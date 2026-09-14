@@ -1,329 +1,426 @@
+/* =====================================================
+   SERVICIOS — WiiU Games
+   Rediseño Premium
+   ===================================================== */
+
 :root {
+  --yellow: #f5c842;
+  --yellow-hover: #e8b830;
+  --dark-blue: #080f20;
+  --dark-blue-2: #0a1628;
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f1f4f9;
+  --border: #e2e8f2;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  /* Compat */
   --Yelow: #f5c842;
-  --YelowHover: #dfb536;
-  --DarkBlue: #0a1628;
+  --YelowHover: #e8b830;
+  --DarkBlue: #080f20;
   --Black: #000000;
-  --Footer: #1a3a7a;
+  --Footer: #080e1d;
   --White: #ffffff;
   --Whitelight: #f0f4fa;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
 
-/* =======================================================
-   3. SECCIÓN HERO / CONTENEDOR TÍTULO
-   ======================================================= */
+body {
+  background-color: var(--bg);
+  color: var(--text-main);
+}
+
+/* =====================================================
+   SECCIÓN HERO
+   ===================================================== */
 .seccion-header {
-  background-color: var(--Whitelight);
-  padding: 40px 0; 
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 60%, #0a1628 100%);
+  padding: 52px 0;
+  line-height: 1.5;
+  position: relative;
+  overflow: hidden;
+}
+
+.seccion-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+}
+
+.seccion-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 32px;
+  background: var(--bg);
+  clip-path: ellipse(55% 100% at 50% 100%);
 }
 
 .seccion-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px; 
+  padding: 0 28px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
+  box-sizing: border-box;
 }
 
 .breadcrumb {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .breadcrumb-separator {
-  margin: 0 8px;
-  color: #e2a03f; 
+  margin: 0 6px;
+  color: rgba(255, 255, 255, 0.25);
 }
 
 .title-seccion {
-  font-size: 2.25rem; 
-  font-weight: 700;
-  color: #000000;
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--white);
   margin: 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
-/* =======================================================
-   4. SECCIÓN SERVICIOS Y DESCRIPCIÓN
-   ======================================================= */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif; /* Define la fuente global */
-}
-
-body {
-    background-color: #f0f2f5;
-    color: #333;
-}
-
+/* =====================================================
+   SECCIÓN SERVICIOS
+   ===================================================== */
 .barra-navegacion {
-    background: linear-gradient(to right, #1a233a, #384259);
-    padding: 15px 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
+  padding: 14px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
 }
 
 .barra-navegacion a {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: color 0.25s, background 0.25s;
 }
 
+.barra-navegacion a:hover,
 .barra-navegacion a.activo {
-    font-weight: bold;
-    border-bottom: 2px solid #ffffff;
+  color: var(--yellow);
+  background: rgba(245, 200, 66, 0.1);
 }
 
 .btn-reservar {
-    background-color: transparent;
-    border: 1px solid #ffffff;
-    padding: 8px 15px;
-    border-radius: 4px;
-    transition: background 0.3s;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  padding: 8px 18px;
+  border-radius: 9999px;
+  transition: all 0.25s ease;
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-size: 13px;
 }
 
 .btn-reservar:hover {
-    background-color: #ffffff;
-    color: #1a233a !important;
+  background: var(--yellow) !important;
+  border-color: var(--yellow) !important;
+  color: var(--dark-blue) !important;
 }
 
 .encabezado-principal {
-    text-align: center;
-    padding: 40px 20px 20px 20px;
+  text-align: center;
+  padding: 48px 20px 24px;
 }
 
 .encabezado-principal h1 {
-    font-size: 2.2rem;
-    color: #1a233a;
-    letter-spacing: 2px;
+  font-size: 2.4rem;
+  color: var(--dark-blue);
+  letter-spacing: -0.02em;
+  font-weight: 800;
 }
 
+/* =====================================================
+   TARJETAS DE SERVICIO
+   ===================================================== */
 .contenedor-servicios {
-    display: grid;
-    grid-template-columns: 1fr; 
-    gap: 30px;
-    max-width: 1000px;
-    margin: 30px auto;
-    padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 1060px;
+  margin: 32px auto;
+  padding: 0 24px;
 }
 
 @media (min-width: 768px) {
-    .contenedor-servicios {
-        grid-template-columns: 1fr 1fr;
-    }
+  .contenedor-servicios {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .tarjeta {
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
+  padding: 44px 36px;
+  border-radius: 20px;
+  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  position: relative;
+}
+
+.tarjeta:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
 }
 
 .titulo-servicio {
-    font-size: 2rem;
-    margin-bottom: 20px;
-    text-align: center;
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
 .pregunta-servicio {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-    font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  font-weight: 600;
 }
 
 .descripcion-servicio {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 30px;
-    flex-grow: 1; 
+  font-size: 14px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  flex-grow: 1;
 }
 
 .btn-accion {
-    display: block;
-    text-align: center;
-    padding: 12px 20px;
-    border-radius: 25px;
-    text-decoration: none;
-    font-weight: bold;
-    font-size: 0.95rem;
-    transition: opacity 0.3s ease;
-    margin-top: auto;
+  display: block;
+  text-align: center;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-top: auto;
+  letter-spacing: 0.02em;
 }
 
 .btn-accion:hover {
-    opacity: 0.85;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Tema Claro (Reparación) */
 .tarjeta-clara {
-    background-color: #ffffff;
-    color: #333;
-    border: 1px solid #e1e4e8;
+  background: var(--white);
+  color: var(--text-main);
 }
 
 .tarjeta-clara .btn-accion {
-    background-color: var(--Footer);
-    color: #ffffff;
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
+  color: var(--white);
+  box-shadow: 0 4px 15px rgba(8, 15, 32, 0.25);
+}
+
+.tarjeta-clara .btn-accion:hover {
+  box-shadow: 0 8px 28px rgba(8, 15, 32, 0.4);
 }
 
 /* Tema Oscuro (Mantenimiento) */
 .tarjeta-oscura {
-    background-color: #0d1b2a; /* Azul marino muy oscuro */
-    color: #e0e1dd;
+  background: linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%);
+  color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 .tarjeta-oscura .titulo-servicio {
-    color: #ffffff;
+  color: var(--yellow);
 }
 
 .tarjeta-oscura .pregunta-servicio {
-    color: #778da9; /* Tono azul grisáceo claro */
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .tarjeta-oscura .btn-accion {
-    background-color: var(--Footer); /* Botón oscuro sutil */
-    color: #ffffff;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
+  color: var(--dark-blue);
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
 }
-/* =======================================================
-   5. SECCIÓN RAZONES (BLOQUES DE CONTENIDO)
-   ======================================================= */
+
+.tarjeta-oscura .btn-accion:hover {
+  box-shadow: 0 8px 28px rgba(245, 200, 66, 0.5);
+}
+
+/* =====================================================
+   SECCIÓN ¿POR QUÉ?
+   ===================================================== */
 .porque-container {
-  width: 100%;          
-  margin: 0 auto;        
-  background-color: var(--Whitelight); 
-  padding: 4rem 2rem;     
-  display: flex;         
+  width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(180deg, var(--bg) 0%, #e8edf7 100%);
+  padding: 72px 32px;
+  display: flex;
   justify-content: space-around;
-  align-items: center;    
+  align-items: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 32px;
   box-sizing: border-box;
 }
 
 .title-porque {
-  color: var(--DarkBlue);         
-  font-size: 2.5rem;      
+  color: var(--dark-blue);
+  font-size: 2.6rem;
+  font-weight: 800;
   text-align: center;
-  margin: 0;              
+  margin: 0;
+  letter-spacing: -0.02em;
 }
 
-.porque-img img, .razon1-img img, .razon2-img img, .razon3-img img {
+.porque-img img,
+.razon1-img img,
+.razon2-img img,
+.razon3-img img {
   max-width: 500px;
-  height: auto; 
+  height: auto;
   width: 100%;
   border-radius: 20px;
   display: block;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
-.razon1-container, .razon2-container, .razon3-container {
+.razon1-container,
+.razon2-container,
+.razon3-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 4rem;
+  gap: 60px;
   width: 100%;
   max-width: 1920px;
   margin: 0 auto;
-  padding: 4rem 2rem;
+  padding: 72px 48px;
   box-sizing: border-box;
 }
 
-.razon1-container { background-color: var(--DarkBlue); flex-direction: row; }
-.razon2-container { background-color: var(--Whitelight); flex-direction: row-reverse; }
-.razon3-container { background-color: var(--DarkBlue); flex-direction: row; }
-
-.texto1-bloque, .texto2-bloque, .texto3-bloque {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;           
-  width: 45%;             
+.razon1-container {
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
+  flex-direction: row;
 }
 
-.title-razon1, .title-razon3 { color: var(--White); font-size: 2.5rem; margin: 0; }
-.title-razon2 { color: var(--Black); font-size: 2.5rem; margin: 0; }
+.razon2-container {
+  background: linear-gradient(135deg, #f8fafc 0%, var(--bg) 100%);
+  flex-direction: row-reverse;
+}
 
-.description-razon1, .description-razon3 { color: var(--White); font-size: 1.2rem; margin: 0; }
-.description-razon2 { color: var(--Black); font-size: 1.2rem; margin: 0; }
+.razon3-container {
+  background: linear-gradient(135deg, #0c1e40 0%, var(--dark-blue) 100%);
+  flex-direction: row;
+}
 
+.texto1-bloque,
+.texto2-bloque,
+.texto3-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 45%;
+}
 
+.title-razon1,
+.title-razon3 {
+  color: var(--yellow);
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
 
-/* =======================================================
-   7. RESPONSIVE MEDIA QUERIES (ADAPTABILIDAD)
-   ======================================================= */
+.title-razon2 {
+  color: var(--dark-blue);
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
 
+.description-razon1,
+.description-razon3 {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 1.05rem;
+  margin: 0;
+  line-height: 1.7;
+}
+
+.description-razon2 {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
 @media (max-width: 992px) {
   .barra-superior {
     flex-direction: column;
     text-align: center;
     padding: 10px;
   }
-  
-  .seccion-horario, .seccion-direccion {
+
+  .seccion-horario,
+  .seccion-direccion {
     text-align: center;
   }
 
-  .razon1-container, .razon2-container, .razon3-container {
-    flex-direction: column !important; 
-    gap: 2rem;
-    padding: 3rem 1.5rem;
+  .razon1-container,
+  .razon2-container,
+  .razon3-container {
+    flex-direction: column !important;
+    gap: 28px;
+    padding: 48px 24px;
   }
 
-  .texto1-bloque, .texto2-bloque, .texto3-bloque {
+  .texto1-bloque,
+  .texto2-bloque,
+  .texto3-bloque {
     width: 100%;
     text-align: center;
-  }
-
-  .title-razon1, .title-razon2, .title-razon3,
-  .description-razon1, .description-razon2, .description-razon3 {
-    text-align: center;
+    align-items: center;
   }
 }
 
 @media (max-width: 768px) {
   .menu-principal {
-    padding: 15px 20px;
+    padding: 14px 20px;
     flex-direction: column;
   }
 
   .contenido-menu {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     width: 100%;
   }
 
   .enlaces-nav {
     flex-direction: column;
     align-items: center;
-    gap: 15px;
   }
 
   .botones-ingreso {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .title-seccion {
-    font-size: 1.8rem;
-  }
-
-  .mantenimiento, .reparacion {
-    font-size: 2rem;
-  }
-
-  .title-porque, .title-razon1, .title-razon2, .title-razon3 {
-    font-size: 2rem;
-  }
-
-  .barra-inferior-footer {
-    flex-direction: column;
-    text-align: center;
-    gap: 15px;
-  }
-}

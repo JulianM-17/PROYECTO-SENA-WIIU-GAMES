@@ -1,530 +1,449 @@
+/* =====================================================
+   GARANTÍAS — WiiU Games
+   Rediseño Premium (mismo sistema que contactanos)
+   ===================================================== */
+
 :root {
+  --yellow: #f5c842;
+  --yellow-hover: #e8b830;
+  --dark-blue: #080f20;
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f1f4f9;
+  --surface: #ffffff;
+  --border: #e2e8f2;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  /* Compat */
   --Yelow: #f5c842;
-  --YelowHover: #dfb536;
-  --DarkBlue: #0a1628;
+  --YelowHover: #e8b830;
+  --DarkBlue: #080f20;
   --Black: #000000;
-  --Footer: #1a3a7a;
+  --Footer: #080e1d;
   --White: #ffffff;
   --Whitelight: #f0f4fa;
 }
 
-/* =======================================================
-   1. ESTRUCTURA DE LA BARRA SUPERIOR NEGRA
-   ======================================================= */
-.barra-superior {
-  background-color: #000000;
-  color: #ffffff;
-  font-size: 13px;
-  padding: 10px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap; 
-  gap: 10px;
-}
-
-.seccion-horario {
-  text-align: left;
-  line-height: 1.4;
-}
-
-.seccion-horario b,
-.barra-superior b {
-  font-weight: bold;
-}
-
-.seccion-direccion {
-  text-align: center;
-  line-height: 1.4;
-}
-
-.link-contacto {
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: bold;
-  border-bottom: 2px solid #ffffff;
-  margin-left: 5px;
-  display: inline-block;
-}
-
-.seccion-contacto {
-  display: flex;
-  align-items: center;
-}
-
-.red-social {
-  color: #ffffff;
-  font-size: 16px;
-  margin-left: 12px;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-}
-
-.red-social:hover {
-  color: #ebd07f;
-}
-
-*{
+* {
   margin: 0;
-  font-family: "Poppins", sans-serif; /* Define la fuente global */
+  font-family: 'Poppins', sans-serif;
 }
 
-/* =======================================================
-   3. SECCIÓN ENCABEZADO DE PÁGINA
-   ======================================================= */
+body {
+  background-color: var(--bg);
+}
+
+/* =====================================================
+   SECCIÓN HEADER DE PÁGINA
+   ===================================================== */
 .seccion-header {
-  background-color: var(--Whitelight);
-  padding: 40px 0; 
-  font-family: 'Arial', sans-serif; 
-  line-height: 1.4;
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 60%, #0a1628 100%);
+  padding: 52px 0;
+  line-height: 1.5;
+  position: relative;
+  overflow: hidden;
+}
+
+.seccion-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+}
+
+.seccion-header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: var(--bg);
+  clip-path: ellipse(55% 100% at 50% 100%);
 }
 
 .title-seccion {
-  font-size: 36px;
-  font-weight: 700;
-  color: #000000;
+  font-size: 38px;
+  font-weight: 800;
+  color: var(--white);
   margin: 0;
+  letter-spacing: -0.02em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
 .subtitle-seccion {
-  font-size: 18px;
-  font-weight: 500;
-  color: #000000;
-  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 12px 0 0 0;
+  max-width: 580px;
+  line-height: 1.7;
 }
 
 .seccion-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px; 
+  padding: 0 28px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
   box-sizing: border-box;
 }
 
 .breadcrumb {
-  font-size: 14px;
-  color: #666;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb .active {
+  color: var(--yellow);
+  font-weight: 500;
 }
 
 .breadcrumb-separator {
-  margin: 0 8px;
-  color: #e2a03f; 
+  margin: 0 4px;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 11px;
 }
 
-/* =======================================================
-   4. CONTENEDOR PRINCIPAL: FORMULARIO Y CITAS
-   ======================================================= */
+/* =====================================================
+   FORMULARIO + INFORMACIÓN
+   ===================================================== */
 .formulario-cita {
   display: grid;
-  grid-template-columns: 2fr 1fr; 
-  gap: 4rem;                     
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
-  font-family: sans-serif;       
+  padding: 48px 28px;
   box-sizing: border-box;
 }
 
+.formulario-container {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--border);
+}
+
 .formulario {
-  grid-template-columns: repeat(2, 1fr); 
-  gap: 2rem;                             
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .campo {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .campo label {
-  font-weight: bold;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-main);
+  letter-spacing: 0.01em;
 }
 
 .campo input {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  width: 100%; 
+  padding: 13px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  width: 100%;
   box-sizing: border-box;
+  background: var(--white);
+  color: var(--text-main);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
 }
 
+.campo input:focus {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
+}
 
-.consulta{
+.consulta {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  justify-self: flex-start;
-  grid-column: 1 / -1; 
+  gap: 8px;
+  grid-column: 1 / -1;
+}
 
+.consulta label {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-main);
 }
 
 .consulta textarea {
-  padding: 8rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-  width: 100%; 
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  width: 100%;
   box-sizing: border-box;
-  font-family: inherit;
-  background-color: #fff;
+  background: var(--white);
+  color: var(--text-main);
+  resize: vertical;
+  min-height: 140px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
 }
 
+.consulta textarea:focus {
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
+}
 
 .btn-agendar {
-  grid-column: span 1; 
-  padding: 1rem;
-  background-color: var(--Yelow); 
-  color: #000; 
+  grid-column: span 1;
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
+  color: var(--dark-blue);
   border: none;
+  border-radius: 10px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+  font-weight: 700;
+  font-size: 14px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+  letter-spacing: 0.02em;
+  width: 100%;
+  margin-top: 8px;
 }
 
 .btn-agendar:hover {
-  background-color: var(--YelowHover);
+  background: linear-gradient(135deg, #ffd95a 0%, var(--yellow) 100%);
+  box-shadow: 0 6px 25px rgba(245, 200, 66, 0.5);
+  transform: translateY(-1px);
 }
 
+/* =====================================================
+   INFORMACIÓN DE CONTACTO (Aside)
+   ===================================================== */
 .informacion-contacto {
   display: flex;
   flex-direction: column;
-  gap: 2rem; 
+  gap: 20px;
+}
+
+.info-bloque {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  border-left: 3px solid var(--yellow);
+}
+
+.info-bloque:hover {
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .info-bloque h3 {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.1rem;
-  font-weight: bold;
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--yellow);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 .info-bloque p {
   margin: 0;
-  color: #555;
-  line-height: 1.4;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 13px;
 }
 
-/* =======================================================
-   5. FOOTER
-   ======================================================= */
-:root {
-  --Yelow: #f5c842; /* Color amarillo principal usado como acento */
-  --YelowHover: #dfb536; /* Amarillo más oscuro para hover */
-  --DarkBlue: #0a1628; /* Azul oscuro para fondo de navbar */
-  --Black: #000000; /* Negro para texto y detalles */
-  --Footer: #1a3a7a; /* Color azul oscuro del footer */
-}
-
-/*
-BARRA SUPERIOR (Top Bar)
-*/
-.barra-superior {
-  background-color: #000000; /* Fondo negro para la barra superior */
-  color: #ffffff; /* Texto blanco */
-  font-size: 13px; /* Tamaño de fuente pequeño */
-  padding: 10px 30px; /* Espacio dentro de la barra */
-  display: flex; /* Layout horizontal */
-  justify-content: space-between; /* Separación entre los extremos */
-  align-items: center; /* Centra verticalmente */
-}
-
-.seccion-horario {
-  text-align: left; /* Alinea el texto a la izquierda */
-  line-height: 1.4; /* Altura de línea para legibilidad */
-}
-
-.seccion-horario b,
-.barra-superior b {
-  font-weight: bold; /* Negrita para texto destacado */
-}
-
-.seccion-direccion {
-  text-align: center; /* Alinea la dirección al centro */
-  line-height: 1.4; /* Altura de línea consistente */
-}
-
-.link-contacto {
-  color: #ffffff; /* Enlace blanco */
-  text-decoration: none; /* Sin subrayado */
-  font-weight: bold; /* Texto en negrita */
-  border-bottom: 2px solid #ffffff; /* Subrayado blanco */
-  margin-left: 5px; /* Separación a la izquierda */
-  display: inline-block; /* Para que funcione el padding/border */
-}
-
-.seccion-contacto {
-  display: flex; /* Layout horizontal */
-  align-items: center; /* Centra verticalmente */
-}
-
-/* Iconos de Redes Sociales en la barra negra (Blancos) */
-.red-social {
-  color: #ffffff; /* Iconos blancos */
-  font-size: 16px; /* Tamaño de icono */
-  margin-left: 12px; /* Separación izquierda entre iconos */
-  text-decoration: none; /* Quita subrayado */
-  display: flex; /* Layout flex para centrar icono */
-  align-items: center; /* Centra verticalmente */
-}
-
-.red-social:hover {
-  color: #ebd07f; /* Cambia a amarillo al pasar el mouse */
-}
-
-/*
-NAV BAR
-*/
-.menu-principal {
-  background-color: var(--DarkBlue); /* Fondo azul oscuro */
-  padding: 15px 40px; /* Espacio interior de navbar */
-  display: flex; /* Layout horizontal */
-  justify-content: space-between; /* Separación entre extremos */
-  align-items: center; /* Centra verticalmente */
-}
-
-.seccion-logo img {
-  height: 80px; /* Altura del logo */
-  width: 150px; /* Ancho del logo */
-}
-
-.contenido-menu {
-  display: flex; /* Layout horizontal */
-  align-items: center; /* Centra verticalmente */
-  gap: 35px; /* Separación entre elementos del menú */
-}
-
-.enlaces-nav {
-  display: flex; /* Enlaces en fila */
-  gap: 25px; /* Separación entre enlaces */
-}
-
-.enlaces-nav a {
-  color: #ffffff; /* Texto blanco */
-  text-decoration: none; /* Sin subrayado */
-  font-weight: bold; /* Texto en negrita */
-  font-size: 15px; /* Tamaño de enlace */
-}
-
-.enlaces-nav a:hover {
-  color: var(--YelowHover); /* Amarillo claro en hover */
-}
-
-.botones-ingreso {
-  display: flex; /* Botones en fila */
-  gap: 12px; /* Separación entre botones */
-}
-
-.btn-iniciar {
-  background-color: var(--Yelow); /* Botón amarillo */
-  color: var(--Black); /* Texto negro */
-  text-decoration: none; /* Sin subrayado */
-  font-weight: bold; /* Texto en negrita */
-  font-size: 14px; /* Tamaño de texto */
-  padding: 10px 22px; /* Espacio interior */
-  border-radius: 25px; /* Bordes redondeados */
-}
-
-.btn-registrar {
-  background-color: transparent; /* Fondo transparente */
-  color: var(--Yelow); /* Texto amarillo */
-  text-decoration: none; /* Sin subrayado */
-  font-weight: bold; /* Texto en negrita */
-  font-size: 14px; /* Tamaño de texto */
-  padding: 8px 20px; /* Espacio interior */
-  border: 2px solid var(--Yelow); /* Borde amarillo */
-  border-radius: 25px; /* Bordes redondeados */
-}
-
-.iconos-usuario {
-  display: flex; /* Íconos en fila */
-  align-items: center; /* Centra verticalmente */
-  gap: 22px; /* Separación entre iconos */
-}
-
-.icono-menu {
-  color: var(--Yelow); /* Iconos amarillos */
-  font-size: 19px; /* Tamaño de icono */
-  cursor: pointer; /* Indica clicable */
-  display: flex; /* Layout flex para alineación */
-  align-items: center; /* Centra verticalmente */
-}
-
-.contenedor-carrito {
-  position: relative; /* Para posicionar la burbuja absoluta */
-  display: flex; /* Layout flex */
-  align-items: center; /* Centra verticalmente */
-}
-
-.burbuja-carrito {
-  position: absolute; /* Posicionada respecto al contenedor */
-  top: -8px; /* Ajuste vertical */
-  right: -10px; /* Ajuste horizontal */
-  background-color: var(--Black); /* Fondo negro */
-  color: #ffffff; /* Texto blanco */
-  font-size: 7px; /* Tamaño pequeño */
-  padding: 2px 5px; /* Espacio interior */
-  border-radius: 50%; /* Forma circular */
-  border: 1px solid var(--Yelow); /* Borde amarillo */
-}
-
-.foto-perfil {
-  width: 34px; /* Ancho del avatar */
-  height: 34px; /* Alto del avatar */
-  background-color: #ffffff; /* Fondo blanco */
-  border-radius: 50%; /* Forma circular */
-  cursor: pointer; /* Indica clicable */
-}
-
-/*
-FOOTER
-*/
+/* =====================================================
+   FOOTER
+   ===================================================== */
 .sitio-footer {
-  background-color: var(--Footer); /* Fondo azul oscuro */
-  color: #ffffff; /* Texto blanco */
-  padding: 40px 60px 20px 60px; /* Espacio interno del footer */
-  font-family:
-    "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Tipografía del footer */
+  background: linear-gradient(180deg, #0c1a35 0%, #080e1d 60%, #050b18 100%);
+  color: var(--white);
+  padding: 60px 60px 28px 60px;
+  font-family: 'Poppins', sans-serif;
+  border-top: 1px solid rgba(245, 200, 66, 0.12);
+  position: relative;
+  overflow: hidden;
 }
 
-/* --- Cuadrícula de Enlaces --- */
+.sitio-footer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+}
+
 .cuadricula-footer {
-  display: flex; /* Columnas en fila */
-  justify-content: space-between; /* Separación entre columnas */
-  gap: 20px; /* Espacio entre columnas */
-  margin-bottom: 5px; /* Espacio inferior */
+  display: flex;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .columna-footer {
-  flex: 1; /* Cada columna ocupa espacio igual */
+  flex: 1;
+  min-width: 140px;
 }
 
 .columna-footer h3 {
-  font-size: 14px; /* Tamaño de encabezado */
-  color: rgba(255, 255, 255, 0.5); /* Texto blanco semitransparente */
-  margin-bottom: 15px; /* Espacio inferior */
-  font-weight: 600; /* Texto semi-negrita */
+  font-size: 11px;
+  color: var(--yellow);
+  margin-bottom: 18px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.85;
 }
 
 .columna-footer ul {
-  list-style: none; /* Quita viñetas de la lista */
+  list-style: none;
 }
 
 .columna-footer ul li {
-  margin-bottom: 10px; /* Espacio entre elementos de lista */
+  margin-bottom: 10px;
 }
 
 .columna-footer ul li a {
-  color: #ffffff; /* Enlaces blancos */
-  text-decoration: none; /* Sin subrayado */
-  font-size: 13px; /* Tamaño de texto */
-  transition: color 0.3s; /* Transición suave para hover */
+  color: rgba(255, 255, 255, 0.48);
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.25s, padding-left 0.2s;
+  display: inline-block;
 }
 
 .columna-footer ul li a:hover {
-  color: var(--Yelow); /* Enlace amarillo al pasar mouse */
+  color: var(--yellow);
+  padding-left: 5px;
 }
 
-/* Columna de dirección y contacto */
 .columna-contacto p {
-  font-size: 13px; /* Tamaño de texto */
-  line-height: 1.6; /* Altura de línea para legibilidad */
-  margin-bottom: 8px; /* Espacio inferior */
-  color: #ffffff; /* Texto blanco */
+  font-size: 13px;
+  line-height: 1.7;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .enlace-resaltado {
-  color: #00aeef; /* Tono azul claro para teléfonos/email */
-  text-decoration: none; /* Sin subrayado */
+  color: var(--yellow);
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
 .enlace-resaltado:hover {
-  text-decoration: underline; /* Subraya al pasar el mouse */
+  color: #ffd95a;
+  text-decoration: underline;
 }
 
-/* --- Barra Inferior --- */
 .barra-inferior-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Línea fina superior */
-  padding-top: 20px; /* Espacio superior */
-  margin-top: 40px; /* Separación del contenido anterior */
-  display: flex; /* Layout horizontal */
-  justify-content: space-between; /* Separación entre extremos */
-  align-items: center; /* Centra verticalmente */
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 24px;
+  margin-top: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
 .redes-footer {
-  display: flex; /* Iconos de redes en fila */
-  gap: 15px; /* Espacio entre iconos */
-}
-
-.redes-footer a {
-  color: rgba(255, 255, 255, 0.6); /* Iconos semi-transparentes */
-  font-size: 18px; /* Tamaño de icono */
-  transition: color 0.3s; /* Transición de color suave */
-}
-
-.redes-footer a:hover {
-  color: #ffffff; /* Icono blanco al hover */
-}
-
-.metodos-pago {
   display: flex;
   gap: 10px;
 }
 
+.redes-footer a {
+  width: 36px; height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.redes-footer a:hover {
+  background: rgba(245, 200, 66, 0.12);
+  border-color: rgba(245, 200, 66, 0.35);
+  color: var(--yellow);
+  transform: translateY(-2px);
+}
+
+.metodos-pago {
+  display: flex;
+  gap: 8px;
+}
+
 .tarjeta-icono {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 4px 10px;
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 6px;
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .copyright p {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.22);
+  letter-spacing: 0.02em;
 }
 
-
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
 @media (max-width: 992px) {
   .barra-superior {
     flex-direction: column;
     text-align: center;
-    padding: 15px;
-  }
-
-  .seccion-direccion {
-    text-align: center;
+    padding: 12px;
   }
 
   .formulario-cita {
     grid-template-columns: 1fr;
-    gap: 3rem;
-    padding: 1.5rem;
+    gap: 28px;
+    padding: 32px 20px;
   }
 }
 
 @media (max-width: 768px) {
   .menu-principal {
-    padding: 15px 20px;
+    padding: 14px 20px;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
   }
 
   .contenido-menu {
     flex-direction: column;
     width: 100%;
-    gap: 20px;
+    gap: 16px;
   }
 
   .enlaces-nav {
     flex-direction: column;
     align-items: center;
-    gap: 15px;
   }
 
   .botones-ingreso {
@@ -538,15 +457,19 @@ FOOTER
 
   .formulario {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 16px;
   }
 
   .btn-agendar {
-    grid-column: span 1; 
+    grid-column: span 1;
+  }
+
+  .formulario-container {
+    padding: 24px;
   }
 
   .sitio-footer {
-    padding: 30px 20px;
+    padding: 40px 20px 24px;
   }
 
   .barra-inferior-footer {

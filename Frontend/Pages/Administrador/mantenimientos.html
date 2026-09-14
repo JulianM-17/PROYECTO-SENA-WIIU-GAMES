@@ -1,93 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WiiU-Games - Reparaciones</title>
-    <link rel="stylesheet" href="styles-mantenimientos.css">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mantenimientos - Administrador</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
+  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
+</head>
+<body>
 
-  <body>
+  <!-- Barra lateral -->
+  <div class="barra-lateral">
+    <div class="titulo-menu">WiiU-Games</div>
+    <a href="index.html" class="boton-menu"><i class="fi fi-rr-apps"></i> Dashboard</a>
+    <a href="productos.html" class="boton-menu"><i class="fi fi-rr-box-open"></i> Productos</a>
+    <a href="reparacion.html" class="boton-menu"><i class="fi fi-rr-wrench-simple"></i> Reparaciones</a>
+    <a href="mantenimientos.html" class="boton-menu activo"><i class="fi fi-rr-broom"></i> Mantenimientos</a>
+    <a href="garantias.html" class="boton-menu"><i class="fi fi-rr-shield-check"></i> Garantias</a>
+    <a href="../Index.html" class="boton-menu" style="margin-top: auto; border-color: rgba(255,255,255,0.1);"><i class="fi fi-rr-exit"></i> Volver a Tienda</a>
+  </div>
 
-    <!-- Barra lateral de navegación con las opciones del sistema -->
-    <div class="barra-lateral">
-      <div class="titulo-menu">WiiU-Games</div>
-      <a href="index.html" class="boton-menu">Dashboard</a>
-      <a href="productos.html" class="boton-menu">Productos</a>
-      <a href="reparacion.html" class="boton-menu">Reparaciones</a>
-      <a href="mantenimientos.html" class="boton-menu activo">Mantenimientos</a>
-      <a href="garantias.html" class="boton-menu">Garantias</a>
-      <a href="#" class="boton-menu">Copia de seguridad</a>
+  <div class="contenedor-principal" style="overflow-x: auto;">
+    <div class="encabezado">
+      <div class="titulo-pagina">Gestión de Mantenimientos</div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL AGREGADO (Arregla el estiramiento visual) -->
-    <div class="panel-principal">
-
-      <!-- Tarjetas superiores -->
-      <div class="contenedor-superior">
-        <div class="encabezado">
-          <div class="titulo-pagina">Mantenimientos </div>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Total en Taller</h3>
-          <h1>18 Equipos</h1>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Urgentes</h3>
-          <h1>3 Casos</h1>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Tiempo Prom.</h3>
-          <h1>2.4 Días</h1>
-        </div>
+    <div class="tabla" style="min-width: 900px;">
+      <!-- Encabezado -->
+      <div class="fila fila-encabezado">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna">ID Servicio</div>
+          <div class="columna" style="flex: 1.5;">Cliente</div>
+          <div class="columna" style="flex: 2;">Equipo</div>
+          <div class="columna">Fecha Ingreso</div>
+          <div class="columna" style="flex: 0.8;">Estado</div>
+          <div class="columna" style="flex: 1.2;">Acciones</div>
       </div>
 
-      <!-- Columnas del Tablero Kanban -->
-      <div class="contenedor">
-        <!-- Recepción -->
-        <div class="columna">
-          <h2>RECEPCIÓN (4)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1050 - PC Gamer</h3>
-            <p>No da video</p>
-            <span class="rojo">Urgente</span>
+      <!-- Fila 1 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">MNT-1001</p></div>
+          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Carlos Torres</p></div>
+          <div class="columna" style="flex: 2;"><p>PC Gamer Custom (Limpieza y Cambio Pasta Térmica)</p></div>
+          <div class="columna"><p>14/09/2026</p></div>
+          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-blue); font-weight: 600;">En Proceso</p></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
           </div>
-
-          <div class="caja">
-            <h3>#ORD-1051 - Tablet iPad</h3>
-            <p>Pin de carga</p>
-            <span class="verde">Normal</span>
-          </div>
-        </div>
-
-        <!-- En proceso -->
-        <div class="columna">
-          <h2>EN PROCESO (3)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1048 - MacBook Pro</h3>
-            <p>Mantenimiento térmico</p>
-            <span class="verde">Técnico: Juan</span>
-          </div>
-        </div>
-
-        <!-- Listo -->
-        <div class="columna">
-          <h2>LISTO ENTREGA (2)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1044 - Consola Switch</h3>
-            <p>Cambio Joycon</p>
-            <span class="verde">Pruebas OK</span>
-          </div>
-        </div>
       </div>
 
-    </div> <!-- FIN DE PANEL PRINCIPAL -->
+      <!-- Fila 2 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">MNT-1002</p></div>
+          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Laura Mendez</p></div>
+          <div class="columna" style="flex: 2;"><p>Laptop HP Omen (Limpieza de Ventiladores)</p></div>
+          <div class="columna"><p>13/09/2026</p></div>
+          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-green); font-weight: 600;">Finalizado</p></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+          </div>
+      </div>
+    </div>
+  </div>
 
-  </body>
+</body>
 </html>

@@ -3,31 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>administrador</title>
+  <title>Dashboard Administrador</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
+  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Barra lateral  -->
+  <!-- Barra lateral -->
   <div class="barra-lateral">
     <div class="titulo-menu">WiiU-Games</div>
-    <a href="index.html" class="boton-menu activo">Dashboard</a>
-    <a href="productos.html" class="boton-menu">Productos</a>
-    <a href="reparacion.html" class="boton-menu">Reparaciones</a>
-    <a href="mantenimientos.html" class="boton-menu">Mantenimientos</a>
-    <a href="garantias.html" class="boton-menu">Garantias</a>
-    <a href="#" class="boton-menu">Copia de seguridad</a>
+    <a href="index.html" class="boton-menu activo"><i class="fi fi-rr-apps"></i> Dashboard</a>
+    <a href="productos.html" class="boton-menu"><i class="fi fi-rr-box-open"></i> Productos</a>
+    <a href="reparacion.html" class="boton-menu"><i class="fi fi-rr-wrench-simple"></i> Reparaciones</a>
+    <a href="mantenimientos.html" class="boton-menu"><i class="fi fi-rr-broom"></i> Mantenimientos</a>
+    <a href="garantias.html" class="boton-menu"><i class="fi fi-rr-shield-check"></i> Garantias</a>
+    <a href="../Index.html" class="boton-menu" style="margin-top: auto; border-color: rgba(255,255,255,0.1);"><i class="fi fi-rr-exit"></i> Volver a Tienda</a>
   </div>
 
-  <!-- CONTENEDOR PRINCIPAL-->
+  <!-- Panel principal -->
   <div class="panel-principal">
-
-    <!-- Encabezado -->
     <div class="encabezado">
-      <div class="titulo-pagina">Dashboard </div>
+      <div class="titulo-pagina">Dashboard General</div>
     </div>
 
-    <!-- tarjetas superiores  -->
+    <!-- Tarjetas -->
     <div class="contenedor-tarjetas">
       <div class="tarjeta">
         <div class="texto-etiqueta">Ventas Diarias</div>
@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <!-- GRAFICA-->
+    <!-- Grafica -->
     <div class="caja-grafica">
       <div class="titulo-caja">Ingresos de la Semana</div>
       <div class="area-grafica">
@@ -55,10 +55,8 @@
       </div>
     </div>
 
-    <!-- CONTENEDOR DEBAJO DE LA GRAFICA -->
     <div class="contenedor-inferior">
-
-      <!-- Tabla  -->
+      <!-- Tabla -->
       <div class="caja-tabla">
         <div class="titulo-caja">Últimos Movimientos</div>
         <div class="fila-tabla">
@@ -66,18 +64,18 @@
             <div class="texto-bold">Reparación Pantalla iPhone</div>
             <div class="texto-sub">Mantenimiento / Servicio</div>
           </div>
-          <div class="texto-valor">$ 150.000</div>
+          <div class="texto-valor" style="color: var(--accent-green); font-size: 16px; font-weight: 700;">$ 150.000</div>
         </div>
         <div class="fila-tabla">
           <div>
             <div class="texto-bold">Venta Cargador Laptop</div>
             <div class="texto-sub">Producto Electrónico</div>
           </div>
-          <div class="texto-valor">$ 80.000</div>
+          <div class="texto-valor" style="color: var(--accent-green); font-size: 16px; font-weight: 700;">$ 80.000</div>
         </div>
       </div>
 
-      <!-- Gráfica circular  -->
+      <!-- Dona -->
       <div class="caja-dona">
         <div class="titulo-caja">Origen de Ingresos</div>
         <div class="circulo-grafica">
@@ -88,9 +86,7 @@
           <p class="color-servicios">■ Servicios (40%)</p>
         </div>
       </div>
-
     </div>
-
   </div>
 
 </body>

@@ -1,115 +1,153 @@
-/* =======================================================
-   ESTILOS PARA CARRITO DE COMPRAS - WIIU GAMES
-   ======================================================= */
+/* =====================================================
+   CARRITO DE COMPRAS — WiiU Games
+   Rediseño Premium
+   ===================================================== */
 
 :root {
+  --yellow: #f5c842;
+  --yellow-hover: #e8b830;
+  --dark-blue: #080f20;
+  --dark-blue-2: #0a1628;
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f1f4f9;
+  --border: #e2e8f2;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  
   --Yelow: #f5c842;
-  --YelowHover: #dfb536;
-  --DarkBlue: #0a1628;
+  --YelowHover: #e8b830;
+  --DarkBlue: #080f20;
   --Black: #000000;
-  --Footer: #1a3a7a;
-  --GrayBg: #f8fafc;
-  --BorderColor: #e2e8f0;
-  --TextMuted: #64748b;
+  --Footer: #080e1d;
+  --White: #ffffff;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
-  background-color: #ffffff;
-  color: #1e293b;
+  background-color: var(--bg);
+  color: var(--text-main);
 }
 
-/* =======================================================
+/* =====================================================
    SECCIÓN CARRITO PRINCIPAL
-   ======================================================= */
+   ===================================================== */
 .seccion-carrito {
-  max-width: 1350px;
-  margin: 20px auto 60px;
-  padding: 0 25px;
+  max-width: 1400px;
+  margin: 40px auto 80px;
+  padding: 0 32px;
 }
 
 .migas-pan {
   font-size: 13px;
-  color: var(--TextMuted);
-  margin-bottom: 20px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .titulo-carrito {
-  font-size: 32px;
-  font-weight: 700;
-  color: #000000;
-  margin-bottom: 30px;
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 36px;
+  letter-spacing: -0.02em;
 }
 
-/* Contenedor de 2 columnas: Productos y Resumen */
+/* Contenedor principal de grid */
 .contenedor-columnas {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
-  gap: 40px;
+  gap: 32px;
   align-items: start;
 }
 
-/* =======================================================
-   COLUMNA IZQUIERDA: LISTA DE PRODUCTOS
-   ======================================================= */
+/* =====================================================
+   COLUMNA IZQUIERDA: PRODUCTOS
+   ===================================================== */
 .columna-productos {
   display: flex;
   flex-direction: column;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
 }
 
 .encabezados-productos {
   display: grid;
-  grid-template-columns: 3.5fr 1fr 1fr 1fr 60px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid var(--BorderColor);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--TextMuted);
-  text-transform: capitalize;
+  grid-template-columns: 3fr 1fr 1fr 1fr 60px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .fila-producto {
   display: grid;
-  grid-template-columns: 3.5fr 1fr 1fr 1fr 60px;
+  grid-template-columns: 3fr 1fr 1fr 1fr 60px;
   align-items: center;
-  padding: 25px 0;
-  border-bottom: 1px solid var(--BorderColor);
-  gap: 15px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  gap: 20px;
+  transition: background 0.3s ease;
+}
+
+.fila-producto:last-child {
+  border-bottom: none;
+}
+
+.fila-producto:hover {
+  background: rgba(245, 200, 66, 0.02);
+  border-radius: 12px;
+  margin: 0 -12px;
+  padding: 28px 12px;
 }
 
 .celda-item {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 20px;
 }
 
 .img-producto {
-  width: 90px;
-  height: 90px;
-  object-fit: cover;
-  border-radius: 8px;
-  background-color: #f1f5f9;
-  border: 1px solid var(--BorderColor);
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
   flex-shrink: 0;
+  padding: 8px;
+  transition: transform 0.3s ease;
+}
+
+.fila-producto:hover .img-producto {
+  transform: scale(1.05);
 }
 
 .texto-producto {
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.5;
-  color: #1e293b;
-  font-weight: 500;
+  color: var(--dark-blue);
+  font-weight: 600;
 }
 
 .celda-precio {
-  font-size: 15px;
-  font-weight: 600;
-  color: #0f172a;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
 }
 
 .celda-cantidad-wrapper {
@@ -121,126 +159,148 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  padding: 6px 12px;
-  min-width: 60px;
-  background-color: #f8fafc;
-  font-weight: 600;
-  font-size: 14px;
+  gap: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-width: 72px;
+  background: var(--white);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--dark-blue);
+  transition: border-color 0.2s ease;
+}
+
+.celda-cantidad:hover {
+  border-color: var(--yellow);
 }
 
 .flechitas {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  color: var(--TextMuted);
+  color: var(--text-muted);
   font-size: 10px;
   cursor: pointer;
 }
 
 .flechitas i:hover {
-  color: #000000;
+  color: var(--yellow);
 }
 
 .celda-subtotal {
-  font-size: 15px;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--dark-blue);
 }
 
 .celda-acciones {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   justify-content: center;
 }
 
 .icono-accion {
   font-size: 18px;
   cursor: pointer;
-  transition: transform 0.2s ease, color 0.2s ease;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--bg);
 }
 
 .icono-accion:hover {
-  transform: scale(1.15);
+  transform: translateY(-2px);
 }
 
 .icono-accion.eliminar {
   color: #ef4444;
 }
+.icono-accion.eliminar:hover {
+  background: #fef2f2;
+}
 
 .icono-accion.editar {
-  color: var(--TextMuted);
+  color: var(--text-muted);
 }
-
 .icono-accion.editar:hover {
-  color: var(--DarkBlue);
+  color: var(--yellow);
+  background: rgba(245, 200, 66, 0.1);
 }
 
-/* Botones de acción inferiores */
+/* Botones Inferiores */
 .botones-inferiores-izq {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
+  margin-top: 36px;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 16px;
 }
 
 .btn-linea {
   display: inline-block;
-  padding: 10px 22px;
-  border: 2px solid #000000;
-  border-radius: 25px;
-  color: #000000;
+  padding: 12px 28px;
+  border: 1.5px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text-main);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  background: var(--white);
 }
 
 .btn-linea:hover {
-  background-color: #000000;
-  color: #ffffff;
+  border-color: var(--yellow);
+  color: var(--dark-blue);
+  background: rgba(245, 200, 66, 0.05);
+  transform: translateY(-1px);
 }
 
 .btn-negro {
   display: inline-block;
-  padding: 10px 22px;
-  background-color: #000000;
-  border: 2px solid #000000;
-  border-radius: 25px;
-  color: #ffffff;
+  padding: 12px 28px;
+  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
+  border: none;
+  border-radius: 9999px;
+  color: var(--white);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   text-decoration: none;
-  transition: all 0.2s ease;
-  margin-left: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(8, 15, 32, 0.2);
 }
 
 .btn-negro:hover {
-  background-color: #334155;
-  border-color: #334155;
+  box-shadow: 0 6px 20px rgba(8, 15, 32, 0.3);
+  transform: translateY(-1px);
 }
 
-/* =======================================================
+/* =====================================================
    COLUMNA DERECHA: RESUMEN DEL PEDIDO
-   ======================================================= */
+   ===================================================== */
 .columna-resumen {
-  background-color: #f8fafc;
-  border: 1px solid var(--BorderColor);
-  border-radius: 12px;
-  padding: 28px;
+  background: linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%);
+  border-radius: 20px;
+  padding: 32px;
+  color: var(--white);
+  box-shadow: 0 8px 30px rgba(8, 15, 32, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .titulo-resumen {
-  font-size: 20px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--BorderColor);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--yellow);
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  letter-spacing: 0.02em;
 }
 
 .acordeon {
@@ -249,155 +309,168 @@ body {
   align-items: center;
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
-  color: #1e293b;
-  padding: 8px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 10px 0;
+  transition: color 0.2s;
+}
+
+.acordeon:hover {
+  color: var(--yellow);
 }
 
 .acordeon-linea {
-  border-top: 1px solid var(--BorderColor);
-  margin-top: 12px;
-  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 16px;
+  padding-top: 16px;
 }
 
 .texto-gris {
-  font-size: 12px;
-  color: var(--TextMuted);
-  line-height: 1.4;
-  margin-top: 4px;
-  margin-bottom: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+  margin-top: 6px;
+  margin-bottom: 16px;
 }
 
 .fila-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  font-size: 13px;
-  color: #334155;
+  padding: 10px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .fila-total b {
-  color: #0f172a;
-  font-weight: 600;
+  color: var(--white);
+  font-weight: 700;
 }
 
 .fila-total.total-grande {
-  border-top: 2px solid var(--BorderColor);
-  margin-top: 16px;
-  padding-top: 16px;
-  font-size: 17px;
-  font-weight: 700;
-  color: #000000;
+  border-top: 2px dashed rgba(245, 200, 66, 0.3);
+  margin-top: 20px;
+  padding-top: 20px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--yellow);
 }
 
 .fila-total.total-grande b {
-  font-size: 20px;
-  color: #000000;
+  font-size: 24px;
+  color: var(--yellow);
 }
 
-/* Botones de pago */
+/* Botones de Pago */
 .btn-pago-amarillo {
   display: block;
   text-align: center;
-  background-color: var(--Yelow);
-  color: #000000;
-  font-weight: 700;
-  font-size: 14px;
-  padding: 14px;
-  border-radius: 25px;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
+  color: var(--dark-blue);
+  font-weight: 800;
+  font-size: 15px;
+  padding: 16px;
+  border-radius: 12px;
   text-decoration: none;
-  margin-top: 22px;
-  transition: background-color 0.2s ease;
+  margin-top: 28px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
 }
 
 .btn-pago-amarillo:hover {
-  background-color: var(--YelowHover);
+  background: linear-gradient(135deg, #ffd95a 0%, var(--yellow) 100%);
+  box-shadow: 0 6px 25px rgba(245, 200, 66, 0.5);
+  transform: translateY(-2px);
 }
 
 .btn-pago-naranja {
   display: block;
   text-align: center;
-  background-color: #ffc439;
+  background: #ffc439;
   color: #003087;
-  font-weight: 600;
-  font-size: 14px;
-  padding: 12px;
-  border-radius: 25px;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px;
+  border-radius: 12px;
   text-decoration: none;
-  margin-top: 10px;
-  transition: opacity 0.2s ease;
+  margin-top: 12px;
+  transition: all 0.3s ease;
 }
 
 .btn-pago-naranja:hover {
-  opacity: 0.9;
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 .btn-pago-blanco {
   display: block;
   text-align: center;
-  background-color: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: var(--TextMuted);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px;
-  border-radius: 25px;
+  background: var(--white);
+  border: none;
+  color: var(--dark-blue);
+  font-size: 14px;
+  font-weight: 700;
+  padding: 14px;
+  border-radius: 12px;
   text-decoration: none;
-  margin-top: 10px;
-  transition: border-color 0.2s ease, color 0.2s ease;
+  margin-top: 12px;
+  transition: all 0.3s ease;
 }
 
 .btn-pago-blanco:hover {
-  border-color: #000000;
-  color: #000000;
+  background: #f8fafc;
+  transform: translateY(-1px);
 }
 
-/* Banner de financiamiento ZIP */
+/* Banner ZIP */
 .zip-banner {
-  margin-top: 25px;
-  background-color: #ffffff;
-  border: 1px solid var(--BorderColor);
-  border-radius: 8px;
-  padding: 12px 14px;
+  margin-top: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .zip-brand {
-  background-color: #000000;
-  color: #ffffff;
-  font-weight: 800;
-  font-size: 12px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
+  background: var(--yellow);
+  color: var(--dark-blue);
+  font-weight: 900;
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.05em;
 }
 
 .zip-text {
-  font-size: 12px;
-  color: #334155;
-  line-height: 1.4;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
 }
 
 .zip-text a {
-  color: #000000;
+  color: var(--yellow);
   font-weight: 600;
   margin-left: 4px;
+  text-decoration: none;
 }
 
-/* =======================================================
+.zip-text a:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================
    SECCIÓN BENEFICIOS INFERIOR
-   ======================================================= */
+   ===================================================== */
 .seccion-beneficios {
   display: flex;
   justify-content: space-around;
-  padding: 50px 30px;
-  background-color: #f8fafc;
-  border-top: 1px solid var(--BorderColor);
-  border-bottom: 1px solid var(--BorderColor);
-  gap: 30px;
+  padding: 60px 40px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  gap: 32px;
   flex-wrap: wrap;
 }
 
@@ -406,41 +479,43 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 320px;
+  max-width: 280px;
 }
 
 .beneficio-icono.amarillo {
-  width: 60px;
-  height: 60px;
-  background-color: var(--Yelow);
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  color: #000000;
-  margin-bottom: 15px;
+  font-size: 26px;
+  color: var(--dark-blue);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
 }
 
 .beneficio-tarjeta h3 {
   font-size: 16px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
+  font-weight: 800;
+  color: var(--dark-blue);
+  margin-bottom: 10px;
 }
 
 .beneficio-tarjeta p {
   font-size: 13px;
-  color: var(--TextMuted);
-  line-height: 1.5;
+  color: var(--text-muted);
+  line-height: 1.6;
 }
 
-/* =======================================================
+/* =====================================================
    ADAPTABILIDAD RESPONSIVE
-   ======================================================= */
-@media (max-width: 992px) {
+   ===================================================== */
+@media (max-width: 1024px) {
   .contenedor-columnas {
     grid-template-columns: 1fr;
+    gap: 40px;
   }
 
   .encabezados-productos {
@@ -449,8 +524,12 @@ body {
 
   .fila-producto {
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 20px 0;
+    gap: 16px;
+    padding: 24px 0;
+  }
+
+  .celda-item {
+    align-items: flex-start;
   }
 
   .botones-inferiores-izq {
@@ -461,7 +540,7 @@ body {
   .botones-inferiores-izq div {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .btn-negro {

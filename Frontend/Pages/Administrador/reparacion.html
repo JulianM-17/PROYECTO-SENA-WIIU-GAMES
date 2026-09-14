@@ -1,93 +1,74 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WiiU-Games - Reparaciones</title>
-    <link rel="stylesheet" href="styles-reparacion.css">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reparaciones - Administrador</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
+  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
+</head>
+<body>
 
-  <body>
+  <!-- Barra lateral -->
+  <div class="barra-lateral">
+    <div class="titulo-menu">WiiU-Games</div>
+    <a href="index.html" class="boton-menu"><i class="fi fi-rr-apps"></i> Dashboard</a>
+    <a href="productos.html" class="boton-menu"><i class="fi fi-rr-box-open"></i> Productos</a>
+    <a href="reparacion.html" class="boton-menu activo"><i class="fi fi-rr-wrench-simple"></i> Reparaciones</a>
+    <a href="mantenimientos.html" class="boton-menu"><i class="fi fi-rr-broom"></i> Mantenimientos</a>
+    <a href="garantias.html" class="boton-menu"><i class="fi fi-rr-shield-check"></i> Garantias</a>
+    <a href="../Index.html" class="boton-menu" style="margin-top: auto; border-color: rgba(255,255,255,0.1);"><i class="fi fi-rr-exit"></i> Volver a Tienda</a>
+  </div>
 
-    <!-- Barra lateral de navegación con las opciones del sistema -->
-    <div class="barra-lateral">
-      <div class="titulo-menu">WiiU-Games</div>
-      <a href="index.html" class="boton-menu">Dashboard</a>
-      <a href="productos.html" class="boton-menu">Productos</a>
-      <a href="reparacion.html" class="boton-menu activo">Reparaciones</a>
-      <a href="mantenimientos.html" class="boton-menu">Mantenimientos</a>
-      <a href="garantias.html" class="boton-menu">Garantias</a>
-      <a href="#" class="boton-menu">Copia de seguridad</a>
+  <div class="contenedor-principal" style="overflow-x: auto;">
+    <div class="encabezado">
+      <div class="titulo-pagina">Gestión de Reparaciones</div>
     </div>
 
-    <!-- CONTENEDOR PRINCIPAL AGREGADO (Arregla el estiramiento visual) -->
-    <div class="panel-principal">
-
-      <!-- Tarjetas superiores -->
-      <div class="contenedor-superior">
-        <div class="encabezado">
-          <div class="titulo-pagina">Reparaciones </div>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Total en Taller</h3>
-          <h1>18 Equipos</h1>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Urgentes</h3>
-          <h1>3 Casos</h1>
-        </div>
-
-        <div class="tarjeta">
-          <h3>Tiempo Prom.</h3>
-          <h1>2.4 Días</h1>
-        </div>
+    <div class="tabla" style="min-width: 900px;">
+      <!-- Encabezado -->
+      <div class="fila fila-encabezado">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna">ID Rep.</div>
+          <div class="columna" style="flex: 1.5;">Cliente</div>
+          <div class="columna" style="flex: 2;">Dispositivo / Problema</div>
+          <div class="columna">Costo Estimado</div>
+          <div class="columna" style="flex: 0.8;">Estado</div>
+          <div class="columna" style="flex: 1.2;">Acciones</div>
       </div>
 
-      <!-- Columnas del Tablero Kanban -->
-      <div class="contenedor">
-        <!-- Recepción -->
-        <div class="columna">
-          <h2>RECEPCIÓN (4)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1050 - PC Gamer</h3>
-            <p>No da video</p>
-            <span class="rojo">Urgente</span>
+      <!-- Fila 1 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">REP-405</p></div>
+          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Andres Silva</p></div>
+          <div class="columna" style="flex: 2;"><p>Nintendo Switch (Cambio de Pantalla)</p></div>
+          <div class="columna"><p style="font-weight: 700;">$ 250.000</p></div>
+          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-red); font-weight: 600;">Pendiente</p></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
           </div>
-
-          <div class="caja">
-            <h3>#ORD-1051 - Tablet iPad</h3>
-            <p>Pin de carga</p>
-            <span class="verde">Normal</span>
-          </div>
-        </div>
-
-        <!-- En proceso -->
-        <div class="columna">
-          <h2>EN PROCESO (3)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1048 - MacBook Pro</h3>
-            <p>Mantenimiento térmico</p>
-            <span class="verde">Técnico: Juan</span>
-          </div>
-        </div>
-
-        <!-- Listo -->
-        <div class="columna">
-          <h2>LISTO ENTREGA (2)</h2>
-
-          <div class="caja">
-            <h3>#ORD-1044 - Consola Switch</h3>
-            <p>Cambio Joycon</p>
-            <span class="verde">Pruebas OK</span>
-          </div>
-        </div>
       </div>
 
-    </div> <!-- FIN DE PANEL PRINCIPAL -->
+      <!-- Fila 2 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">REP-406</p></div>
+          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Sofia Bernal</p></div>
+          <div class="columna" style="flex: 2;"><p>PS5 (Problema HDMI)</p></div>
+          <div class="columna"><p style="font-weight: 700;">$ 180.000</p></div>
+          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-blue); font-weight: 600;">Reparando</p></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+          </div>
+      </div>
+    </div>
+  </div>
 
-  </body>
+</body>
 </html>

@@ -3,84 +3,86 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>administrador</title>
-  <link rel="stylesheet" href="styles-productos.css">
-  <link href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css" rel="stylesheet">
+  <title>Productos - Administrador</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
+  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- Barra lateral de navegación con las opciones del sistema -->
+  <!-- Barra lateral -->
   <div class="barra-lateral">
     <div class="titulo-menu">WiiU-Games</div>
-    <a href="index.html" class="boton-menu">Dashboard</a>
-    <a href="productos.html" class="boton-menu activo">Productos</a>
-    <a href="reparacion.html" class="boton-menu">Reparaciones</a>
-    <a href="mantenimientos.html" class="boton-menu">Mantenimientos</a>
-    <a href="garantias.html" class="boton-menu">Garantias</a>
-    <a href="#" class="boton-menu">Copia de seguridad</a>
+    <a href="index.html" class="boton-menu"><i class="fi fi-rr-apps"></i> Dashboard</a>
+    <a href="productos.html" class="boton-menu activo"><i class="fi fi-rr-box-open"></i> Productos</a>
+    <a href="reparacion.html" class="boton-menu"><i class="fi fi-rr-wrench-simple"></i> Reparaciones</a>
+    <a href="mantenimientos.html" class="boton-menu"><i class="fi fi-rr-broom"></i> Mantenimientos</a>
+    <a href="garantias.html" class="boton-menu"><i class="fi fi-rr-shield-check"></i> Garantias</a>
+    <a href="../Index.html" class="boton-menu" style="margin-top: auto; border-color: rgba(255,255,255,0.1);"><i class="fi fi-rr-exit"></i> Volver a Tienda</a>
   </div>
 
-  <div class="contenedor-principal">
-
-    <!-- Encabezado -->
+  <div class="contenedor-principal" style="overflow-x: auto;">
     <div class="encabezado">
-      <div class="titulo-pagina">Productos </div>
+      <div class="titulo-pagina">Gestión de Productos</div>
     </div>
 
-    <div class="tabla">
-    <!-- Encabezado -->
-    <div class="fila fila-encabezado">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna">Imagen</div>
-        <div class="columna">Nombre</div>
-        <div class="columna">SKU</div>
-        <div class="columna">Categoría</div>
-        <div class="columna">Stock</div>
-        <div class="columna">Precio</div>
-        <div class="columna">Estado</div>
-        <div class="columna">Acciones</div>
-    </div>
+    <div class="tabla" style="min-width: 900px;">
+      <!-- Encabezado -->
+      <div class="fila fila-encabezado">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna" style="flex: 0.8;">Imagen</div>
+          <div class="columna" style="flex: 2;">Nombre</div>
+          <div class="columna">SKU</div>
+          <div class="columna">Categoría</div>
+          <div class="columna">Stock</div>
+          <div class="columna">Precio</div>
+          <div class="columna" style="flex: 0.5;">Estado</div>
+          <div class="columna" style="flex: 1.2;">Acciones</div>
+      </div>
 
-    <!-- Fila 1 -->
-    <div class="fila">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna"><img src="../../Assets/lenovolegion.webp" alt="Producto" class="imagen-producto"></div>
-        <div class="columna"><p class="texto-nombre">MSI Pro 16 Multitouch (i7, 16GB)</p></div>
-        <div class="columna"><p>EX-036AU</p></div>
-        <div class="columna"><p>PC</p></div>
-        <div class="columna">
-            <div class="stock rojo">
-              <span>100</span>
-            </div>
-        </div>
-        <div class="columna"><p class="texto-precio">$499.00</p></div>
-        <div class="columna"><input type="checkbox" checked></div>
-        <div class="columna caja-acciones">
-        <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-bs-trash-list"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
-        </div>
-    </div>
+      <!-- Fila 1 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna" style="flex: 0.8;"><img src="../../Assets/lenovolegion.webp" alt="Producto" class="imagen-producto"></div>
+          <div class="columna" style="flex: 2;"><p class="texto-nombre" style="font-weight: 600;">MSI Pro 16 Multitouch (i7, 16GB)</p></div>
+          <div class="columna"><p>EX-036AU</p></div>
+          <div class="columna"><p>PC</p></div>
+          <div class="columna">
+              <div class="stock rojo">
+                <span>100</span>
+              </div>
+          </div>
+          <div class="columna"><p class="texto-precio" style="color: var(--yellow); font-weight: 700;">$499.00</p></div>
+          <div class="columna" style="flex: 0.5;"><input type="checkbox" checked></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+          </div>
+      </div>
 
-    <!-- Fila 2 -->
-    <div class="fila">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna"><img src="../../Assets/lenovolegion.webp" alt="Producto" class="imagen-producto"></div>
-        <div class="columna"><p class="texto-nombre">EX DISPLAY 15.6 MULTITOUCH</p></div>
-        <div class="columna"><p>MX-036AU</p></div>
-        <div class="columna"><p>Laptop</p></div>
-        <div class="columna">
-            <div class="stock amarillo">
-              <span>60</span>
-            </div>
-        </div>
-        <div class="columna"><p class="texto-precio">$499.00</p></div>
-        <div class="columna"><input type="checkbox" checked></div>
-        <div class="columna caja-acciones">
-        <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-bs-trash-list"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
-        </div>
+      <!-- Fila 2 -->
+      <div class="fila">
+          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
+          <div class="columna" style="flex: 0.8;"><img src="../../Assets/lenovolegion.webp" alt="Producto" class="imagen-producto"></div>
+          <div class="columna" style="flex: 2;"><p class="texto-nombre" style="font-weight: 600;">EX DISPLAY 15.6 MULTITOUCH</p></div>
+          <div class="columna"><p>MX-036AU</p></div>
+          <div class="columna"><p>Laptop</p></div>
+          <div class="columna">
+              <div class="stock amarillo">
+                <span>60</span>
+              </div>
+          </div>
+          <div class="columna"><p class="texto-precio" style="color: var(--yellow); font-weight: 700;">$499.00</p></div>
+          <div class="columna" style="flex: 0.5;"><input type="checkbox" checked></div>
+          <div class="columna caja-acciones" style="flex: 1.2;">
+            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
+            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
+            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+          </div>
+      </div>
     </div>
   </div>
-</div>
+
+</body>
+</html>
