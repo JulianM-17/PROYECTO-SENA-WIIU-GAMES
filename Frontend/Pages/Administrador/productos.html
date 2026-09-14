@@ -1,86 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>administrador</title>
-  <link rel="stylesheet" href="styles-productos.css">
-  <link href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css" rel="stylesheet">
-</head>
-<body>
-
-  <!-- Barra lateral de navegación con las opciones del sistema -->
-  <div class="barra-lateral">
-    <div class="titulo-menu">WiiU-Games</div>
-    <a href="/administrador/index.html" class="boton-menu">Dashboard</a>
-    <a href="/administrador/productos.html" class="boton-menu activo">Productos</a>
-    <a href="/administrador/reparacion.html" class="boton-menu">Reparaciones</a>
-    <a href="/administrador/mantenimientos.html" class="boton-menu">Mantenimientos</a>
-    <a href="/administrador/garantias.html" class="boton-menu">Garantias</a>
-    <a href="#" class="boton-menu">Copia de seguridad</a>
-  </div>
-
-  <div class="contenedor-principal">
-
-    <!-- Encabezado -->
-    <div class="encabezado">
-      <div class="titulo-pagina">Productos </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>administrador</title>
+    <link rel="stylesheet" href="styles-productos.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/@flaticon/flaticon-uicons@3.3.1/css/all/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Barra lateral de navegación con las opciones del sistema -->
+    <div class="barra-lateral">
+      <div class="titulo-menu">WiiU-Games</div>
+      <a href="./index.html" class="boton-menu">Dashboard</a>
+      <a href="./productos.html" class="boton-menu activo">Productos</a>
+      <a href="./reparacion.html" class="boton-menu">Reparaciones</a>
+      <a href="./mantenimientos.html" class="boton-menu">Mantenimientos</a>
+      <a href="/administrador/garantias.html" class="boton-menu">Garantias</a>
+      <a href="#" class="boton-menu">Copia de seguridad</a>
     </div>
 
-    <div class="tabla">
-    <!-- Encabezado -->
-    <div class="fila fila-encabezado">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna">Imagen</div>
-        <div class="columna">Nombre</div>
-        <div class="columna">SKU</div>
-        <div class="columna">Categoría</div>
-        <div class="columna">Stock</div>
-        <div class="columna">Precio</div>
-        <div class="columna">Estado</div>
-        <div class="columna">Acciones</div>
-    </div>
+    <div class="contenedor-principal">
+      <!-- Encabezado -->
+      <div class="encabezado">
+        <div class="titulo-pagina">Productos</div>
+      </div>
 
-    <!-- Fila 1 -->
-    <div class="fila">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna"><img src="imagen.jpg" alt="Producto" class="imagen-producto"></div>
-        <div class="columna"><p class="texto-nombre">MSI Pro 16 Multitouch (i7, 16GB)</p></div>
-        <div class="columna"><p>EX-036AU</p></div>
-        <div class="columna"><p>PC</p></div>
-        <div class="columna">
+      <div class="tabla">
+        <!-- Encabezado -->
+        <div class="fila fila-encabezado">
+          <div class="columna"><input type="checkbox" /></div>
+          <div class="columna">Imagen</div>
+          <div class="columna">Nombre</div>
+          <div class="columna">SKU</div>
+          <div class="columna">Categoría</div>
+          <div class="columna">Stock</div>
+          <div class="columna">Precio</div>
+          <div class="columna">Estado</div>
+          <div class="columna">Acciones</div>
+        </div>
+
+        <!-- Fila 1 -->
+        <div class="fila">
+          <div class="columna"><input type="checkbox" /></div>
+          <div class="columna">
+            <img src="imagen.jpg" alt="Producto" class="imagen-producto" />
+          </div>
+          <div class="columna">
+            <p class="texto-nombre">MSI Pro 16 Multitouch (i7, 16GB)</p>
+          </div>
+          <div class="columna"><p>EX-036AU</p></div>
+          <div class="columna"><p>PC</p></div>
+          <div class="columna">
             <div class="stock rojo">
               <span>100</span>
             </div>
+          </div>
+          <div class="columna"><p class="texto-precio">$499.00</p></div>
+          <div class="columna"><input type="checkbox" checked /></div>
+          <div class="columna caja-acciones">
+            <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
+            <a href="#" class="boton-accion"
+              ><i class="fi fi-bs-trash-list"></i
+            ></a>
+            <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
+          </div>
         </div>
-        <div class="columna"><p class="texto-precio">$499.00</p></div>
-        <div class="columna"><input type="checkbox" checked></div>
-        <div class="columna caja-acciones">
-        <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-bs-trash-list"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
-        </div>
-    </div>
 
-    <!-- Fila 2 -->
-    <div class="fila">
-        <div class="columna"><input type="checkbox"></div>
-        <div class="columna"><img src="imagen.jpg" alt="Producto" class="imagen-producto"></div>
-        <div class="columna"><p class="texto-nombre">EX DISPLAY 15.6 MULTITOUCH</p></div>
-        <div class="columna"><p>MX-036AU</p></div>
-        <div class="columna"><p>Laptop</p></div>
-        <div class="columna">
+        <!-- Fila 2 -->
+        <div class="fila">
+          <div class="columna"><input type="checkbox" /></div>
+          <div class="columna">
+            <img src="imagen.jpg" alt="Producto" class="imagen-producto" />
+          </div>
+          <div class="columna">
+            <p class="texto-nombre">EX DISPLAY 15.6 MULTITOUCH</p>
+          </div>
+          <div class="columna"><p>MX-036AU</p></div>
+          <div class="columna"><p>Laptop</p></div>
+          <div class="columna">
             <div class="stock amarillo">
               <span>60</span>
             </div>
+          </div>
+          <div class="columna"><p class="texto-precio">$499.00</p></div>
+          <div class="columna"><input type="checkbox" checked /></div>
+          <div class="columna caja-acciones">
+            <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
+            <a href="#" class="boton-accion"
+              ><i class="fi fi-bs-trash-list"></i
+            ></a>
+            <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
+          </div>
         </div>
-        <div class="columna"><p class="texto-precio">$499.00</p></div>
-        <div class="columna"><input type="checkbox" checked></div>
-        <div class="columna caja-acciones">
-        <a href="#" class="boton-accion"><i class="fi fi-rr-pencil"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-bs-trash-list"></i></a>
-        <a href="#" class="boton-accion"><i class="fi fi-rr-ballot"></i></a>
-        </div>
+      </div>
     </div>
-  </div>
-</div>
+  </body>
+</html>

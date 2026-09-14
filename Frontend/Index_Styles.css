@@ -27,7 +27,7 @@
 
 .banner-hero {
   /* Banner principal de la página */
-  background-image: url("Imagenes/image.png"); /* Imagen de fondo para el banner */
+  background-image: url("Assets/image.png"); /* Imagen de fondo para el banner */
   background-size: cover; /* Ajusta la imagen para cubrir todo el contenedor */
   background-position: center; /* Centra la imagen */
   height: 400px; /* Altura fija del banner */
@@ -225,7 +225,7 @@
 
 .tarjeta-servicios {
   /* Tarjeta de servicio con imagen de fondo */
-  background-image: url("Imagenes/image.png"); /* Imagen de fondo */
+  background-image: url("Assets/image.png"); /* Imagen de fondo */
   background-size: cover; /* Cubre todo el área de la tarjeta */
   background-position: center; /* Centra la imagen */
   width: 480px; /* Ancho fijo */
