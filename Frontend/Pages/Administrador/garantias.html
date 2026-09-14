@@ -1,74 +1,90 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Garantías - Administrador</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
-  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
-</head>
-<body>
-
-  <!-- Barra lateral -->
-  <div class="barra-lateral">
-    <div class="titulo-menu">WiiU-Games</div>
-    <a href="index.html" class="boton-menu"><i class="fi fi-rr-apps"></i> Dashboard</a>
-    <a href="productos.html" class="boton-menu"><i class="fi fi-rr-box-open"></i> Productos</a>
-    <a href="reparacion.html" class="boton-menu"><i class="fi fi-rr-wrench-simple"></i> Reparaciones</a>
-    <a href="mantenimientos.html" class="boton-menu"><i class="fi fi-rr-broom"></i> Mantenimientos</a>
-    <a href="garantias.html" class="boton-menu activo"><i class="fi fi-rr-shield-check"></i> Garantias</a>
-    <a href="../Index.html" class="boton-menu" style="margin-top: auto; border-color: rgba(255,255,255,0.1);"><i class="fi fi-rr-exit"></i> Volver a Tienda</a>
-  </div>
-
-  <div class="contenedor-principal" style="overflow-x: auto;">
-    <div class="encabezado">
-      <div class="titulo-pagina">Gestión de Garantías</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Garantías - WiiU-Games</title>
+    <link rel="stylesheet" href="styles-garantias.css" />
+  </head>
+  <body>
+    <!-- Barra lateral de navegación -->
+    <div class="barra-lateral">
+        <div class="titulo-menu">WiiU-Games</div>
+        <div class="contenedor-botones">
+            <a href="index.html" class="boton-menu">Dashboard</a>
+            <a href="productos.html" class="boton-menu">Productos</a>
+            <a href="reparacion.html" class="boton-menu">Reparaciones</a>
+            <a href="mantenimientos.html" class="boton-menu">Mantenimientos</a>
+            <a href="garantias.html" class="boton-menu activo">Garantias</a>
+            <a href="#" class="boton-menu">Copia de seguridad</a>
+        </div>
     </div>
 
-    <div class="tabla" style="min-width: 900px;">
-      <!-- Encabezado -->
-      <div class="fila fila-encabezado">
-          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
-          <div class="columna">ID Ticket</div>
-          <div class="columna" style="flex: 1.5;">Cliente</div>
-          <div class="columna" style="flex: 2;">Producto / Serial</div>
-          <div class="columna">Fecha Solicitud</div>
-          <div class="columna" style="flex: 0.8;">Estado</div>
-          <div class="columna" style="flex: 1.2;">Acciones</div>
+    <!-- Contenedor principal de la tabla -->
+    <div class="contenedor-tabla">
+      <div class="encabezado">
+        <div class="titulo-pagina">Garantias</div>
       </div>
 
-      <!-- Fila 1 -->
-      <div class="fila">
-          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
-          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">TKT-089</p></div>
-          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Javier Muñoz</p></div>
-          <div class="columna" style="flex: 2;"><p>Monitor ASUS 144Hz (SN: 1238947A)</p></div>
-          <div class="columna"><p>10/09/2026</p></div>
-          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-red); font-weight: 600;">Rechazada</p></div>
-          <div class="columna caja-acciones" style="flex: 1.2;">
-            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
-            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
-            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+      <!-- Envoltorio con scroll para dispositivos móviles -->
+      <div class="contenedor-desplazamiento">
+        <div class="tabla-adaptable">
+          <!-- Encabezado de la tabla -->
+          <div class="fila-encabezado">
+            <div class="columna-encabezado"><p>Dispositivo</p></div>
+            <div class="columna-encabezado"><p>Cliente</p></div>
+            <div class="columna-encabezado"><p>Servicio / Trabajo</p></div>
+            <div class="columna-encabezado"><p>Garantía Otorgada</p></div>
+            <div class="columna-encabezado"><p>Estado Actual</p></div>
           </div>
-      </div>
 
-      <!-- Fila 2 -->
-      <div class="fila">
-          <div class="columna" style="flex: 0.3;"><input type="checkbox"></div>
-          <div class="columna"><p style="font-weight: 700; color: var(--yellow);">TKT-090</p></div>
-          <div class="columna" style="flex: 1.5;"><p class="texto-nombre">Mariana Velez</p></div>
-          <div class="columna" style="flex: 2;"><p>Teclado Mecánico Razer (SN: RZ9928)</p></div>
-          <div class="columna"><p>12/09/2026</p></div>
-          <div class="columna" style="flex: 0.8;"><p style="color: var(--accent-green); font-weight: 600;">Aprobada</p></div>
-          <div class="columna caja-acciones" style="flex: 1.2;">
-            <a href="#" class="boton-accion" title="Editar"><i class="fi fi-rr-edit"></i></a>
-            <a href="#" class="boton-accion" title="Eliminar" style="color: var(--accent-red);"><i class="fi fi-rr-trash"></i></a>
-            <a href="#" class="boton-accion" title="Detalles"><i class="fi fi-rr-document"></i></a>
+          <!-- Fila 1 -->
+          <div class="fila-datos">
+            <div class="columna-datos">
+              <p class="texto-principal">iPhone 13 128GB</p>
+              <p class="texto-secundario">SN: F2LX902A</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">Marcos Soler</p>
+              <p class="texto-secundario">300-123-4567</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">Cambio Pantalla OLED + Batería</p>
+              <p class="texto-secundario">Repuestos Originales</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">90 Días Cobertura</p>
+              <p class="texto-secundario">Vence: 15/10/2026</p>
+            </div>
+            <div class="columna-datos">
+              <p class="estado-vigente">Garantía Vigente</p>
+            </div>
           </div>
+
+          <!-- Fila 2 -->
+          <div class="fila-datos">
+            <div class="columna-datos">
+              <p class="texto-principal">Laptop Lenovo Legion</p>
+              <p class="texto-secundario">SN: MP19283X</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">Elena Torres</p>
+              <p class="texto-secundario">315-987-6543</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">Reparación Tarjeta Gráfica</p>
+              <p class="texto-secundario">Reballing Chip GPU</p>
+            </div>
+            <div class="columna-datos">
+              <p class="texto-principal">60 Días Cobertura</p>
+              <p class="texto-secundario">Vence: 01/09/2026</p>
+            </div>
+            <div class="columna-datos">
+              <p class="estado-revision">Reclamo en Revisión</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-
-</body>
+  </body>
 </html>
