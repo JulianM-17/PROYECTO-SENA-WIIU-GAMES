@@ -1,0 +1,445 @@
+/*
+VARIABLES GLOBALES Y RESET
+*/
+:root {
+  --Yelow: #f5c842; /* Color amarillo principal usado en botones y acentos */
+  --DarkBlue: #0a1628; /* Color azul oscuro usado para fondos oscuros */
+  --Black: #000000; /* Color negro usado para texto y contrastes */
+}
+
+* {
+  margin: 0; /* Elimina el margen por defecto de los navegadores */
+  padding: 0; /* Elimina el relleno por defecto de los navegadores */
+  box-sizing: border-box; /* Hace que ancho/alto incluyan padding y border */
+  font-family: "Poppins", sans-serif; /* Define la fuente global por defecto */
+  font-style: normal; /* Usa estilo de fuente normal en todos los elementos */
+}
+
+body {
+  background-color: #ffffff; /* Fondo blanco para toda la página */
+  color: var(--Black); /* Color de texto principal negro */
+}
+
+/*
+ESTILOS SUB-NAV COMPRA
+*/
+.sub-nav-compra {
+  border-bottom: 1px solid #e2e8f0; /* Línea separadora inferior */
+  padding: 15px 0; /* Espacio arriba y abajo */
+}
+
+.sub-nav-container {
+  max-width: 1400px; /* Ancho máximo del contenedor */
+  margin: 0 auto; /* Centra el contenedor en la página */
+  display: flex; /* Coloca los elementos en fila */
+  justify-content: space-between; /* Espacio entre los extremos */
+  align-items: center; /* Centra verticalmente los elementos */
+  padding: 0 40px; /* Espacio horizontal interno */
+}
+
+.sub-nav-links a {
+  color: #64748b; /* Color de enlace secundario */
+  text-decoration: none; /* Quita el subrayado del enlace */
+  font-size: 14px; /* Tamaño de fuente para enlaces */
+  margin-right: 25px; /* Separación entre enlaces */
+  font-weight: 500; /* Peso de fuente medio */
+}
+
+.sub-nav-links a.activo {
+  color: var(--Black); /* Color negro para enlace activo */
+  font-weight: bold; /* Texto en negrita */
+  border-bottom: 2px solid var(--Yelow); /* Línea amarilla inferior */
+  padding-bottom: 15px; /* Espacio debajo del texto activo */
+}
+
+.sub-nav-acciones {
+  display: flex; /* Coloca acciones en fila */
+  align-items: center; /* Centra verticalmente las acciones */
+  gap: 15px; /* Espacio entre botones y elementos */
+}
+
+.sku {
+  font-size: 13px; /* Tamaño pequeño para el SKU */
+  color: #64748b; /* Color gris azulado */
+}
+
+.input-cantidad {
+  width: 50px; /* Ancho fijo del campo de cantidad */
+  padding: 8px; /* Relleno interno */
+  border: 1px solid #cbd5e1; /* Borde gris claro */
+  border-radius: 4px; /* Esquinas redondeadas */
+  text-align: center; /* Texto centrado dentro del input */
+}
+
+.btn-añadir {
+  background-color: var(--Yelow); /* Fondo amarillo */
+  border: none; /* Quita borde por defecto */
+  padding: 10px 20px; /* Espacio interno del botón */
+  font-weight: bold; /* Texto en negrita */
+  border-radius: 20px; /* Botón con bordes redondeados */
+  cursor: pointer; /* Cambia el cursor en hover */
+}
+
+.btn-paypal {
+  background-color: #ffc439; /* Fondo color PayPal amarillo */
+  border: none; /* Quita borde por defecto */
+  padding: 10px 20px; /* Espacio interno del botón */
+  font-weight: bold; /* Texto en negrita */
+  border-radius: 20px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor en hover */
+}
+
+/*
+ESTILOS DETALLE PRINCIPAL
+*/
+.detalle-principal {
+  padding: 40px 0; /* Espacio vertical arriba y abajo */
+  background-color: #f8fafc; /* Fondo gris muy claro */
+}
+
+.detalle-container {
+  max-width: 1400px; /* Ancho máximo de la sección */
+  margin: 0 auto; /* Centra horizontalmente */
+  display: flex; /* Caja flexible para contenido */
+  gap: 50px; /* Separación entre columnas */
+  padding: 0 40px; /* Espacio horizontal interno */
+}
+
+.info-producto {
+  flex: 1; /* Ocupa espacio disponible */
+}
+
+.categoria-ruta {
+  font-size: 12px; /* Texto pequeño para la ruta de categoría */
+  color: #64748b; /* Color gris azulado */
+}
+
+.info-producto h1 {
+  font-size: 32px; /* Tamaño grande para el título del producto */
+  margin: 15px 0 5px 0; /* Espacio superior e inferior */
+}
+
+.resena-link a {
+  font-size: 12px; /* Tamaño de enlace pequeño */
+  color: #00aeef; /* Color azul de enlace */
+}
+
+.descripcion-corta {
+  font-size: 14px; /* Tamaño de fuente para la descripción */
+  line-height: 1.6; /* Altura de línea para mejor lectura */
+  margin: 20px 0; /* Espacio arriba y abajo */
+  color: #334155; /* Color gris oscuro para el texto */
+}
+
+.variantes-color {
+  display: flex; /* Coloca los círculos de color en fila */
+  gap: 10px; /* Espacio entre variantes de color */
+  margin-bottom: 20px; /* Separación inferior */
+}
+
+.circulo-color {
+  width: 24px; /* Ancho del círculo de color */
+  height: 24px; /* Alto del círculo de color */
+  border-radius: 50%; /* Forma redonda */
+  cursor: pointer; /* Cursor en hover indica interactividad */
+}
+
+.circulo-color.activo {
+  outline: 2px solid var(--Yelow); /* Borde amarillo cuando está activo */
+  outline-offset: 2px; /* Separación del borde al elemento */
+}
+
+.pregunta a {
+  color: #00aeef; /* Color azul para enlaces de preguntas */
+}
+
+.galeria-producto {
+  flex: 1; /* Ocupa espacio restante */
+  display: flex; /* Caja flexible para la galería */
+  flex-direction: column; /* Coloca elementos en columna */
+  align-items: center; /* Centra horizontalmente */
+}
+
+.imagen-hero {
+  max-width: 100%; /* Imagen no excede el ancho del contenedor */
+  height: auto; /* Mantiene la proporción original */
+}
+
+.zip-logo {
+  margin-top: 20px; /* Espacio superior para el texto del logo */
+  font-size: 13px; /* Tamaño de fuente pequeño */
+  color: #64748b; /* Color gris azulado */
+}
+
+/*
+ESTILOS BANNER PUBLICITARIO
+*/
+.banner-publicitario {
+  background-color: var(--Black); /* Fondo negro para el banner */
+  color: #ffffff; /* Texto blanco sobre fondo oscuro */
+  padding: 60px 0; /* Espacio vertical alto */
+}
+
+.banner-publicitario-container {
+  max-width: 1400px; /* Ancho máximo del banner */
+  margin: 0 auto; /* Centra el contenido */
+  display: flex; /* Contenido en fila */
+  align-items: center; /* Centra verticalmente */
+  padding: 0 40px; /* Espacio horizontal interno */
+}
+
+.banner-publicitario-texto {
+  flex: 1; /* Ocupa espacio disponible */
+  padding-right: 50px; /* Espacio a la derecha entre texto e imagen */
+}
+
+.banner-publicitario-texto h2 {
+  font-size: 32px; /* Tamaño grande para el título del banner */
+  margin-bottom: 20px; /* Espacio inferior del título */
+}
+
+.banner-publicitario-texto p {
+  font-size: 14px; /* Tamaño de párrafo normal */
+  line-height: 1.6; /* Altura de línea cómoda */
+  color: #cbd5e1; /* Texto gris claro sobre fondo oscuro */
+  margin-bottom: 20px; /* Espacio inferior */
+}
+
+.nota-pie {
+  font-size: 11px; /* Texto muy pequeño para la nota al pie */
+  color: #64748b; /* Color gris azulado */
+}
+
+.banner-publicitario-imagen {
+  flex: 1; /* Ocupa espacio disponible */
+  text-align: center; /* Centra la imagen */
+}
+
+.banner-publicitario-imagen img {
+  max-width: 80%; /* Imagen no excede el 80% del contenedor */
+}
+
+.banner-intel {
+  background-color: var(--Black); /* Fondo negro para sección Intel */
+  display: flex; /* Caja flexible para el contenido */
+  align-items: center; /* Centra verticalmente */
+  padding: 60px; /* Espacio interno uniforme */
+}
+
+.imagen-fusionada {
+  max-width: 100%; /* Imagen responsiva */
+  /* Hace que la imagen pase de transparente (izquierda) a totalmente opaca (derecha) */
+  mask-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 1) 30%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+
+.imagen-fusionada {
+  max-width: 100%; /* Asegura que la imagen se ajuste al contenedor */
+  /* lighten conserva los colores claros del procesador y desvanece el fondo negro */
+  mix-blend-mode: lighten; /* Mezcla la imagen con el fondo al aclarar */
+}
+
+/*
+ESTILOS SECCIÓN ACORDIONES / SOPORTE
+*/
+.seccion-soporte {
+  padding: 80px 0; /* Espacio vertical de la sección de soporte */
+  position: relative; /* Para posicionar la capa overlay */
+  background-image: url("Imagenes/Baner_acerca_producto.png");
+  background-size: cover; /* Cubre toda la sección */
+  background-position: center; /* Centra la imagen de fondo */
+  background-repeat: no-repeat; /* No repite la imagen */
+}
+
+/* Capa oscura semitransparente sobre el fondo para mejorar legibilidad */
+.soporte-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.6); /* Negro semitransparente */
+  z-index: 1;
+}
+
+.soporte-container {
+  max-width: 1400px; /* Ancho máximo del contenedor de soporte */
+  margin: 0 auto; /* Centra el contenido */
+  padding: 0 40px; /* Espacio interior horizontal */
+  position: relative; /* Para estar por encima del overlay */
+  z-index: 2;
+}
+
+.bloque-acordiones {
+  max-width: 800px; /* Ancho máximo para los acordeones */
+  margin: 0 auto; /* Centra los acordeones */
+}
+
+.acordion {
+  border: 1px solid #e2e8f0; /* Borde gris claro */
+  padding: 15px 20px; /* Espacio interno del acordeón */
+  margin-bottom: 10px; /* Separación inferior entre acordeones */
+  display: flex; /* Coloca título y icono en fila */
+  justify-content: space-between; /* Separación entre contenido e icono */
+  font-weight: 600; /* Texto semi-negrita */
+  cursor: pointer; /* Indica que es clicable */
+  border-radius: 4px; /* Esquinas ligeramente redondeadas */
+}
+
+/*
+ESTILOS CARACTERÍSTICAS TÉCNICAS
+*/
+.seccion-caracteristicas {
+  background-color: var(--Black); /* Fondo negro para esta sección */
+  color: #ffffff; /* Texto blanco sobre fondo oscuro */
+  padding: 60px 40px; /* Espacio interior amplio */
+  text-align: center; /* Centra el texto horizontalmente */
+}
+
+.seccion-caracteristicas h2 {
+  font-size: 28px; /* Tamaño grande para el título */
+  margin-bottom: 10px; /* Espacio inferior del título */
+}
+
+.subtitulo-caracteristicas {
+  max-width: 600px; /* Ancho máximo del subtítulo */
+  margin: 0 auto 40px auto; /* Centra y añade espacio inferior */
+  font-size: 14px; /* Tamaño de fuente del subtítulo */
+  color: #94a3b8; /* Color gris claro */
+}
+
+.grid-caracteristicas {
+  max-width: 1400px; /* Ancho máximo de la cuadrícula */
+  margin: 0 auto; /* Centra la cuadrícula */
+  display: grid; /* Usa grid para columnas */
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas iguales */
+  gap: 25px; /* Espacio entre elementos de la cuadrícula */
+}
+
+.item-caracteristica {
+  display: flex; /* Contenedor flexible */
+  flex-direction: column; /* Elementos en columna */
+  align-items: center; /* Centra contenido */
+}
+
+.circulo-icono {
+  width: 80px; /* Ancho del círculo del icono */
+  height: 80px; /* Alto del círculo del icono */
+  background-color: #1e293b; /* Fondo gris oscuro */
+  border-radius: 50%; /* Forma redonda */
+  display: flex; /* Usa flex para centrar el icono */
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  margin-bottom: 15px; /* Espacio inferior del círculo */
+}
+
+.circulo-icono img {
+  max-width: 100%; /* Imagen no excede el círculo */
+}
+
+.item-caracteristica p {
+  font-size: 12px; /* Tamaño de texto pequeño */
+  line-height: 1.5; /* Altura de línea legible */
+  color: #cbd5e1; /* Texto gris claro */
+}
+
+/*
+ESTILOS ICONOS DE BENEFICIOS
+*/
+.seccion-beneficios {
+  background-color: #f8fafc; /* Fondo gris muy claro */
+  padding: 40px 0; /* Espacio vertical de la sección */
+}
+
+.beneficios-container {
+  max-width: 1400px; /* Ancho máximo del contenedor */
+  margin: 0 auto; /* Centra el contenedor */
+  display: flex; /* Envuelve iconos en fila */
+  justify-content: space-around; /* Espacio entre los iconos */
+  padding: 0 40px; /* Espacio horizontal interno */
+}
+
+.item-beneficio {
+  text-align: center; /* Centra el contenido de cada beneficio */
+}
+
+.badge-beneficio {
+  font-size: 30px; /* Tamaño grande para el icono del beneficio */
+  margin-bottom: 10px; /* Espacio inferior */
+}
+
+.item-beneficio h3 {
+  font-size: 14px; /* Tamaño del título del beneficio */
+  color: var(--Black); /* Color negro para el texto */
+}
+
+/* 
+ESTILOS SECCIÓN ACORDIONES NATIVO HTML5
+*/
+.bloque-acordiones {
+  flex: 1;
+}
+
+.acordion-item {
+  border: 1px solid #e2e8f0;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.acordion-header {
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.3s ease;
+  list-style: none; /* Oculta la flecha nativa en Firefox y navegadores modernos */
+}
+
+/* Oculta la flecha nativa específicamente en navegadores basados en WebKit (Chrome, Safari, Edge) */
+.acordion-header::-webkit-details-marker {
+  display: none;
+}
+
+.acordion-header:hover {
+  background-color: #f8fafc;
+}
+
+/* Agregamos el signo + por defecto a la derecha del texto */
+.acordion-header::after {
+  content: "+";
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Magia de CSS: Cuando el contenedor <details> está abierto, cambiamos el contenido a − */
+details[open] .acordion-header::after {
+  content: "−";
+}
+
+.acordion-content p {
+  padding: 15px 20px;
+  border-top: 1px solid #e2e8f0;
+  margin: 0;
+  font-size: 14px;
+  color: #334155;
+  /* Opcional: Pequeña animación al aparecer el texto */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

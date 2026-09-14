@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WiiU-Games - Reparaciones</title>
+    <link rel="stylesheet" href="styles-reparacion.css">
+  </head>
+
+  <body>
+
+    <!-- Barra lateral de navegación con las opciones del sistema -->
+    <div class="barra-lateral">
+      <div class="titulo-menu">WiiU-Games</div>
+      <a href="/administrador/index.html" class="boton-menu">Dashboard</a>
+      <a href="/administrador/productos.html" class="boton-menu">Productos</a>
+      <a href="/administrador/reparacion.html" class="boton-menu activo">Reparaciones</a>
+      <a href="/administrador/mantenimientos.html" class="boton-menu">Mantenimientos</a>
+      <a href="/administrador/garantias.html" class="boton-menu">Garantias</a>
+      <a href="#" class="boton-menu">Copia de seguridad</a>
+    </div>
+
+    <!-- CONTENEDOR PRINCIPAL AGREGADO (Arregla el estiramiento visual) -->
+    <div class="panel-principal">
+
+      <!-- Tarjetas superiores -->
+      <div class="contenedor-superior">
+        <div class="encabezado">
+          <div class="titulo-pagina">Reparaciones </div>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Total en Taller</h3>
+          <h1>18 Equipos</h1>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Urgentes</h3>
+          <h1>3 Casos</h1>
+        </div>
+
+        <div class="tarjeta">
+          <h3>Tiempo Prom.</h3>
+          <h1>2.4 Días</h1>
+        </div>
+      </div>
+
+      <!-- Columnas del Tablero Kanban -->
+      <div class="contenedor">
+        <!-- Recepción -->
+        <div class="columna">
+          <h2>RECEPCIÓN (4)</h2>
+
+          <div class="caja">
+            <h3>#ORD-1050 - PC Gamer</h3>
+            <p>No da video</p>
+            <span class="rojo">Urgente</span>
+          </div>
+
+          <div class="caja">
+            <h3>#ORD-1051 - Tablet iPad</h3>
+            <p>Pin de carga</p>
+            <span class="verde">Normal</span>
+          </div>
+        </div>
+
+        <!-- En proceso -->
+        <div class="columna">
+          <h2>EN PROCESO (3)</h2>
+
+          <div class="caja">
+            <h3>#ORD-1048 - MacBook Pro</h3>
+            <p>Mantenimiento térmico</p>
+            <span class="verde">Técnico: Juan</span>
+          </div>
+        </div>
+
+        <!-- Listo -->
+        <div class="columna">
+          <h2>LISTO ENTREGA (2)</h2>
+
+          <div class="caja">
+            <h3>#ORD-1044 - Consola Switch</h3>
+            <p>Cambio Joycon</p>
+            <span class="verde">Pruebas OK</span>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- FIN DE PANEL PRINCIPAL -->
+
+  </body>
+</html>

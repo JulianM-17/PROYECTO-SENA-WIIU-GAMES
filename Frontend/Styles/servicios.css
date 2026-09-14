@@ -1,0 +1,329 @@
+:root {
+  --Yelow: #f5c842;
+  --YelowHover: #dfb536;
+  --DarkBlue: #0a1628;
+  --Black: #000000;
+  --Footer: #1a3a7a;
+  --White: #ffffff;
+  --Whitelight: #f0f4fa;
+}
+
+
+/* =======================================================
+   3. SECCIÓN HERO / CONTENEDOR TÍTULO
+   ======================================================= */
+.seccion-header {
+  background-color: var(--Whitelight);
+  padding: 40px 0; 
+}
+
+.seccion-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px; 
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #e2a03f; 
+}
+
+.title-seccion {
+  font-size: 2.25rem; 
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+/* =======================================================
+   4. SECCIÓN SERVICIOS Y DESCRIPCIÓN
+   ======================================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif; /* Define la fuente global */
+}
+
+body {
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+.barra-navegacion {
+    background: linear-gradient(to right, #1a233a, #384259);
+    padding: 15px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.barra-navegacion a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.barra-navegacion a.activo {
+    font-weight: bold;
+    border-bottom: 2px solid #ffffff;
+}
+
+.btn-reservar {
+    background-color: transparent;
+    border: 1px solid #ffffff;
+    padding: 8px 15px;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+.btn-reservar:hover {
+    background-color: #ffffff;
+    color: #1a233a !important;
+}
+
+.encabezado-principal {
+    text-align: center;
+    padding: 40px 20px 20px 20px;
+}
+
+.encabezado-principal h1 {
+    font-size: 2.2rem;
+    color: #1a233a;
+    letter-spacing: 2px;
+}
+
+.contenedor-servicios {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 30px;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+@media (min-width: 768px) {
+    .contenedor-servicios {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.tarjeta {
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-servicio {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.pregunta-servicio {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.descripcion-servicio {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    flex-grow: 1; 
+}
+
+.btn-accion {
+    display: block;
+    text-align: center;
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 0.95rem;
+    transition: opacity 0.3s ease;
+    margin-top: auto;
+}
+
+.btn-accion:hover {
+    opacity: 0.85;
+}
+
+/* Tema Claro (Reparación) */
+.tarjeta-clara {
+    background-color: #ffffff;
+    color: #333;
+    border: 1px solid #e1e4e8;
+}
+
+.tarjeta-clara .btn-accion {
+    background-color: var(--Footer);
+    color: #ffffff;
+}
+
+/* Tema Oscuro (Mantenimiento) */
+.tarjeta-oscura {
+    background-color: #0d1b2a; /* Azul marino muy oscuro */
+    color: #e0e1dd;
+}
+
+.tarjeta-oscura .titulo-servicio {
+    color: #ffffff;
+}
+
+.tarjeta-oscura .pregunta-servicio {
+    color: #778da9; /* Tono azul grisáceo claro */
+}
+
+.tarjeta-oscura .btn-accion {
+    background-color: var(--Footer); /* Botón oscuro sutil */
+    color: #ffffff;
+}
+/* =======================================================
+   5. SECCIÓN RAZONES (BLOQUES DE CONTENIDO)
+   ======================================================= */
+.porque-container {
+  width: 100%;          
+  margin: 0 auto;        
+  background-color: var(--Whitelight); 
+  padding: 4rem 2rem;     
+  display: flex;         
+  justify-content: space-around;
+  align-items: center;    
+  flex-wrap: wrap;
+  gap: 2rem;
+  box-sizing: border-box;
+}
+
+.title-porque {
+  color: var(--DarkBlue);         
+  font-size: 2.5rem;      
+  text-align: center;
+  margin: 0;              
+}
+
+.porque-img img, .razon1-img img, .razon2-img img, .razon3-img img {
+  max-width: 500px;
+  height: auto; 
+  width: 100%;
+  border-radius: 20px;
+  display: block;
+}
+
+.razon1-container, .razon2-container, .razon3-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4rem;
+  width: 100%;
+  max-width: 1920px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+  box-sizing: border-box;
+}
+
+.razon1-container { background-color: var(--DarkBlue); flex-direction: row; }
+.razon2-container { background-color: var(--Whitelight); flex-direction: row-reverse; }
+.razon3-container { background-color: var(--DarkBlue); flex-direction: row; }
+
+.texto1-bloque, .texto2-bloque, .texto3-bloque {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;           
+  width: 45%;             
+}
+
+.title-razon1, .title-razon3 { color: var(--White); font-size: 2.5rem; margin: 0; }
+.title-razon2 { color: var(--Black); font-size: 2.5rem; margin: 0; }
+
+.description-razon1, .description-razon3 { color: var(--White); font-size: 1.2rem; margin: 0; }
+.description-razon2 { color: var(--Black); font-size: 1.2rem; margin: 0; }
+
+
+
+/* =======================================================
+   7. RESPONSIVE MEDIA QUERIES (ADAPTABILIDAD)
+   ======================================================= */
+
+@media (max-width: 992px) {
+  .barra-superior {
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  .seccion-horario, .seccion-direccion {
+    text-align: center;
+  }
+
+  .razon1-container, .razon2-container, .razon3-container {
+    flex-direction: column !important; 
+    gap: 2rem;
+    padding: 3rem 1.5rem;
+  }
+
+  .texto1-bloque, .texto2-bloque, .texto3-bloque {
+    width: 100%;
+    text-align: center;
+  }
+
+  .title-razon1, .title-razon2, .title-razon3,
+  .description-razon1, .description-razon2, .description-razon3 {
+    text-align: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-principal {
+    padding: 15px 20px;
+    flex-direction: column;
+  }
+
+  .contenido-menu {
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+  }
+
+  .enlaces-nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .botones-ingreso {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .title-seccion {
+    font-size: 1.8rem;
+  }
+
+  .mantenimiento, .reparacion {
+    font-size: 2rem;
+  }
+
+  .title-porque, .title-razon1, .title-razon2, .title-razon3 {
+    font-size: 2rem;
+  }
+
+  .barra-inferior-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+}

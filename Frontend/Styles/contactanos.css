@@ -1,0 +1,520 @@
+:root {
+  --Yelow: #f5c842;
+  --YelowHover: #dfb536;
+  --DarkBlue: #0a1628;
+  --Black: #000000;
+  --Footer: #1a3a7a;
+  --White: #ffffff;
+  --Whitelight: #f0f4fa;
+}
+
+/* =======================================================
+   1. ESTRUCTURA DE LA BARRA SUPERIOR NEGRA
+   ======================================================= */
+.barra-superior {
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 13px;
+  padding: 10px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 10px;
+}
+
+.seccion-horario {
+  text-align: left;
+  line-height: 1.4;
+}
+
+.seccion-horario b,
+.barra-superior b {
+  font-weight: bold;
+}
+
+.seccion-direccion {
+  text-align: center;
+  line-height: 1.4;
+}
+
+.link-contacto {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  border-bottom: 2px solid #ffffff;
+  margin-left: 5px;
+  display: inline-block;
+}
+
+.seccion-contacto {
+  display: flex;
+  align-items: center;
+}
+
+.red-social {
+  color: #ffffff;
+  font-size: 16px;
+  margin-left: 12px;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.red-social:hover {
+  color: #ebd07f;
+}
+
+/* =======================================================
+   2. HEADER Y MENÚ DE NAVEGACIÓN
+   ======================================================= */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--Whitelight);
+}
+
+header {
+  background-color: var(--DarkBlue);
+}
+
+.menu-principal {
+  background-color: var(--DarkBlue);
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.texto-logo img {
+  height: 54px;
+  width: auto;
+}
+
+.contenido-menu {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  flex-wrap: wrap;
+}
+
+.enlaces-nav {
+  display: flex;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.enlaces-nav a {
+  color: var(--White);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.enlaces-nav a:hover {
+  color: var(--YelowHover);
+}
+
+.botones-ingreso {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-iniciar {
+  background-color: var(--Yelow);
+  color: #000000;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px 22px;
+  border-radius: 25px;
+  white-space: nowrap;
+}
+
+.btn-registrar {
+  background-color: transparent;
+  color: var(--Yelow);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 8px 20px;
+  border: 2px solid var(--Yelow);
+  border-radius: 25px;
+  white-space: nowrap;
+}
+
+.iconos-usuario {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.icono-menu {
+  color: var(--Yelow);
+  font-size: 19px; 
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.contenedor-carrito {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.burbuja-carrito {
+  position: absolute;
+  top: -8px;
+  right: -10px;
+  background-color: var(--Black);
+  color: var(--White);
+  font-size: 10px;
+  padding: 2px 5px;
+  border-radius: 50%;
+  border: 1px solid var(--Yelow);
+}
+
+.foto-perfil {
+  width: 34px;
+  height: 34px;
+  background-color: var(--White);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* =======================================================
+   3. SECCIÓN ENCABEZADO DE PÁGINA
+   ======================================================= */
+.seccion-header {
+  background-color: var(--Whitelight);
+  padding: 40px 0; 
+  font-family: 'Arial', sans-serif; 
+  line-height: 1.4;
+}
+
+.title-seccion {
+  font-size: 36px;
+  font-weight: 700;
+  color: #000000;
+  margin: 0;
+}
+
+.subtitle-seccion {
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+  margin: 0;
+}
+
+.seccion-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px; 
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-sizing: border-box;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+}
+
+.breadcrumb-separator {
+  margin: 0 8px;
+  color: #e2a03f; 
+}
+
+/* =======================================================
+   4. CONTENEDOR PRINCIPAL: FORMULARIO Y CITAS
+   ======================================================= */
+.formulario-cita {
+  display: grid;
+  grid-template-columns: 2fr 1fr; 
+  gap: 4rem;                     
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: sans-serif;       
+  box-sizing: border-box;
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 2rem;                             
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.consulta{
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-self: flex-start;
+  grid-column: 1 / -1; 
+
+}
+
+.campo label {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.campo input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 100%; 
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.consulta textarea {
+  padding: 8rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: 330%; 
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.consulta input {
+  height: 200px;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  grid-column: 0.5 / -0.5; 
+}
+
+.consulta label {
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+
+.btn-agendar {
+  padding: 1rem;
+  background-color: var(--Yelow); 
+  color: #000; 
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-top: 1rem;
+  grid-column: 1 / -1; 
+  width: 40%;
+}
+
+.btn-agendar:hover {
+  background-color: var(--YelowHover);
+}
+
+.informacion-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; 
+}
+
+.info-bloque h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.info-bloque p {
+  margin: 0;
+  color: #555;
+  line-height: 1.4;
+}
+
+/* =======================================================
+   5. FOOTER
+   ======================================================= */
+.sitio-footer {
+  background-color: var(--Footer);
+  color: #ffffff;
+  padding: 40px 60px 20px 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-sizing: border-box;
+}
+
+.cuadricula-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 5px;
+  flex-wrap: wrap; 
+}
+
+.columna-footer {
+  flex: 1;
+  min-width: 200px; 
+}
+
+.columna-footer h3 {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.columna-footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.columna-footer ul li {
+  margin-bottom: 10px;
+}
+
+.columna-footer ul li a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+  transition: color 0.3s;
+}
+
+.columna-footer ul li a:hover {
+  color: var(--Yelow);
+}
+
+.columna-contacto p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.enlace-resaltado:hover {
+  text-decoration: underline;
+}
+
+.barra-inferior-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.redes-footer {
+  display: flex;
+  gap: 15px;
+}
+
+.redes-footer a {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  transition: color 0.3s;
+}
+
+.redes-footer a:hover {
+  color: #ffffff;
+}
+
+.metodos-pago {
+  display: flex;
+  gap: 10px;
+}
+
+.tarjeta-icono {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.copyright p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+
+@media (max-width: 992px) {
+  .barra-superior {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px;
+  }
+
+  .seccion-direccion {
+    text-align: center;
+  }
+
+  .formulario-cita {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .menu-principal {
+    padding: 15px 20px;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .contenido-menu {
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .enlaces-nav {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .botones-ingreso {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .title-seccion {
+    font-size: 28px;
+  }
+
+  .formulario {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .btn-agendar {
+    grid-column: span 1; 
+  }
+
+  .sitio-footer {
+    padding: 30px 20px;
+  }
+
+  .barra-inferior-footer {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+}

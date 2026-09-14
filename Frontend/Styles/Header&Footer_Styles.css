@@ -1,0 +1,291 @@
+:root {
+  --Yelow: #f5c842; /* Color amarillo principal usado como acento */
+  --YelowHover: #dfb536; /* Amarillo más oscuro para hover */
+  --DarkBlue: #0a1628; /* Azul oscuro para fondo de navbar */
+  --Black: #000000; /* Negro para texto y detalles */
+  --Footer: #1a3a7a; /* Color azul oscuro del footer */
+}
+*{
+  /* Restablece márgenes y rellenos de todos los elementos */
+  margin: 0; /* Elimina el margen por defecto de los navegadores */
+  padding: 0; /* Elimina el relleno por defecto de los navegadores */
+  box-sizing: border-box; /* Incluye el borde dentro del ancho y alto totales */
+  font-family: "Poppins", sans-serif; /* Define la fuente global */
+  font-style: normal; /* Usa estilo de fuente normal */
+}
+
+/*
+BARRA SUPERIOR (Top Bar)
+*/
+.barra-superior {
+  background-color: #000000; /* Fondo negro para la barra superior */
+  color: #ffffff; /* Texto blanco */
+  font-size: 13px; /* Tamaño de fuente pequeño */
+  padding: 10px 30px; /* Espacio dentro de la barra */
+  display: flex; /* Layout horizontal */
+  justify-content: space-between; /* Separación entre los extremos */
+  align-items: center; /* Centra verticalmente */
+}
+
+.seccion-horario {
+  text-align: left; /* Alinea el texto a la izquierda */
+  line-height: 1.4; /* Altura de línea para legibilidad */
+}
+
+.seccion-horario b,
+.barra-superior b {
+  font-weight: bold; /* Negrita para texto destacado */
+}
+
+.seccion-direccion {
+  text-align: center; /* Alinea la dirección al centro */
+  line-height: 1.4; /* Altura de línea consistente */
+}
+
+.link-contacto {
+  color: #ffffff; /* Enlace blanco */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Texto en negrita */
+  border-bottom: 2px solid #ffffff; /* Subrayado blanco */
+  margin-left: 5px; /* Separación a la izquierda */
+  display: inline-block; /* Para que funcione el padding/border */
+}
+
+.seccion-contacto {
+  display: flex; /* Layout horizontal */
+  align-items: center; /* Centra verticalmente */
+}
+
+/* Iconos de Redes Sociales en la barra negra (Blancos) */
+.red-social {
+  color: #ffffff; /* Iconos blancos */
+  font-size: 16px; /* Tamaño de icono */
+  margin-left: 12px; /* Separación izquierda entre iconos */
+  text-decoration: none; /* Quita subrayado */
+  display: flex; /* Layout flex para centrar icono */
+  align-items: center; /* Centra verticalmente */
+}
+
+.red-social:hover {
+  color: #ebd07f; /* Cambia a amarillo al pasar el mouse */
+}
+
+/*
+NAV BAR
+*/
+.menu-principal {
+  background-color: var(--DarkBlue); /* Fondo azul oscuro */
+  padding: 15px 40px; /* Espacio interior de navbar */
+  display: flex; /* Layout horizontal */
+  justify-content: space-between; /* Separación entre extremos */
+  align-items: center; /* Centra verticalmente */
+}
+
+.seccion-logo img {
+  height: 80px; /* Altura del logo */
+  width: 150px; /* Ancho del logo */
+}
+
+.contenido-menu {
+  display: flex; /* Layout horizontal */
+  align-items: center; /* Centra verticalmente */
+  gap: 35px; /* Separación entre elementos del menú */
+}
+
+.enlaces-nav {
+  display: flex; /* Enlaces en fila */
+  gap: 25px; /* Separación entre enlaces */
+}
+
+.enlaces-nav a {
+  color: #ffffff; /* Texto blanco */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Texto en negrita */
+  font-size: 15px; /* Tamaño de enlace */
+}
+
+.enlaces-nav a:hover {
+  color: var(--YelowHover); /* Amarillo claro en hover */
+}
+
+.enlaces-nav a.active {
+  color: var(--Yelow); /* Resalta en amarillo la página activa */
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+.botones-ingreso {
+  display: flex; /* Botones en fila */
+  gap: 12px; /* Separación entre botones */
+}
+
+.btn-iniciar {
+  background-color: var(--Yelow); /* Botón amarillo */
+  color: var(--Black); /* Texto negro */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Texto en negrita */
+  font-size: 14px; /* Tamaño de texto */
+  padding: 10px 22px; /* Espacio interior */
+  border-radius: 25px; /* Bordes redondeados */
+}
+
+.btn-registrar {
+  background-color: transparent; /* Fondo transparente */
+  color: var(--Yelow); /* Texto amarillo */
+  text-decoration: none; /* Sin subrayado */
+  font-weight: bold; /* Texto en negrita */
+  font-size: 14px; /* Tamaño de texto */
+  padding: 8px 20px; /* Espacio interior */
+  border: 2px solid var(--Yelow); /* Borde amarillo */
+  border-radius: 25px; /* Bordes redondeados */
+}
+
+.iconos-usuario {
+  display: flex; /* Íconos en fila */
+  align-items: center; /* Centra verticalmente */
+  gap: 22px; /* Separación entre iconos */
+}
+
+.icono-menu {
+  color: var(--Yelow); /* Iconos amarillos */
+  font-size: 19px; /* Tamaño de icono */
+  cursor: pointer; /* Indica clicable */
+  display: flex; /* Layout flex para alineación */
+  align-items: center; /* Centra verticalmente */
+}
+
+.contenedor-carrito {
+  position: relative; /* Para posicionar la burbuja absoluta */
+  display: flex; /* Layout flex */
+  align-items: center; /* Centra verticalmente */
+}
+
+.burbuja-carrito {
+  position: absolute; /* Posicionada respecto al contenedor */
+  top: -8px; /* Ajuste vertical */
+  right: -10px; /* Ajuste horizontal */
+  background-color: var(--Black); /* Fondo negro */
+  color: #ffffff; /* Texto blanco */
+  font-size: 7px; /* Tamaño pequeño */
+  padding: 2px 5px; /* Espacio interior */
+  border-radius: 50%; /* Forma circular */
+  border: 1px solid var(--Yelow); /* Borde amarillo */
+}
+
+.foto-perfil {
+  width: 34px; /* Ancho del avatar */
+  height: 34px; /* Alto del avatar */
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 50%; /* Forma circular */
+  cursor: pointer; /* Indica clicable */
+}
+
+/*
+FOOTER
+*/
+.sitio-footer {
+  background-color: var(--Footer); /* Fondo azul oscuro */
+  color: #ffffff; /* Texto blanco */
+  padding: 40px 60px 20px 60px; /* Espacio interno del footer */
+  font-family:
+    "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Tipografía del footer */
+}
+
+/* --- Cuadrícula de Enlaces --- */
+.cuadricula-footer {
+  display: flex; /* Columnas en fila */
+  justify-content: space-between; /* Separación entre columnas */
+  gap: 20px; /* Espacio entre columnas */
+  margin-bottom: 5px; /* Espacio inferior */
+}
+
+.columna-footer {
+  flex: 1; /* Cada columna ocupa espacio igual */
+}
+
+.columna-footer h3 {
+  font-size: 14px; /* Tamaño de encabezado */
+  color: rgba(255, 255, 255, 0.5); /* Texto blanco semitransparente */
+  margin-bottom: 15px; /* Espacio inferior */
+  font-weight: 600; /* Texto semi-negrita */
+}
+
+.columna-footer ul {
+  list-style: none; /* Quita viñetas de la lista */
+}
+
+.columna-footer ul li {
+  margin-bottom: 10px; /* Espacio entre elementos de lista */
+}
+
+.columna-footer ul li a {
+  color: #ffffff; /* Enlaces blancos */
+  text-decoration: none; /* Sin subrayado */
+  font-size: 13px; /* Tamaño de texto */
+  transition: color 0.3s; /* Transición suave para hover */
+}
+
+.columna-footer ul li a:hover {
+  color: var(--Yelow); /* Enlace amarillo al pasar mouse */
+}
+
+/* Columna de dirección y contacto */
+.columna-contacto p {
+  font-size: 13px; /* Tamaño de texto */
+  line-height: 1.6; /* Altura de línea para legibilidad */
+  margin-bottom: 8px; /* Espacio inferior */
+  color: #ffffff; /* Texto blanco */
+}
+
+.enlace-resaltado {
+  color: #00aeef; /* Tono azul claro para teléfonos/email */
+  text-decoration: none; /* Sin subrayado */
+}
+
+.enlace-resaltado:hover {
+  text-decoration: underline; /* Subraya al pasar el mouse */
+}
+
+/* --- Barra Inferior --- */
+.barra-inferior-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1); /* Línea fina superior */
+  padding-top: 20px; /* Espacio superior */
+  margin-top: 40px; /* Separación del contenido anterior */
+  display: flex; /* Layout horizontal */
+  justify-content: space-between; /* Separación entre extremos */
+  align-items: center; /* Centra verticalmente */
+}
+
+.redes-footer {
+  display: flex; /* Iconos de redes en fila */
+  gap: 15px; /* Espacio entre iconos */
+}
+
+.redes-footer a {
+  color: rgba(255, 255, 255, 0.6); /* Iconos semi-transparentes */
+  font-size: 18px; /* Tamaño de icono */
+  transition: color 0.3s; /* Transición de color suave */
+}
+
+.redes-footer a:hover {
+  color: #ffffff; /* Icono blanco al hover */
+}
+
+.metodos-pago {
+  display: flex;
+  gap: 10px;
+}
+
+.tarjeta-icono {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.copyright p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}

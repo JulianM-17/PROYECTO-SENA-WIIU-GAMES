@@ -1,0 +1,200 @@
+* {
+  box-sizing: border-box; /* incluye bordes y rellenos en el tamano total del elemento */
+  margin: 0; /* quita los margenes externos predeterminados */
+  padding: 0; /* quita los rellenos internos predeterminados */
+  font-family: Arial, sans-serif; /* define la fuente principal para todo el sitio */
+}
+
+body {
+  background-color: #0f172a; /* establece el fondo oscuro global */
+  color: #ffffff; /* fija el color de texto blanco en toda la pagina */
+  display: flex; /* coloca la barra lateral a la izquierda y el contenido a la derecha */
+  min-height: 100vh; /* asegura que el fondo cubra el alto completo de la ventana */
+}
+
+/* Estilos de la barra lateral fija a la izquierda */
+.barra-lateral {
+  width: 220px; /* fija el ancho horizontal del menu lateral */
+  background-color: #1e293b; /* le da un tono azul oscuro a la barra lateral */
+  padding: 20px; /* agrega espacio alrededor del contenido interno */
+  display: flex; /* activa flexbox para organizar los botones */
+  flex-direction: column; /* apila los botones verticalmente uno debajo del otro */
+  gap: 12px; /* establece una separacion fija de 12px entre botones */
+  flex-shrink: 0; /* evita que la barra lateral se reduzca al achicar la pantalla */
+}
+
+.titulo-menu {
+  font-size: 18px; /* define el tamano del titulo principal del menu */
+  font-weight: bold; /* pone en negrita el texto del titulo */
+  color: #ffffff; /* asigna color blanco brillante al texto del titulo */
+  margin-bottom: 10px; /* da un espacio hacia abajo antes del primer boton */
+}
+
+.boton-menu {
+  color: #94a3b8; /* asigna un tono gris claro a los enlaces */
+  text-decoration: none; /* quita la linea de subrayado a los botones */
+  padding: 10px; /* agrega un area de clic comoda dentro del boton */
+  border-radius: 6px; /* redondea ligeramente las esquinas de los botones */
+  font-size: 14px; /* fija el tamano de letra de las opciones */
+  display: block; /* fuerza al enlace a ocupante toda la linea */
+}
+
+.boton-menu:hover, .boton-menu.activo {
+  background-color: #334155; /* cambia el fondo a gris azulado al pasar el cursor o estar activo */
+  color: #ffffff; /* resalta el texto a blanco cuando esta activo o encima */
+}
+
+/* Contenedor general */
+.contenedor-principal {
+  flex: 1; /* permite que el contenedor tome todo el espacio sobrante a la derecha */
+  padding: 40px; /* agrega margen interno alrededor de todo el contenido */
+  min-width: 0; /* evita que contenidos anchos desborden el contenedor flexible */
+}
+
+.encabezado {
+  margin-bottom: 20px; /* separa el titulo principal de la tabla de productos */
+}
+
+.titulo-pagina {
+  font-size: 20px; /* define el tamano de la letra del encabezado de pagina */
+  font-weight: bold; /* coloca el titulo en negrita */
+}
+
+/* Tabla personalizada con divs */
+.tabla {
+  width: 100%; /* hace que la tabla ocupe todo el ancho disponible */
+  background-color: #212835; /* otorga fondo gris oscuro al bloque de la tabla */
+  border-radius: 20px; /* redondea los bordes generales de la tabla */
+  display: flex; /* organiza las filas en formato flexible */
+  flex-direction: column; /* apila la fila encabezado y los registros verticalmente */
+}
+
+/* Filas */
+.fila {
+  display: flex; /* alinea las celdas de la fila en forma horizontal */
+  align-items: center; /* centra verticalmente el contenido de cada celda */
+  padding: 12px; /* espacio interno arriba y abajo en cada fila */
+  border-bottom: 1px solid #2d3748; /* dibuja una linea divisoria entre filas */
+}
+
+.fila-encabezado {
+  font-weight: bold; /* destaca en negrita los titulos de las columnas */
+  color: #a0aec0; /* otorga color gris claro al texto del encabezado */
+  border-bottom: 2px solid #2d3748; /* hace la linea divisoria mas gruesa para la cabecera */
+}
+
+/* Columnas para alinear */
+.columna {
+  flex: 1; /* reparte el espacio equitativamente entre las celdas */
+  padding: 0 8px; /* agrega separacion lateral dentro de cada celda */
+  min-width: 80px; /* fija un ancho minimo por celda para evitar amontonamiento */
+}
+
+.columna p {
+  margin: 0; /* elimina los margenes por defecto de los parrafos internos */
+}
+
+/* Detalles */
+.imagen-producto {
+  width: 40px; /* fija el ancho de la miniatura de imagen */
+  height: 40px; /* fija el alto de la miniatura de imagen */
+  border-radius: 6px; /* redondea las esquinas de la imagen */
+  background-color: #ffffff; /* asigna fondo blanco de respaldo a la foto */
+  object-fit: cover; /* ajusta la imagen para cubrir el recuadro sin deformarse */
+}
+
+.stock {
+  width: 70px; /* define el ancho de la caja del indicador de stock */
+  height: 35px; /* define la altura del indicador de stock */
+  position: relative; /* permite posicionar los elementos internos de forma absoluta */
+  overflow: hidden; /* oculta los bordes sobrantes del semicirculo */
+}
+
+.stock::before {
+  content: ""; /* crea un elemento grafico vacio para el semicirculo exterior */
+  position: absolute; /* posiciona la figura en la esquina superior */
+  width: 70px; /* determina el ancho del circulo base */
+  height: 70px; /* determina el alto del circulo base */
+  border-radius: 50%; /* convierte el cuadro en un circulo perfecto */
+  top: 0; /* alinea en el borde superior */
+  left: 0; /* alinea en el borde izquierdo */
+}
+
+/* Hueco interior */
+.stock::after {
+  content: ""; /* crea el elemento grafico vacio para el recorte interno */
+  position: absolute; /* lo posiciona sobre el circulo base */
+  width: 52px; /* determina el ancho del circulo interno */
+  height: 52px; /* determina la altura del circulo interno */
+  background: #212835; /* coincide con el color del fondo de la tabla */
+  border-radius: 50%; /* recorta en forma circular */
+  top: 9px; /* centra verticalmente sobre la base */
+  left: 9px; /* centra horizontalmente sobre la base */
+}
+
+.stock span {
+  position: absolute; /* ubica el numero sobre los graficos */
+  width: 100%; /* expande el texto a todo el ancho disponible */
+  text-align: center; /* centra el numero del stock */
+  bottom: 2px; /* ajusta el numero cerca de la base del grafico */
+  color: white; /* le da color blanco a la cifra de stock */
+  font-size: 14px; /* fija el tamano de letra de la cifra */
+  font-weight: bold; /* resalta el numero en negrita */
+  z-index: 2; /* asegura que la cifra quede por encima de las figuras */
+}
+
+.rojo::before {
+  background: conic-gradient( #F44336 0deg 180deg ); /* aplica degradado semicircular rojo */
+}
+
+.amarillo::before {
+  background: conic-gradient( #c5fb02 0deg 180deg, #3b4655 180deg 360deg ); /* aplica degradado semicircular verde/amarillo */
+}
+
+.caja-acciones {
+  display: flex; /* alinea los botones de accion de forma horizontal */
+  gap: 8px; /* da un espacio de 8px entre cada icono de accion */
+}
+
+.boton-accion {
+  text-decoration: none; /* quita el subrayado a los iconos de accion */
+  color: #ffffff; /* fija los iconos en color blanco */
+}
+
+/* --- ADAPTACIÓN RESPONSIVE (PANTALLAS MEDIANAS Y MOVILES) --- */
+
+@media (max-width: 992px) {
+  .contenedor-principal {
+    padding: 20px; /* reduce los margenes internos en tablets para ganar espacio */
+  }
+
+  .tabla {
+    overflow-x: auto; /* habilita desplazamiento horizontal si la tabla sobrepasa la pantalla */
+  }
+
+  .fila {
+    min-width: 700px; /* asegura un ancho minimo constante a las filas para que no se aplasten */
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column; /* pasa la barra lateral hacia arriba en dispositivos moviles */
+  }
+
+  .barra-lateral {
+    width: 100%; /* hace que la barra lateral ocupe todo el ancho superior */
+    flex-direction: row; /* acomoda las opciones del menu una al lado de la otra */
+    flex-wrap: wrap; /* permite que los enlaces bajen de linea si no entran */
+    align-items: center; /* centra verticalmente los elementos del menu */
+  }
+
+  .titulo-menu {
+    width: 100%; /* deja el titulo principal en su propia linea superior */
+    margin-bottom: 5px; /* achica el margen inferior en pantallas chicas */
+  }
+
+  .boton-menu {
+    display: inline-block; /* permite ver los enlaces como botones en fila horizontal */
+  }
+}
