@@ -64,12 +64,12 @@
             <a href="../Index.html" >Inicio</a>
             <a href="Catalog.html">Catalogo</a>
             <a href="servicios.html">Servicios</a>
-            <a href="garantias.html"class="active">Garantias</a>
+            <a href="garantias.html" class="active">Garantias</a>
           </div>
 
           <div class="botones-ingreso">
-            <a href="Catalog.html" class="btn-iniciar">Iniciar sesion</a>
-            <a href="Catalog.html" class="btn-registrar">Registrarse</a>
+            <a href="Registro.html" class="btn-iniciar">Iniciar sesion</a>
+            <a href="Registro.html" class="btn-registrar">Registrarse</a>
           </div>
 
           <div class="iconos-usuario">
@@ -122,7 +122,6 @@
               required
             />
           </div>
-          
 
           <div class="campo">
             <label for="servicio">Categoria del producto</label>
@@ -134,10 +133,15 @@
               required
             />
 
-          <div class="consulta">
-            <label for="consulta">Descripcion detallada del problema</label>
-            <textarea id="consulta" name="consulta" placeholder="Describe detalladamente el problema" required></textarea>
-          </div>
+            <div class="consulta">
+              <label for="consulta">Descripcion detallada del problema</label>
+              <textarea
+                id="consulta"
+                name="consulta"
+                placeholder="Describe detalladamente el problema"
+                required
+              ></textarea>
+            </div>
 
             <datalist id="categorias">
               <option value="Laptops"></option>
@@ -146,11 +150,11 @@
               <option value="Computador de Escritorio"></option>
             </datalist>
           </div>
-          <button type="submit" class="btn-agendar">Agregar nueva garantía</button>
+          <button type="submit" class="btn-agendar">
+            Agregar nueva garantía
+          </button>
         </form>
       </div>
-
-
 
       <aside class="informacion-contacto">
         <div class="info-bloque">

@@ -1,303 +1,406 @@
-/* Resetea los márgenes, paddings y la tipografía base de todos los elementos. */
+/* =====================================================
+   CATÁLOGO — WiiU Games
+   Rediseño Premium
+   ===================================================== */
+
 * {
-  margin: 0; /* Elimina el margen exterior de todos los elementos. */
-  padding: 0; /* Elimina el relleno interior de todos los elementos. */
-  box-sizing: border-box; /* Hace que el ancho y alto incluyan borde y padding. */
-  font-family:
-    "Poppins", sans-serif; /* Usa la fuente Poppins como tipografía global. */
-  font-style: normal; /* Mantiene el estilo normal de la fuente. */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  font-style: normal;
 }
 
-/* Sección principal del contenido del catálogo. */
+:root {
+  --yellow: #f5c842;
+  --yellow-hover: #e8b830;
+  --dark-blue: #080f20;
+  --dark-blue-2: #0a1628;
+  --black: #000000;
+  --white: #ffffff;
+  --bg: #f1f4f9;
+  --border: #e2e8f2;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+
+  /* Compat */
+  --Yelow: #f5c842;
+  --YelowHover: #e8b830;
+  --DarkBlue: #080f20;
+  --Black: #000000;
+  --Footer: #080e1d;
+  --White: #ffffff;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-main);
+}
+
+/* =====================================================
+   ESTRUCTURA PRINCIPAL
+   ===================================================== */
 .main-container {
-  display: flex; /* Organiza la barra lateral y el contenido en una fila. */
-  max-width: 1200px; /* Limita el ancho del contenedor principal. */
-  margin: 0 auto; /* Centra el contenido horizontalmente. */
-  padding: 20px; /* Añade espacio interno alrededor del contenido. */
-  gap: 30px; /* Genera separación entre la barra lateral y la sección de productos. */
+  display: flex;
+  max-width: 1400px;
+  margin: 40px auto 80px;
+  padding: 0 32px;
+  gap: 40px;
+  align-items: flex-start;
 }
 
-/* Barra lateral de filtros del catálogo. */
+/* =====================================================
+   BARRA LATERAL (SIDEBAR)
+   ===================================================== */
 .sidebar {
-  width: 25%; /* Ocupa una cuarta parte del ancho disponible. */
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border);
+  position: sticky;
+  top: 100px;
 }
 
-/* Contenedor de la zona donde se muestran los productos. */
-.products-section {
-  width: 75%; /* Ocupa tres cuartas partes del ancho disponible. */
-  display: flex; /* Permite alinear el contenido en la fila. */
-  align-items: flex-start; /* Alinea el contenido hacia arriba. */
-}
-
-/* Grid general de productos cuando se necesita una distribución uniforme. */
-.products-grid {
-  display: grid; /* Usa un diseño de cuadrícula. */
-  grid-template-columns: repeat(5, 1fr); /* Crea 5 columnas de igual tamaño. */
-  gap: 20px; /* Añade espacio entre cada tarjeta. */
-}
-
-/* Estilos de la sección de productos del catálogo. */
-.seccion-productos {
-  margin-bottom: 60px; /* Deja espacio inferior para separar secciones. */
-  padding: 0 10px; /* Añade un pequeño padding horizontal. */
-}
-
-/* Encabezado superior de la sección de productos. */
-.encabezado-productos {
-  display: flex; /* Coloca el título y el enlace en una fila. */
-  justify-content: space-between; /* Separa los elementos a los extremos. */
-  align-items: flex-end; /* Alinea los elementos al fondo del contenedor. */
-  margin-bottom: 25px; /* Añade espacio inferior. */
-}
-
-/* Título del encabezado de productos. */
-.encabezado-productos h2 {
-  font-size: 22px; /* Define el tamaño del texto del título. */
-  color: var(--Black); /* Usa el color negro global. */
-  font-weight: bold; /* Resalta el título con negrita. */
-}
-
-/* Contenedor del carrusel o bloque de productos deslizables. */
-.carrusel-productos {
-  position: relative; /* Permite posicionar las flechas de forma absoluta. */
-  display: flex; /* Usa disposición flexible. */
-  align-items: center; /* Centra verticalmente el contenido. */
-}
-
-/* Grid que organiza las tarjetas de productos en filas y columnas. */
-.grid-productos {
-  display: grid; /* Usa diseño de cuadrícula. */
-  grid-template-columns: repeat(6, 1fr); /* Crea 6 columnas iguales. */
-  gap: 15px; /* Añade separación entre tarjetas. */
-  width: 100%; /* Ocupa todo el ancho disponible. */
-}
-
-/* Estilo visual de cada tarjeta de producto. */
-.tarjeta-producto {
-  background-color: #ffffff; /* Fondo blanco para la tarjeta. */
-  padding: 15px; /* Añade espacio interno. */
-  display: flex; /* Coloca los elementos internos en columna. */
-  flex-direction: column; /* Ordena los elementos verticalmente. */
-  position: relative; /* Permite posicionar elementos internos si se necesita. */
-  transition: transform 0.2s; /* Añade una transición suave al pasar el mouse. */
-  height: 100%; /* Ocupa toda la altura del contenedor. */
-}
-
-/* Enlace que envuelve cada tarjeta de producto. */
-.enlace-producto {
-  text-decoration: none; /* Quita el subrayado del enlace. */
-  color: inherit; /* Hereda el color del contenedor padre. */
-  display: block; /* Hace que el enlace ocupe el espacio completo. */
-}
-
-/* Efecto al pasar el mouse sobre la tarjeta dentro del enlace. */
-.enlace-producto:hover .tarjeta-producto {
-  transform: translateY(-2px); /* Eleva ligeramente la tarjeta. */
-}
-
-/* Efecto al pasar el mouse sobre la tarjeta directamente. */
-.tarjeta-producto:hover {
-  transform: translateY(-2px); /* Eleva ligeramente la tarjeta. */
-}
-
-/* Etiqueta de estado del producto, como stock o disponibilidad. */
-.estado-stock {
-  font-size: 10px; /* Tamaño pequeño del texto. */
-  font-weight: bold; /* Hace el texto más visible. */
-  display: flex; /* Usa layout flexible para icono y texto. */
-  align-items: center; /* Centra verticalmente los elementos. */
-  gap: 4px; /* Añade separación entre el punto y el texto. */
-  margin-bottom: 4px; /* Deja espacio inferior. */
-}
-
-/* Punto decorativo antes del texto del estado. */
-.estado-stock::before {
-  content: "●"; /* Inserta un círculo como indicador visual. */
-  font-size: 12px; /* Ajusta el tamaño del círculo. */
-}
-
-/* Estilo para productos disponibles. */
-.estado-stock.disponible {
-  color: #52b788; /* Usa un verde para indicar disponibilidad. */
-}
-
-/* Estilo para productos que requieren revisar disponibilidad. */
-.estado-stock.consultar {
-  color: #e63946; /* Usa rojo para advertencia o revisión. */
-}
-
-/* Imagen principal del producto. */
-.imagen-producto {
-  width: 100%; /* La imagen ocupa todo el ancho disponible. */
-  height: 130px; /* Fija una altura uniforme para todas las imágenes. */
-  object-fit: contain; /* Mantiene la imagen completa dentro del espacio. */
-  margin-bottom: 15px; /* Deja separación inferior. */
-}
-
-/* Bloque de calificación del producto. */
-.calificacion {
-  color: var(--Yelow); /* Usa el color amarillo global. */
-  font-size: 12px; /* Tamaño pequeño para la calificación. */
-  margin-bottom: 10px; /* Deja espacio inferior. */
-}
-
-/* Texto de reseñas del producto. */
-.resenas {
-  color: #a0a0a0; /* Usa un gris claro. */
-  font-size: 11px; /* Tamaño pequeño para las reseñas. */
-  margin-left: 5px; /* Añade separación horizontal. */
-}
-
-/* Título del producto dentro de la tarjeta. */
-.titulo-producto {
-  font-size: 12px; /* Tamaño pequeño del título. */
-  color: var(--Black); /* Usa el color negro global. */
-  font-weight: 500; /* Da un peso medio al texto. */
-  line-height: 1.4; /* Mejora la legibilidad del texto. */
-  height: 50px; /* Limita la altura del título. */
-  overflow: hidden; /* Oculta el texto que excede el espacio. */
-  margin-bottom: 15px; /* Añade separación inferior. */
-}
-
-/* Precio anterior del producto, normalmente tachado. */
-.precio-anterior {
-  font-size: 13px; /* Tamaño del texto del precio anterior. */
-  color: #a0a0a0; /* Usa un gris suave. */
-  text-decoration: line-through; /* Tacha el precio anterior. */
-  margin-bottom: 2px; /* Deja separación inferior. */
-}
-
-/* Precio actual del producto. */
-.precio-actual {
-  font-size: 16px; /* Tamaño mayor para resaltar el precio. */
-  color: var(--Black); /* Usa el color negro global. */
-  font-weight: bold; /* Resalta el precio con negrita. */
-}
-
-/* Botones de navegación del carrusel. */
-.flecha-carrusel {
-  position: absolute; /* Permite ubicarlos sobre el carrusel. */
-  top: 35%; /* Alinea verticalmente en el centro. */
-  width: 32px; /* Define el ancho del botón. */
-  height: 32px; /* Define la altura del botón. */
-  border-radius: 50%; /* Lo convierte en un círculo. */
-  background-color: #e0e0e0; /* Fondo gris claro. */
-  border: none; /* Quita el borde predeterminado. */
-  color: #666666; /* Color del icono. */
-  font-weight: bold; /* Resalta el icono. */
-  cursor: pointer; /* Cambia el cursor al pasar sobre el botón. */
-  z-index: 10; /* Mantiene el botón por encima del contenido. */
-  display: flex; /* Usa flex para centrar el contenido. */
-  justify-content: center; /* Centra horizontalmente. */
-  align-items: center; /* Centra verticalmente. */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Añade una sombra sutil. */
-}
-
-/* Flecha izquierda del carrusel. */
-.flecha-izq {
-  left: -15px; /* Desplaza la flecha hacia la izquierda. */
-}
-
-/* Flecha derecha del carrusel. */
-.flecha-der {
-  right: -15px; /* Desplaza la flecha hacia la derecha. */
-}
-
-/* Barra lateral del catálogo. */
-.sidebar {
-  width: 250px; /* Define un ancho fijo para la barra lateral. */
-  font-family: sans-serif; /* Usa una tipografía sencilla para los filtros. */
-  color: #000; /* Color oscuro para el texto. */
-}
-
-/* Botones de limpiar filtros y mostrar todas las marcas. */
 .btn-clear,
 .btn-all-brands {
-  width: 100%; /* Ocupa todo el ancho disponible. */
-  background: transparent; /* Fondo transparente. */
-  border: 2px solid #e1e1e1; /* Borde gris claro. */
-  border-radius: 20px; /* Bordes redondeados. */
-  padding: 8px; /* Espacio interno. */
-  font-weight: bold; /* Texto en negrita. */
-  cursor: pointer; /* Muestra el cursor de botón. */
-  margin-bottom: 20px; /* Deja separación inferior. */
-  color: #666; /* Color gris para el texto. */
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 24px;
+  color: var(--text-main);
+  transition: all 0.25s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
-/* Grupo de filtros dentro de la barra lateral. */
+.btn-clear:hover,
+.btn-all-brands:hover {
+  border-color: var(--dark-blue);
+  background: rgba(8, 15, 32, 0.03);
+}
+
 .filter-group {
-  border-bottom: 1px solid #eee; /* Añade una línea divisoria inferior. */
-  padding-bottom: 15px; /* Espacio inferior dentro del bloque. */
-  margin-bottom: 15px; /* Separación entre grupos. */
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+  margin-bottom: 24px;
 }
 
-/* Título de cada grupo de filtros. */
+.filter-group:last-of-type {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 16px;
+}
+
 .filter-group h3 {
-  font-size: 14px; /* Tamaño pequeño para el título. */
-  font-weight: bold; /* Resalta el título. */
-  margin-bottom: 10px; /* Espacio inferior. */
-  text-transform: uppercase; /* Convierte el texto a mayúsculas. */
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--dark-blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Lista de opciones dentro del filtro. */
 .filter-group ul {
-  list-style: none; /* Quita las viñetas de la lista. */
-  padding: 0; /* Elimina el relleno interno. */
-  margin: 0; /* Elimina el margen externo. */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* Cada ítem dentro de la lista de filtros. */
 .filter-group ul li {
-  display: flex; /* Coloca el texto y el contador en una fila. */
-  justify-content: space-between; /* Separa texto y contador. */
-  font-size: 13px; /* Tamaño del texto. */
-  padding: 5px 0; /* Espacio vertical interno. */
-  cursor: pointer; /* Indica que el item es interactivo. */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px 0;
 }
 
-/* Resalta la categoría activa en la barra lateral. */
+.filter-group ul li:hover {
+  color: var(--dark-blue);
+}
+
 .filter-group ul li.active {
-  font-weight: bold; /* Hace el texto más visible. */
+  font-weight: 700;
+  color: var(--yellow);
 }
 
-/* Contador de resultados por filtro. */
 .count {
-  color: #a1a1a1; /* Usa un gris claro para el contador. */
+  background: var(--bg);
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
-/* Contenedor de los círculos de color para filtrar por color. */
 .color-options {
-  display: flex; /* Organiza los colores en una fila. */
-  gap: 10px; /* Añade espacio entre círculos. */
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-/* Cada opción circular de color. */
 .color-circle {
-  width: 20px; /* Define el ancho del círculo. */
-  height: 20px; /* Define la altura del círculo. */
-  border-radius: 50%; /* Lo convierte en un círculo perfecto. */
-  cursor: pointer; /* Indica interactividad. */
-  border: 1px solid #ccc; /* Añade un borde gris claro. */
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Opción de color negro. */
+.color-circle:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
 .color-circle.black {
-  background-color: #000; /* Fondo negro. */
+  background-color: #000;
 }
 
-/* Opción de color rojo. */
 .color-circle.red {
-  background-color: #ff4d4d; /* Fondo rojo. */
+  background-color: #ef4444;
 }
 
-/* Botón amarillo para aplicar filtros. */
 .btn-apply {
-  width: 100%; /* Ocupa todo el ancho disponible. */
-  background-color: #ffcc00; /* Usa amarillo para destacar la acción. */
-  border: none; /* Quita el borde predeterminado. */
-  border-radius: 20px; /* Da bordes redondeados. */
-  padding: 10px; /* Añade espacio interno. */
-  font-weight: bold; /* Destaca el texto. */
-  color: #000; /* Usa color negro para el texto. */
-  cursor: pointer; /* Indica que es un botón clicable. */
+  width: 100%;
+  background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
+  border: none;
+  border-radius: 10px;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--dark-blue);
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-apply:hover {
+  background: linear-gradient(135deg, #ffd95a 0%, var(--yellow) 100%);
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.4);
+  transform: translateY(-1px);
+}
+
+/* =====================================================
+   SECCIÓN PRODUCTOS
+   ===================================================== */
+.products-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.seccion-productos {
+  margin-bottom: 40px;
+}
+
+.encabezado-productos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+}
+
+.encabezado-productos h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--dark-blue);
+  letter-spacing: -0.02em;
+}
+
+.carrusel-productos {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.grid-productos,
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* =====================================================
+   TARJETAS DE PRODUCTO
+   ===================================================== */
+.tarjeta-producto {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  height: 100%;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.tarjeta-producto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(245, 200, 66, 0.03), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.enlace-producto {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.enlace-producto:hover .tarjeta-producto,
+.tarjeta-producto:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+  border-color: rgba(245, 200, 66, 0.2);
+}
+
+.enlace-producto:hover .tarjeta-producto::before {
+  opacity: 1;
+}
+
+.estado-stock {
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 16px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.estado-stock::before {
+  content: "●";
+  font-size: 9px;
+}
+
+.estado-stock.disponible { color: #22c55e; }
+.estado-stock.consultar { color: #ef4444; }
+
+.imagen-producto {
+  width: 100%;
+  height: 150px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.enlace-producto:hover .imagen-producto,
+.tarjeta-producto:hover .imagen-producto {
+  transform: scale(1.05);
+}
+
+.calificacion {
+  color: var(--yellow);
+  font-size: 12px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.resenas {
+  color: var(--text-muted);
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.titulo-producto {
+  font-size: 13px;
+  color: var(--dark-blue);
+  font-weight: 600;
+  line-height: 1.5;
+  height: 58px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.precio-anterior {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-decoration: line-through;
+  margin-bottom: 4px;
+}
+
+.precio-actual {
+  font-size: 18px;
+  color: var(--dark-blue);
+  font-weight: 800;
+}
+
+/* =====================================================
+   CARRUSEL CONTROLES
+   ===================================================== */
+.flecha-carrusel {
+  position: absolute;
+  top: 40%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  color: var(--text-muted);
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.flecha-carrusel:hover {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: var(--dark-blue);
+  box-shadow: 0 4px 20px rgba(245, 200, 66, 0.35);
+  transform: scale(1.1);
+}
+
+.flecha-izq { left: -20px; }
+.flecha-der { right: -20px; }
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+@media (max-width: 1024px) {
+  .main-container {
+    flex-direction: column;
+    padding: 0 24px;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: static;
+  }
+  
+  .products-section {
+    width: 100%;
+  }
 }

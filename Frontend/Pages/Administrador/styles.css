@@ -837,6 +837,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+  z-index: 10;
 }
 
 .product-rank-item {
@@ -1509,6 +1513,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 0 30px rgba(245, 200, 66, 0.1);
 }
 
 .modal-title {
@@ -1548,7 +1553,6 @@ body {
   .modal-body-grid {
     grid-template-columns: 1fr;
   }
-}
 
 .modal-body-single {
   padding: 24px;
@@ -1761,4 +1765,5 @@ body {
 
 @keyframes fadeOutToast {
   to { transform: translateX(100%); opacity: 0; }
+}
 }
