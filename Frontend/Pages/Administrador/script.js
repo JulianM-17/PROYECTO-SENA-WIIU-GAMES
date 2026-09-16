@@ -1,19 +1,20 @@
 /**
  * ==========================================================================
- * WIIU-GAMES - PANEL DE ADMINISTRADOR
- * Lógica e Interactividad Integral
+ * WIIU-GAMES - PANEL DE ADMINISTRACIÓN (SCRIPT PRINCIPAL)
+ * Código limpio, estructurado y documentado en español para fácil comprensión.
  * ==========================================================================
  */
 
+// Se ejecuta cuando el documento HTML ha cargado completamente
 document.addEventListener('DOMContentLoaded', () => {
-  initNavigation();
   initPresetData();
+  initNavigation();
   renderAllModules();
   initGlobalSearch();
 });
 
 /* ==========================================================================
-   DATOS INICIALES Y LOCALSTORAGE
+   1. DATOS DE PRUEBA E INICIALIZACIÓN
    ========================================================================== */
 
 const DEFAULT_PRODUCTS = [
@@ -141,10 +142,10 @@ const DEFAULT_DISCOUNTS = [
 ];
 
 const DEFAULT_REVIEWS = [
-  { name: 'Camilo Restrepo', stars: '★★★★★', product: 'Zelda BOTW Wii U', comment: 'Llegó en perfecto estado, el disco impecable y la caja sellada. La mejor compra para revivir la Wii U.' },
-  { name: 'Natalia Gómez', stars: '★★★★★', product: 'Reparación GamePad', comment: 'Excelente servicio técnico. Arreglaron la pantalla de mi GamePad en menos de 2 días y quedó como nueva.' },
-  { name: 'Julián Mendoza', stars: '★★★★☆', product: 'Super Mario 3D World', comment: 'Muy buen juego y entrega rápida. Recomendada 100% esta tienda.' },
-  { name: 'Alejandro Cruz', stars: '★★★★★', product: 'Consola Wii U Deluxe', comment: 'La consola llegó con todos sus cables, impecable y funcionando a la perfección. Gran atención.' }
+  { name: 'Camilo Restrepo', rating: 5, product: 'Zelda BOTW Wii U', comment: 'Llegó en perfecto estado, el disco impecable y la caja sellada. La mejor compra para revivir la Wii U.' },
+  { name: 'Natalia Gómez', rating: 5, product: 'Reparación GamePad', comment: 'Excelente servicio técnico. Arreglaron la pantalla de mi GamePad en menos de 2 días y quedó como nueva.' },
+  { name: 'Julián Mendoza', rating: 4, product: 'Super Mario 3D World', comment: 'Muy buen juego y entrega rápida. Recomendada 100% esta tienda.' },
+  { name: 'Alejandro Cruz', rating: 5, product: 'Consola Wii U Deluxe', comment: 'La consola llegó con todos sus cables, impecable y funcionando a la perfección. Gran atención.' }
 ];
 
 const DEFAULT_CLIENTS = [
@@ -154,7 +155,10 @@ const DEFAULT_CLIENTS = [
   { name: 'Laura Sofía M.', phone: '+57 301 555 4433', email: 'laura.m@yahoo.com', totalSpent: '$ 320.000', lastVisit: '10 Sep 2026', level: 'Nuevo' }
 ];
 
-// Inicializar almacenamiento
+/* ==========================================================================
+   2. GESTIÓN DE MEMORIA Y ALMACENAMIENTO (LOCALSTORAGE)
+   ========================================================================== */
+
 function initPresetData() {
   if (!localStorage.getItem('wiiu_products')) {
     localStorage.setItem('wiiu_products', JSON.stringify(DEFAULT_PRODUCTS));
@@ -182,7 +186,7 @@ function saveProductsList(products) {
 }
 
 /* ==========================================================================
-   SISTEMA DE NAVEGACIÓN ENTRE SECCIONES
+   3. NAVEGACIÓN Y CAMBIO DE VISTAS
    ========================================================================== */
 
 function initNavigation() {
@@ -196,19 +200,13 @@ function initNavigation() {
 }
 
 window.switchView = function(viewKey) {
-  // Cambiar botones activos en el sidebar
-  const navButtons = document.querySelectorAll('.nav-item');
-  navButtons.forEach(btn => {
-    if (btn.getAttribute('data-view') === viewKey) {
-      btn.classList.add('active');
-    } else {
-      btn.classList.remove('active');
-    }
+  // Actualizar botones de la barra lateral
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-view') === viewKey);
   });
 
-  // Ocultar todas las secciones y mostrar la elegida
-  const sections = document.querySelectorAll('.view-section');
-  sections.forEach(sec => sec.classList.remove('active-view'));
+  // Mostrar la sección seleccionada y ocultar las demás
+  document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
 
   const targetSection = document.getElementById(`view-${viewKey}`);
   if (targetSection) {
@@ -216,26 +214,18 @@ window.switchView = function(viewKey) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Refrescar datos según la vista
-  if (viewKey === 'inventario') {
-    renderInventoryTable();
-  } else if (viewKey === 'garantias') {
-    renderWarrantiesTable();
-  } else if (viewKey === 'mantenimientos') {
-    renderMaintenanceTable();
-  } else if (viewKey === 'reparacion') {
-    renderRepairsTable();
-  } else if (viewKey === 'descuentos') {
-    renderDiscountsTable();
-  } else if (viewKey === 'reseñas') {
-    renderReviewsGrid();
-  } else if (viewKey === 'clientes') {
-    renderClientsTable();
-  }
+  // Refrescar contenido del módulo activo
+  if (viewKey === 'inventario') renderInventoryTable();
+  else if (viewKey === 'garantias') renderWarrantiesTable();
+  else if (viewKey === 'mantenimientos') renderMaintenanceTable();
+  else if (viewKey === 'reparacion') renderRepairsTable();
+  else if (viewKey === 'descuentos') renderDiscountsTable();
+  else if (viewKey === 'reseñas') renderReviewsGrid();
+  else if (viewKey === 'clientes') renderClientsTable();
 };
 
 /* ==========================================================================
-   RENDERIZADO DE MÓDULOS
+   4. RENDERIZADO DE TABLAS Y MÓDULOS
    ========================================================================== */
 
 function renderAllModules() {
@@ -248,29 +238,25 @@ function renderAllModules() {
   renderClientsTable();
 }
 
-// 1. INVENTARIO
+// 1. Tabla de Inventario
 function renderInventoryTable(itemsToRender = null) {
   const products = itemsToRender || getProducts();
   const tbody = document.getElementById('inventoryTableBody');
   if (!tbody) return;
 
-  // Actualizar contadores de inventario
-  const totalStockCount = products.length;
+  // Actualizar métricas del resumen de inventario
   let totalStockVal = 0;
   let lowStockCount = 0;
-
   products.forEach(p => {
     totalStockVal += (p.price * p.stock);
-    if (p.stock <= (p.minStock || 3)) {
-      lowStockCount++;
-    }
+    if (p.stock <= (p.minStock || 3)) lowStockCount++;
   });
 
   const countEl = document.getElementById('invTotalCount');
   const valEl = document.getElementById('invTotalValue');
   const lowEl = document.getElementById('invLowStock');
 
-  if (countEl) countEl.textContent = `${totalStockCount} items`;
+  if (countEl) countEl.textContent = `${products.length} items`;
   if (valEl) valEl.textContent = `$ ${totalStockVal.toLocaleString('es-CO')}`;
   if (lowEl) lowEl.textContent = `${lowStockCount} alertas`;
 
@@ -278,6 +264,10 @@ function renderInventoryTable(itemsToRender = null) {
     tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">No se encontraron productos registrados</td></tr>`;
     return;
   }
+
+  // Iconos SVG limpios para editar y eliminar
+  const editIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-gold);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+  const deleteIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-red);"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
   tbody.innerHTML = products.map(prod => `
     <tr>
@@ -303,16 +293,16 @@ function renderInventoryTable(itemsToRender = null) {
         <span class="badge-status ${prod.condition === 'Nuevo Sellado' ? 'delivered' : 'shipping'}">${prod.condition}</span>
       </td>
       <td>
-        <div style="display: flex; gap: 6px;">
-          <button style="background:none; border:none; color: var(--accent-gold); cursor:pointer; font-size: 1rem;" title="Editar producto" onclick="window.editProduct(${prod.id})">✏️</button>
-          <button style="background:none; border:none; color: var(--accent-red); cursor:pointer; font-size: 1rem;" title="Eliminar producto" onclick="window.deleteProduct(${prod.id})">🗑️</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="row-more-btn" title="Editar producto" onclick="window.editProduct(${prod.id})">${editIcon}</button>
+          <button class="row-more-btn" title="Eliminar producto" onclick="window.deleteProduct(${prod.id})">${deleteIcon}</button>
         </div>
       </td>
     </tr>
   `).join('');
 }
 
-// 2. GARANTÍAS
+// 2. Tabla de Garantías
 function renderWarrantiesTable(items = null) {
   const warranties = items || JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
   const tbody = document.getElementById('garantiasTableBody');
@@ -337,7 +327,7 @@ function renderWarrantiesTable(items = null) {
   `).join('');
 }
 
-// 3. MANTENIMIENTOS
+// 3. Tabla de Mantenimientos
 function renderMaintenanceTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_maintenance')) || DEFAULT_MAINTENANCE;
   const tbody = document.getElementById('mantenimientosTableBody');
@@ -362,7 +352,7 @@ function renderMaintenanceTable() {
   `).join('');
 }
 
-// 4. REPARACIONES
+// 4. Tabla de Reparaciones
 function renderRepairsTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_repairs')) || DEFAULT_REPAIRS;
   const tbody = document.getElementById('reparacionesTableBody');
@@ -387,7 +377,7 @@ function renderRepairsTable() {
   `).join('');
 }
 
-// 5. DESCUENTOS
+// 5. Tabla de Descuentos
 function renderDiscountsTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_discounts')) || DEFAULT_DISCOUNTS;
   const tbody = document.getElementById('descuentosTableBody');
@@ -410,24 +400,27 @@ function renderDiscountsTable() {
   `).join('');
 }
 
-// 6. RESEÑAS
+// 6. Grid de Reseñas
 function renderReviewsGrid() {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
+
+  const starIcon = `<svg viewBox="0 0 24 24" class="review-star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  const gamepadTagIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg>`;
 
   grid.innerHTML = DEFAULT_REVIEWS.map(rev => `
     <div class="review-card">
       <div class="review-header">
         <span class="reviewer-name">${rev.name}</span>
-        <span class="review-stars">${rev.stars}</span>
+        <div class="review-stars">${starIcon.repeat(rev.rating || 5)}</div>
       </div>
       <p class="review-comment">"${rev.comment}"</p>
-      <div class="review-product-tag">🎮 ${rev.product}</div>
+      <div class="review-product-tag">${gamepadTagIcon} <span>${rev.product}</span></div>
     </div>
   `).join('');
 }
 
-// 7. CLIENTES
+// 7. Tabla de Clientes
 function renderClientsTable() {
   const tbody = document.getElementById('clientesTableBody');
   if (!tbody) return;
@@ -448,14 +441,13 @@ function renderClientsTable() {
 }
 
 /* ==========================================================================
-   MODAL: AGREGAR PRODUCTO CON TODOS SUS DETALLES
+   5. MODAL DE AGREGAR Y EDITAR PRODUCTO
    ========================================================================== */
 
 window.openAddProductModal = function() {
   const modal = document.getElementById('modalAddProduct');
   if (!modal) return;
 
-  // Limpiar y preparar formulario
   document.getElementById('formAddProduct').reset();
   document.getElementById('imagePreview').src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
   document.getElementById('previewCategoryBadge').textContent = 'Juegos Wii U';
@@ -469,7 +461,7 @@ window.closeAddProductModal = function() {
   if (modal) modal.classList.remove('active');
 };
 
-// Generador de SKU aleatorio
+// Generador de SKU Automático
 window.generateRandomSKU = function() {
   const cat = document.getElementById('prodCategory')?.value || 'Juegos';
   let prefix = 'WIIU-GME';
@@ -483,14 +475,13 @@ window.generateRandomSKU = function() {
   if (skuInput) skuInput.value = `${prefix}-${randomNum}`;
 };
 
-// Portadas oficiales sugeridas
+// Portadas Rápidas Sugeridas
 const PRESET_COVERS = {
   zelda: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop',
   mario: 'https://images.unsplash.com/photo-1612287233214-9988424269e8?w=300&h=300&fit=crop',
   mariokart: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=300&fit=crop',
   splatoon: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=300&fit=crop',
-  smash: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=300&h=300&fit=crop',
-  gamepad: 'https://images.unsplash.com/photo-1600080972464-8e5f35f63d08?w=300&h=300&fit=crop'
+  smash: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=300&h=300&fit=crop'
 };
 
 window.setPresetCover = function(key) {
@@ -503,14 +494,10 @@ window.setPresetCover = function(key) {
 window.previewProductImage = function(url) {
   const img = document.getElementById('imagePreview');
   if (!img) return;
-  if (url && url.trim() !== '') {
-    img.src = url;
-  } else {
-    img.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
-  }
+  img.src = (url && url.trim() !== '') ? url : 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
 };
 
-// Guardar nuevo producto
+// Guardar Producto (Crear o Actualizar)
 window.saveProduct = function(event) {
   event.preventDefault();
 
@@ -536,42 +523,29 @@ window.saveProduct = function(event) {
   const products = getProducts();
   const newProduct = {
     id: Date.now(),
-    name,
-    category,
-    sku,
-    publisher,
-    platform,
-    price,
-    costPrice,
-    stock,
-    minStock,
-    condition,
-    warranty,
-    imageUrl,
-    description
+    name, category, sku, publisher, platform,
+    price, costPrice, stock, minStock, condition, warranty, imageUrl, description
   };
 
   products.unshift(newProduct);
   saveProductsList(products);
 
-  // Cerrar modal y notificar
   closeAddProductModal();
   renderInventoryTable();
-  showToast(`¡Producto "${name}" agregado con éxito al inventario!`);
+  showToast(`¡Producto "${name}" guardado exitosamente en el inventario!`);
 };
 
-// Eliminar producto
+// Eliminar Producto
 window.deleteProduct = function(id) {
   if (confirm('¿Estás seguro de que deseas eliminar este producto del inventario?')) {
-    let products = getProducts();
-    products = products.filter(p => p.id !== id);
+    let products = getProducts().filter(p => p.id !== id);
     saveProductsList(products);
     renderInventoryTable();
     showToast('Producto eliminado del inventario.');
   }
 };
 
-// Editar producto
+// Editar Producto
 window.editProduct = function(id) {
   const products = getProducts();
   const prod = products.find(p => p.id === id);
@@ -593,13 +567,13 @@ window.editProduct = function(id) {
   document.getElementById('prodDescription').value = prod.description || '';
   previewProductImage(prod.imageUrl);
 
-  // Al guardar se reemplazará
+  // Remover la versión antigua antes de guardar los cambios
   products.splice(products.findIndex(p => p.id === id), 1);
   saveProductsList(products);
 };
 
 /* ==========================================================================
-   MODAL DE DESCUENTOS Y ACCIONES RÁPIDAS
+   6. MODAL DE DESCUENTOS Y EXPORTACIÓN
    ========================================================================== */
 
 window.openDiscountModal = function() {
@@ -624,22 +598,17 @@ window.saveDiscount = function(e) {
 
   const discounts = JSON.parse(localStorage.getItem('wiiu_discounts')) || DEFAULT_DISCOUNTS;
   discounts.unshift({
-    code,
-    desc,
-    percent,
-    expires: '31/12/2026',
-    uses: `0 / ${limit}`,
-    status: 'Activo'
+    code, desc, percent, expires: '31/12/2026', uses: `0 / ${limit}`, status: 'Activo'
   });
 
   localStorage.setItem('wiiu_discounts', JSON.stringify(discounts));
   closeDiscountModal();
   renderDiscountsTable();
-  showToast(`¡Cupón de descuento "${code}" activado!`);
+  showToast(`¡Cupón promocional "${code}" activado!`);
 };
 
 window.exportFullReport = function() {
-  showToast('Generando reporte consolidado de ventas y taller...');
+  showToast('Generando reporte consolidado de la tienda...');
   setTimeout(() => {
     const reportData = {
       tienda: 'WiiU-Games',
@@ -661,12 +630,12 @@ window.exportFullReport = function() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('✅ Reporte descargado exitosamente.');
-  }, 800);
+    showToast('Reporte descargado exitosamente.');
+  }, 600);
 };
 
 /* ==========================================================================
-   BÚSQUEDAS Y FILTROS DINÁMICOS
+   7. FILTROS Y BÚSQUEDA DINÁMICA
    ========================================================================== */
 
 function initGlobalSearch() {
@@ -677,7 +646,6 @@ function initGlobalSearch() {
     const term = e.target.value.toLowerCase().trim();
     if (term === '') return;
 
-    // Si coincide con inventario, buscar y cambiar vista
     const products = getProducts();
     const filtered = products.filter(p => 
       p.name.toLowerCase().includes(term) || 
@@ -694,8 +662,7 @@ function initGlobalSearch() {
 
 window.filterProducts = function(searchTerm) {
   const term = searchTerm.toLowerCase().trim();
-  const products = getProducts();
-  const filtered = products.filter(p => 
+  const filtered = getProducts().filter(p => 
     p.name.toLowerCase().includes(term) || 
     p.sku.toLowerCase().includes(term) ||
     p.category.toLowerCase().includes(term)
@@ -708,8 +675,7 @@ window.filterProductsByCategory = function(category) {
   if (category === 'todos') {
     renderInventoryTable(products);
   } else {
-    const filtered = products.filter(p => p.category === category);
-    renderInventoryTable(filtered);
+    renderInventoryTable(products.filter(p => p.category === category));
   }
 };
 
@@ -725,25 +691,23 @@ window.filterWarranties = function(term) {
 
 window.filterWarrantiesByStatus = function(status) {
   const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
-  if (status === 'todos') {
-    renderWarrantiesTable(warranties);
-  } else {
-    const filtered = warranties.filter(w => w.status === status);
-    renderWarrantiesTable(filtered);
-  }
+  if (status === 'todos') renderWarrantiesTable(warranties);
+  else renderWarrantiesTable(warranties.filter(w => w.status === status));
 };
 
 /* ==========================================================================
-   SISTEMA DE TOAST NOTIFICATIONS
+   8. SISTEMA DE NOTIFICACIONES (TOAST)
    ========================================================================== */
 
 window.showToast = function(message) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
+  const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+
   const toast = document.createElement('div');
   toast.className = 'toast';
-  toast.innerHTML = `<span>🎮</span><span>${message}</span>`;
+  toast.innerHTML = `${infoIcon}<span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {

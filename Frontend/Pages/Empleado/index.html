@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Empleado - WiiU-Games</title>
+  
+  <!-- Tipografía Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Hoja de Estilos del Empleado -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- CONTENEDOR PRINCIPAL DE EMPLEADO -->
+  <div class="app-layout">
+
+    <!-- ======================================================== -->
+    <!-- BARRA LATERAL (SIDEBAR DE EMPLEADO) -->
+    <!-- ======================================================== -->
+    <aside class="sidebar" id="sidebar">
+      
+      <!-- LOGO OFICIAL WIIU-GAMES (PROMINENTE) -->
+      <div class="brand-header">
+        <div class="brand-logo-container">
+          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="brand-logo-img">
+        </div>
+      </div>
+
+      <!-- MENÚ DE ATENCIÓN Y VENTAS -->
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="pos" id="nav-pos">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <line x1="6" y1="12" x2="10" y2="12"></line>
+            <line x1="8" y1="10" x2="8" y2="14"></line>
+            <circle cx="15" cy="11" r="1.5" fill="currentColor"></circle>
+            <circle cx="18" cy="13" r="1.5" fill="currentColor"></circle>
+          </svg>
+          <span>Punto de Venta (POS)</span>
+        </button>
+
+        <button class="nav-item" data-view="catalogo" id="nav-catalogo">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="7" width="20" height="14" rx="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          <span>Consultar Catálogo</span>
+        </button>
+
+        <button class="nav-item" data-view="garantias" id="nav-garantias">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            <polyline points="9 12 11 14 15 10"></polyline>
+          </svg>
+          <span>Registrar Garantía</span>
+        </button>
+
+        <button class="nav-item" data-view="taller" id="nav-taller">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+          </svg>
+          <span>Recepción Taller</span>
+        </button>
+
+        <button class="nav-item" data-view="clientes" id="nav-clientes">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          </svg>
+          <span>Directorio Clientes</span>
+        </button>
+      </nav>
+
+      <!-- PERFIL DE EMPLEADO -->
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="Carlos M." onerror="this.src='https://ui-avatars.com/api/?name=Carlos+M&background=0077FF&color=FFFFFF&bold=true'">
+          </div>
+          <div class="user-info">
+            <div class="user-name">Carlos M.</div>
+            <div class="user-role">Asesor de Ventas</div>
+          </div>
+          <span class="user-status-online" title="En servicio"></span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ======================================================== -->
+    <!-- ÁREA DE TRABAJO PRINCIPAL DEL EMPLEADO -->
+    <!-- ======================================================== -->
+    <main class="main-content">
+
+      <!-- HEADER SUPERIOR DE EMPLEADO -->
+      <header class="top-header">
+        <div class="header-greeting">
+          <h1 class="greeting-title">
+            <span>Módulo de Atención - Empleado</span>
+            <svg class="greeting-icon" viewBox="0 0 24 24" fill="none" stroke="#00D2FF" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </h1>
+          <p class="greeting-subtitle">Registra ventas en caja, atiende garantías y gestiona servicios de taller.</p>
+        </div>
+
+        <div class="header-controls">
+          <div class="shift-badge">
+            <span class="shift-dot"></span> Turno Mañana (08:00 - 16:00)
+          </div>
+
+          <button class="notification-btn" title="Solicitudes de clientes" onclick="window.showToast('3 clientes esperando en caja')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="notification-badge">3</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- ======================================================== -->
+      <!-- VISTA 1: PUNTO DE VENTA (POS CAJA RÁPIDA) -->
+      <!-- ======================================================== -->
+      <section class="view-section active-view" id="view-pos">
+        <div class="pos-layout">
+          
+          <!-- COLUMNA IZQUIERDA: CATÁLOGO DE PRODUCTOS -->
+          <div class="pos-products-area">
+            <div class="pos-search-bar">
+              <input type="text" id="posSearchInput" placeholder="Buscar por nombre de juego, consola o SKU..." oninput="window.filterPosProducts(this.value)">
+              <select id="posCategoryFilter" class="custom-select" onchange="window.filterPosProductsByCategory(this.value)">
+                <option value="todos">Todas las categorías</option>
+                <option value="Juegos Wii U">Juegos Wii U</option>
+                <option value="Consolas">Consolas</option>
+                <option value="Accesorios">Accesorios</option>
+                <option value="Repuestos">Repuestos</option>
+              </select>
+            </div>
+
+            <div class="pos-products-grid" id="posProductsGrid">
+              <!-- Carga dinámicamente con JS -->
+            </div>
+          </div>
+
+          <!-- COLUMNA DERECHA: CARRITO DE VENTA -->
+          <div class="pos-cart-panel">
+            <div class="cart-header">
+              <h3 class="cart-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                Orden de Venta en Caja
+              </h3>
+              <button class="cart-clear-btn" onclick="window.clearCart()">Vaciar</button>
+            </div>
+
+            <!-- Datos del Cliente para el Recibo -->
+            <div class="cart-client-select">
+              <label for="posClientSelect">Cliente para Recibo:</label>
+              <select id="posClientSelect" class="custom-select">
+                <option value="Cliente Ocasional / Mostrador">Cliente Mostrador (Venta Rápida)</option>
+                <option value="Juan Camilo R.">Juan Camilo R. (VIP)</option>
+                <option value="María Fernanda T.">María Fernanda T.</option>
+                <option value="Andrés Felipe G.">Andrés Felipe G.</option>
+              </select>
+            </div>
+
+            <!-- Lista de items agregados al carrito -->
+            <div class="cart-items-list" id="cartItemsList">
+              <div class="empty-cart-msg">Selecciona un producto del catálogo para agregar a la venta</div>
+            </div>
+
+            <!-- Resumen de Totales y Cobro -->
+            <div class="cart-summary">
+              <div class="summary-row">
+                <span>Subtotal:</span>
+                <span id="cartSubtotal">$ 0</span>
+              </div>
+              <div class="summary-row">
+                <span>Descuento / Promo:</span>
+                <span id="cartDiscount">$ 0</span>
+              </div>
+              <div class="summary-row total-row">
+                <span>TOTAL A COBRAR:</span>
+                <span id="cartTotal" class="total-price">$ 0</span>
+              </div>
+
+              <div class="payment-method-group">
+                <label>Método de Pago:</label>
+                <div class="payment-radios">
+                  <label class="pay-radio"><input type="radio" name="payMethod" value="Efectivo" checked> Efectivo</label>
+                  <label class="pay-radio"><input type="radio" name="payMethod" value="Nequi / Daviplata"> Nequi</label>
+                  <label class="pay-radio"><input type="radio" name="payMethod" value="Tarjeta Débito/Crédito"> Tarjeta</label>
+                </div>
+              </div>
+
+              <button class="btn-primary-glow btn-checkout" onclick="window.processCheckout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><polyline points="20 6 9 17 4 12"/></svg>
+                <span>COMPLETAR VENTA Y RECIBO</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VISTA 2: CONSULTA DE CATÁLOGO E INVENTARIO -->
+      <!-- ======================================================== -->
+      <section class="view-section" id="view-catalogo">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">Catálogo y Stock en Tienda</h2>
+            <p class="section-subtitle">Verifica disponibilidad de productos, precios al público y referencias SKU en vivo.</p>
+          </div>
+        </div>
+
+        <div class="panel-card full-panel">
+          <div class="table-toolbar">
+            <div class="search-mini">
+              <input type="text" placeholder="Buscar por juego, consola o SKU..." id="empSearchProductInput" oninput="window.filterEmpProducts(this.value)">
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>SKU</th>
+                  <th>Categoría</th>
+                  <th>Precio Venta</th>
+                  <th>Stock Disponible</th>
+                  <th>Estado Físico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="empInventoryTableBody">
+                <!-- Se pobla dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VISTA 3: REGISTRO Y CONSULTA DE GARANTÍAS -->
+      <!-- ======================================================== -->
+      <section class="view-section" id="view-garantias">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">Registro y Emisión de Garantías</h2>
+            <p class="section-subtitle">Genera comprobantes de garantía para clientes y consulta certificados existentes.</p>
+          </div>
+          <button class="btn-primary" onclick="window.openAddWarrantyModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Registrar Nueva Garantía</span>
+          </button>
+        </div>
+
+        <div class="panel-card full-panel">
+          <div class="table-responsive">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>ID Garantía</th>
+                  <th>Cliente</th>
+                  <th>Producto / Serial</th>
+                  <th>Fecha Compra</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th>Comprobante</th>
+                </tr>
+              </thead>
+              <tbody id="empGarantiasTableBody">
+                <!-- Se pobla dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VISTA 4: RECEPCIÓN DE SOPORTE TÉCNICO Y TALLER -->
+      <!-- ======================================================== -->
+      <section class="view-section" id="view-taller">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">Recepción de Equipos en Taller</h2>
+            <p class="section-subtitle">Recibe GamePads y consolas Wii U defectuosas e ingresa la orden para el técnico.</p>
+          </div>
+          <button class="btn-primary" onclick="window.openAddRepairModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Ingresar Orden a Taller</span>
+          </button>
+        </div>
+
+        <div class="panel-card full-panel">
+          <div class="table-responsive">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Orden Ticket</th>
+                  <th>Dispositivo / Consola</th>
+                  <th>Falla Reportada</th>
+                  <th>Cliente</th>
+                  <th>Presupuesto</th>
+                  <th>Estado Taller</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="empRepairsTableBody">
+                <!-- Se pobla dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================================================== -->
+      <!-- VISTA 5: DIRECTORIO Y REGISTRO DE CLIENTES -->
+      <!-- ======================================================== -->
+      <section class="view-section" id="view-clientes">
+        <div class="view-header-bar">
+          <div>
+            <h2 class="section-title">Directorio de Clientes de la Tienda</h2>
+            <p class="section-subtitle">Registra nuevos compradores para acumulación de puntos y beneficios.</p>
+          </div>
+          <button class="btn-primary" onclick="window.openAddClientModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Registrar Nuevo Cliente</span>
+          </button>
+        </div>
+
+        <div class="panel-card full-panel">
+          <div class="table-responsive">
+            <table class="orders-table">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono Contacto</th>
+                  <th>Correo Electrónico</th>
+                  <th>Total Compras</th>
+                  <th>Nivel</th>
+                </tr>
+              </thead>
+              <tbody id="empClientsTableBody">
+                <!-- Se pobla dinámicamente -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- BARRA DE ACCIONES RÁPIDAS DE EMPLEADO -->
+      <footer class="quick-actions-bar">
+        <div class="quick-actions-info">
+          <div class="qa-title">Acciones de Empleado</div>
+          <div class="qa-subtitle">Operaciones rápidas en mostrador</div>
+        </div>
+
+        <div class="quick-actions-buttons">
+          <button class="btn-action-primary" onclick="window.switchView('pos')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+            <span>Ir a Caja (Venta Rápida)</span>
+          </button>
+
+          <button class="btn-action-secondary" onclick="window.openAddWarrantyModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Emitir Garantía</span>
+          </button>
+
+          <button class="btn-action-secondary" onclick="window.openAddRepairModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            <span>Recibir en Taller</span>
+          </button>
+
+          <button class="btn-action-secondary" onclick="window.openAddClientModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+            <span>Registrar Cliente</span>
+          </button>
+        </div>
+      </footer>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: REGISTRAR GARANTÍA -->
+  <div class="modal-backdrop" id="modalAddWarranty">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Emitir Certificado de Garantía</h3>
+        <button class="modal-close-btn" onclick="window.closeAddWarrantyModal()">&times;</button>
+      </div>
+      <form onsubmit="window.saveWarranty(event)">
+        <div class="modal-body-single">
+          <div class="form-group">
+            <label>Nombre del Cliente <span class="required">*</span></label>
+            <input type="text" id="warClient" required placeholder="Ej. Juan Camilo R.">
+          </div>
+          <div class="form-group">
+            <label>Producto y Serial <span class="required">*</span></label>
+            <input type="text" id="warProduct" required placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Fecha de Compra</label>
+              <input type="text" id="warBuyDate" value="Hoy" required>
+            </div>
+            <div class="form-group">
+              <label>Periodo de Cobertura</label>
+              <select id="warDuration">
+                <option value="3 Meses">3 Meses</option>
+                <option value="6 Meses" selected>6 Meses</option>
+                <option value="1 Año">1 Año Completo</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="window.closeAddWarrantyModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-glow">Guardar Certificado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: RECEPCIÓN DE TALLER -->
+  <div class="modal-backdrop" id="modalAddRepair">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Ingresar Orden de Reparación / Taller</h3>
+        <button class="modal-close-btn" onclick="window.closeAddRepairModal()">&times;</button>
+      </div>
+      <form onsubmit="window.saveRepairOrder(event)">
+        <div class="modal-body-single">
+          <div class="form-group">
+            <label>Dispositivo / Consola <span class="required">*</span></label>
+            <input type="text" id="repDevice" required placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
+          </div>
+          <div class="form-group">
+            <label>Falla Reportada por el Cliente <span class="required">*</span></label>
+            <input type="text" id="repDefect" required placeholder="Ej. Pantalla táctil no responde / No enciende">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Cliente Contacto</label>
+              <input type="text" id="repClient" required placeholder="Nombre de cliente">
+            </div>
+            <div class="form-group">
+              <label>Presupuesto Estimado ($ COP)</label>
+              <input type="text" id="repPrice" placeholder="$ 85.000">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="window.closeAddRepairModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-glow">Generar Orden</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: REGISTRO DE NUEVO CLIENTE -->
+  <div class="modal-backdrop" id="modalAddClient">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title">Registrar Nuevo Cliente</h3>
+        <button class="modal-close-btn" onclick="window.closeAddClientModal()">&times;</button>
+      </div>
+      <form onsubmit="window.saveClient(event)">
+        <div class="modal-body-single">
+          <div class="form-group">
+            <label>Nombre Completo <span class="required">*</span></label>
+            <input type="text" id="cliName" required placeholder="Ej. Mario Alejandro Pérez">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label>Teléfono Contacto</label>
+              <input type="text" id="cliPhone" placeholder="+57 300 123 4567">
+            </div>
+            <div class="form-group">
+              <label>Correo Electrónico</label>
+              <input type="email" id="cliEmail" placeholder="cliente@gmail.com">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" onclick="window.closeAddClientModal()">Cancelar</button>
+          <button type="submit" class="btn-primary-glow">Guardar Cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- SCRIPT LÓGICO DE EMPLEADO -->
+  <script src="script.js"></script>
+</body>
+</html>

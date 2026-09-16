@@ -1,10 +1,11 @@
 /* ==========================================================================
    WIIU-GAMES - PANEL DE ADMINISTRADOR PREMIUM
-   Diseño fiel a la referencia: Tema Oscuro Gamer con Acentos Dorados y Neón
+   Diseño Tema Oscuro Gamer con Acentos Dorados y Neón Azules
    ========================================================================== */
 
+/* 1. VARIABLES GLOBALES Y PALETA DE COLORES */
 :root {
-  /* Paleta Principal */
+  /* Paleta de Colores de Fondo */
   --bg-app: #070D1E;
   --bg-sidebar: #091226;
   --bg-panel: #0E1834;
@@ -28,7 +29,7 @@
   --text-muted: #5B6B8A;
   --text-dark: #0A1128;
   
-  /* Radios & Sombras */
+  /* Bordes Redondeados y Sombras */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -43,7 +44,7 @@
   --transition-normal: 0.25s ease;
 }
 
-/* Reset y Base */
+/* Reset Base */
 * {
   margin: 0;
   padding: 0;
@@ -60,7 +61,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar estilizada */
+/* Scrollbar Personalizada */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -76,10 +77,7 @@ body {
   background: #253D7E;
 }
 
-/* ==========================================================================
-   LAYOUT PRINCIPAL (SIDEBAR + MAIN CONTENT)
-   ========================================================================== */
-
+/* 2. ESTRUCTURA PRINCIPAL DEL DASHBOARD */
 .app-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -98,10 +96,7 @@ body {
   }
 }
 
-/* ==========================================================================
-   BARRA LATERAL (SIDEBAR)
-   ========================================================================== */
-
+/* 3. BARRA LATERAL DE NAVEGACIÓN (SIDEBAR) */
 .sidebar {
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
@@ -115,9 +110,9 @@ body {
   z-index: 50;
 }
 
-/* Logo WiiU-Games */
+/* Logo Oficial WiiU-Games */
 .brand-header {
-  padding: 8px 6px 20px 6px;
+  padding: 16px 8px 30px 8px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -130,35 +125,33 @@ body {
   width: 100%;
 }
 
-.brand-badge {
-  width: 150px;
-  filter: drop-shadow(0 4px 12px rgba(0, 119, 255, 0.3));
+.brand-logo-img {
+  max-width: 200px;
+  max-height: 85px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 16px rgba(0, 119, 255, 0.45));
   transition: transform var(--transition-normal);
 }
 
-.brand-badge:hover {
-  transform: scale(1.03);
+.brand-logo-img:hover {
+  transform: scale(1.05);
 }
 
-.brand-icon-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Navegación del Menú Lateral */
+/* Menú de Botones de la Sidebar */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 16px;
+  padding: 11px 16px;
   border-radius: var(--radius-md);
   border: none;
   background: transparent;
@@ -188,7 +181,7 @@ body {
   stroke: var(--text-primary);
 }
 
-/* Botón Activo (Exacto al estilo amarillo destacado de la imagen) */
+/* Botón Activo Amarillo Destacado */
 .nav-item.active {
   background-color: var(--accent-gold);
   color: #000000;
@@ -200,36 +193,11 @@ body {
   stroke: #000000;
 }
 
-/* Mascota Gamer Ilustrada */
-.sidebar-mascot {
-  margin-top: auto;
-  padding: 16px 8px 8px 8px;
-  display: flex;
-  justify-content: center;
-}
-
-.mascot-badge {
-  width: 140px;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.5));
-  animation: floatMascot 4s ease-in-out infinite;
-}
-
-.robot-mascot-svg {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
-@keyframes floatMascot {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-/* Perfil de Usuario en Footer */
+/* Perfil de Usuario en Footer de Sidebar */
 .sidebar-footer {
   padding-top: 14px;
   border-top: 1px solid var(--border-subtle);
-  margin-top: 10px;
+  margin-top: auto;
 }
 
 .user-profile {
@@ -293,10 +261,7 @@ body {
   color: var(--text-primary);
 }
 
-/* ==========================================================================
-   MAIN CONTENT & HEADER
-   ========================================================================== */
-
+/* 4. CONTENIDO PRINCIPAL Y CABECERA */
 .main-content {
   padding: 24px 32px 40px 32px;
   display: flex;
@@ -332,21 +297,9 @@ body {
   gap: 8px;
 }
 
-.wave-hand {
-  display: inline-block;
-  animation: wave 2.5s infinite;
-  transform-origin: 70% 70%;
-}
-
-@keyframes wave {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60% { transform: rotate(0deg); }
-  100% { transform: rotate(0deg); }
+.greeting-icon {
+  width: 24px;
+  height: 24px;
 }
 
 .greeting-subtitle {
@@ -361,7 +314,7 @@ body {
   gap: 12px;
 }
 
-/* Barra de búsqueda */
+/* Buscador */
 .search-bar {
   display: flex;
   align-items: center;
@@ -406,7 +359,7 @@ body {
   height: 16px;
 }
 
-/* Selector de Fecha */
+/* Selector de fecha */
 .date-selector {
   display: flex;
   align-items: center;
@@ -433,13 +386,7 @@ body {
   height: 16px;
 }
 
-.date-selector .chevron-down {
-  width: 14px;
-  height: 14px;
-  margin-left: 4px;
-}
-
-/* Botón de Notificaciones con Badge */
+/* Notificaciones con Badge */
 .notification-wrapper {
   position: relative;
 }
@@ -486,10 +433,7 @@ body {
   border: 2px solid var(--bg-app);
 }
 
-/* ==========================================================================
-   VISTAS Y SECCIONES
-   ========================================================================== */
-
+/* 5. VISTAS Y SECCIONES */
 .view-section {
   display: none;
   flex-direction: column;
@@ -524,10 +468,7 @@ body {
   color: var(--text-secondary);
 }
 
-/* ==========================================================================
-   4 TARJETAS MÉTRICAS (KPIS)
-   ========================================================================== */
-
+/* 6. TARJETAS DE MÉTRICAS (KPIS) */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -565,7 +506,6 @@ body {
   border-color: rgba(0, 119, 255, 0.4);
 }
 
-/* Tarjeta 3: Clientes nuevos (Estilo Fondo Blanco Destacado de la imagen) */
 .kpi-card.light-card {
   background-color: #FFFFFF;
   border-color: #E2E8F0;
@@ -575,13 +515,8 @@ body {
   border-color: #CBD5E1;
 }
 
-.text-dark {
-  color: #0F172A !important;
-}
-
-.text-muted-dark {
-  color: #64748B !important;
-}
+.text-dark { color: #0F172A !important; }
+.text-muted-dark { color: #64748B !important; }
 
 .kpi-content {
   display: flex;
@@ -651,17 +586,12 @@ body {
   gap: 4px;
 }
 
-.kpi-trend.positive {
-  color: var(--accent-green);
-}
+.kpi-trend.positive { color: var(--accent-green); }
+.kpi-trend.warning { color: #F59E0B; }
 
-.kpi-trend.warning {
-  color: #F59E0B;
-}
-
-.trend-arrow {
-  font-size: 0.95rem;
-  font-weight: 700;
+.trend-icon {
+  width: 14px;
+  height: 14px;
 }
 
 .trend-sub {
@@ -669,7 +599,6 @@ body {
   font-weight: 400;
 }
 
-/* Sparklines dentro de las tarjetas */
 .kpi-sparkline {
   margin: 8px -20px -10px -20px;
   height: 45px;
@@ -683,18 +612,17 @@ body {
   display: block;
 }
 
-/* ==========================================================================
-   PANELES Y GRÁFICAS DE FILA INTERMEDIA
-   ========================================================================== */
-
-.dashboard-grid-mid {
+/* 7. PANELES Y GRÁFICAS DEL DASHBOARD */
+.dashboard-grid-mid,
+.dashboard-grid-bottom {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 18px;
 }
 
 @media (max-width: 1100px) {
-  .dashboard-grid-mid {
+  .dashboard-grid-mid,
+  .dashboard-grid-bottom {
     grid-template-columns: 1fr;
   }
 }
@@ -754,7 +682,7 @@ body {
   color: var(--text-primary);
 }
 
-/* Gráfico de Ventas Semanal */
+/* Gráfica de Ventas */
 .chart-panel {
   display: flex;
   flex-direction: column;
@@ -837,10 +765,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  flex-shrink: 0;
-  border-right: 1px solid var(--border);
-  box-shadow: 4px 0 24px rgba(0,0,0,0.2);
-  z-index: 10;
 }
 
 .product-rank-item {
@@ -949,23 +873,7 @@ body {
   color: var(--accent-gold);
 }
 
-/* ==========================================================================
-   FILA INFERIOR: PEDIDOS RECIENTES + RESUMEN FINANCIERO
-   ========================================================================== */
-
-.dashboard-grid-bottom {
-  display: grid;
-  grid-template-columns: 1.4fr 1fr;
-  gap: 18px;
-}
-
-@media (max-width: 1100px) {
-  .dashboard-grid-bottom {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Tablas Estilizadas */
+/* 8. TABLAS DE DATOS */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -1003,8 +911,10 @@ body {
   gap: 8px;
 }
 
-.box-icon {
-  font-size: 1rem;
+.box-icon-svg {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-blue);
 }
 
 .order-code {
@@ -1012,7 +922,6 @@ body {
   font-weight: 700;
 }
 
-/* Badges de Estado */
 .badge-status {
   display: inline-block;
   padding: 4px 10px;
@@ -1042,24 +951,32 @@ body {
   color: #EF4444;
 }
 
-.order-total-price {
-  font-weight: 700;
-}
+.order-total-price { font-weight: 700; }
 
 .row-more-btn {
   background: none;
   border: none;
   color: var(--text-secondary);
-  font-size: 1.1rem;
   cursor: pointer;
-  padding: 4px;
+  padding: 4px 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
 }
 
 .row-more-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
 }
 
-/* Panel Resumen Financiero */
+.action-icon-sm {
+  width: 16px;
+  height: 16px;
+}
+
+/* Panel Financiero */
 .financial-panel {
   display: flex;
   flex-direction: column;
@@ -1139,40 +1056,14 @@ body {
   height: 18px;
 }
 
-.fin-stat-icon.blue {
-  background-color: rgba(0, 119, 255, 0.15);
-  color: #3B82F6;
-}
+.fin-stat-icon.blue { background-color: rgba(0, 119, 255, 0.15); color: #3B82F6; }
+.fin-stat-icon.gold { background-color: rgba(245, 158, 11, 0.15); color: #F59E0B; }
+.fin-stat-icon.cyan { background-color: rgba(0, 210, 255, 0.15); color: #00D2FF; }
 
-.fin-stat-icon.gold {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #F59E0B;
-}
-
-.fin-stat-icon.cyan {
-  background-color: rgba(0, 210, 255, 0.15);
-  color: #00D2FF;
-}
-
-.fin-stat-info {
-  display: flex;
-  flex-direction: column;
-}
-
-.fin-stat-label {
-  font-size: 0.76rem;
-  color: var(--text-secondary);
-}
-
-.fin-stat-value {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.fin-stat-value.highlight {
-  color: #00D2FF;
-}
+.fin-stat-info { display: flex; flex-direction: column; }
+.fin-stat-label { font-size: 0.76rem; color: var(--text-secondary); }
+.fin-stat-value { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.fin-stat-value.highlight { color: #00D2FF; }
 
 .financial-footer {
   margin-top: 14px;
@@ -1196,14 +1087,9 @@ body {
   height: 14px;
 }
 
-.view-fin-details:hover {
-  color: var(--accent-gold);
-}
+.view-fin-details:hover { color: var(--accent-gold); }
 
-/* ==========================================================================
-   BARRA INFERIOR DE ACCIONES RÁPIDAS
-   ========================================================================== */
-
+/* 9. ACCIONES RÁPIDAS (FOOTER DEL DASHBOARD) */
 .quick-actions-bar {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-subtle);
@@ -1217,15 +1103,8 @@ body {
   box-shadow: var(--shadow-panel);
 }
 
-.qa-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-}
-
-.qa-subtitle {
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-}
+.qa-title { font-size: 0.95rem; font-weight: 700; }
+.qa-subtitle { font-size: 0.78rem; color: var(--text-secondary); }
 
 .quick-actions-buttons {
   display: flex;
@@ -1234,7 +1113,6 @@ body {
   gap: 12px;
 }
 
-/* Botón Amarillo Destacado */
 .btn-action-primary {
   background-color: var(--accent-gold);
   color: #000000;
@@ -1257,12 +1135,6 @@ body {
   box-shadow: 0 6px 22px rgba(255, 184, 0, 0.45);
 }
 
-.btn-plus-icon {
-  font-size: 1.15rem;
-  line-height: 1;
-}
-
-/* Botones Secundarios */
 .btn-action-secondary {
   background-color: var(--bg-card-secondary);
   border: 1px solid var(--border-subtle);
@@ -1289,7 +1161,6 @@ body {
   border-color: var(--accent-blue);
 }
 
-/* Botón Primario Genérico */
 .btn-primary {
   background-color: var(--accent-gold);
   color: #000000;
@@ -1298,6 +1169,9 @@ body {
   padding: 10px 18px;
   font-size: 0.88rem;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
   box-shadow: var(--shadow-gold);
@@ -1332,6 +1206,9 @@ body {
   padding: 12px 24px;
   font-size: 0.92rem;
   font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
   box-shadow: 0 4px 20px rgba(255, 140, 0, 0.4);
   transition: all var(--transition-fast);
@@ -1342,13 +1219,13 @@ body {
   box-shadow: 0 6px 25px rgba(255, 140, 0, 0.6);
 }
 
-/* ==========================================================================
-   TOOLBARS Y COMPONENTES DE OTRAS VISTAS (INVENTARIO, GARANTÍAS, ETC.)
-   ========================================================================== */
-
-.full-panel {
-  width: 100%;
+.btn-svg-icon {
+  width: 18px;
+  height: 18px;
 }
+
+/* 10. HERRAMIENTAS Y VISTAS ESPECÍFICAS */
+.full-panel { width: 100%; }
 
 .table-toolbar {
   display: flex;
@@ -1395,11 +1272,6 @@ body {
   margin-bottom: 8px;
 }
 
-.text-warning {
-  color: #F59E0B !important;
-}
-
-/* Grid de Reseñas */
 .reviews-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -1422,15 +1294,9 @@ body {
   align-items: center;
 }
 
-.reviewer-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.review-stars {
-  color: var(--accent-gold);
-  font-size: 0.9rem;
-}
+.reviewer-name { font-weight: 700; font-size: 0.9rem; }
+.review-stars { color: var(--accent-gold); font-size: 0.9rem; display: flex; gap: 2px; }
+.review-star-icon { width: 15px; height: 15px; fill: var(--accent-gold); color: var(--accent-gold); }
 
 .review-comment {
   font-size: 0.85rem;
@@ -1442,12 +1308,12 @@ body {
   font-size: 0.75rem;
   color: var(--accent-cyan);
   margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-/* ==========================================================================
-   MODALES (AGREGAR PRODUCTO, DESCUENTOS, ETC.)
-   ========================================================================== */
-
+/* 11. MODALES Y FORMULARIO DE PRODUCTO */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1505,7 +1371,6 @@ body {
 }
 
 .modal-badge-icon {
-  font-size: 1.5rem;
   width: 44px;
   height: 44px;
   background-color: rgba(0, 119, 255, 0.15);
@@ -1514,17 +1379,16 @@ body {
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 30px rgba(245, 200, 66, 0.1);
+  flex-shrink: 0;
 }
 
-.modal-title {
-  font-size: 1.2rem;
-  font-weight: 800;
+.modal-badge-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
-.modal-subtitle {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-}
+.modal-title { font-size: 1.2rem; font-weight: 800; }
+.modal-subtitle { font-size: 0.8rem; color: var(--text-secondary); }
 
 .modal-close-btn {
   background: none;
@@ -1537,11 +1401,8 @@ body {
   transition: color var(--transition-fast);
 }
 
-.modal-close-btn:hover {
-  color: var(--text-primary);
-}
+.modal-close-btn:hover { color: var(--text-primary); }
 
-/* Formularios de Modales */
 .modal-body-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr;
@@ -1549,16 +1410,17 @@ body {
   padding: 24px;
 }
 
-@media (max-width: 768px) {
-  .modal-body-grid {
-    grid-template-columns: 1fr;
-  }
-
 .modal-body-single {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .modal-body-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .form-column {
@@ -1573,8 +1435,24 @@ body {
   color: var(--accent-cyan);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-step {
+  background: var(--accent-blue);
+  color: #FFFFFF;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mt-4 { margin-top: 16px; }
@@ -1592,9 +1470,7 @@ body {
   color: var(--text-secondary);
 }
 
-.required {
-  color: var(--accent-red);
-}
+.required { color: var(--accent-red); }
 
 .form-group input,
 .form-group select,
@@ -1627,9 +1503,7 @@ body {
   gap: 8px;
 }
 
-.input-with-action input {
-  flex-grow: 1;
-}
+.input-with-action input { flex-grow: 1; }
 
 .btn-inline-gen {
   background-color: var(--bg-card-secondary);
@@ -1637,14 +1511,18 @@ body {
   border-radius: var(--radius-md);
   padding: 0 12px;
   cursor: pointer;
-  font-size: 1rem;
+  color: var(--accent-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
 }
 
 .btn-inline-gen:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-gold);
 }
 
-/* Portadas rápidas */
 .quick-cover-picker {
   display: flex;
   flex-direction: column;
@@ -1678,7 +1556,6 @@ body {
   border-color: var(--accent-gold);
 }
 
-/* Vista previa de imagen */
 .image-preview-container {
   display: flex;
   justify-content: center;
@@ -1690,8 +1567,8 @@ body {
 }
 
 .image-preview-box {
-  width: 140px;
-  height: 140px;
+  width: 130px;
+  height: 130px;
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
@@ -1727,10 +1604,7 @@ body {
   gap: 12px;
 }
 
-/* ==========================================================================
-   SISTEMA DE TOASTS NOTIFICACIONES
-   ========================================================================== */
-
+/* 12. NOTIFICACIONES TOAST */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -1758,6 +1632,13 @@ body {
   animation: slideInToast 0.3s ease, fadeOutToast 0.3s ease 3.7s forwards;
 }
 
+.toast-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--accent-gold);
+  flex-shrink: 0;
+}
+
 @keyframes slideInToast {
   from { transform: translateX(100%); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
@@ -1765,5 +1646,4 @@ body {
 
 @keyframes fadeOutToast {
   to { transform: translateX(100%); opacity: 0; }
-}
 }
