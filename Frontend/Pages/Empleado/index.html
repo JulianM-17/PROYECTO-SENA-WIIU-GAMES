@@ -4,33 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Empleado - WiiU-Games</title>
-  
-  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Hoja de Estilos del Empleado -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- CONTENEDOR PRINCIPAL DE EMPLEADO -->
   <div class="app-layout">
 
-    <!-- ======================================================== -->
-    <!-- BARRA LATERAL (SIDEBAR DE EMPLEADO) -->
-    <!-- ======================================================== -->
     <aside class="sidebar" id="sidebar">
-      
-      <!-- LOGO OFICIAL WIIU-GAMES (PROMINENTE) -->
       <div class="brand-header">
         <div class="brand-logo-container">
           <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="brand-logo-img">
         </div>
       </div>
 
-      <!-- MENÚ DE ATENCIÓN Y VENTAS -->
       <nav class="sidebar-nav">
         <button class="nav-item active" data-view="pos" id="nav-pos">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -76,7 +65,6 @@
         </button>
       </nav>
 
-      <!-- PERFIL DE EMPLEADO -->
       <div class="sidebar-footer">
         <div class="user-profile">
           <div class="user-avatar">
@@ -89,15 +77,9 @@
           <span class="user-status-online" title="En servicio"></span>
         </div>
       </div>
-
     </aside>
 
-    <!-- ======================================================== -->
-    <!-- ÁREA DE TRABAJO PRINCIPAL DEL EMPLEADO -->
-    <!-- ======================================================== -->
     <main class="main-content">
-
-      <!-- HEADER SUPERIOR DE EMPLEADO -->
       <header class="top-header">
         <div class="header-greeting">
           <h1 class="greeting-title">
@@ -125,13 +107,8 @@
         </div>
       </header>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 1: PUNTO DE VENTA (POS CAJA RÁPIDA) -->
-      <!-- ======================================================== -->
       <section class="view-section active-view" id="view-pos">
         <div class="pos-layout">
-          
-          <!-- COLUMNA IZQUIERDA: CATÁLOGO DE PRODUCTOS -->
           <div class="pos-products-area">
             <div class="pos-search-bar">
               <input type="text" id="posSearchInput" placeholder="Buscar por nombre de juego, consola o SKU..." oninput="window.filterPosProducts(this.value)">
@@ -144,12 +121,9 @@
               </select>
             </div>
 
-            <div class="pos-products-grid" id="posProductsGrid">
-              <!-- Carga dinámicamente con JS -->
-            </div>
+            <div class="pos-products-grid" id="posProductsGrid"></div>
           </div>
 
-          <!-- COLUMNA DERECHA: CARRITO DE VENTA -->
           <div class="pos-cart-panel">
             <div class="cart-header">
               <h3 class="cart-title">
@@ -159,7 +133,6 @@
               <button class="cart-clear-btn" onclick="window.clearCart()">Vaciar</button>
             </div>
 
-            <!-- Datos del Cliente para el Recibo -->
             <div class="cart-client-select">
               <label for="posClientSelect">Cliente para Recibo:</label>
               <select id="posClientSelect" class="custom-select">
@@ -170,12 +143,10 @@
               </select>
             </div>
 
-            <!-- Lista de items agregados al carrito -->
             <div class="cart-items-list" id="cartItemsList">
               <div class="empty-cart-msg">Selecciona un producto del catálogo para agregar a la venta</div>
             </div>
 
-            <!-- Resumen de Totales y Cobro -->
             <div class="cart-summary">
               <div class="summary-row">
                 <span>Subtotal:</span>
@@ -205,13 +176,9 @@
               </button>
             </div>
           </div>
-
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 2: CONSULTA DE CATÁLOGO E INVENTARIO -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-catalogo">
         <div class="view-header-bar">
           <div>
@@ -240,17 +207,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="empInventoryTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="empInventoryTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 3: REGISTRO Y CONSULTA DE GARANTÍAS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-garantias">
         <div class="view-header-bar">
           <div>
@@ -277,17 +239,12 @@
                   <th>Comprobante</th>
                 </tr>
               </thead>
-              <tbody id="empGarantiasTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="empGarantiasTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 4: RECEPCIÓN DE SOPORTE TÉCNICO Y TALLER -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-taller">
         <div class="view-header-bar">
           <div>
@@ -314,17 +271,12 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="empRepairsTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="empRepairsTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 5: DIRECTORIO Y REGISTRO DE CLIENTES -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-clientes">
         <div class="view-header-bar">
           <div>
@@ -349,15 +301,12 @@
                   <th>Nivel</th>
                 </tr>
               </thead>
-              <tbody id="empClientsTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="empClientsTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- BARRA DE ACCIONES RÁPIDAS DE EMPLEADO -->
       <footer class="quick-actions-bar">
         <div class="quick-actions-info">
           <div class="qa-title">Acciones de Empleado</div>
@@ -391,7 +340,6 @@
 
   </div>
 
-  <!-- MODAL: REGISTRAR GARANTÍA -->
   <div class="modal-backdrop" id="modalAddWarranty">
     <div class="modal-window">
       <div class="modal-header">
@@ -431,7 +379,6 @@
     </div>
   </div>
 
-  <!-- MODAL: RECEPCIÓN DE TALLER -->
   <div class="modal-backdrop" id="modalAddRepair">
     <div class="modal-window">
       <div class="modal-header">
@@ -467,7 +414,6 @@
     </div>
   </div>
 
-  <!-- MODAL: REGISTRO DE NUEVO CLIENTE -->
   <div class="modal-backdrop" id="modalAddClient">
     <div class="modal-window">
       <div class="modal-header">
@@ -499,10 +445,8 @@
     </div>
   </div>
 
-  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- SCRIPT LÓGICO DE EMPLEADO -->
   <script src="script.js"></script>
 </body>
 </html>

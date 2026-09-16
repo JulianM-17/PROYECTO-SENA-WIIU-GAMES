@@ -1,10 +1,3 @@
-/**
- * ==========================================================================
- * WIIU-GAMES - PANEL DE EMPLEADO (SCRIPT PRINCIPAL DE CAJA Y ATENCIÓN)
- * Conectado en tiempo real con la base de datos compartida (localStorage)
- * ==========================================================================
- */
-
 let cartItems = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,10 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCart();
   renderAllEmployeeTables();
 });
-
-/* ==========================================================================
-   1. BASE DE DATOS Y COMPARTICIÓN CON EL ADMINISTRADOR
-   ========================================================================== */
 
 const DEFAULT_PRODUCTS = [
   { id: 1, name: 'The Legend of Zelda: Breath of the Wild (Wii U)', category: 'Juegos Wii U', sku: 'WIIU-GME-001', price: 189900, stock: 25, condition: 'Nuevo Sellado', imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop' },
@@ -43,10 +32,18 @@ const DEFAULT_CLIENTS = [
 ];
 
 function initPresetData() {
-  if (!localStorage.getItem('wiiu_products')) localStorage.setItem('wiiu_products', JSON.stringify(DEFAULT_PRODUCTS));
-  if (!localStorage.getItem('wiiu_warranties')) localStorage.setItem('wiiu_warranties', JSON.stringify(DEFAULT_WARRANTIES));
-  if (!localStorage.getItem('wiiu_repairs')) localStorage.setItem('wiiu_repairs', JSON.stringify(DEFAULT_REPAIRS));
-  if (!localStorage.getItem('wiiu_clients')) localStorage.setItem('wiiu_clients', JSON.stringify(DEFAULT_CLIENTS));
+  const storeDefaults = {
+    wiiu_products: DEFAULT_PRODUCTS,
+    wiiu_warranties: DEFAULT_WARRANTIES,
+    wiiu_repairs: DEFAULT_REPAIRS,
+    wiiu_clients: DEFAULT_CLIENTS
+  };
+
+  Object.entries(storeDefaults).forEach(([key, val]) => {
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, JSON.stringify(val));
+    }
+  });
 }
 
 function getProducts() {
@@ -57,15 +54,10 @@ function saveProducts(products) {
   localStorage.setItem('wiiu_products', JSON.stringify(products));
 }
 
-/* ==========================================================================
-   2. SISTEMA DE NAVEGACIÓN
-   ========================================================================== */
-
 function initNavigation() {
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
-      const viewId = btn.getAttribute('data-view');
-      switchView(viewId);
+      switchView(btn.getAttribute('data-view'));
     });
   });
 }
@@ -83,16 +75,16 @@ window.switchView = function(viewKey) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  if (viewKey === 'pos') renderPosProductsGrid();
-  else if (viewKey === 'catalogo') renderEmpCatalogTable();
-  else if (viewKey === 'garantias') renderEmpWarrantiesTable();
-  else if (viewKey === 'taller') renderEmpRepairsTable();
-  else if (viewKey === 'clientes') renderEmpClientsTable();
-};
+  const renderMap = {
+    pos: renderPosProductsGrid,
+    catalogo: renderEmpCatalogTable,
+    garantias: renderEmpWarrantiesTable,
+    taller: renderEmpRepairsTable,
+    clientes: renderEmpClientsTable
+  };
 
-/* ==========================================================================
-   3. PUNTO DE VENTA (POS CAJA) Y CARRITO
-   ========================================================================== */
+  if (renderMap[viewKey]) renderMap[viewKey]();
+};
 
 function renderPosProductsGrid(items = null) {
   const products = items || getProducts();
@@ -123,8 +115,7 @@ window.filterPosProducts = function(term) {
 
 window.filterPosProductsByCategory = function(cat) {
   const products = getProducts();
-  if (cat === 'todos') renderPosProductsGrid(products);
-  else renderPosProductsGrid(products.filter(p => p.category === cat));
+  renderPosProductsGrid(cat === 'todos' ? products : products.filter(p => p.category === cat));
 };
 
 window.addToCart = function(prodId) {
@@ -213,7 +204,6 @@ function renderCart() {
   if (totalEl) totalEl.textContent = `$ ${total.toLocaleString('es-CO')}`;
 }
 
-// Procesar Cobro de Venta en Caja
 window.processCheckout = function() {
   if (cartItems.length === 0) {
     showToast('El carrito está vacío. Agrega productos antes de procesar.', 'error');
@@ -223,7 +213,6 @@ window.processCheckout = function() {
   const clientName = document.getElementById('posClientSelect').value;
   const payMethod = document.querySelector('input[name="payMethod"]:checked')?.value || 'Efectivo';
 
-  // Descontar existencias en stock de localStorage
   const products = getProducts();
   cartItems.forEach(cartItem => {
     const targetProd = products.find(p => p.id === cartItem.id);
@@ -234,19 +223,13 @@ window.processCheckout = function() {
 
   saveProducts(products);
 
-  let grandTotal = cartItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
-
-  // Vaciar carrito y actualizar vista
+  const grandTotal = cartItems.reduce((acc, i) => acc + (i.price * i.qty), 0);
   cartItems = [];
   renderCart();
   renderPosProductsGrid();
 
   showToast(`¡Venta procesada con éxito! Total: $ ${grandTotal.toLocaleString('es-CO')} (${payMethod}) - Cliente: ${clientName}`);
 };
-
-/* ==========================================================================
-   4. RENDERIZADO DE MÓDULOS OPERATIVOS
-   ========================================================================== */
 
 function renderAllEmployeeTables() {
   renderEmpCatalogTable();
@@ -263,8 +246,8 @@ function renderEmpCatalogTable(items = null) {
   tbody.innerHTML = products.map(p => `
     <tr>
       <td>
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <img src="${p.imageUrl}" alt="${p.name}" style="width:34px;height:34px;border-radius:4px;object-fit:cover;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <img src="${p.imageUrl}" alt="${p.name}" style="width:34px; height:34px; border-radius:4px; object-fit:cover;">
           <span style="font-weight:700;">${p.name}</span>
         </div>
       </td>
@@ -279,7 +262,8 @@ function renderEmpCatalogTable(items = null) {
 }
 
 window.filterEmpProducts = function(term) {
-  const filtered = getProducts().filter(p => p.name.toLowerCase().includes(term.toLowerCase()) || p.sku.toLowerCase().includes(term.toLowerCase()));
+  const clean = term.toLowerCase().trim();
+  const filtered = getProducts().filter(p => p.name.toLowerCase().includes(clean) || p.sku.toLowerCase().includes(clean));
   renderEmpCatalogTable(filtered);
 };
 
@@ -335,11 +319,6 @@ function renderEmpClientsTable() {
   `).join('');
 }
 
-/* ==========================================================================
-   5. MODALES Y REGISTROS DE EMPLEADO
-   ========================================================================== */
-
-// Modal Garantía
 window.openAddWarrantyModal = function() {
   const modal = document.getElementById('modalAddWarranty');
   if (modal) modal.classList.add('active');
@@ -368,7 +347,6 @@ window.saveWarranty = function(e) {
   showToast(`¡Certificado de garantía ${newWar.id} emitido para ${client}!`);
 };
 
-// Modal Reparación Taller
 window.openAddRepairModal = function() {
   const modal = document.getElementById('modalAddRepair');
   if (modal) modal.classList.add('active');
@@ -398,7 +376,6 @@ window.saveRepairOrder = function(e) {
   showToast(`¡Orden ${newRepair.ticket} recibida y asignada al taller técnico!`);
 };
 
-// Modal Cliente
 window.openAddClientModal = function() {
   const modal = document.getElementById('modalAddClient');
   if (modal) modal.classList.add('active');
@@ -422,16 +399,11 @@ window.saveClient = function(e) {
   showToast(`¡Cliente "${name}" registrado correctamente!`);
 };
 
-/* ==========================================================================
-   6. SISTEMA DE TOASTS
-   ========================================================================== */
-
 window.showToast = function(message) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
   const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;
