@@ -83,41 +83,41 @@
       <div class="panel-layout">
 
         <!-- ============ SIDEBAR ============ -->
-        <aside class="panel-sidebar" id="panel-sidebar">
+        <aside class="panel-barra-lateral" id="panel-barra-lateral">
           <!-- Avatar + info -->
-          <div class="sidebar-perfil">
-            <div class="avatar-sidebar">F</div>
-            <div class="sidebar-perfil-info">
+          <div class="barra-lateral-perfil">
+            <div class="avatar-barra-lateral">F</div>
+            <div class="info-perfil-barra-lateral">
               <p class="nombre">Fabian Mora</p>
               <p class="email">fabian@wiiu.com</p>
             </div>
           </div>
 
           <!-- Navegación -->
-          <nav class="sidebar-nav">
+          <nav class="nav-barra-lateral">
             <p class="nav-section-label">Mi Cuenta</p>
 
-            <a href="#" class="nav-item active" id="nav-inicio" data-vista="vista-inicio">
+            <a href="#" class="elemento-nav activo" id="nav-inicio" data-vista="vista-inicio">
               <i class="fi fi-rr-home"></i>
               Mi Cuenta
             </a>
-            <a href="#" class="nav-item" id="nav-perfil" data-vista="vista-perfil">
+            <a href="#" class="elemento-nav" id="nav-perfil" data-vista="vista-perfil">
               <i class="fi fi-rr-user"></i>
               Mi Perfil
             </a>
-            <a href="#" class="nav-item" id="nav-direcciones" data-vista="vista-direcciones">
+            <a href="#" class="elemento-nav" id="nav-direcciones" data-vista="vista-direcciones">
               <i class="fi fi-rr-marker"></i>
               Direcciones de envío
             </a>
-            <a href="#" class="nav-item" id="nav-pedidos" data-vista="vista-pedidos">
+            <a href="#" class="elemento-nav" id="nav-pedidos" data-vista="vista-pedidos">
               <i class="fi fi-rr-shopping-cart"></i>
               Mis Pedidos
             </a>
-            <a href="#" class="nav-item" id="nav-pagos" data-vista="vista-pagos">
+            <a href="#" class="elemento-nav" id="nav-pagos" data-vista="vista-pagos">
               <i class="fi fi-rr-credit-card"></i>
               Métodos de Pago
             </a>
-            <a href="#" class="nav-item" id="nav-favoritos" data-vista="vista-favoritos">
+            <a href="#" class="elemento-nav" id="nav-favoritos" data-vista="vista-favoritos">
               <i class="fi fi-rr-heart"></i>
               Mi lista de Favoritos
             </a>
@@ -125,17 +125,17 @@
             <div class="nav-divider"></div>
             <p class="nav-section-label">Más opciones</p>
 
-            <a href="#" class="nav-item" id="nav-seguimiento" data-vista="vista-seguimiento">
+            <a href="#" class="elemento-nav" id="nav-seguimiento" data-vista="vista-seguimiento">
               <i class="fi fi-rr-truck-side"></i>
               Sigue tu pedido
             </a>
-            <a href="#" class="nav-item" id="nav-factura" data-vista="vista-factura">
+            <a href="#" class="elemento-nav" id="nav-factura" data-vista="vista-factura">
               <i class="fi fi-rr-file-invoice"></i>
               Descarga tu factura
             </a>
 
             <div class="nav-divider"></div>
-            <a href="Registro.html" class="nav-item logout">
+            <a href="Registro.html" class="elemento-nav logout">
               <i class="fi fi-rr-exit"></i>
               Cerrar Sesión
             </a>
@@ -269,10 +269,10 @@
                 <div>
                   <p class="perfil-avatar-nombre">Fabian Mora</p>
                   <p class="perfil-avatar-email">fabian@wiiu.com</p>
-                  <span class="perfil-badge">Cliente Premium</span>
+                  <span class="insignia-perfil">Cliente Premium</span>
                 </div>
               </div>
-              <div class="perfil-stats">
+              <div class="estadisticas-perfil">
                 <div class="perfil-stat-item">
                   <p class="perfil-stat-numero">12</p>
                   <p class="perfil-stat-label">Pedidos</p>
@@ -289,59 +289,59 @@
             </div>
 
             <!-- Formulario de datos -->
-            <div class="form-card">
-              <p class="form-card-titulo">Datos personales</p>
-              <div class="form-grid-2">
-                <div class="form-campo">
-                  <label class="form-label">Nombres</label>
-                  <input type="text" value="Fabian" class="form-input" />
+            <div class="tarjeta-formulario">
+              <p class="titulo-tarjeta-formulario">Datos personales</p>
+              <div class="cuadricula-formulario-2">
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Nombres</label>
+                  <input type="text" value="Fabian" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Apellidos</label>
-                  <input type="text" value="Mora Ríos" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Apellidos</label>
+                  <input type="text" value="Mora Ríos" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Correo electrónico</label>
-                  <input type="email" value="fabian@wiiu.com" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Correo electrónico</label>
+                  <input type="email" value="fabian@wiiu.com" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Teléfono</label>
-                  <input type="tel" value="+57 310 456 7890" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Teléfono</label>
+                  <input type="tel" value="+57 310 456 7890" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Fecha de nacimiento</label>
-                  <input type="date" value="1998-04-15" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Fecha de nacimiento</label>
+                  <input type="date" value="1998-04-15" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Documento de identidad</label>
-                  <input type="text" value="1098 765 432" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Documento de identidad</label>
+                  <input type="text" value="1098 765 432" class="entrada-formulario" />
                 </div>
               </div>
-              <div class="form-acciones">
+              <div class="acciones-formulario">
                 <button class="btn-cancelar">Cancelar</button>
                 <button class="btn-guardar">Guardar cambios</button>
               </div>
             </div>
 
             <!-- Cambio contraseña -->
-            <div class="form-card">
-              <p class="form-card-titulo">Seguridad</p>
-              <div class="form-grid-2">
-                <div class="form-campo">
-                  <label class="form-label">Contraseña actual</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+            <div class="tarjeta-formulario">
+              <p class="titulo-tarjeta-formulario">Seguridad</p>
+              <div class="cuadricula-formulario-2">
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Contraseña actual</label>
+                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
                 </div>
                 <div></div>
-                <div class="form-campo">
-                  <label class="form-label">Nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Nueva contraseña</label>
+                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
                 </div>
-                <div class="form-campo">
-                  <label class="form-label">Confirmar nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+                <div class="campo-formulario">
+                  <label class="etiqueta-formulario">Confirmar nueva contraseña</label>
+                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
                 </div>
               </div>
-              <div class="form-acciones-end">
+              <div class="acciones-formulario-fin">
                 <button class="btn-cambiar-password">Cambiar contraseña</button>
               </div>
             </div>
@@ -369,7 +369,7 @@
 
               <!-- Dirección 1 - Principal -->
               <div class="dir-card principal">
-                <span class="dir-badge-principal">Principal</span>
+                <span class="insignia-direccion-principal">Principal</span>
                 <div class="dir-encabezado">
                   <div class="dir-icono"><i class="fi fi-rr-home"></i></div>
                   <p class="dir-tipo">Casa</p>
@@ -427,7 +427,7 @@
                   <p class="pedido-numero">Pedido #<b>WG-20260901</b></p>
                   <p class="pedido-fecha">Realizado el 1 de septiembre, 2026</p>
                 </div>
-                <span class="badge-entregado"><i class="fi fi-rr-check"></i> Entregado</span>
+                <span class="insignia-entregado"><i class="fi fi-rr-check"></i> Entregado</span>
               </div>
               <div class="pedido-cuerpo">
                 <div class="pedido-img">
@@ -451,7 +451,7 @@
                   <p class="pedido-numero">Pedido #<b>WG-20260912</b></p>
                   <p class="pedido-fecha">Realizado el 12 de septiembre, 2026</p>
                 </div>
-                <span class="badge-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>
+                <span class="insignia-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>
               </div>
               <div class="pedido-cuerpo">
                 <div class="pedido-img">
@@ -475,7 +475,7 @@
                   <p class="pedido-numero">Pedido #<b>WG-20260815</b></p>
                   <p class="pedido-fecha">Realizado el 15 de agosto, 2026</p>
                 </div>
-                <span class="badge-procesando"><i class="fi fi-rr-clock"></i> Procesando</span>
+                <span class="insignia-procesando"><i class="fi fi-rr-clock"></i> Procesando</span>
               </div>
               <div class="pedido-cuerpo">
                 <div class="pedido-img-emoji"><i class="fi fi-rr-mouse"></i></div>
@@ -518,7 +518,7 @@
                 <div class="tarjeta-deco-2"></div>
                 <div class="tarjeta-top">
                   <div class="tarjeta-info-predeterminada">
-                    <span class="tarjeta-label-predeterminada">Predeterminada</span>
+                    <span class="etiqueta-tarjeta-predeterminada">Predeterminada</span>
                     <div class="tarjeta-chip"></div>
                   </div>
                   <span class="tarjeta-visa-logo">VISA</span>
@@ -579,7 +579,7 @@
                   <p class="paypal-email">fabian@wiiu.com</p>
                 </div>
               </div>
-              <span class="badge-verificado">Verificado</span>
+              <span class="insignia-verificado">Verificado</span>
             </div>
 
           </div>
@@ -602,7 +602,7 @@
                 <div class="fav-img-wrap">
                   <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80" alt="PC Gamer" />
                   <button class="btn-fav-quitar" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
-                  <span class="fav-badge-descuento">-15%</span>
+                  <span class="insignia-descuento-favorito">-15%</span>
                 </div>
                 <div class="fav-body">
                   <p class="fav-categoria">PC Gamer</p>
@@ -636,7 +636,7 @@
                 <div class="fav-img-wrap">
                   <img src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400&q=80" alt="Monitor" />
                   <button class="btn-fav-quitar" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
-                  <span class="fav-badge-stock">Stock bajo</span>
+                  <span class="insignia-stock-favorito">Stock bajo</span>
                 </div>
                 <div class="fav-body">
                   <p class="fav-categoria">Monitor Gaming</p>
@@ -706,7 +706,7 @@
                   <p class="seguimiento-pedido-num">Pedido <b>#WG-20260912</b></p>
                   <p class="seguimiento-estimado">Estimado de entrega: <b>19 de septiembre, 2026</b></p>
                 </div>
-                <span class="badge-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>
+                <span class="insignia-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>
               </div>
 
               <!-- Timeline de seguimiento -->
@@ -867,43 +867,43 @@
     </main>
 
     <!-- ==================== CONTENEDOR TOASTS ==================== -->
-    <div id="toast-container" class="toast-container"></div>
+    <div id="contenedor-notificacion" class="contenedor-notificacion"></div>
 
     <!-- ==================== MODAL DIRECCIÓN ==================== -->
-    <div id="modal-direccion" class="modal-backdrop">
-      <div class="modal-card">
-        <div class="modal-header">
+    <div id="modal-direccion" class="fondo-modal">
+      <div class="tarjeta-modal">
+        <div class="encabezado-modal">
           <h3 id="modal-direccion-titulo"><i class="fi fi-rr-marker"></i> Agregar Dirección</h3>
-          <button class="modal-close-btn" data-close-modal>&times;</button>
+          <button class="btn-cerrar-modal" data-close-modal>&times;</button>
         </div>
-        <form id="form-modal-direccion" class="modal-body">
+        <form id="form-modal-direccion" class="cuerpo-modal">
           <input type="hidden" id="dir-edit-id" value="" />
-          <div class="form-campo">
-            <label class="form-label">Tipo de dirección</label>
-            <select id="dir-input-tipo" class="form-input" required>
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Tipo de dirección</label>
+            <select id="dir-input-tipo" class="entrada-formulario" required>
               <option value="Casa">Casa</option>
               <option value="Trabajo">Trabajo</option>
               <option value="Apartamento">Apartamento</option>
               <option value="Otra">Otra</option>
             </select>
           </div>
-          <div class="form-campo">
-            <label class="form-label">Nombre del destinatario</label>
-            <input type="text" id="dir-input-nombre" class="form-input" placeholder="Ej: Fabian Mora" required />
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Nombre del destinatario</label>
+            <input type="text" id="dir-input-nombre" class="entrada-formulario" placeholder="Ej: Fabian Mora" required />
           </div>
-          <div class="form-campo">
-            <label class="form-label">Dirección detallada</label>
-            <input type="text" id="dir-input-detalle" class="form-input" placeholder="Ej: Cra. 11 #14-14, Apto 302, Sogamoso" required />
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Dirección detallada</label>
+            <input type="text" id="dir-input-detalle" class="entrada-formulario" placeholder="Ej: Cra. 11 #14-14, Apto 302, Sogamoso" required />
           </div>
-          <div class="form-campo">
-            <label class="form-label">Teléfono de contacto</label>
-            <input type="tel" id="dir-input-telefono" class="form-input" placeholder="Ej: +57 310 456 7890" required />
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Teléfono de contacto</label>
+            <input type="tel" id="dir-input-telefono" class="entrada-formulario" placeholder="Ej: +57 310 456 7890" required />
           </div>
-          <div class="form-campo-checkbox">
+          <div class="campo-formulario-casilla">
             <input type="checkbox" id="dir-input-principal" />
             <label for="dir-input-principal">Establecer como dirección principal</label>
           </div>
-          <div class="modal-footer">
+          <div class="pie-modal">
             <button type="button" class="btn-cancelar" data-close-modal>Cancelar</button>
             <button type="submit" class="btn-guardar">Guardar Dirección</button>
           </div>
@@ -912,44 +912,44 @@
     </div>
 
     <!-- ==================== MODAL TARJETA ==================== -->
-    <div id="modal-tarjeta" class="modal-backdrop">
-      <div class="modal-card">
-        <div class="modal-header">
+    <div id="modal-tarjeta" class="fondo-modal">
+      <div class="tarjeta-modal">
+        <div class="encabezado-modal">
           <h3 id="modal-tarjeta-titulo"><i class="fi fi-rr-credit-card"></i> Agregar Tarjeta de Pago</h3>
-          <button class="modal-close-btn" data-close-modal>&times;</button>
+          <button class="btn-cerrar-modal" data-close-modal>&times;</button>
         </div>
-        <form id="form-modal-tarjeta" class="modal-body">
+        <form id="form-modal-tarjeta" class="cuerpo-modal">
           <input type="hidden" id="card-edit-id" value="" />
-          <div class="form-campo">
-            <label class="form-label">Franquicia</label>
-            <select id="card-input-tipo" class="form-input" required>
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Franquicia</label>
+            <select id="card-input-tipo" class="entrada-formulario" required>
               <option value="visa">VISA</option>
               <option value="mastercard">MasterCard</option>
             </select>
           </div>
-          <div class="form-campo">
-            <label class="form-label">Número de Tarjeta</label>
-            <input type="text" id="card-input-numero" class="form-input" placeholder="•••• •••• •••• 1234" maxlength="19" required />
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Número de Tarjeta</label>
+            <input type="text" id="card-input-numero" class="entrada-formulario" placeholder="•••• •••• •••• 1234" maxlength="19" required />
           </div>
-          <div class="form-campo">
-            <label class="form-label">Nombre en la tarjeta</label>
-            <input type="text" id="card-input-titular" class="form-input" placeholder="FABIAN MORA" required />
+          <div class="campo-formulario">
+            <label class="etiqueta-formulario">Nombre en la tarjeta</label>
+            <input type="text" id="card-input-titular" class="entrada-formulario" placeholder="FABIAN MORA" required />
           </div>
-          <div class="form-grid-2">
-            <div class="form-campo">
-              <label class="form-label">Vencimiento (MM/AA)</label>
-              <input type="text" id="card-input-vence" class="form-input" placeholder="08/29" maxlength="5" required />
+          <div class="cuadricula-formulario-2">
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario">Vencimiento (MM/AA)</label>
+              <input type="text" id="card-input-vence" class="entrada-formulario" placeholder="08/29" maxlength="5" required />
             </div>
-            <div class="form-campo">
-              <label class="form-label">CVC</label>
-              <input type="password" id="card-input-cvc" class="form-input" placeholder="•••" maxlength="4" required />
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario">CVC</label>
+              <input type="password" id="card-input-cvc" class="entrada-formulario" placeholder="•••" maxlength="4" required />
             </div>
           </div>
-          <div class="form-campo-checkbox">
+          <div class="campo-formulario-casilla">
             <input type="checkbox" id="card-input-predeterminada" />
             <label for="card-input-predeterminada">Establecer como tarjeta predeterminada</label>
           </div>
-          <div class="modal-footer">
+          <div class="pie-modal">
             <button type="button" class="btn-cancelar" data-close-modal>Cancelar</button>
             <button type="submit" class="btn-guardar">Guardar Tarjeta</button>
           </div>
@@ -958,16 +958,16 @@
     </div>
 
     <!-- ==================== MODAL DETALLE PEDIDO ==================== -->
-    <div id="modal-pedido-detalle" class="modal-backdrop">
-      <div class="modal-card modal-card-lg">
-        <div class="modal-header">
+    <div id="modal-pedido-detalle" class="fondo-modal">
+      <div class="tarjeta-modal tarjeta-modal-grande">
+        <div class="encabezado-modal">
           <h3><i class="fi fi-rr-file-invoice"></i> Detalle del Pedido <span id="det-pedido-num">#WG-20260901</span></h3>
-          <button class="modal-close-btn" data-close-modal>&times;</button>
+          <button class="btn-cerrar-modal" data-close-modal>&times;</button>
         </div>
-        <div class="modal-body" id="det-pedido-contenido">
+        <div class="cuerpo-modal" id="det-pedido-contenido">
           <!-- Contenido dinámico del pedido -->
         </div>
-        <div class="modal-footer">
+        <div class="pie-modal">
           <button type="button" class="btn-cancelar" data-close-modal>Cerrar</button>
           <button type="button" class="btn-guardar" id="btn-imprimir-factura"><i class="fi fi-rr-print"></i> Imprimir Factura</button>
         </div>

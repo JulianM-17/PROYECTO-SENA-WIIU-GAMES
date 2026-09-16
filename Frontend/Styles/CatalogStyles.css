@@ -40,7 +40,7 @@ body {
 /* =====================================================
    ESTRUCTURA PRINCIPAL
    ===================================================== */
-.main-container {
+.contenedor-principal-catalogo {
   display: flex;
   max-width: 1400px;
   margin: 40px auto 80px;
@@ -52,7 +52,7 @@ body {
 /* =====================================================
    BARRA LATERAL (SIDEBAR)
    ===================================================== */
-.sidebar {
+.barra-lateral {
   width: 280px;
   flex-shrink: 0;
   background: var(--white);
@@ -64,8 +64,8 @@ body {
   top: 100px;
 }
 
-.btn-clear,
-.btn-all-brands {
+.btn-limpiar,
+.btn-todas-marcas {
   width: 100%;
   background: transparent;
   border: 1.5px solid var(--border);
@@ -80,25 +80,25 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.btn-clear:hover,
-.btn-all-brands:hover {
+.btn-limpiar:hover,
+.btn-todas-marcas:hover {
   border-color: var(--dark-blue);
   background: rgba(8, 15, 32, 0.03);
 }
 
-.filter-group {
+.grupo-filtro {
   border-bottom: 1px solid var(--border);
   padding-bottom: 24px;
   margin-bottom: 24px;
 }
 
-.filter-group:last-of-type {
+.grupo-filtro:last-of-type {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 16px;
 }
 
-.filter-group h3 {
+.grupo-filtro h3 {
   font-size: 14px;
   font-weight: 800;
   margin-bottom: 16px;
@@ -107,7 +107,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-.filter-group ul {
+.grupo-filtro ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -116,7 +116,7 @@ body {
   gap: 10px;
 }
 
-.filter-group ul li {
+.grupo-filtro ul li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -127,16 +127,16 @@ body {
   padding: 4px 0;
 }
 
-.filter-group ul li:hover {
+.grupo-filtro ul li:hover {
   color: var(--dark-blue);
 }
 
-.filter-group ul li.active {
+.grupo-filtro ul li.activo {
   font-weight: 700;
   color: var(--yellow);
 }
 
-.count {
+.contador {
   background: var(--bg);
   padding: 2px 8px;
   border-radius: 9999px;
@@ -145,13 +145,13 @@ body {
   color: var(--text-muted);
 }
 
-.color-options {
+.opciones-color {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.color-circle {
+.circulo-color {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -161,20 +161,20 @@ body {
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.color-circle:hover {
+.circulo-color:hover {
   transform: scale(1.15);
   box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
-.color-circle.black {
+.circulo-color.negro {
   background-color: #000;
 }
 
-.color-circle.red {
+.circulo-color.rojo {
   background-color: #ef4444;
 }
 
-.btn-apply {
+.btn-aplicar {
   width: 100%;
   background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
   border: none;
@@ -190,7 +190,7 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.btn-apply:hover {
+.btn-aplicar:hover {
   background: linear-gradient(135deg, #ffd95a 0%, var(--yellow) 100%);
   box-shadow: 0 6px 20px rgba(245, 200, 66, 0.4);
   transform: translateY(-1px);
@@ -199,7 +199,7 @@ body {
 /* =====================================================
    SECCIÓN PRODUCTOS
    ===================================================== */
-.products-section {
+.seccion-productos-cat {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -390,17 +390,17 @@ body {
    RESPONSIVE
    ===================================================== */
 @media (max-width: 1024px) {
-  .main-container {
+  .contenedor-principal-catalogo {
     flex-direction: column;
     padding: 0 24px;
   }
   
-  .sidebar {
+  .barra-lateral {
     width: 100%;
     position: static;
   }
   
-  .products-section {
+  .seccion-productos-cat {
     width: 100%;
   }
 }

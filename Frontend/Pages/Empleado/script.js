@@ -32,7 +32,7 @@ function saveProducts(products) {
 }
 
 function initNavigation() {
-  document.querySelectorAll('.nav-item').forEach(btn => {
+  document.querySelectorAll('.elemento-nav').forEach(btn => {
     btn.addEventListener('click', () => {
       switchView(btn.getAttribute('data-view'));
     });
@@ -40,15 +40,15 @@ function initNavigation() {
 }
 
 window.switchView = function(viewKey) {
-  document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-view') === viewKey);
+  document.querySelectorAll('.elemento-nav').forEach(btn => {
+    btn.classList.toggle('activo', btn.getAttribute('data-view') === viewKey);
   });
 
-  document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
+  document.querySelectorAll('.seccion-vista').forEach(sec => sec.classList.remove('vista-activa'));
 
   const target = document.getElementById(`view-${viewKey}`);
   if (target) {
-    target.classList.add('active-view');
+    target.classList.add('vista-activa');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -242,7 +242,7 @@ function renderEmpCatalogTable(items = null) {
       <td>${p.category}</td>
       <td style="font-weight:700;">$ ${Number(p.price).toLocaleString('es-CO')}</td>
       <td><span style="font-weight:700; color:${p.stock > 3 ? '#10B981' : '#EF4444'};">${p.stock} uds</span></td>
-      <td><span class="badge-status delivered">${p.condition || 'Nuevo'}</span></td>
+      <td><span class="insignia-estado entregado">${p.condition || 'Nuevo'}</span></td>
       <td><button class="row-more-btn" onclick="window.addToCart(${p.id}); window.switchView('pos');">➕ Vender</button></td>
     </tr>
   `).join('');
@@ -271,7 +271,7 @@ function renderEmpWarrantiesTable() {
       <td>${w.product}</td>
       <td>${w.buyDate}</td>
       <td>${w.expDate}</td>
-      <td><span class="badge-status delivered">${w.status}</span></td>
+      <td><span class="insignia-estado entregado">${w.status}</span></td>
       <td><button class="row-more-btn" onclick="window.showToast('Certificado ${w.id} impreso en caja')">Imprimir</button></td>
     </tr>
   `).join('');
@@ -294,7 +294,7 @@ function renderEmpRepairsTable() {
       <td style="color:var(--text-secondary);">${r.defect}</td>
       <td>${r.client}</td>
       <td style="font-weight:700;">${r.price}</td>
-      <td><span class="badge-status processing">${r.status}</span></td>
+      <td><span class="insignia-estado processing">${r.status}</span></td>
       <td><button class="row-more-btn" onclick="window.showToast('Ticket ${r.ticket} enviado a laboratorio técnico')">Enviar Taller</button></td>
     </tr>
   `).join('');
@@ -316,18 +316,18 @@ function renderEmpClientsTable() {
       <td>${c.phone}</td>
       <td>${c.email}</td>
       <td style="color:var(--accent-gold); font-weight:700;">${c.totalSpent}</td>
-      <td><span class="badge-status delivered">${c.level}</span></td>
+      <td><span class="insignia-estado entregado">${c.level}</span></td>
     </tr>
   `).join('');
 }
 
 window.openAddWarrantyModal = function() {
   const modal = document.getElementById('modalAddWarranty');
-  if (modal) modal.classList.add('active');
+  if (modal) modal.classList.add('activo');
 };
 window.closeAddWarrantyModal = function() {
   const modal = document.getElementById('modalAddWarranty');
-  if (modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('activo');
 };
 
 window.saveWarranty = function(e) {
@@ -351,11 +351,11 @@ window.saveWarranty = function(e) {
 
 window.openAddRepairModal = function() {
   const modal = document.getElementById('modalAddRepair');
-  if (modal) modal.classList.add('active');
+  if (modal) modal.classList.add('activo');
 };
 window.closeAddRepairModal = function() {
   const modal = document.getElementById('modalAddRepair');
-  if (modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('activo');
 };
 
 window.saveRepairOrder = function(e) {
@@ -380,11 +380,11 @@ window.saveRepairOrder = function(e) {
 
 window.openAddClientModal = function() {
   const modal = document.getElementById('modalAddClient');
-  if (modal) modal.classList.add('active');
+  if (modal) modal.classList.add('activo');
 };
 window.closeAddClientModal = function() {
   const modal = document.getElementById('modalAddClient');
-  if (modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('activo');
 };
 
 window.saveClient = function(e) {
@@ -405,7 +405,7 @@ window.showToast = function(message) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
-  const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icono-notificacion"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;

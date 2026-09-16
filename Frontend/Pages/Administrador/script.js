@@ -32,7 +32,7 @@ function saveProductsList(products) {
 }
 
 function initNavigation() {
-  document.querySelectorAll('.nav-item').forEach(btn => {
+  document.querySelectorAll('.elemento-nav').forEach(btn => {
     btn.addEventListener('click', () => {
       switchView(btn.getAttribute('data-view'));
     });
@@ -40,15 +40,15 @@ function initNavigation() {
 }
 
 window.switchView = function(viewKey) {
-  document.querySelectorAll('.nav-item').forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-view') === viewKey);
+  document.querySelectorAll('.elemento-nav').forEach(btn => {
+    btn.classList.toggle('activo', btn.getAttribute('data-view') === viewKey);
   });
 
-  document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
+  document.querySelectorAll('.seccion-vista').forEach(sec => sec.classList.remove('vista-activa'));
 
   const targetSection = document.getElementById(`view-${viewKey}`);
   if (targetSection) {
-    targetSection.classList.add('active-view');
+    targetSection.classList.add('vista-activa');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -152,7 +152,7 @@ function renderInventoryTable(itemsToRender = null) {
       </td>
       <td style="font-size:0.8rem; color:var(--text-secondary);">${prod.warranty || '3 Meses'}</td>
       <td>
-        <span class="badge-status ${prod.condition === 'Nuevo Sellado' ? 'delivered' : 'shipping'}">${prod.condition}</span>
+        <span class="insignia-estado ${prod.condition === 'Nuevo Sellado' ? 'entregado' : 'shipping'}">${prod.condition}</span>
       </td>
       <td>
         <div style="display:flex; gap:8px;">
@@ -186,7 +186,7 @@ function renderWarrantiesTable(items = null) {
       <td>${w.buyDate}</td>
       <td>${w.expDate}</td>
       <td>
-        <span class="badge-status ${w.status === 'Activa' ? 'delivered' : (w.status === 'En Revisión' ? 'shipping' : 'warning')}">
+        <span class="insignia-estado ${w.status === 'Activa' ? 'entregado' : (w.status === 'En Revisión' ? 'shipping' : 'warning')}">
           ${w.status}
         </span>
       </td>
@@ -215,7 +215,7 @@ function renderMaintenanceTable() {
       <td style="color:var(--accent-cyan);">${m.tech}</td>
       <td style="font-weight:700;">${m.cost}</td>
       <td>
-        <span class="badge-status ${m.status === 'Listo para Entrega' ? 'delivered' : (m.status === 'En Taller' ? 'shipping' : 'processing')}">
+        <span class="insignia-estado ${m.status === 'Listo para Entrega' ? 'entregado' : (m.status === 'En Taller' ? 'shipping' : 'processing')}">
           ${m.status}
         </span>
       </td>
@@ -244,7 +244,7 @@ function renderRepairsTable() {
       <td>${r.client}</td>
       <td style="font-weight:700; color:#FFFFFF;">${r.price}</td>
       <td>
-        <span class="badge-status ${r.status === 'Completada' ? 'delivered' : (r.status === 'En Reparación' ? 'processing' : 'warning')}">
+        <span class="insignia-estado ${r.status === 'Completada' ? 'entregado' : (r.status === 'En Reparación' ? 'processing' : 'warning')}">
           ${r.status}
         </span>
       </td>
@@ -273,7 +273,7 @@ function renderDiscountsTable() {
       <td>${d.expires}</td>
       <td>${d.uses}</td>
       <td>
-        <span class="badge-status ${d.status === 'Activo' ? 'delivered' : 'warning'}">${d.status}</span>
+        <span class="insignia-estado ${d.status === 'Activo' ? 'entregado' : 'warning'}">${d.status}</span>
       </td>
       <td>
         <button class="row-more-btn" onclick="window.showToast('Cupón ${d.code} copiado al portapapeles')">Copiar</button>
@@ -292,17 +292,17 @@ function renderReviewsGrid() {
     return;
   }
 
-  const starIcon = `<svg viewBox="0 0 24 24" class="review-star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  const starIcon = `<svg viewBox="0 0 24 24" class="icono-estrella-resena"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
   const gamepadTagIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg>`;
 
   grid.innerHTML = reviews.map(rev => `
-    <div class="review-card">
-      <div class="review-header">
-        <span class="reviewer-name">${rev.name}</span>
-        <div class="review-stars">${starIcon.repeat(rev.rating || 5)}</div>
+    <div class="tarjeta-resena">
+      <div class="encabezado-resena">
+        <span class="nombre-resenador">${rev.name}</span>
+        <div class="estrellas-resena">${starIcon.repeat(rev.rating || 5)}</div>
       </div>
-      <p class="review-comment">"${rev.comment}"</p>
-      <div class="review-product-tag">${gamepadTagIcon} <span>${rev.product}</span></div>
+      <p class="comentario-resena">"${rev.comment}"</p>
+      <div class="etiqueta-producto-resena">${gamepadTagIcon} <span>${rev.product}</span></div>
     </div>
   `).join('');
 }
@@ -324,7 +324,7 @@ function renderClientsTable() {
       <td style="color:var(--text-secondary);">${c.email}</td>
       <td style="font-weight:700; color:var(--accent-gold);">${c.totalSpent}</td>
       <td>${c.lastVisit || 'Reciente'}</td>
-      <td><span class="badge-status delivered">${c.level}</span></td>
+      <td><span class="insignia-estado entregado">${c.level}</span></td>
       <td>
         <button class="row-more-btn" onclick="window.showToast('Historial del cliente: ${c.name}')">Historial</button>
       </td>
@@ -340,12 +340,12 @@ window.openAddProductModal = function() {
   document.getElementById('imagePreview').src = 'https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa';
   document.getElementById('previewCategoryBadge').textContent = 'Juegos Wii U';
   window.generateRandomSKU();
-  modal.classList.add('active');
+  modal.classList.add('activo');
 };
 
 window.closeAddProductModal = function() {
   const modal = document.getElementById('modalAddProduct');
-  if (modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('activo');
 };
 
 window.generateRandomSKU = function() {
@@ -456,13 +456,13 @@ window.openDiscountModal = function() {
   const modal = document.getElementById('modalDiscount');
   if (modal) {
     document.getElementById('formDiscount').reset();
-    modal.classList.add('active');
+    modal.classList.add('activo');
   }
 };
 
 window.closeDiscountModal = function() {
   const modal = document.getElementById('modalDiscount');
-  if (modal) modal.classList.remove('active');
+  if (modal) modal.classList.remove('activo');
 };
 
 window.saveDiscount = function(e) {
@@ -497,7 +497,7 @@ function initGlobalSearch() {
       p.category.toLowerCase().includes(term)
     );
 
-    if (filtered.length > 0 && !document.getElementById('view-inventario').classList.contains('active-view')) {
+    if (filtered.length > 0 && !document.getElementById('view-inventario').classList.contains('vista-activa')) {
       switchView('inventario');
       renderInventoryTable(filtered);
     }
@@ -538,7 +538,7 @@ window.showToast = function(message) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
-  const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+  const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icono-notificacion"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;

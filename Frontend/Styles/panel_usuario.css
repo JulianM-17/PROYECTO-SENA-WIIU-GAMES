@@ -57,7 +57,7 @@ body {
 /* =====================================================
    SIDEBAR / MENU LATERAL
    ===================================================== */
-.panel-sidebar {
+.panel-barra-lateral {
   width: 240px;
   flex-shrink: 0;
   background: var(--surface);
@@ -70,7 +70,7 @@ body {
   top: 20px;
 }
 
-.sidebar-perfil {
+.barra-lateral-perfil {
   background: linear-gradient(135deg, var(--dark-blue) 0%, var(--dark-blue-3) 100%);
   padding: 24px 20px;
   display: flex;
@@ -81,7 +81,7 @@ body {
   overflow: hidden;
 }
 
-.sidebar-perfil::before {
+.barra-lateral-perfil::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
@@ -89,7 +89,7 @@ body {
   background: linear-gradient(90deg, transparent, var(--yellow), transparent);
 }
 
-.avatar-sidebar {
+.avatar-barra-lateral {
   width: 44px;
   height: 44px;
   background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
@@ -104,9 +104,9 @@ body {
   box-shadow: 0 4px 12px rgba(245, 200, 66, 0.4);
 }
 
-.sidebar-perfil-info { overflow: hidden; }
+.info-perfil-barra-lateral { overflow: hidden; }
 
-.sidebar-perfil-info .nombre {
+.info-perfil-barra-lateral .nombre {
   font-size: 13px;
   font-weight: 700;
   color: var(--white);
@@ -115,7 +115,7 @@ body {
   text-overflow: ellipsis;
 }
 
-.sidebar-perfil-info .email {
+.info-perfil-barra-lateral .email {
   font-size: 10px;
   color: rgba(255, 255, 255, 0.45);
   white-space: nowrap;
@@ -123,7 +123,7 @@ body {
   text-overflow: ellipsis;
 }
 
-.sidebar-nav { padding: 12px 0; }
+.nav-barra-lateral { padding: 12px 0; }
 
 .nav-section-label {
   font-size: 9px;
@@ -134,7 +134,7 @@ body {
   padding: 10px 20px 6px;
 }
 
-.nav-item {
+.elemento-nav {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -152,7 +152,7 @@ body {
   position: relative;
 }
 
-.nav-item i {
+.elemento-nav i {
   font-size: 16px;
   width: 20px;
   text-align: center;
@@ -160,20 +160,20 @@ body {
   transition: color 0.25s ease;
 }
 
-.nav-item:hover {
+.elemento-nav:hover {
   background: rgba(8, 15, 32, 0.04);
   color: var(--dark-blue);
 }
 
-.nav-item:hover i { color: var(--yellow-hover); }
+.elemento-nav:hover i { color: var(--yellow-hover); }
 
-.nav-item.active {
+.elemento-nav.activo {
   background: var(--yellow-light);
   color: var(--dark-blue);
   font-weight: 600;
 }
 
-.nav-item.active::before {
+.elemento-nav.activo::before {
   content: '';
   position: absolute;
   left: 0; top: 0; bottom: 0;
@@ -182,7 +182,7 @@ body {
   border-radius: 0 3px 3px 0;
 }
 
-.nav-item.active i { color: var(--yellow-hover); }
+.elemento-nav.activo i { color: var(--yellow-hover); }
 
 .nav-divider {
   height: 1px;
@@ -190,15 +190,15 @@ body {
   margin: 8px 20px;
 }
 
-.nav-item.logout { color: #e74c3c; }
+.elemento-nav.logout { color: #e74c3c; }
 
-.nav-item.logout:hover {
+.elemento-nav.logout:hover {
   background: rgba(231, 76, 60, 0.07);
   color: #c0392b;
 }
 
-.nav-item.logout i { color: #e74c3c; }
-.nav-item.logout:hover i { color: #c0392b; }
+.elemento-nav.logout i { color: #e74c3c; }
+.elemento-nav.logout:hover i { color: #c0392b; }
 
 /* =====================================================
    CONTENIDO PRINCIPAL
@@ -486,12 +486,12 @@ body {
     gap: 20px;
   }
 
-  .panel-sidebar {
+  .panel-barra-lateral {
     width: 100%;
     position: static;
   }
 
-  .sidebar-nav {
+  .nav-barra-lateral {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
   }
@@ -559,7 +559,7 @@ body {
   margin-bottom: 8px;
 }
 
-.perfil-badge {
+.insignia-perfil {
   font-size: 11px;
   font-weight: 600;
   background: rgba(245, 200, 66, 0.12);
@@ -570,7 +570,7 @@ body {
   display: inline-block;
 }
 
-.perfil-stats {
+.estadisticas-perfil {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 12px;
@@ -602,7 +602,7 @@ body {
 /* =====================================================
    PERFIL — Formularios (datos + seguridad)
    ===================================================== */
-.form-card {
+.tarjeta-formulario {
   background: var(--surface);
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -610,7 +610,7 @@ body {
   box-shadow: 0 2px 10px rgba(8, 15, 32, 0.05);
 }
 
-.form-card-titulo {
+.titulo-tarjeta-formulario {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main);
@@ -619,25 +619,25 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
-.form-grid-2 {
+.cuadricula-formulario-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
-.form-campo {
+.campo-formulario {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.form-label {
+.etiqueta-formulario {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.form-input {
+.entrada-formulario {
   padding: 12px 14px;
   border: 1.5px solid var(--border);
   border-radius: 10px;
@@ -648,9 +648,9 @@ body {
   transition: border-color 0.2s;
 }
 
-.form-input:focus { border-color: var(--yellow); }
+.entrada-formulario:focus { border-color: var(--yellow); }
 
-.form-acciones {
+.acciones-formulario {
   margin-top: 24px;
   display: flex;
   gap: 12px;
@@ -694,7 +694,7 @@ body {
   color: var(--white);
 }
 
-.form-acciones-end {
+.acciones-formulario-fin {
   margin-top: 24px;
   display: flex;
   justify-content: flex-end;
@@ -741,7 +741,7 @@ body {
   box-shadow: 0 4px 20px rgba(245, 200, 66, 0.1);
 }
 
-.dir-badge-principal {
+.insignia-direccion-principal {
   position: absolute;
   top: 16px;
   right: 16px;
@@ -895,30 +895,30 @@ body {
 .pedido-numero b { color: var(--text-main); }
 .pedido-fecha { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-.badge-entregado {
+.insignia-entregado {
   font-size: 11px; font-weight: 700;
   background: #ecfdf5; color: #059669;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #d1fae5;
   display: inline-flex; align-items: center; gap: 6px;
 }
 
-.badge-en-camino {
+.insignia-en-camino {
   font-size: 11px; font-weight: 700;
   background: #eff6ff; color: #2563eb;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #bfdbfe;
   display: inline-flex; align-items: center; gap: 6px;
 }
 
-.badge-procesando {
+.insignia-procesando {
   font-size: 11px; font-weight: 700;
   background: #fefce8; color: #ca8a04;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #fef08a;
   display: inline-flex; align-items: center; gap: 6px;
 }
 
-.badge-entregado i,
-.badge-en-camino i,
-.badge-procesando i {
+.insignia-entregado i,
+.insignia-en-camino i,
+.insignia-procesando i {
   font-size: 12px;
 }
 
@@ -1031,7 +1031,7 @@ body {
 }
 
 .tarjeta-info-predeterminada { display: flex; flex-direction: column; }
-.tarjeta-label-predeterminada {
+.etiqueta-tarjeta-predeterminada {
   font-size: 10px; opacity: 0.6; letter-spacing: 0.08em; text-transform: uppercase;
 }
 
@@ -1096,7 +1096,7 @@ body {
 .paypal-nombre { font-size: 13px; font-weight: 700; color: var(--text-main); }
 .paypal-email { font-size: 12px; color: var(--text-muted); }
 
-.badge-verificado {
+.insignia-verificado {
   font-size: 11px; font-weight: 600;
   background: #ecfdf5; color: #059669;
   padding: 4px 12px; border-radius: 20px;
@@ -1152,14 +1152,14 @@ body {
   transform: scale(1.1);
 }
 
-.fav-badge-descuento {
+.insignia-descuento-favorito {
   position: absolute; top: 10px; left: 10px;
   font-size: 10px; font-weight: 700;
   background: var(--yellow); color: var(--dark-blue);
   padding: 3px 8px; border-radius: 20px;
 }
 
-.fav-badge-stock {
+.insignia-stock-favorito {
   position: absolute; top: 10px; left: 10px;
   font-size: 10px; font-weight: 700;
   background: #ecfdf5; color: #059669;
@@ -1358,11 +1358,11 @@ body {
    RESPONSIVE — Secciones internas
    ===================================================== */
 @media (max-width: 900px) {
-  .perfil-stats { grid-template-columns: repeat(3, 1fr); }
+  .estadisticas-perfil { grid-template-columns: repeat(3, 1fr); }
   .grid-direcciones { grid-template-columns: 1fr; }
   .grid-tarjetas-pago { grid-template-columns: 1fr; }
   .grid-favoritos { grid-template-columns: repeat(2, 1fr); }
-  .form-grid-2 { grid-template-columns: 1fr; }
+  .cuadricula-formulario-2 { grid-template-columns: 1fr; }
   .tabla-header,
   .tabla-fila { grid-template-columns: 1fr 1.5fr 1fr 1fr; }
   .tabla-header > *:last-child,
@@ -1370,7 +1370,7 @@ body {
 }
 
 @media (max-width: 600px) {
-  .perfil-stats { grid-template-columns: repeat(2, 1fr); }
+  .estadisticas-perfil { grid-template-columns: repeat(2, 1fr); }
   .grid-favoritos { grid-template-columns: 1fr; }
   .tabla-header,
   .tabla-fila { grid-template-columns: 1fr 1.5fr 1fr; }
@@ -1381,7 +1381,7 @@ body {
 /* =====================================================
    MODALES Y NOTIFICACIONES TOAST
    ===================================================== */
-.modal-backdrop {
+.fondo-modal {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(8, 15, 32, 0.65);
@@ -1396,12 +1396,12 @@ body {
   padding: 20px;
 }
 
-.modal-backdrop.activa {
+.fondo-modal.activa {
   opacity: 1;
   visibility: visible;
 }
 
-.modal-card {
+.tarjeta-modal {
   background: var(--surface);
   border-radius: 20px;
   width: 100%;
@@ -1414,15 +1414,15 @@ body {
   transition: transform 0.25s ease;
 }
 
-.modal-card-lg {
+.tarjeta-modal-grande {
   max-width: 680px;
 }
 
-.modal-backdrop.activa .modal-card {
+.fondo-modal.activa .tarjeta-modal {
   transform: scale(1);
 }
 
-.modal-header {
+.encabezado-modal {
   padding: 20px 24px;
   border-bottom: 1px solid var(--border);
   display: flex;
@@ -1430,7 +1430,7 @@ body {
   justify-content: space-between;
 }
 
-.modal-header h3 {
+.encabezado-modal h3 {
   font-size: 16px;
   font-weight: 700;
   color: var(--dark-blue);
@@ -1439,11 +1439,11 @@ body {
   gap: 10px;
 }
 
-.modal-header h3 i {
+.encabezado-modal h3 i {
   color: var(--yellow-hover);
 }
 
-.modal-close-btn {
+.btn-cerrar-modal {
   background: none;
   border: none;
   font-size: 24px;
@@ -1453,38 +1453,38 @@ body {
   transition: color 0.2s;
 }
 
-.modal-close-btn:hover {
+.btn-cerrar-modal:hover {
   color: var(--dark-blue);
 }
 
-.modal-body {
+.cuerpo-modal {
   padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.form-campo-checkbox {
+.campo-formulario-casilla {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-top: 6px;
 }
 
-.form-campo-checkbox input {
+.campo-formulario-casilla input {
   width: 18px;
   height: 18px;
   accent-color: var(--dark-blue);
   cursor: pointer;
 }
 
-.form-campo-checkbox label {
+.campo-formulario-casilla label {
   font-size: 12px;
   color: var(--text-main);
   cursor: pointer;
 }
 
-.modal-footer {
+.pie-modal {
   padding: 16px 24px;
   border-top: 1px solid var(--border);
   display: flex;
@@ -1495,7 +1495,7 @@ body {
 }
 
 /* Toast Container */
-.toast-container {
+.contenedor-notificacion {
   position: fixed;
   bottom: 24px;
   right: 24px;

@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         num: 'WG-20260901',
         fecha: '1 de septiembre, 2026',
         estado: 'entregado',
-        badgeHtml: '<span class="badge-entregado"><i class="fi fi-rr-check"></i> Entregado</span>',
+        badgeHtml: '<span class="insignia-entregado"><i class="fi fi-rr-check"></i> Entregado</span>',
         producto: 'MSI MEG Trident X — PC Gamer i7',
         cantidad: 1,
         total: '$4,349.000 COP',
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         num: 'WG-20260912',
         fecha: '12 de septiembre, 2026',
         estado: 'en-camino',
-        badgeHtml: '<span class="badge-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>',
+        badgeHtml: '<span class="insignia-en-camino"><i class="fi fi-rr-truck-side"></i> En camino</span>',
         producto: 'ASUS ROG Zephyrus G14 — Gaming Laptop',
         cantidad: 1,
         total: '$6,850.000 COP',
@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
         num: 'WG-20260815',
         fecha: '15 de agosto, 2026',
         estado: 'procesando',
-        badgeHtml: '<span class="badge-procesando"><i class="fi fi-rr-clock"></i> Procesando</span>',
+        badgeHtml: '<span class="insignia-procesando"><i class="fi fi-rr-clock"></i> Procesando</span>',
         producto: 'Logitech G Pro X Superlight 2 — Mouse Gaming',
         cantidad: 2,
         total: '$580.000 COP',
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         precioActual: '$3,697.000',
         precioTachado: '$4,349.000',
         badge: '-15%',
-        badgeClass: 'fav-badge-descuento',
+        badgeClass: 'insignia-descuento-favorito',
         img: 'https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80'
       },
       {
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         categoria: 'Monitor Gaming',
         precioActual: '$1,250.000',
         badge: 'Stock bajo',
-        badgeClass: 'fav-badge-stock',
+        badgeClass: 'insignia-stock-favorito',
         img: 'https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400&q=80'
       },
       {
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================================
   // 2. SISTEMA DE TOASTS Y MODALES
   // ===================================================
-  const toastContainer = document.getElementById('toast-container');
+  const toastContainer = document.getElementById('contenedor-notificacion');
 
   function showToast(mensaje, tipo = 'success') {
     if (!toastContainer) return;
@@ -208,10 +208,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Cerrar modales al hacer clic en botones de cierre o backdrop
-  document.querySelectorAll('[data-close-modal], .modal-backdrop').forEach(el => {
+  document.querySelectorAll('[data-close-modal], .fondo-modal').forEach(el => {
     el.addEventListener('click', (e) => {
       if (e.target === el || el.hasAttribute('data-close-modal')) {
-        const activeModal = el.closest('.modal-backdrop') || el;
+        const activeModal = el.closest('.fondo-modal') || el;
         activeModal.classList.remove('activa');
       }
     });
@@ -219,14 +219,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-backdrop.activa').forEach(m => m.classList.remove('activa'));
+      document.querySelectorAll('.fondo-modal.activa').forEach(m => m.classList.remove('activa'));
     }
   });
 
   // ===================================================
   // 3. NAVEGACIÓN SPA & BREADCRUMBS
   // ===================================================
-  const navItems   = document.querySelectorAll('.nav-item[data-vista]');
+  const navItems   = document.querySelectorAll('.elemento-nav[data-vista]');
   const vistas     = document.querySelectorAll('.vista-panel');
   const migaActiva = document.getElementById('miga-activa');
 
@@ -243,13 +243,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function activarVista(vistaId, navId) {
     vistas.forEach(v => v.classList.remove('activa'));
-    navItems.forEach(n => n.classList.remove('active'));
+    navItems.forEach(n => n.classList.remove('activo'));
 
     const vista = document.getElementById(vistaId);
     if (vista) vista.classList.add('activa');
 
     const navEl = document.getElementById(navId);
-    if (navEl) navEl.classList.add('active');
+    if (navEl) navEl.classList.add('activo');
 
     if (migaActiva) migaActiva.textContent = etiquetas[vistaId] || 'Mi Cuenta';
   }
@@ -290,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const { nombre, apellidos, email, telefono, nacimiento, documento } = state.profile;
     const initial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'U';
 
-    document.querySelectorAll('.avatar-sidebar, .perfil-avatar-grande, .foto-perfil').forEach(el => {
+    document.querySelectorAll('.avatar-barra-lateral, .perfil-avatar-grande, .foto-perfil').forEach(el => {
       if (el.classList.contains('foto-perfil')) {
         el.textContent = initial;
       } else {
@@ -298,11 +298,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    document.querySelectorAll('.sidebar-perfil-info .nombre, .perfil-avatar-nombre').forEach(el => {
+    document.querySelectorAll('.info-perfil-barra-lateral .nombre, .perfil-avatar-nombre').forEach(el => {
       el.textContent = `${nombre} ${apellidos}`.trim();
     });
 
-    document.querySelectorAll('.sidebar-perfil-info .email, .perfil-avatar-email').forEach(el => {
+    document.querySelectorAll('.info-perfil-barra-lateral .email, .perfil-avatar-email').forEach(el => {
       el.textContent = email;
     });
 
@@ -320,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Form inputs de perfil
     const inputNombre = document.querySelector('#vista-perfil input[type="text"]:nth-of-type(1)');
-    const inputsPerfil = document.querySelectorAll('#vista-perfil .form-card:first-of-type .form-input');
+    const inputsPerfil = document.querySelectorAll('#vista-perfil .tarjeta-formulario:first-of-type .entrada-formulario');
     if (inputsPerfil.length >= 6) {
       inputsPerfil[0].value = nombre;
       inputsPerfil[1].value = apellidos;
@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnGuardarPerfil) {
     btnGuardarPerfil.addEventListener('click', (e) => {
       e.preventDefault();
-      const inputs = document.querySelectorAll('#vista-perfil .form-card:first-of-type .form-input');
+      const inputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:first-of-type .entrada-formulario');
       if (inputs.length >= 6) {
         state.profile.nombre     = inputs[0].value.trim() || 'Usuario';
         state.profile.apellidos  = inputs[1].value.trim();
@@ -373,7 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCambiarPassword) {
     btnCambiarPassword.addEventListener('click', (e) => {
       e.preventDefault();
-      const passInputs = document.querySelectorAll('#vista-perfil .form-card:nth-of-type(2) .form-input');
+      const passInputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:nth-of-type(2) .entrada-formulario');
       const actual  = passInputs[0]?.value;
       const nueva   = passInputs[1]?.value;
       const confirm = passInputs[2]?.value;
@@ -416,7 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = `dir-card ${dir.principal ? 'principal' : ''}`;
       card.innerHTML = `
-        ${dir.principal ? '<span class="dir-badge-principal">Principal</span>' : ''}
+        ${dir.principal ? '<span class="insignia-direccion-principal">Principal</span>' : ''}
         <div class="dir-encabezado">
           <div class="dir-icono ${!dir.principal ? 'secundario' : ''}">
             <i class="${dir.iconClass || (dir.tipo === 'Trabajo' ? 'fi fi-rr-briefcase' : 'fi fi-rr-home')}"></i>
@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="tarjeta-deco-2"></div>
         <div class="tarjeta-top">
           <div class="tarjeta-info-predeterminada">
-            ${card.predeterminada ? '<span class="tarjeta-label-predeterminada">Predeterminada</span>' : ''}
+            ${card.predeterminada ? '<span class="etiqueta-tarjeta-predeterminada">Predeterminada</span>' : ''}
             <div class="tarjeta-chip ${!isVisa ? 'mc' : ''}"></div>
           </div>
           ${isVisa ? '<span class="tarjeta-visa-logo">VISA</span>' : `
@@ -692,7 +692,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="fav-img-wrap">
             <img src="${fav.img}" alt="${fav.nombre}" />
             <button class="btn-fav-quitar" data-id="${fav.id}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
-            ${fav.badge ? `<span class="${fav.badgeClass || 'fav-badge-descuento'}">${fav.badge}</span>` : ''}
+            ${fav.badge ? `<span class="${fav.badgeClass || 'insignia-descuento-favorito'}">${fav.badge}</span>` : ''}
           </div>
         `}
         <div class="fav-body">
@@ -789,7 +789,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (confirm('¿Deseas cancelar este pedido?')) {
             const badge = card.querySelector('.badge-procesando');
             if (badge) {
-              badge.className = 'badge-entregado';
+              badge.className = 'insignia-entregado';
               badge.style.background = '#fee2e2';
               badge.style.color = '#e74c3c';
               badge.style.borderColor = '#fca5a5';
@@ -951,7 +951,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================================
   // 12. CERRAR SESIÓN
   // ===================================================
-  const btnLogout = document.querySelector('.nav-item.logout');
+  const btnLogout = document.querySelector('.elemento-nav.logout');
   if (btnLogout) {
     btnLogout.addEventListener('click', (e) => {
       e.preventDefault();
