@@ -1,50 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administrador - WiiU-Games</title>
+  
+  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Hoja de Estilos Principal -->
   <link rel="stylesheet" href="styles.css">
-  <link href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" rel="stylesheet" />
-  <link href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css" rel="stylesheet" />
 </head>
 <body>
 
-  <!-- CONTENEDOR PRINCIPAL DEL DASHBOARD -->
+  <!-- CONTENEDOR PRINCIPAL DEL PANEL -->
   <div class="app-layout">
 
-    <!-- BARRA LATERAL (SIDEBAR) -->
+    <!-- ======================================================== -->
+    <!-- BARRA LATERAL (SIDEBAR DE NAVEGACIÓN) -->
+    <!-- ======================================================== -->
     <aside class="sidebar" id="sidebar">
       
-      <!-- LOGO DE WIIU-GAMES -->
+      <!-- LOGO OFICIAL DE WIIU-GAMES -->
       <div class="brand-header">
         <div class="brand-logo-container">
-          <div class="brand-badge">
-            <svg class="brand-icon-svg" viewBox="0 0 140 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#00A2FF" />
-                  <stop offset="100%" stop-color="#0066FF" />
-                </linearGradient>
-                <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#FFE100" />
-                  <stop offset="100%" stop-color="#FFB300" />
-                </linearGradient>
-              </defs>
-              <!-- Emblem background -->
-              <path d="M10 20 L25 5 L115 5 L130 20 L120 55 L70 65 L20 55 Z" fill="#0E214D" stroke="url(#goldGrad)" stroke-width="4" stroke-linejoin="round"/>
-              <text x="70" y="38" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="20" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">WiiU-Games</text>
-              <circle cx="70" cy="52" r="5" fill="#FFE100"/>
-              <rect x="62" y="50" width="16" height="4" rx="2" fill="#00D2FF" opacity="0.8"/>
-            </svg>
-          </div>
+          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="brand-logo-img">
         </div>
       </div>
 
-      <!-- MENÚ DE NAVEGACIÓN -->
+      <!-- MENÚ PRINCIPAL DE NAVEGACIÓN -->
       <nav class="sidebar-nav">
         <button class="nav-item active" data-view="home" id="nav-home">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -110,54 +96,7 @@
         </button>
       </nav>
 
-      <!-- ILUSTRACIÓN DE MASCOTA GAMER EN LA BASE -->
-      <div class="sidebar-mascot">
-        <div class="mascot-badge">
-          <svg viewBox="0 0 160 130" fill="none" xmlns="http://www.w3.org/2000/svg" class="robot-mascot-svg">
-            <defs>
-              <linearGradient id="robotGold" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stop-color="#FFD700" />
-                <stop offset="100%" stop-color="#E5A800" />
-              </linearGradient>
-              <linearGradient id="boxGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#D97706"/>
-                <stop offset="100%" stop-color="#92400E"/>
-              </linearGradient>
-            </defs>
-            <!-- Sparks / Stars -->
-            <circle cx="20" cy="40" r="3" fill="#FFE100" opacity="0.8"/>
-            <circle cx="140" cy="30" r="2.5" fill="#00D2FF" opacity="0.8"/>
-            <path d="M15 70 L25 65 L20 80 Z" fill="#FFE100" opacity="0.6"/>
-            <!-- Robot Body -->
-            <rect x="52" y="24" width="56" height="42" rx="14" fill="url(#robotGold)" stroke="#0E1730" stroke-width="3"/>
-            <!-- Screen -->
-            <rect x="60" y="30" width="40" height="28" rx="8" fill="#0A1128"/>
-            <!-- Happy Eyes -->
-            <path d="M68 44 Q73 38 78 44" stroke="#00D2FF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-            <path d="M82 44 Q87 38 92 44" stroke="#00D2FF" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-            <!-- Antenna -->
-            <line x1="80" y1="24" x2="80" y2="12" stroke="url(#robotGold)" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="80" cy="10" r="5" fill="#00D2FF"/>
-            <!-- Robot Arms waving -->
-            <path d="M52 42 Q36 30 40 18" stroke="url(#robotGold)" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <circle cx="40" cy="18" r="5" fill="#FFE100"/>
-            <path d="M108 42 Q124 35 120 22" stroke="url(#robotGold)" stroke-width="5" stroke-linecap="round" fill="none"/>
-            <circle cx="120" cy="22" r="5" fill="#FFE100"/>
-            <!-- Game Box -->
-            <path d="M30 65 L130 65 L118 115 L42 115 Z" fill="url(#boxGrad)" stroke="#FFE100" stroke-width="2"/>
-            <path d="M22 65 L30 65 L42 115 L28 115 Z" fill="#78350F" opacity="0.5"/>
-            <!-- Cartridges sticking out -->
-            <rect x="46" y="52" width="18" height="20" rx="3" fill="#00A2FF" transform="rotate(-12 46 52)"/>
-            <rect x="94" y="50" width="18" height="22" rx="3" fill="#EF4444" transform="rotate(15 94 50)"/>
-            <rect x="70" y="50" width="20" height="24" rx="3" fill="#10B981"/>
-            <!-- Box Front Detail -->
-            <path d="M34 68 L126 68" stroke="#FFE100" stroke-width="2"/>
-            <circle cx="80" cy="88" r="8" fill="#FFE100" opacity="0.3"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- PERFIL DE USUARIO EN FOOTER LATERAL -->
+      <!-- PERFIL DE USUARIO ADMINISTRADOR -->
       <div class="sidebar-footer">
         <div class="user-profile">
           <div class="user-avatar">
@@ -177,18 +116,28 @@
 
     </aside>
 
+    <!-- ======================================================== -->
     <!-- ÁREA DE CONTENIDO PRINCIPAL -->
+    <!-- ======================================================== -->
     <main class="main-content">
 
-      <!-- HEADER SUPERIOR -->
+      <!-- ENCABEZADO SUPERIOR -->
       <header class="top-header">
         <div class="header-greeting">
-          <h1 class="greeting-title">¡Hola, Fabian! <span class="wave-hand">👋</span></h1>
-          <p class="greeting-subtitle">Aquí tienes el resumen de tu tienda WiiU-Games.</p>
+          <h1 class="greeting-title">
+            <span>¡Hola, Fabian!</span>
+            <svg class="greeting-icon" viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"></path>
+              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+              <path d="M18 8a2 2 0 0 1 2 2v4a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"></path>
+            </svg>
+          </h1>
+          <p class="greeting-subtitle">Resumen general del estado de tu tienda WiiU-Games.</p>
         </div>
 
         <div class="header-controls">
-          <!-- Buscador -->
+          <!-- Buscador Global -->
           <div class="search-bar">
             <input type="text" id="globalSearchInput" placeholder="Buscar productos, pedidos, clientes...">
             <button class="search-btn" title="Buscar">
@@ -199,7 +148,7 @@
             </button>
           </div>
 
-          <!-- Selector de rango de fecha -->
+          <!-- Selector Rápido de Rango de Fecha -->
           <div class="date-selector">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -213,7 +162,7 @@
             </svg>
           </div>
 
-          <!-- Notificaciones -->
+          <!-- Botón de Notificaciones -->
           <div class="notification-wrapper">
             <button class="notification-btn" id="notificationBtn" title="Notificaciones" onclick="window.showToast('Tienes 3 pedidos pendientes por despachar')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -226,13 +175,15 @@
         </div>
       </header>
 
-      <!-- VISTA 1: HOME / DASHBOARD (IDÉNTICO A LA IMAGEN) -->
+      <!-- ======================================================== -->
+      <!-- VISTA 1: HOME / DASHBOARD (MÉTRICAS Y GRÁFICOS) -->
+      <!-- ======================================================== -->
       <section class="view-section active-view" id="view-home">
         
-        <!-- 4 TARJETAS DE MÉTRICAS (KPIs) -->
+        <!-- TARJETAS DE MÉTRICAS (KPIs) -->
         <div class="kpi-grid">
           
-          <!-- KPI 1: Ventas totales -->
+          <!-- KPI 1: Ventas Totales -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -245,10 +196,10 @@
               </div>
               <div class="kpi-value" id="kpiVentasTotales">$ 24.850.000</div>
               <div class="kpi-trend positive">
-                <span class="trend-arrow">↑</span> 18.6% <span class="trend-sub">vs semana pasada</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
+                18.6% <span class="trend-sub">vs semana pasada</span>
               </div>
             </div>
-            <!-- Sparkline decorativo azul -->
             <div class="kpi-sparkline">
               <svg viewBox="0 0 200 45" preserveAspectRatio="none">
                 <path d="M0,35 Q30,30 60,32 T120,20 T170,10 T200,6" fill="none" stroke="#2563EB" stroke-width="3"/>
@@ -276,10 +227,10 @@
               </div>
               <div class="kpi-value" id="kpiTotalPedidos">512</div>
               <div class="kpi-trend warning">
-                <span class="trend-arrow">↑</span> 14.2% <span class="trend-sub">vs semana pasada</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
+                14.2% <span class="trend-sub">vs semana pasada</span>
               </div>
             </div>
-            <!-- Sparkline decorativo dorado -->
             <div class="kpi-sparkline">
               <svg viewBox="0 0 200 45" preserveAspectRatio="none">
                 <path d="M0,38 Q40,38 70,25 T130,28 T170,12 T200,8" fill="none" stroke="#F59E0B" stroke-width="3"/>
@@ -294,7 +245,7 @@
             </div>
           </div>
 
-          <!-- KPI 3: Clientes nuevos (Tarjeta blanca destacada como en la imagen) -->
+          <!-- KPI 3: Clientes Nuevos -->
           <div class="kpi-card light-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -307,10 +258,10 @@
               </div>
               <div class="kpi-value text-dark" id="kpiClientesNuevos">128</div>
               <div class="kpi-trend positive">
-                <span class="trend-arrow">↑</span> 22.4% <span class="trend-sub text-muted-dark">vs semana pasada</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
+                22.4% <span class="trend-sub text-muted-dark">vs semana pasada</span>
               </div>
             </div>
-            <!-- Sparkline decorativo azul sobre blanco -->
             <div class="kpi-sparkline">
               <svg viewBox="0 0 200 45" preserveAspectRatio="none">
                 <path d="M0,32 Q50,30 90,26 T150,18 T180,12 T200,8" fill="none" stroke="#2563EB" stroke-width="3"/>
@@ -325,7 +276,7 @@
             </div>
           </div>
 
-          <!-- KPI 4: Tasa de conversión -->
+          <!-- KPI 4: Tasa de Conversión -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -336,10 +287,10 @@
               </div>
               <div class="kpi-value" id="kpiTasaConversion">3.48%</div>
               <div class="kpi-trend positive">
-                <span class="trend-arrow">↑</span> 8.7% <span class="trend-sub">vs semana pasada</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
+                8.7% <span class="trend-sub">vs semana pasada</span>
               </div>
             </div>
-            <!-- Sparkline decorativo azul -->
             <div class="kpi-sparkline">
               <svg viewBox="0 0 200 45" preserveAspectRatio="none">
                 <path d="M0,35 Q40,36 80,30 T140,22 T180,15 T200,10" fill="none" stroke="#2563EB" stroke-width="3"/>
@@ -356,10 +307,10 @@
 
         </div>
 
-        <!-- FILA INTERMEDIA: GRÁFICO DE VENTAS + PRODUCTOS MÁS VENDIDOS -->
+        <!-- FILA INTERMEDIA: GRÁFICA DE VENTAS + TOP PRODUCTOS -->
         <div class="dashboard-grid-mid">
           
-          <!-- GRÁFICA DE VENTAS -->
+          <!-- GRÁFICO DINÁMICO DE VENTAS -->
           <div class="panel-card chart-panel">
             <div class="panel-header">
               <h2 class="panel-title">Ventas</h2>
@@ -372,7 +323,6 @@
             </div>
 
             <div class="chart-container">
-              <!-- Eje Y con etiquetas -->
               <div class="chart-y-axis">
                 <span>25K</span>
                 <span>20K</span>
@@ -382,11 +332,9 @@
                 <span>0</span>
               </div>
 
-              <!-- Gráfica SVG Dinámica con curva suave y tooltip -->
               <div class="chart-canvas-area">
                 <svg viewBox="0 0 650 260" class="interactive-sales-chart" preserveAspectRatio="none">
                   <defs>
-                    <!-- Gradiente azul brillante para el área de la curva -->
                     <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stop-color="#0066FF" stop-opacity="0.5"/>
                       <stop offset="50%" stop-color="#0066FF" stop-opacity="0.15"/>
@@ -398,7 +346,6 @@
                     </filter>
                   </defs>
 
-                  <!-- Líneas guía horizontales tenues -->
                   <line x1="0" y1="20" x2="650" y2="20" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
                   <line x1="0" y1="68" x2="650" y2="68" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
                   <line x1="0" y1="116" x2="650" y2="116" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
@@ -406,24 +353,17 @@
                   <line x1="0" y1="212" x2="650" y2="212" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
                   <line x1="0" y1="250" x2="650" y2="250" stroke="#162447" stroke-width="1"/>
 
-                  <!-- Área degradada rellena -->
                   <path d="M 25 180 C 80 180, 110 170, 160 175 C 210 180, 240 120, 290 120 C 340 120, 360 180, 410 170 C 460 160, 500 130, 550 110 C 580 95, 600 35, 625 35 L 625 250 L 25 250 Z" fill="url(#chartAreaGrad)"/>
-
-                  <!-- Línea azul neón principal de la curva -->
                   <path d="M 25 180 C 80 180, 110 170, 160 175 C 210 180, 240 120, 290 120 C 340 120, 360 180, 410 170 C 460 160, 500 130, 550 110 C 580 95, 600 35, 625 35" fill="none" stroke="#0077FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonGlow)"/>
 
-                  <!-- Puntos interactivos sobre los días -->
                   <circle cx="25" cy="180" r="5" fill="#00D2FF" stroke="#0B132B" stroke-width="3"/>
                   <circle cx="160" cy="175" r="4" fill="#0077FF"/>
                   <circle cx="290" cy="120" r="5" fill="#00D2FF" stroke="#0B132B" stroke-width="3"/>
                   <circle cx="410" cy="170" r="4" fill="#0077FF"/>
                   <circle cx="550" cy="110" r="4" fill="#0077FF"/>
-                  
-                  <!-- Punto destacado de Domingo con resplandor y tooltip -->
                   <circle cx="625" cy="35" r="7" fill="#FFFFFF" stroke="#0077FF" stroke-width="4"/>
                 </svg>
 
-                <!-- Tooltip flotante exacto al de la imagen sobre Domingo -->
                 <div class="chart-tooltip-badge" style="position: absolute; right: 10px; top: 15px;">
                   <div class="tooltip-amount">$ 24.850.000</div>
                   <div class="tooltip-label">Domingo</div>
@@ -431,7 +371,6 @@
               </div>
             </div>
 
-            <!-- Eje X (Días) -->
             <div class="chart-x-axis">
               <span>Lun</span>
               <span>Mar</span>
@@ -451,7 +390,6 @@
             </div>
 
             <div class="best-sellers-list" id="bestSellersList">
-              <!-- Item 1 -->
               <div class="product-rank-item">
                 <div class="rank-number rank-1">1</div>
                 <div class="product-thumb">
@@ -464,7 +402,6 @@
                 <div class="product-revenue">$ 6.250.000</div>
               </div>
 
-              <!-- Item 2 -->
               <div class="product-rank-item">
                 <div class="rank-number rank-2">2</div>
                 <div class="product-thumb">
@@ -477,7 +414,6 @@
                 <div class="product-revenue">$ 4.900.000</div>
               </div>
 
-              <!-- Item 3 -->
               <div class="product-rank-item">
                 <div class="rank-number rank-3">3</div>
                 <div class="product-thumb">
@@ -490,7 +426,6 @@
                 <div class="product-revenue">$ 3.750.000</div>
               </div>
 
-              <!-- Item 4 -->
               <div class="product-rank-item">
                 <div class="rank-number rank-4">4</div>
                 <div class="product-thumb">
@@ -503,7 +438,6 @@
                 <div class="product-revenue">$ 3.100.000</div>
               </div>
 
-              <!-- Item 5 -->
               <div class="product-rank-item">
                 <div class="rank-number rank-5">5</div>
                 <div class="product-thumb">
@@ -517,7 +451,6 @@
               </div>
             </div>
 
-            <!-- Botón inferior para ver todos los productos con icono de mando -->
             <button class="view-all-products-btn" onclick="window.switchView('inventario')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="controller-icon">
                 <rect x="2" y="6" width="20" height="12" rx="4"></rect>
@@ -549,15 +482,18 @@
                     <th>Cliente</th>
                     <th>Estado</th>
                     <th>Total</th>
-                    <th></th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody id="recentOrdersBody">
-                  <!-- Fila 1 -->
                   <tr>
                     <td>
                       <div class="order-id-cell">
-                        <span class="box-icon">📦</span>
+                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
                         <span class="order-code">#PED-1258</span>
                       </div>
                     </td>
@@ -565,15 +501,20 @@
                     <td><span class="badge-status delivered">Entregado</span></td>
                     <td class="order-total-price">$ 189.900</td>
                     <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1258: Entregado a Juan Camilo R.')">⋯</button>
+                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1258: Entregado a Juan Camilo R.')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                      </button>
                     </td>
                   </tr>
 
-                  <!-- Fila 2 -->
                   <tr>
                     <td>
                       <div class="order-id-cell">
-                        <span class="box-icon">📦</span>
+                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
                         <span class="order-code">#PED-1257</span>
                       </div>
                     </td>
@@ -581,15 +522,20 @@
                     <td><span class="badge-status shipping">En camino</span></td>
                     <td class="order-total-price">$ 259.900</td>
                     <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1257: En camino a María Fernanda T.')">⋯</button>
+                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1257: En camino a María Fernanda T.')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                      </button>
                     </td>
                   </tr>
 
-                  <!-- Fila 3 -->
                   <tr>
                     <td>
                       <div class="order-id-cell">
-                        <span class="box-icon">📦</span>
+                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
                         <span class="order-code">#PED-1256</span>
                       </div>
                     </td>
@@ -597,15 +543,20 @@
                     <td><span class="badge-status processing">Procesando</span></td>
                     <td class="order-total-price">$ 129.900</td>
                     <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1256: Procesando para Andrés Felipe G.')">⋯</button>
+                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1256: Procesando para Andrés Felipe G.')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                      </button>
                     </td>
                   </tr>
 
-                  <!-- Fila 4 -->
                   <tr>
                     <td>
                       <div class="order-id-cell">
-                        <span class="box-icon">📦</span>
+                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
                         <span class="order-code">#PED-1255</span>
                       </div>
                     </td>
@@ -613,7 +564,9 @@
                     <td><span class="badge-status delivered">Entregado</span></td>
                     <td class="order-total-price">$ 79.900</td>
                     <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1255: Entregado a Laura Sofía M.')">⋯</button>
+                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1255: Entregado a Laura Sofía M.')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                      </button>
                     </td>
                   </tr>
                 </tbody>
@@ -628,19 +581,11 @@
             </div>
 
             <div class="financial-body">
-              <!-- Gráfico de Dona 72% Meta Mensual -->
               <div class="donut-chart-container">
                 <svg viewBox="0 0 160 160" class="donut-svg">
-                  <!-- Círculo de fondo base -->
                   <circle cx="80" cy="80" r="62" fill="none" stroke="#0E1B38" stroke-width="15"/>
-                  <!-- Arco azul de progreso (72%) -->
-                  <circle cx="80" cy="80" r="62" fill="none" stroke="#0077FF" stroke-width="15"
-                          stroke-dasharray="389.5" stroke-dashoffset="109" stroke-linecap="round"
-                          transform="rotate(-90 80 80)"/>
-                  <!-- Acento dorado en la punta -->
-                  <circle cx="80" cy="80" r="62" fill="none" stroke="#FFCC00" stroke-width="15"
-                          stroke-dasharray="389.5" stroke-dashoffset="365" stroke-linecap="round"
-                          transform="rotate(160 80 80)"/>
+                  <circle cx="80" cy="80" r="62" fill="none" stroke="#0077FF" stroke-width="15" stroke-dasharray="389.5" stroke-dashoffset="109" stroke-linecap="round" transform="rotate(-90 80 80)"/>
+                  <circle cx="80" cy="80" r="62" fill="none" stroke="#FFCC00" stroke-width="15" stroke-dasharray="389.5" stroke-dashoffset="365" stroke-linecap="round" transform="rotate(160 80 80)"/>
                 </svg>
                 <div class="donut-center-label">
                   <div class="donut-percentage">72%</div>
@@ -648,9 +593,7 @@
                 </div>
               </div>
 
-              <!-- Lista de desglose financiero -->
               <div class="financial-stats-list">
-                <!-- Ingresos -->
                 <div class="fin-stat-item">
                   <div class="fin-stat-icon blue">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -664,7 +607,6 @@
                   </div>
                 </div>
 
-                <!-- Gastos -->
                 <div class="fin-stat-item">
                   <div class="fin-stat-icon gold">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -679,7 +621,6 @@
                   </div>
                 </div>
 
-                <!-- Utilidad -->
                 <div class="fin-stat-item">
                   <div class="fin-stat-icon cyan">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -696,7 +637,6 @@
               </div>
             </div>
 
-            <!-- Enlace inferior -->
             <div class="financial-footer">
               <a href="javascript:void(0)" class="view-fin-details" onclick="window.showToast('Balance: 72% de meta cumplida ($17.600.000 utilidad neta)')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -713,7 +653,9 @@
 
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 2: GARANTÍAS -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-garantias">
         <div class="view-header-bar">
           <div>
@@ -721,7 +663,8 @@
             <p class="section-subtitle">Supervisa reclamaciones, estados de cobertura y términos de garantías para clientes.</p>
           </div>
           <button class="btn-primary" onclick="window.showToast('Formulario de nueva garantía abierto')">
-            <span>➕ Registrar Garantía</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Registrar Garantía</span>
           </button>
         </div>
 
@@ -755,14 +698,16 @@
                 </tr>
               </thead>
               <tbody id="garantiasTableBody">
-                <!-- Se pobla dinámicamente con JS -->
+                <!-- Se pobla dinámicamente -->
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 3: MANTENIMIENTOS -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-mantenimientos">
         <div class="view-header-bar">
           <div>
@@ -770,7 +715,8 @@
             <p class="section-subtitle">Control de consolas y periféricos en mantenimiento preventivo y correctivo.</p>
           </div>
           <button class="btn-primary" onclick="window.showToast('Formulario de nuevo servicio técnico iniciado')">
-            <span>➕ Nuevo Mantenimiento</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Nuevo Mantenimiento</span>
           </button>
         </div>
 
@@ -795,14 +741,16 @@
                 </tr>
               </thead>
               <tbody id="mantenimientosTableBody">
-                <!-- Se pobla con JS -->
+                <!-- Se pobla dinámicamente -->
               </tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- VISTA 4: INVENTARIO (CON GESTIÓN Y AGREGAR PRODUCTOS) -->
+      <!-- ======================================================== -->
+      <!-- VISTA 4: INVENTARIO DE PRODUCTOS -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-inventario">
         <div class="view-header-bar">
           <div>
@@ -810,11 +758,11 @@
             <p class="section-subtitle">Administra los videojuegos, consolas, repuestos y accesorios disponibles en tienda.</p>
           </div>
           <button class="btn-primary" onclick="window.openAddProductModal()">
-            <span>➕ Agregar Producto</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Agregar Producto</span>
           </button>
         </div>
 
-        <!-- Tarjetas resumen de inventario -->
         <div class="kpi-grid inventory-summary-grid">
           <div class="kpi-card">
             <div class="kpi-content">
@@ -875,7 +823,9 @@
         </div>
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 5: REPARACIÓN -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-reparacion">
         <div class="view-header-bar">
           <div>
@@ -883,7 +833,8 @@
             <p class="section-subtitle">Diagnósticos y reparación de Wii U GamePads, placas base, pantallas y puertos HDMI.</p>
           </div>
           <button class="btn-primary" onclick="window.showToast('Nueva orden de reparación iniciada')">
-            <span>➕ Nueva Reparación</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Nueva Reparación</span>
           </button>
         </div>
 
@@ -915,7 +866,9 @@
         </div>
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 6: DESCUENTOS -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-descuentos">
         <div class="view-header-bar">
           <div>
@@ -923,7 +876,8 @@
             <p class="section-subtitle">Gestiona cupones de descuento, campañas de fin de semana y rebajas por temporada.</p>
           </div>
           <button class="btn-primary" onclick="window.openDiscountModal()">
-            <span>➕ Crear Descuento</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Crear Descuento</span>
           </button>
         </div>
 
@@ -949,7 +903,9 @@
         </div>
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 7: RESEÑAS -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-reseñas">
         <div class="view-header-bar">
           <div>
@@ -960,12 +916,14 @@
 
         <div class="panel-card full-panel">
           <div class="reviews-grid" id="reviewsGrid">
-            <!-- Pobla con JS -->
+            <!-- Se pobla dinámicamente -->
           </div>
         </div>
       </section>
 
+      <!-- ======================================================== -->
       <!-- VISTA 8: CLIENTES -->
+      <!-- ======================================================== -->
       <section class="view-section" id="view-clientes">
         <div class="view-header-bar">
           <div>
@@ -973,7 +931,8 @@
             <p class="section-subtitle">Base de datos de compradores, historial de compras y fidelización.</p>
           </div>
           <button class="btn-primary" onclick="window.showToast('Módulo de registro de nuevo cliente')">
-            <span>➕ Nuevo Cliente</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Nuevo Cliente</span>
           </button>
         </div>
 
@@ -999,21 +958,19 @@
         </div>
       </section>
 
-      <!-- BARRA DE ACCIONES RÁPIDAS (EXACTA A LA IMAGEN) -->
+      <!-- BARRA DE ACCIONES RÁPIDAS (FOOTER DEL DASHBOARD) -->
       <footer class="quick-actions-bar">
         <div class="quick-actions-info">
           <div class="qa-title">Acciones rápidas</div>
-          <div class="qa-subtitle">Gestiona tu tienda fácil y rápido</div>
+          <div class="qa-subtitle">Gestiona tu tienda de forma ágil y centralizada</div>
         </div>
 
         <div class="quick-actions-buttons">
-          <!-- Botón Amarillo Destacado: Agregar producto -->
           <button class="btn-action-primary" id="btnQuickAddProduct" onclick="window.openAddProductModal()">
-            <span class="btn-plus-icon">+</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Agregar producto</span>
           </button>
 
-          <!-- Botón Crear Descuento -->
           <button class="btn-action-secondary" onclick="window.openDiscountModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
@@ -1022,7 +979,6 @@
             <span>Crear descuento</span>
           </button>
 
-          <!-- Botón Ver Análisis -->
           <button class="btn-action-secondary" onclick="window.showToast('Métricas actualizadas: Tasa de conversión 3.48% (+8.7%)')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="20" x2="18" y2="10"></line>
@@ -1032,7 +988,6 @@
             <span>Ver análisis</span>
           </button>
 
-          <!-- Botón Exportar Reporte -->
           <button class="btn-action-secondary" onclick="window.exportFullReport()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -1049,27 +1004,40 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- MODAL COMPLETO: AGREGAR PRODUCTO CON TODOS SUS DETALLES -->
+  <!-- MODAL: FORMULARIO MEJORADO "AGREGAR PRODUCTO" -->
   <!-- ======================================================== -->
   <div class="modal-backdrop" id="modalAddProduct">
     <div class="modal-window modal-lg">
+      
+      <!-- Encabezado del Modal -->
       <div class="modal-header">
         <div class="modal-title-box">
-          <div class="modal-badge-icon">🎮</div>
+          <div class="modal-badge-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
+              <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+              <path d="M6 12h4m-2-2v4"></path>
+              <circle cx="15" cy="11" r="1" fill="#FFB800"></circle>
+              <circle cx="18" cy="13" r="1" fill="#FFB800"></circle>
+            </svg>
+          </div>
           <div>
             <h3 class="modal-title">Agregar Nuevo Producto</h3>
-            <p class="modal-subtitle">Ingresa todos los detalles para publicar el producto en el catálogo e inventario.</p>
+            <p class="modal-subtitle">Ingresa la información detallada para publicar el artículo en el inventario.</p>
           </div>
         </div>
         <button class="modal-close-btn" onclick="window.closeAddProductModal()">&times;</button>
       </div>
 
+      <!-- Formulario Organizado en 2 Columnas -->
       <form id="formAddProduct" onsubmit="window.saveProduct(event)">
         <div class="modal-body-grid">
           
-          <!-- COLUMNA IZQUIERDA: DETALLES PRINCIPALES -->
+          <!-- COLUMNA IZQUIERDA: DATOS DEL PRODUCTO Y PRECIOS -->
           <div class="form-column">
-            <h4 class="form-section-title">1. Información General</h4>
+            
+            <h4 class="form-section-title">
+              <span class="section-step">1</span> Información Principal
+            </h4>
             
             <div class="form-group">
               <label for="prodName">Nombre del Producto <span class="required">*</span></label>
@@ -1089,10 +1057,12 @@
               </div>
 
               <div class="form-group">
-                <label for="prodSKU">Código SKU / Referencia <span class="required">*</span></label>
+                <label for="prodSKU">Código SKU <span class="required">*</span></label>
                 <div class="input-with-action">
                   <input type="text" id="prodSKU" required placeholder="WIIU-GME-001">
-                  <button type="button" class="btn-inline-gen" onclick="window.generateRandomSKU()" title="Generar código automático">🎲</button>
+                  <button type="button" class="btn-inline-gen" onclick="window.generateRandomSKU()" title="Generar código SKU automático">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><rect x="2" y="2" width="20" height="20" rx="4"/><circle cx="8" cy="8" r="1.5"/><circle cx="16" cy="16" r="1.5"/><circle cx="12" cy="12" r="1.5"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -1115,7 +1085,9 @@
               </div>
             </div>
 
-            <h4 class="form-section-title mt-4">2. Precios & Existencias</h4>
+            <h4 class="form-section-title mt-4">
+              <span class="section-step">2</span> Precios e Inventario
+            </h4>
 
             <div class="form-row-2">
               <div class="form-group">
@@ -1136,16 +1108,19 @@
               </div>
 
               <div class="form-group">
-                <label for="prodMinStock">Alerta de Stock Mínimo</label>
+                <label for="prodMinStock">Stock Mínimo Alerta</label>
                 <input type="number" id="prodMinStock" placeholder="3" min="1" value="2">
               </div>
             </div>
 
           </div>
 
-          <!-- COLUMNA DERECHA: ESTADO, GARANTÍA E IMAGEN -->
+          <!-- COLUMNA DERECHA: ESTADO, GARANTÍA Y VISTA PREVIA -->
           <div class="form-column">
-            <h4 class="form-section-title">3. Estado y Garantía</h4>
+            
+            <h4 class="form-section-title">
+              <span class="section-step">3</span> Estado y Garantía
+            </h4>
 
             <div class="form-row-2">
               <div class="form-group">
@@ -1159,7 +1134,7 @@
               </div>
 
               <div class="form-group">
-                <label for="prodWarranty">Garantía Aplicable <span class="required">*</span></label>
+                <label for="prodWarranty">Garantía <span class="required">*</span></label>
                 <select id="prodWarranty">
                   <option value="1 Mes">1 Mes</option>
                   <option value="3 Meses" selected>3 Meses</option>
@@ -1170,14 +1145,16 @@
               </div>
             </div>
 
-            <h4 class="form-section-title mt-4">4. Imagen y Presentación</h4>
+            <h4 class="form-section-title mt-4">
+              <span class="section-step">4</span> Portada y Presentación
+            </h4>
 
             <div class="form-group">
-              <label for="prodImageUrl">URL de la Imagen / Portada</label>
+              <label for="prodImageUrl">URL de la Imagen de Portada</label>
               <input type="url" id="prodImageUrl" placeholder="https://ejemplo.com/portada-zelda.jpg" oninput="window.previewProductImage(this.value)">
             </div>
 
-            <!-- Selector rápido de portadas oficiales de Wii U -->
+            <!-- Accesos Rápidos de Portadas Recomendadas -->
             <div class="quick-cover-picker">
               <span class="cover-picker-label">Portadas rápidas sugeridas:</span>
               <div class="cover-chips">
@@ -1186,34 +1163,40 @@
                 <button type="button" class="cover-chip" onclick="window.setPresetCover('mariokart')">Mario Kart 8</button>
                 <button type="button" class="cover-chip" onclick="window.setPresetCover('splatoon')">Splatoon</button>
                 <button type="button" class="cover-chip" onclick="window.setPresetCover('smash')">Smash Bros</button>
-                <button type="button" class="cover-chip" onclick="window.setPresetCover('gamepad')">GamePad Wii U</button>
               </div>
             </div>
 
-            <!-- Previsualización de Imagen -->
+            <!-- Caja de Vista Previa -->
             <div class="image-preview-container">
               <div class="image-preview-box" id="imagePreviewBox">
-                <img id="imagePreview" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop" alt="Vista previa">
+                <img id="imagePreview" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop" alt="Vista previa de portada">
                 <span class="preview-badge" id="previewCategoryBadge">Juegos Wii U</span>
               </div>
             </div>
 
             <div class="form-group mt-3">
-              <label for="prodDescription">Descripción / Especificaciones</label>
-              <textarea id="prodDescription" rows="3" placeholder="Detalles de contenido, idioma, manuales incluidos, estado de la caja o especificaciones..."></textarea>
+              <label for="prodDescription">Descripción del Producto</label>
+              <textarea id="prodDescription" rows="3" placeholder="Detalles de contenido, idioma, estado de la caja o especificaciones..."></textarea>
             </div>
 
           </div>
 
         </div>
 
+        <!-- Botones del Pie del Modal -->
         <div class="modal-footer">
           <button type="button" class="btn-secondary" onclick="window.closeAddProductModal()">Cancelar</button>
           <button type="submit" class="btn-primary-glow">
-            <span>💾 Guardar Producto</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Guardar Producto</span>
           </button>
         </div>
       </form>
+
     </div>
   </div>
 
@@ -1224,7 +1207,12 @@
     <div class="modal-window">
       <div class="modal-header">
         <div class="modal-title-box">
-          <div class="modal-badge-icon">🏷️</div>
+          <div class="modal-badge-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+              <circle cx="7" cy="7" r="1.5" fill="#FFB800"></circle>
+            </svg>
+          </div>
           <div>
             <h3 class="modal-title">Crear Nuevo Descuento</h3>
             <p class="modal-subtitle">Genera un cupón promocional o descuento especial.</p>
@@ -1232,6 +1220,7 @@
         </div>
         <button class="modal-close-btn" onclick="window.closeDiscountModal()">&times;</button>
       </div>
+
       <form id="formDiscount" onsubmit="window.saveDiscount(event)">
         <div class="modal-body-single">
           <div class="form-group">
@@ -1253,6 +1242,7 @@
             <input type="text" id="discDesc" placeholder="Descuento especial fin de semana para juegos Wii U" required>
           </div>
         </div>
+
         <div class="modal-footer">
           <button type="button" class="btn-secondary" onclick="window.closeDiscountModal()">Cerrar</button>
           <button type="submit" class="btn-primary-glow">Crear Cupón</button>
@@ -1261,10 +1251,10 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- SCRIPT PRINCIPAL -->
+  <!-- SCRIPT LÓGICO PRINCIPAL -->
   <script src="script.js"></script>
 </body>
 </html>
