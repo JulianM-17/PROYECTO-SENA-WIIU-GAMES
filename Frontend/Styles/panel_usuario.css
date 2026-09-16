@@ -899,18 +899,27 @@ body {
   font-size: 11px; font-weight: 700;
   background: #ecfdf5; color: #059669;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #d1fae5;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 
 .badge-en-camino {
   font-size: 11px; font-weight: 700;
   background: #eff6ff; color: #2563eb;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #bfdbfe;
+  display: inline-flex; align-items: center; gap: 6px;
 }
 
 .badge-procesando {
   font-size: 11px; font-weight: 700;
   background: #fefce8; color: #ca8a04;
   padding: 4px 12px; border-radius: 20px; border: 1px solid #fef08a;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+
+.badge-entregado i,
+.badge-en-camino i,
+.badge-procesando i {
+  font-size: 12px;
 }
 
 .pedido-cuerpo {
@@ -937,6 +946,7 @@ body {
   border-radius: 12px;
   display: flex; align-items: center; justify-content: center;
   font-size: 28px;
+  color: var(--dark-blue);
   flex-shrink: 0;
 }
 
@@ -1124,7 +1134,8 @@ body {
   position: relative; height: 160px;
   overflow: hidden; background: #f1f4f9;
   display: flex; align-items: center; justify-content: center;
-  font-size: 60px;
+  font-size: 54px;
+  color: var(--dark-blue);
 }
 
 .btn-fav-quitar {
@@ -1132,7 +1143,13 @@ body {
   width: 32px; height: 32px; border-radius: 50%;
   background: rgba(231, 76, 60, 0.9); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: white;
+  font-size: 13px; color: white;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-fav-quitar:hover {
+  background: #e74c3c;
+  transform: scale(1.1);
 }
 
 .fav-badge-descuento {
@@ -1214,6 +1231,13 @@ body {
   font-size: 14px; font-weight: 700; flex-shrink: 0;
 }
 
+.timeline-circulo i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
 .timeline-circulo.completado {
   background: linear-gradient(135deg, var(--yellow), var(--yellow-hover));
   color: var(--dark-blue);
@@ -1221,11 +1245,12 @@ body {
 
 .timeline-circulo.activo {
   background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  font-size: 16px;
+  font-size: 15px;
+  color: var(--white);
 }
 
 .timeline-circulo.pendiente {
-  background: var(--border); color: var(--text-muted); font-size: 16px;
+  background: var(--border); color: var(--text-muted); font-size: 15px;
 }
 
 .timeline-linea { width: 2px; height: 40px; }
@@ -1252,7 +1277,8 @@ body {
 .transportadora-icono {
   width: 44px; height: 44px; background: rgba(8, 15, 32, 0.06);
   border-radius: 12px; display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
+  color: var(--dark-blue);
 }
 
 .transportadora-nombre { font-size: 13px; font-weight: 700; color: var(--text-main); }
