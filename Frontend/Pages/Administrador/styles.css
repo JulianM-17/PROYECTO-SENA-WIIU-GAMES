@@ -1,11 +1,4 @@
-/* ==========================================================================
-   WIIU-GAMES - PANEL DE ADMINISTRADOR PREMIUM
-   Diseño Tema Oscuro Gamer con Acentos Dorados y Neón Azules
-   ========================================================================== */
-
-/* 1. VARIABLES GLOBALES Y PALETA DE COLORES */
 :root {
-  /* Paleta de Colores de Fondo */
   --bg-app: #070D1E;
   --bg-sidebar: #091226;
   --bg-panel: #0E1834;
@@ -14,7 +7,6 @@
   --border-subtle: #172652;
   --border-focus: #0077FF;
   
-  /* Acentos y Botones */
   --accent-gold: #FFB800;
   --accent-gold-hover: #E5A500;
   --accent-blue: #0077FF;
@@ -23,13 +15,11 @@
   --accent-red: #EF4444;
   --accent-purple: #8B5CF6;
   
-  /* Textos */
   --text-primary: #FFFFFF;
   --text-secondary: #8E9DB8;
   --text-muted: #5B6B8A;
   --text-dark: #0A1128;
   
-  /* Bordes Redondeados y Sombras */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -39,12 +29,10 @@
   --shadow-glow: 0 0 20px rgba(0, 119, 255, 0.3);
   --shadow-gold: 0 4px 20px rgba(255, 184, 0, 0.35);
   
-  /* Transiciones */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.25s ease;
 }
 
-/* Reset Base */
 * {
   margin: 0;
   padding: 0;
@@ -61,7 +49,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar Personalizada */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -77,7 +64,6 @@ body {
   background: #253D7E;
 }
 
-/* 2. ESTRUCTURA PRINCIPAL DEL DASHBOARD */
 .app-layout {
   display: grid;
   grid-template-columns: 240px 1fr;
@@ -96,7 +82,6 @@ body {
   }
 }
 
-/* 3. BARRA LATERAL DE NAVEGACIÓN (SIDEBAR) */
 .sidebar {
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
@@ -110,7 +95,6 @@ body {
   z-index: 50;
 }
 
-/* Logo Oficial WiiU-Games */
 .brand-header {
   padding: 16px 8px 30px 8px;
   display: flex;
@@ -139,7 +123,6 @@ body {
   transform: scale(1.05);
 }
 
-/* Menú de Botones de la Sidebar */
 .sidebar-nav {
   display: flex;
   flex-direction: column;
@@ -181,7 +164,6 @@ body {
   stroke: var(--text-primary);
 }
 
-/* Botón Activo Amarillo Destacado */
 .nav-item.active {
   background-color: var(--accent-gold);
   color: #000000;
@@ -193,7 +175,6 @@ body {
   stroke: #000000;
 }
 
-/* Perfil de Usuario en Footer de Sidebar */
 .sidebar-footer {
   padding-top: 14px;
   border-top: 1px solid var(--border-subtle);
@@ -261,7 +242,6 @@ body {
   color: var(--text-primary);
 }
 
-/* 4. CONTENIDO PRINCIPAL Y CABECERA */
 .main-content {
   padding: 24px 32px 40px 32px;
   display: flex;
@@ -279,7 +259,6 @@ body {
   }
 }
 
-/* Header Superior */
 .top-header {
   display: flex;
   justify-content: space-between;
@@ -314,7 +293,6 @@ body {
   gap: 12px;
 }
 
-/* Buscador */
 .search-bar {
   display: flex;
   align-items: center;
@@ -359,7 +337,6 @@ body {
   height: 16px;
 }
 
-/* Selector de fecha */
 .date-selector {
   display: flex;
   align-items: center;
@@ -386,7 +363,6 @@ body {
   height: 16px;
 }
 
-/* Notificaciones con Badge */
 .notification-wrapper {
   position: relative;
 }
@@ -433,7 +409,6 @@ body {
   border: 2px solid var(--bg-app);
 }
 
-/* 5. VISTAS Y SECCIONES */
 .view-section {
   display: none;
   flex-direction: column;
@@ -468,7 +443,6 @@ body {
   color: var(--text-secondary);
 }
 
-/* 6. TARJETAS DE MÉTRICAS (KPIS) */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -612,7 +586,6 @@ body {
   display: block;
 }
 
-/* 7. PANELES Y GRÁFICAS DEL DASHBOARD */
 .dashboard-grid-mid,
 .dashboard-grid-bottom {
   display: grid;
@@ -682,7 +655,6 @@ body {
   color: var(--text-primary);
 }
 
-/* Gráfica de Ventas */
 .chart-panel {
   display: flex;
   flex-direction: column;
@@ -755,7 +727,6 @@ body {
   font-weight: 700;
 }
 
-/* Lista de Productos Más Vendidos */
 .best-sellers-panel {
   display: flex;
   flex-direction: column;
@@ -873,7 +844,6 @@ body {
   color: var(--accent-gold);
 }
 
-/* 8. TABLAS DE DATOS */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -976,7 +946,6 @@ body {
   height: 16px;
 }
 
-/* Panel Financiero */
 .financial-panel {
   display: flex;
   flex-direction: column;
@@ -1089,7 +1058,6 @@ body {
 
 .view-fin-details:hover { color: var(--accent-gold); }
 
-/* 9. ACCIONES RÁPIDAS (FOOTER DEL DASHBOARD) */
 .quick-actions-bar {
   background-color: var(--bg-panel);
   border: 1px solid var(--border-subtle);
@@ -1224,7 +1192,6 @@ body {
   height: 18px;
 }
 
-/* 10. HERRAMIENTAS Y VISTAS ESPECÍFICAS */
 .full-panel { width: 100%; }
 
 .table-toolbar {
@@ -1313,7 +1280,6 @@ body {
   gap: 6px;
 }
 
-/* 11. MODALES Y FORMULARIO DE PRODUCTO */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1604,7 +1570,6 @@ body {
   gap: 12px;
 }
 
-/* 12. NOTIFICACIONES TOAST */
 .toast-container {
   position: fixed;
   bottom: 24px;

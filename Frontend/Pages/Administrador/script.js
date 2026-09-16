@@ -1,21 +1,9 @@
-/**
- * ==========================================================================
- * WIIU-GAMES - PANEL DE ADMINISTRACIÓN (SCRIPT PRINCIPAL)
- * Código limpio, estructurado y documentado en español para fácil comprensión.
- * ==========================================================================
- */
-
-// Se ejecuta cuando el documento HTML ha cargado completamente
 document.addEventListener('DOMContentLoaded', () => {
   initPresetData();
   initNavigation();
   renderAllModules();
   initGlobalSearch();
 });
-
-/* ==========================================================================
-   1. DATOS DE PRUEBA E INICIALIZACIÓN
-   ========================================================================== */
 
 const DEFAULT_PRODUCTS = [
   {
@@ -155,26 +143,21 @@ const DEFAULT_CLIENTS = [
   { name: 'Laura Sofía M.', phone: '+57 301 555 4433', email: 'laura.m@yahoo.com', totalSpent: '$ 320.000', lastVisit: '10 Sep 2026', level: 'Nuevo' }
 ];
 
-/* ==========================================================================
-   2. GESTIÓN DE MEMORIA Y ALMACENAMIENTO (LOCALSTORAGE)
-   ========================================================================== */
-
 function initPresetData() {
-  if (!localStorage.getItem('wiiu_products')) {
-    localStorage.setItem('wiiu_products', JSON.stringify(DEFAULT_PRODUCTS));
-  }
-  if (!localStorage.getItem('wiiu_warranties')) {
-    localStorage.setItem('wiiu_warranties', JSON.stringify(DEFAULT_WARRANTIES));
-  }
-  if (!localStorage.getItem('wiiu_maintenance')) {
-    localStorage.setItem('wiiu_maintenance', JSON.stringify(DEFAULT_MAINTENANCE));
-  }
-  if (!localStorage.getItem('wiiu_repairs')) {
-    localStorage.setItem('wiiu_repairs', JSON.stringify(DEFAULT_REPAIRS));
-  }
-  if (!localStorage.getItem('wiiu_discounts')) {
-    localStorage.setItem('wiiu_discounts', JSON.stringify(DEFAULT_DISCOUNTS));
-  }
+  const storeDefaults = {
+    wiiu_products: DEFAULT_PRODUCTS,
+    wiiu_warranties: DEFAULT_WARRANTIES,
+    wiiu_maintenance: DEFAULT_MAINTENANCE,
+    wiiu_repairs: DEFAULT_REPAIRS,
+    wiiu_discounts: DEFAULT_DISCOUNTS,
+    wiiu_clients: DEFAULT_CLIENTS
+  };
+
+  Object.entries(storeDefaults).forEach(([key, val]) => {
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, JSON.stringify(val));
+    }
+  });
 }
 
 function getProducts() {
@@ -185,27 +168,19 @@ function saveProductsList(products) {
   localStorage.setItem('wiiu_products', JSON.stringify(products));
 }
 
-/* ==========================================================================
-   3. NAVEGACIÓN Y CAMBIO DE VISTAS
-   ========================================================================== */
-
 function initNavigation() {
-  const navButtons = document.querySelectorAll('.nav-item');
-  navButtons.forEach(btn => {
+  document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => {
-      const viewId = btn.getAttribute('data-view');
-      switchView(viewId);
+      switchView(btn.getAttribute('data-view'));
     });
   });
 }
 
 window.switchView = function(viewKey) {
-  // Actualizar botones de la barra lateral
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-view') === viewKey);
   });
 
-  // Mostrar la sección seleccionada y ocultar las demás
   document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active-view'));
 
   const targetSection = document.getElementById(`view-${viewKey}`);
@@ -214,19 +189,18 @@ window.switchView = function(viewKey) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Refrescar contenido del módulo activo
-  if (viewKey === 'inventario') renderInventoryTable();
-  else if (viewKey === 'garantias') renderWarrantiesTable();
-  else if (viewKey === 'mantenimientos') renderMaintenanceTable();
-  else if (viewKey === 'reparacion') renderRepairsTable();
-  else if (viewKey === 'descuentos') renderDiscountsTable();
-  else if (viewKey === 'reseñas') renderReviewsGrid();
-  else if (viewKey === 'clientes') renderClientsTable();
-};
+  const renderMap = {
+    inventario: renderInventoryTable,
+    garantias: renderWarrantiesTable,
+    mantenimientos: renderMaintenanceTable,
+    reparacion: renderRepairsTable,
+    descuentos: renderDiscountsTable,
+    reseñas: renderReviewsGrid,
+    clientes: renderClientsTable
+  };
 
-/* ==========================================================================
-   4. RENDERIZADO DE TABLAS Y MÓDULOS
-   ========================================================================== */
+  if (renderMap[viewKey]) renderMap[viewKey]();
+};
 
 function renderAllModules() {
   renderInventoryTable();
@@ -238,19 +212,13 @@ function renderAllModules() {
   renderClientsTable();
 }
 
-// 1. Tabla de Inventario
 function renderInventoryTable(itemsToRender = null) {
   const products = itemsToRender || getProducts();
   const tbody = document.getElementById('inventoryTableBody');
   if (!tbody) return;
 
-  // Actualizar métricas del resumen de inventario
-  let totalStockVal = 0;
-  let lowStockCount = 0;
-  products.forEach(p => {
-    totalStockVal += (p.price * p.stock);
-    if (p.stock <= (p.minStock || 3)) lowStockCount++;
-  });
+  const totalStockVal = products.reduce((acc, p) => acc + (p.price * p.stock), 0);
+  const lowStockCount = products.filter(p => p.stock <= (p.minStock || 3)).length;
 
   const countEl = document.getElementById('invTotalCount');
   const valEl = document.getElementById('invTotalValue');
@@ -261,48 +229,47 @@ function renderInventoryTable(itemsToRender = null) {
   if (lowEl) lowEl.textContent = `${lowStockCount} alertas`;
 
   if (products.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); padding: 30px;">No se encontraron productos registrados</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos registrados</td></tr>`;
     return;
   }
-
-  // Iconos SVG limpios para editar y eliminar
-  const editIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-gold);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
-  const deleteIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-red);"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
   tbody.innerHTML = products.map(prod => `
     <tr>
       <td>
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <img src="${prod.imageUrl || 'https://via.placeholder.com/40'}" alt="${prod.name}" style="width: 38px; height: 38px; border-radius: 6px; object-fit: cover; background: #0E1834;" onerror="this.src='https://via.placeholder.com/40/0E214D/00D2FF?text=Game'">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <img src="${prod.imageUrl || 'https://via.placeholder.com/40'}" alt="${prod.name}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; background:#0E1834;" onerror="this.src='https://via.placeholder.com/40/0E214D/00D2FF?text=Game'">
           <div>
-            <div style="font-weight: 700; color: #FFFFFF; font-size: 0.88rem;">${prod.name}</div>
-            <div style="font-size: 0.74rem; color: var(--text-secondary);">${prod.platform || 'Original'}</div>
+            <div style="font-weight:700; color:#FFFFFF; font-size:0.88rem;">${prod.name}</div>
+            <div style="font-size:0.74rem; color:var(--text-secondary);">${prod.platform || 'Original'}</div>
           </div>
         </div>
       </td>
-      <td style="color: var(--accent-cyan); font-weight: 600; font-size: 0.82rem;">${prod.sku}</td>
-      <td><span style="background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 4px; font-size: 0.78rem;">${prod.category}</span></td>
-      <td style="font-weight: 700; color: #FFFFFF;">$ ${Number(prod.price).toLocaleString('es-CO')}</td>
+      <td style="color:var(--accent-cyan); font-weight:600; font-size:0.82rem;">${prod.sku}</td>
+      <td><span style="background:rgba(255,255,255,0.06); padding:3px 8px; border-radius:4px; font-size:0.78rem;">${prod.category}</span></td>
+      <td style="font-weight:700; color:#FFFFFF;">$ ${Number(prod.price).toLocaleString('es-CO')}</td>
       <td>
-        <span style="font-weight: 700; color: ${prod.stock <= (prod.minStock || 3) ? '#EF4444' : '#10B981'};">
+        <span style="font-weight:700; color:${prod.stock <= (prod.minStock || 3) ? '#EF4444' : '#10B981'};">
           ${prod.stock} uds
         </span>
       </td>
-      <td style="font-size: 0.8rem; color: var(--text-secondary);">${prod.warranty || '3 Meses'}</td>
+      <td style="font-size:0.8rem; color:var(--text-secondary);">${prod.warranty || '3 Meses'}</td>
       <td>
         <span class="badge-status ${prod.condition === 'Nuevo Sellado' ? 'delivered' : 'shipping'}">${prod.condition}</span>
       </td>
       <td>
-        <div style="display: flex; gap: 8px;">
-          <button class="row-more-btn" title="Editar producto" onclick="window.editProduct(${prod.id})">${editIcon}</button>
-          <button class="row-more-btn" title="Eliminar producto" onclick="window.deleteProduct(${prod.id})">${deleteIcon}</button>
+        <div style="display:flex; gap:8px;">
+          <button class="row-more-btn" title="Editar producto" onclick="window.editProduct(${prod.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-gold);"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+          </button>
+          <button class="row-more-btn" title="Eliminar producto" onclick="window.deleteProduct(${prod.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm" style="color:var(--accent-red);"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         </div>
       </td>
     </tr>
   `).join('');
 }
 
-// 2. Tabla de Garantías
 function renderWarrantiesTable(items = null) {
   const warranties = items || JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
   const tbody = document.getElementById('garantiasTableBody');
@@ -310,8 +277,8 @@ function renderWarrantiesTable(items = null) {
 
   tbody.innerHTML = warranties.map(w => `
     <tr>
-      <td style="color: var(--accent-blue); font-weight: 700;">${w.id}</td>
-      <td style="font-weight: 600;">${w.client}</td>
+      <td style="color:var(--accent-blue); font-weight:700;">${w.id}</td>
+      <td style="font-weight:600;">${w.client}</td>
       <td>${w.product}</td>
       <td>${w.buyDate}</td>
       <td>${w.expDate}</td>
@@ -327,7 +294,6 @@ function renderWarrantiesTable(items = null) {
   `).join('');
 }
 
-// 3. Tabla de Mantenimientos
 function renderMaintenanceTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_maintenance')) || DEFAULT_MAINTENANCE;
   const tbody = document.getElementById('mantenimientosTableBody');
@@ -335,11 +301,11 @@ function renderMaintenanceTable() {
 
   tbody.innerHTML = list.map(m => `
     <tr>
-      <td style="color: var(--accent-gold); font-weight: 700;">${m.order}</td>
-      <td style="font-weight: 600;">${m.equipment}</td>
+      <td style="color:var(--accent-gold); font-weight:700;">${m.order}</td>
+      <td style="font-weight:600;">${m.equipment}</td>
       <td>${m.client}</td>
-      <td style="color: var(--accent-cyan);">${m.tech}</td>
-      <td style="font-weight: 700;">${m.cost}</td>
+      <td style="color:var(--accent-cyan);">${m.tech}</td>
+      <td style="font-weight:700;">${m.cost}</td>
       <td>
         <span class="badge-status ${m.status === 'Listo para Entrega' ? 'delivered' : (m.status === 'En Taller' ? 'shipping' : 'processing')}">
           ${m.status}
@@ -352,7 +318,6 @@ function renderMaintenanceTable() {
   `).join('');
 }
 
-// 4. Tabla de Reparaciones
 function renderRepairsTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_repairs')) || DEFAULT_REPAIRS;
   const tbody = document.getElementById('reparacionesTableBody');
@@ -360,11 +325,11 @@ function renderRepairsTable() {
 
   tbody.innerHTML = list.map(r => `
     <tr>
-      <td style="color: var(--accent-blue); font-weight: 700;">${r.ticket}</td>
-      <td style="font-weight: 600;">${r.device}</td>
-      <td style="color: var(--text-secondary); max-width: 250px;">${r.defect}</td>
+      <td style="color:var(--accent-blue); font-weight:700;">${r.ticket}</td>
+      <td style="font-weight:600;">${r.device}</td>
+      <td style="color:var(--text-secondary); max-width:250px;">${r.defect}</td>
       <td>${r.client}</td>
-      <td style="font-weight: 700; color: #FFFFFF;">${r.price}</td>
+      <td style="font-weight:700; color:#FFFFFF;">${r.price}</td>
       <td>
         <span class="badge-status ${r.status === 'Completada' ? 'delivered' : (r.status === 'En Reparación' ? 'processing' : 'warning')}">
           ${r.status}
@@ -377,7 +342,6 @@ function renderRepairsTable() {
   `).join('');
 }
 
-// 5. Tabla de Descuentos
 function renderDiscountsTable() {
   const list = JSON.parse(localStorage.getItem('wiiu_discounts')) || DEFAULT_DISCOUNTS;
   const tbody = document.getElementById('descuentosTableBody');
@@ -385,9 +349,9 @@ function renderDiscountsTable() {
 
   tbody.innerHTML = list.map(d => `
     <tr>
-      <td style="color: var(--accent-gold); font-weight: 800; letter-spacing: 0.05em;">${d.code}</td>
+      <td style="color:var(--accent-gold); font-weight:800; letter-spacing:0.05em;">${d.code}</td>
       <td>${d.desc}</td>
-      <td style="font-weight: 700; color: var(--accent-cyan);">${d.percent}</td>
+      <td style="font-weight:700; color:var(--accent-cyan);">${d.percent}</td>
       <td>${d.expires}</td>
       <td>${d.uses}</td>
       <td>
@@ -400,7 +364,6 @@ function renderDiscountsTable() {
   `).join('');
 }
 
-// 6. Grid de Reseñas
 function renderReviewsGrid() {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
@@ -420,18 +383,18 @@ function renderReviewsGrid() {
   `).join('');
 }
 
-// 7. Tabla de Clientes
 function renderClientsTable() {
   const tbody = document.getElementById('clientesTableBody');
   if (!tbody) return;
 
-  tbody.innerHTML = DEFAULT_CLIENTS.map(c => `
+  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || DEFAULT_CLIENTS;
+  tbody.innerHTML = clients.map(c => `
     <tr>
-      <td style="font-weight: 700; color: #FFFFFF;">${c.name}</td>
+      <td style="font-weight:700; color:#FFFFFF;">${c.name}</td>
       <td>${c.phone}</td>
-      <td style="color: var(--text-secondary);">${c.email}</td>
-      <td style="font-weight: 700; color: var(--accent-gold);">${c.totalSpent}</td>
-      <td>${c.lastVisit}</td>
+      <td style="color:var(--text-secondary);">${c.email}</td>
+      <td style="font-weight:700; color:var(--accent-gold);">${c.totalSpent}</td>
+      <td>${c.lastVisit || 'Reciente'}</td>
       <td><span class="badge-status delivered">${c.level}</span></td>
       <td>
         <button class="row-more-btn" onclick="window.showToast('Historial del cliente: ${c.name}')">Historial</button>
@@ -439,10 +402,6 @@ function renderClientsTable() {
     </tr>
   `).join('');
 }
-
-/* ==========================================================================
-   5. MODAL DE AGREGAR Y EDITAR PRODUCTO
-   ========================================================================== */
 
 window.openAddProductModal = function() {
   const modal = document.getElementById('modalAddProduct');
@@ -452,7 +411,6 @@ window.openAddProductModal = function() {
   document.getElementById('imagePreview').src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
   document.getElementById('previewCategoryBadge').textContent = 'Juegos Wii U';
   window.generateRandomSKU();
-
   modal.classList.add('active');
 };
 
@@ -461,7 +419,6 @@ window.closeAddProductModal = function() {
   if (modal) modal.classList.remove('active');
 };
 
-// Generador de SKU Automático
 window.generateRandomSKU = function() {
   const cat = document.getElementById('prodCategory')?.value || 'Juegos';
   let prefix = 'WIIU-GME';
@@ -475,7 +432,6 @@ window.generateRandomSKU = function() {
   if (skuInput) skuInput.value = `${prefix}-${randomNum}`;
 };
 
-// Portadas Rápidas Sugeridas
 const PRESET_COVERS = {
   zelda: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop',
   mario: 'https://images.unsplash.com/photo-1612287233214-9988424269e8?w=300&h=300&fit=crop',
@@ -497,7 +453,6 @@ window.previewProductImage = function(url) {
   img.src = (url && url.trim() !== '') ? url : 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
 };
 
-// Guardar Producto (Crear o Actualizar)
 window.saveProduct = function(event) {
   event.preventDefault();
 
@@ -535,17 +490,15 @@ window.saveProduct = function(event) {
   showToast(`¡Producto "${name}" guardado exitosamente en el inventario!`);
 };
 
-// Eliminar Producto
 window.deleteProduct = function(id) {
   if (confirm('¿Estás seguro de que deseas eliminar este producto del inventario?')) {
-    let products = getProducts().filter(p => p.id !== id);
+    const products = getProducts().filter(p => p.id !== id);
     saveProductsList(products);
     renderInventoryTable();
     showToast('Producto eliminado del inventario.');
   }
 };
 
-// Editar Producto
 window.editProduct = function(id) {
   const products = getProducts();
   const prod = products.find(p => p.id === id);
@@ -567,14 +520,8 @@ window.editProduct = function(id) {
   document.getElementById('prodDescription').value = prod.description || '';
   previewProductImage(prod.imageUrl);
 
-  // Remover la versión antigua antes de guardar los cambios
-  products.splice(products.findIndex(p => p.id === id), 1);
-  saveProductsList(products);
+  saveProductsList(products.filter(p => p.id !== id));
 };
-
-/* ==========================================================================
-   6. MODAL DE DESCUENTOS Y EXPORTACIÓN
-   ========================================================================== */
 
 window.openDiscountModal = function() {
   const modal = document.getElementById('modalDiscount');
@@ -634,10 +581,6 @@ window.exportFullReport = function() {
   }, 600);
 };
 
-/* ==========================================================================
-   7. FILTROS Y BÚSQUEDA DINÁMICA
-   ========================================================================== */
-
 function initGlobalSearch() {
   const input = document.getElementById('globalSearchInput');
   if (!input) return;
@@ -646,8 +589,7 @@ function initGlobalSearch() {
     const term = e.target.value.toLowerCase().trim();
     if (term === '') return;
 
-    const products = getProducts();
-    const filtered = products.filter(p => 
+    const filtered = getProducts().filter(p => 
       p.name.toLowerCase().includes(term) || 
       p.sku.toLowerCase().includes(term) || 
       p.category.toLowerCase().includes(term)
@@ -672,47 +614,35 @@ window.filterProducts = function(searchTerm) {
 
 window.filterProductsByCategory = function(category) {
   const products = getProducts();
-  if (category === 'todos') {
-    renderInventoryTable(products);
-  } else {
-    renderInventoryTable(products.filter(p => p.category === category));
-  }
+  renderInventoryTable(category === 'todos' ? products : products.filter(p => p.category === category));
 };
 
 window.filterWarranties = function(term) {
   const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
-  const filtered = warranties.filter(w => 
-    w.client.toLowerCase().includes(term.toLowerCase()) || 
-    w.product.toLowerCase().includes(term.toLowerCase()) || 
-    w.id.toLowerCase().includes(term.toLowerCase())
-  );
-  renderWarrantiesTable(filtered);
+  const cleanTerm = term.toLowerCase().trim();
+  renderWarrantiesTable(warranties.filter(w => 
+    w.client.toLowerCase().includes(cleanTerm) || 
+    w.product.toLowerCase().includes(cleanTerm) || 
+    w.id.toLowerCase().includes(cleanTerm)
+  ));
 };
 
 window.filterWarrantiesByStatus = function(status) {
   const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
-  if (status === 'todos') renderWarrantiesTable(warranties);
-  else renderWarrantiesTable(warranties.filter(w => w.status === status));
+  renderWarrantiesTable(status === 'todos' ? warranties : warranties.filter(w => w.status === status));
 };
-
-/* ==========================================================================
-   8. SISTEMA DE NOTIFICACIONES (TOAST)
-   ========================================================================== */
 
 window.showToast = function(message) {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
   const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="toast-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-
   const toast = document.createElement('div');
   toast.className = 'toast';
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;
   container.appendChild(toast);
 
   setTimeout(() => {
-    if (toast.parentNode) {
-      toast.remove();
-    }
+    if (toast.parentNode) toast.remove();
   }, 4000);
 };

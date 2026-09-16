@@ -4,33 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administrador - WiiU-Games</title>
-  
-  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Hoja de Estilos Principal -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- CONTENEDOR PRINCIPAL DEL PANEL -->
   <div class="app-layout">
 
-    <!-- ======================================================== -->
-    <!-- BARRA LATERAL (SIDEBAR DE NAVEGACIÓN) -->
-    <!-- ======================================================== -->
     <aside class="sidebar" id="sidebar">
-      
-      <!-- LOGO OFICIAL DE WIIU-GAMES -->
       <div class="brand-header">
         <div class="brand-logo-container">
           <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="brand-logo-img">
         </div>
       </div>
 
-      <!-- MENÚ PRINCIPAL DE NAVEGACIÓN -->
       <nav class="sidebar-nav">
         <button class="nav-item active" data-view="home" id="nav-home">
           <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -96,7 +85,6 @@
         </button>
       </nav>
 
-      <!-- PERFIL DE USUARIO ADMINISTRADOR -->
       <div class="sidebar-footer">
         <div class="user-profile">
           <div class="user-avatar">
@@ -113,15 +101,9 @@
           </button>
         </div>
       </div>
-
     </aside>
 
-    <!-- ======================================================== -->
-    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
-    <!-- ======================================================== -->
     <main class="main-content">
-
-      <!-- ENCABEZADO SUPERIOR -->
       <header class="top-header">
         <div class="header-greeting">
           <h1 class="greeting-title">
@@ -137,7 +119,6 @@
         </div>
 
         <div class="header-controls">
-          <!-- Buscador Global -->
           <div class="search-bar">
             <input type="text" id="globalSearchInput" placeholder="Buscar productos, pedidos, clientes...">
             <button class="search-btn" title="Buscar">
@@ -148,7 +129,6 @@
             </button>
           </div>
 
-          <!-- Selector Rápido de Rango de Fecha -->
           <div class="date-selector">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -162,7 +142,6 @@
             </svg>
           </div>
 
-          <!-- Botón de Notificaciones -->
           <div class="notification-wrapper">
             <button class="notification-btn" id="notificationBtn" title="Notificaciones" onclick="window.showToast('Tienes 3 pedidos pendientes por despachar')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -175,15 +154,8 @@
         </div>
       </header>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 1: HOME / DASHBOARD (MÉTRICAS Y GRÁFICOS) -->
-      <!-- ======================================================== -->
       <section class="view-section active-view" id="view-home">
-        
-        <!-- TARJETAS DE MÉTRICAS (KPIs) -->
         <div class="kpi-grid">
-          
-          <!-- KPI 1: Ventas Totales -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -214,7 +186,6 @@
             </div>
           </div>
 
-          <!-- KPI 2: Pedidos -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -245,7 +216,6 @@
             </div>
           </div>
 
-          <!-- KPI 3: Clientes Nuevos -->
           <div class="kpi-card light-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -276,7 +246,6 @@
             </div>
           </div>
 
-          <!-- KPI 4: Tasa de Conversión -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -304,13 +273,9 @@
               </svg>
             </div>
           </div>
-
         </div>
 
-        <!-- FILA INTERMEDIA: GRÁFICA DE VENTAS + TOP PRODUCTOS -->
         <div class="dashboard-grid-mid">
-          
-          <!-- GRÁFICO DINÁMICO DE VENTAS -->
           <div class="panel-card chart-panel">
             <div class="panel-header">
               <h2 class="panel-title">Ventas</h2>
@@ -382,7 +347,6 @@
             </div>
           </div>
 
-          <!-- LISTA DE PRODUCTOS MÁS VENDIDOS -->
           <div class="panel-card best-sellers-panel">
             <div class="panel-header">
               <h2 class="panel-title">Productos más vendidos</h2>
@@ -461,13 +425,9 @@
               <span>Ver todos los productos</span>
             </button>
           </div>
-
         </div>
 
-        <!-- FILA INFERIOR: PEDIDOS RECIENTES + RESUMEN FINANCIERO -->
         <div class="dashboard-grid-bottom">
-          
-          <!-- TABLA DE PEDIDOS RECIENTES -->
           <div class="panel-card recent-orders-panel">
             <div class="panel-header">
               <h2 class="panel-title">Pedidos recientes</h2>
@@ -574,7 +534,6 @@
             </div>
           </div>
 
-          <!-- RESUMEN FINANCIERO -->
           <div class="panel-card financial-panel">
             <div class="panel-header">
               <h2 class="panel-title">Resumen financiero</h2>
@@ -648,14 +607,9 @@
               </a>
             </div>
           </div>
-
         </div>
-
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 2: GARANTÍAS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-garantias">
         <div class="view-header-bar">
           <div>
@@ -697,17 +651,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="garantiasTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="garantiasTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 3: MANTENIMIENTOS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-mantenimientos">
         <div class="view-header-bar">
           <div>
@@ -740,17 +689,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="mantenimientosTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="mantenimientosTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 4: INVENTARIO DE PRODUCTOS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-inventario">
         <div class="view-header-bar">
           <div>
@@ -815,17 +759,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="inventoryTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="inventoryTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 5: REPARACIÓN -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-reparacion">
         <div class="view-header-bar">
           <div>
@@ -858,17 +797,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="reparacionesTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="reparacionesTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 6: DESCUENTOS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-descuentos">
         <div class="view-header-bar">
           <div>
@@ -895,17 +829,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="descuentosTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="descuentosTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 7: RESEÑAS -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-reseñas">
         <div class="view-header-bar">
           <div>
@@ -915,15 +844,10 @@
         </div>
 
         <div class="panel-card full-panel">
-          <div class="reviews-grid" id="reviewsGrid">
-            <!-- Se pobla dinámicamente -->
-          </div>
+          <div class="reviews-grid" id="reviewsGrid"></div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 8: CLIENTES -->
-      <!-- ======================================================== -->
       <section class="view-section" id="view-clientes">
         <div class="view-header-bar">
           <div>
@@ -950,15 +874,12 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="clientesTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="clientesTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- BARRA DE ACCIONES RÁPIDAS (FOOTER DEL DASHBOARD) -->
       <footer class="quick-actions-bar">
         <div class="quick-actions-info">
           <div class="qa-title">Acciones rápidas</div>
@@ -1003,13 +924,8 @@
 
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: FORMULARIO MEJORADO "AGREGAR PRODUCTO" -->
-  <!-- ======================================================== -->
   <div class="modal-backdrop" id="modalAddProduct">
     <div class="modal-window modal-lg">
-      
-      <!-- Encabezado del Modal -->
       <div class="modal-header">
         <div class="modal-title-box">
           <div class="modal-badge-icon">
@@ -1028,13 +944,9 @@
         <button class="modal-close-btn" onclick="window.closeAddProductModal()">&times;</button>
       </div>
 
-      <!-- Formulario Organizado en 2 Columnas -->
       <form id="formAddProduct" onsubmit="window.saveProduct(event)">
         <div class="modal-body-grid">
-          
-          <!-- COLUMNA IZQUIERDA: DATOS DEL PRODUCTO Y PRECIOS -->
           <div class="form-column">
-            
             <h4 class="form-section-title">
               <span class="section-step">1</span> Información Principal
             </h4>
@@ -1112,12 +1024,9 @@
                 <input type="number" id="prodMinStock" placeholder="3" min="1" value="2">
               </div>
             </div>
-
           </div>
 
-          <!-- COLUMNA DERECHA: ESTADO, GARANTÍA Y VISTA PREVIA -->
           <div class="form-column">
-            
             <h4 class="form-section-title">
               <span class="section-step">3</span> Estado y Garantía
             </h4>
@@ -1154,7 +1063,6 @@
               <input type="url" id="prodImageUrl" placeholder="https://ejemplo.com/portada-zelda.jpg" oninput="window.previewProductImage(this.value)">
             </div>
 
-            <!-- Accesos Rápidos de Portadas Recomendadas -->
             <div class="quick-cover-picker">
               <span class="cover-picker-label">Portadas rápidas sugeridas:</span>
               <div class="cover-chips">
@@ -1166,7 +1074,6 @@
               </div>
             </div>
 
-            <!-- Caja de Vista Previa -->
             <div class="image-preview-container">
               <div class="image-preview-box" id="imagePreviewBox">
                 <img id="imagePreview" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop" alt="Vista previa de portada">
@@ -1178,12 +1085,9 @@
               <label for="prodDescription">Descripción del Producto</label>
               <textarea id="prodDescription" rows="3" placeholder="Detalles de contenido, idioma, estado de la caja o especificaciones..."></textarea>
             </div>
-
           </div>
-
         </div>
 
-        <!-- Botones del Pie del Modal -->
         <div class="modal-footer">
           <button type="button" class="btn-secondary" onclick="window.closeAddProductModal()">Cancelar</button>
           <button type="submit" class="btn-primary-glow">
@@ -1196,13 +1100,9 @@
           </button>
         </div>
       </form>
-
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: CREAR DESCUENTO RÁPIDO -->
-  <!-- ======================================================== -->
   <div class="modal-backdrop" id="modalDiscount">
     <div class="modal-window">
       <div class="modal-header">
@@ -1251,10 +1151,8 @@
     </div>
   </div>
 
-  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
   <div class="toast-container" id="toastContainer"></div>
 
-  <!-- SCRIPT LÓGICO PRINCIPAL -->
   <script src="script.js"></script>
 </body>
 </html>
