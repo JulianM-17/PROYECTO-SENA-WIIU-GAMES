@@ -866,6 +866,114 @@
       <!-- FIN panel-layout -->
     </main>
 
+    <!-- ==================== CONTENEDOR TOASTS ==================== -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- ==================== MODAL DIRECCIÓN ==================== -->
+    <div id="modal-direccion" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-direccion-titulo"><i class="fi fi-rr-marker"></i> Agregar Dirección</h3>
+          <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="form-modal-direccion" class="modal-body">
+          <input type="hidden" id="dir-edit-id" value="" />
+          <div class="form-campo">
+            <label class="form-label">Tipo de dirección</label>
+            <select id="dir-input-tipo" class="form-input" required>
+              <option value="Casa">Casa</option>
+              <option value="Trabajo">Trabajo</option>
+              <option value="Apartamento">Apartamento</option>
+              <option value="Otra">Otra</option>
+            </select>
+          </div>
+          <div class="form-campo">
+            <label class="form-label">Nombre del destinatario</label>
+            <input type="text" id="dir-input-nombre" class="form-input" placeholder="Ej: Fabian Mora" required />
+          </div>
+          <div class="form-campo">
+            <label class="form-label">Dirección detallada</label>
+            <input type="text" id="dir-input-detalle" class="form-input" placeholder="Ej: Cra. 11 #14-14, Apto 302, Sogamoso" required />
+          </div>
+          <div class="form-campo">
+            <label class="form-label">Teléfono de contacto</label>
+            <input type="tel" id="dir-input-telefono" class="form-input" placeholder="Ej: +57 310 456 7890" required />
+          </div>
+          <div class="form-campo-checkbox">
+            <input type="checkbox" id="dir-input-principal" />
+            <label for="dir-input-principal">Establecer como dirección principal</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancelar" data-close-modal>Cancelar</button>
+            <button type="submit" class="btn-guardar">Guardar Dirección</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== MODAL TARJETA ==================== -->
+    <div id="modal-tarjeta" class="modal-backdrop">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-tarjeta-titulo"><i class="fi fi-rr-credit-card"></i> Agregar Tarjeta de Pago</h3>
+          <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <form id="form-modal-tarjeta" class="modal-body">
+          <input type="hidden" id="card-edit-id" value="" />
+          <div class="form-campo">
+            <label class="form-label">Franquicia</label>
+            <select id="card-input-tipo" class="form-input" required>
+              <option value="visa">VISA</option>
+              <option value="mastercard">MasterCard</option>
+            </select>
+          </div>
+          <div class="form-campo">
+            <label class="form-label">Número de Tarjeta</label>
+            <input type="text" id="card-input-numero" class="form-input" placeholder="•••• •••• •••• 1234" maxlength="19" required />
+          </div>
+          <div class="form-campo">
+            <label class="form-label">Nombre en la tarjeta</label>
+            <input type="text" id="card-input-titular" class="form-input" placeholder="FABIAN MORA" required />
+          </div>
+          <div class="form-grid-2">
+            <div class="form-campo">
+              <label class="form-label">Vencimiento (MM/AA)</label>
+              <input type="text" id="card-input-vence" class="form-input" placeholder="08/29" maxlength="5" required />
+            </div>
+            <div class="form-campo">
+              <label class="form-label">CVC</label>
+              <input type="password" id="card-input-cvc" class="form-input" placeholder="•••" maxlength="4" required />
+            </div>
+          </div>
+          <div class="form-campo-checkbox">
+            <input type="checkbox" id="card-input-predeterminada" />
+            <label for="card-input-predeterminada">Establecer como tarjeta predeterminada</label>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancelar" data-close-modal>Cancelar</button>
+            <button type="submit" class="btn-guardar">Guardar Tarjeta</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ==================== MODAL DETALLE PEDIDO ==================== -->
+    <div id="modal-pedido-detalle" class="modal-backdrop">
+      <div class="modal-card modal-card-lg">
+        <div class="modal-header">
+          <h3><i class="fi fi-rr-file-invoice"></i> Detalle del Pedido <span id="det-pedido-num">#WG-20260901</span></h3>
+          <button class="modal-close-btn" data-close-modal>&times;</button>
+        </div>
+        <div class="modal-body" id="det-pedido-contenido">
+          <!-- Contenido dinámico del pedido -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" data-close-modal>Cerrar</button>
+          <button type="button" class="btn-guardar" id="btn-imprimir-factura"><i class="fi fi-rr-print"></i> Imprimir Factura</button>
+        </div>
+      </div>
+    </div>
+
     <!-- ==================== FOOTER ==================== -->
     <footer class="sitio-footer">
       <div class="cuadricula-footer">
