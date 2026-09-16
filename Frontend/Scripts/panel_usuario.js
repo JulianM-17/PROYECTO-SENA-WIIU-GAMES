@@ -339,12 +339,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================================
   // 5. PERFIL — GUARDAR DATOS & CAMBIAR CONTRASEÑA
   // ===================================================
-  const btnGuardarPerfil = document.querySelector('#vista-perfil .btn-guardar');
-  const btnCancelarPerfil = document.querySelector('#vista-perfil .btn-cancelar');
-  const btnCambiarPassword = document.querySelector('.btn-cambiar-password');
+  const formPerfilDatos     = document.getElementById('form-perfil-datos');
+  const btnCancelarPerfil   = document.getElementById('btn-cancelar-perfil');
+  const formPerfilSeguridad = document.getElementById('form-perfil-seguridad');
 
-  if (btnGuardarPerfil) {
-    btnGuardarPerfil.addEventListener('click', (e) => {
+  if (formPerfilDatos) {
+    formPerfilDatos.addEventListener('submit', (e) => {
       e.preventDefault();
       const inputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:first-of-type .entrada-formulario');
       if (inputs.length >= 6) {
@@ -355,10 +355,28 @@ document.addEventListener('DOMContentLoaded', () => {
         state.profile.nacimiento = inputs[4].value;
         state.profile.documento  = inputs[5].value.trim();
 
-        saveState();
-        updateUI();
-        showToast('¡Datos personales guardados correctamente!', 'success');
+      const nuevoNombre     = document.getElementById('perfil-nombres')?.value.trim();
+      const nuevosApellidos = document.getElementById('perfil-apellidos')?.value.trim();
+      const nuevoEmail      = document.getElementById('perfil-email')?.value.trim();
+      const nuevoTel        = document.getElementById('perfil-telefono')?.value.trim();
+      const nuevoNac        = document.getElementById('perfil-nacimiento')?.value;
+      const nuevoDoc        = document.getElementById('perfil-documento')?.value.trim();
+
+      if (!nuevoNombre) {
+        showToast('El campo Nombres no puede estar vacío.', 'error');
+        return;
       }
+
+      state.profile.nombre     = nuevoNombre;
+      state.profile.apellidos  = nuevosApellidos;
+      state.profile.email      = nuevoEmail;
+      state.profile.telefono   = nuevoTel;
+      state.profile.nacimiento = nuevoNac;
+      state.profile.documento  = nuevoDoc;
+
+      saveState();
+      updateUI();
+      showToast('¡Datos personales actualizados con éxito!', 'success');
     });
   }
 
@@ -370,8 +388,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (btnCambiarPassword) {
-    btnCambiarPassword.addEventListener('click', (e) => {
+  if (formPerfilSeguridad) {
+    formPerfilSeguridad.addEventListener('submit', (e) => {
       e.preventDefault();
       const passInputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:nth-of-type(2) .entrada-formulario');
       const actual  = passInputs[0]?.value;
@@ -391,7 +409,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      passInputs.forEach(i => i.value = '');
+      document.getElementById('perfil-pass-actual').value = '';
+      document.getElementById('perfil-pass-nueva').value = '';
+      document.getElementById('perfil-pass-confirm').value = '';
       showToast('¡Contraseña actualizada con éxito!', 'success');
     });
   }
