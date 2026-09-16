@@ -68,7 +68,7 @@
       <div class="sidebar-footer">
         <div class="user-profile">
           <div class="user-avatar">
-            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="Carlos M." onerror="this.src='https://ui-avatars.com/api/?name=Carlos+M&background=0077FF&color=FFFFFF&bold=true'">
+            <img src="https://ui-avatars.com/api/?name=Carlos+M&background=0077FF&color=FFFFFF&bold=true" alt="Carlos M.">
           </div>
           <div class="user-info">
             <div class="user-name">Carlos M.</div>
@@ -94,15 +94,15 @@
 
         <div class="header-controls">
           <div class="shift-badge">
-            <span class="shift-dot"></span> Turno Mañana (08:00 - 16:00)
+            <span class="shift-dot"></span> Turno Actual
           </div>
 
-          <button class="notification-btn" title="Solicitudes de clientes" onclick="window.showToast('3 clientes esperando en caja')">
+          <button class="notification-btn" title="Solicitudes de clientes" onclick="window.showToast('No hay clientes en espera')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
             </svg>
-            <span class="notification-badge">3</span>
+            <span class="notification-badge">0</span>
           </button>
         </div>
       </header>
@@ -137,9 +137,6 @@
               <label for="posClientSelect">Cliente para Recibo:</label>
               <select id="posClientSelect" class="custom-select">
                 <option value="Cliente Ocasional / Mostrador">Cliente Mostrador (Venta Rápida)</option>
-                <option value="Juan Camilo R.">Juan Camilo R. (VIP)</option>
-                <option value="María Fernanda T.">María Fernanda T.</option>
-                <option value="Andrés Felipe G.">Andrés Felipe G.</option>
               </select>
             </div>
 

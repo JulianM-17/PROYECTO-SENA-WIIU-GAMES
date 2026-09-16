@@ -8,28 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   renderAllEmployeeTables();
 });
 
-const DEFAULT_PRODUCTS = [
-  { id: 1, name: 'The Legend of Zelda: Breath of the Wild (Wii U)', category: 'Juegos Wii U', sku: 'WIIU-GME-001', price: 189900, stock: 25, condition: 'Nuevo Sellado', imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop' },
-  { id: 2, name: 'Super Mario 3D World', category: 'Juegos Wii U', sku: 'WIIU-GME-002', price: 149900, stock: 18, condition: 'Usado - Excelente', imageUrl: 'https://images.unsplash.com/photo-1612287233214-9988424269e8?w=300&h=300&fit=crop' },
-  { id: 3, name: 'Mario Kart 8', category: 'Juegos Wii U', sku: 'WIIU-GME-003', price: 139900, stock: 32, condition: 'Nuevo Sellado', imageUrl: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=300&fit=crop' },
-  { id: 4, name: 'Splatoon (Wii U)', category: 'Juegos Wii U', sku: 'WIIU-GME-004', price: 119900, stock: 14, condition: 'Usado - Excelente', imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=300&fit=crop' },
-  { id: 5, name: 'Super Smash Bros. for Wii U', category: 'Juegos Wii U', sku: 'WIIU-GME-005', price: 159900, stock: 20, condition: 'Nuevo Sellado', imageUrl: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=300&h=300&fit=crop' },
-  { id: 6, name: 'Consola Wii U Deluxe 32GB Black + GamePad', category: 'Consolas', sku: 'WIIU-CNS-001', price: 850000, stock: 4, condition: 'Reacondicionado Certificado', imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop' }
-];
-
-const DEFAULT_WARRANTIES = [
-  { id: 'GAR-801', client: 'Juan Camilo R.', product: 'Consola Wii U 32GB (SN: GW70291823)', buyDate: '10/08/2026', expDate: '10/02/2027', status: 'Activa' },
-  { id: 'GAR-802', client: 'Andrés Felipe G.', product: 'Zelda Breath of the Wild (WIIU-GME-001)', buyDate: '01/09/2026', expDate: '01/09/2027', status: 'Activa' }
-];
-
-const DEFAULT_REPAIRS = [
-  { ticket: 'REP-101', device: 'Wii U GamePad', defect: 'Cambio de pantalla LCD y táctil', client: 'Andrés Felipe G.', price: '$ 150.000', status: 'En Reparación' }
-];
-
-const DEFAULT_CLIENTS = [
-  { name: 'Juan Camilo R.', phone: '+57 312 456 7890', email: 'camilo.r@gmail.com', totalSpent: '$ 1.250.000', level: 'VIP Gamer' },
-  { name: 'María Fernanda T.', phone: '+57 315 987 6543', email: 'mafe.t@hotmail.com', totalSpent: '$ 680.000', level: 'Frecuente' }
-];
+const DEFAULT_PRODUCTS = [];
+const DEFAULT_WARRANTIES = [];
+const DEFAULT_REPAIRS = [];
+const DEFAULT_CLIENTS = [];
 
 function initPresetData() {
   const storeDefaults = {
@@ -47,7 +29,7 @@ function initPresetData() {
 }
 
 function getProducts() {
-  return JSON.parse(localStorage.getItem('wiiu_products')) || DEFAULT_PRODUCTS;
+  return JSON.parse(localStorage.getItem('wiiu_products')) || [];
 }
 
 function saveProducts(products) {
@@ -90,6 +72,11 @@ function renderPosProductsGrid(items = null) {
   const products = items || getProducts();
   const grid = document.getElementById('posProductsGrid');
   if (!grid) return;
+
+  if (products.length === 0) {
+    grid.innerHTML = `<div class="empty-cart-msg" style="grid-column: 1 / -1; padding: 40px; font-size: 0.95rem;">No hay productos disponibles en el inventario</div>`;
+    return;
+  }
 
   grid.innerHTML = products.map(p => `
     <div class="pos-product-card" onclick="window.addToCart(${p.id})">
@@ -243,11 +230,16 @@ function renderEmpCatalogTable(items = null) {
   const tbody = document.getElementById('empInventoryTableBody');
   if (!tbody) return;
 
+  if (products.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay productos registrados en el catálogo</td></tr>`;
+    return;
+  }
+
   tbody.innerHTML = products.map(p => `
     <tr>
       <td>
         <div style="display:flex; align-items:center; gap:10px;">
-          <img src="${p.imageUrl}" alt="${p.name}" style="width:34px; height:34px; border-radius:4px; object-fit:cover;">
+          <img src="${p.imageUrl || 'https://via.placeholder.com/34'}" alt="${p.name}" style="width:34px; height:34px; border-radius:4px; object-fit:cover;">
           <span style="font-weight:700;">${p.name}</span>
         </div>
       </td>
@@ -268,9 +260,14 @@ window.filterEmpProducts = function(term) {
 };
 
 function renderEmpWarrantiesTable() {
-  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
+  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   const tbody = document.getElementById('empGarantiasTableBody');
   if (!tbody) return;
+
+  if (warranties.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay garantías registradas</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = warranties.map(w => `
     <tr>
@@ -286,9 +283,14 @@ function renderEmpWarrantiesTable() {
 }
 
 function renderEmpRepairsTable() {
-  const repairs = JSON.parse(localStorage.getItem('wiiu_repairs')) || DEFAULT_REPAIRS;
+  const repairs = JSON.parse(localStorage.getItem('wiiu_repairs')) || [];
   const tbody = document.getElementById('empRepairsTableBody');
   if (!tbody) return;
+
+  if (repairs.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay órdenes de taller técnico registradas</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = repairs.map(r => `
     <tr>
@@ -304,9 +306,14 @@ function renderEmpRepairsTable() {
 }
 
 function renderEmpClientsTable() {
-  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || DEFAULT_CLIENTS;
+  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
   const tbody = document.getElementById('empClientsTableBody');
   if (!tbody) return;
+
+  if (clients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay clientes registrados</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = clients.map(c => `
     <tr>
@@ -334,7 +341,7 @@ window.saveWarranty = function(e) {
   const product = document.getElementById('warProduct').value.trim();
   const duration = document.getElementById('warDuration').value;
 
-  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
+  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   const newWar = {
     id: `GAR-${Math.floor(850 + Math.random() * 100)}`,
     client, product, buyDate: new Date().toLocaleDateString('es-CO'), expDate: duration, status: 'Activa'
@@ -363,7 +370,7 @@ window.saveRepairOrder = function(e) {
   const client = document.getElementById('repClient').value.trim();
   const price = document.getElementById('repPrice').value.trim() || '$ 60.000';
 
-  const repairs = JSON.parse(localStorage.getItem('wiiu_repairs')) || DEFAULT_REPAIRS;
+  const repairs = JSON.parse(localStorage.getItem('wiiu_repairs')) || [];
   const newRepair = {
     ticket: `REP-${Math.floor(105 + Math.random() * 90)}`,
     device, defect, client, price, status: 'Ingresado en Taller'
@@ -391,7 +398,7 @@ window.saveClient = function(e) {
   const phone = document.getElementById('cliPhone').value.trim() || 'Sin teléfono';
   const email = document.getElementById('cliEmail').value.trim() || 'Sin correo';
 
-  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || DEFAULT_CLIENTS;
+  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
   clients.unshift({ name, phone, email, totalSpent: '$ 0', level: 'Nuevo' });
   localStorage.setItem('wiiu_clients', JSON.stringify(clients));
   closeAddClientModal();

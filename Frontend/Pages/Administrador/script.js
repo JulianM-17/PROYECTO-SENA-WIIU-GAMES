@@ -5,143 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initGlobalSearch();
 });
 
-const DEFAULT_PRODUCTS = [
-  {
-    id: 1,
-    name: 'The Legend of Zelda: Breath of the Wild (Wii U)',
-    category: 'Juegos Wii U',
-    sku: 'WIIU-GME-001',
-    price: 189900,
-    costPrice: 120000,
-    stock: 25,
-    minStock: 5,
-    condition: 'Nuevo Sellado',
-    warranty: '1 Año',
-    publisher: 'Nintendo',
-    platform: 'Disco Físico Original',
-    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop',
-    description: 'Aventura épica de mundo abierto en Hyrule para la consola Wii U. Edición original física en caja sellada.'
-  },
-  {
-    id: 2,
-    name: 'Super Mario 3D World',
-    category: 'Juegos Wii U',
-    sku: 'WIIU-GME-002',
-    price: 149900,
-    costPrice: 90000,
-    stock: 18,
-    minStock: 4,
-    condition: 'Usado - Excelente',
-    warranty: '6 Meses',
-    publisher: 'Nintendo',
-    platform: 'Disco Físico Original',
-    imageUrl: 'https://images.unsplash.com/photo-1612287233214-9988424269e8?w=300&h=300&fit=crop',
-    description: 'Juego de plataformas multijugador cooperativo para hasta 4 jugadores con Mario gato y amigos.'
-  },
-  {
-    id: 3,
-    name: 'Mario Kart 8',
-    category: 'Juegos Wii U',
-    sku: 'WIIU-GME-003',
-    price: 139900,
-    costPrice: 85000,
-    stock: 32,
-    minStock: 6,
-    condition: 'Nuevo Sellado',
-    warranty: '1 Año',
-    publisher: 'Nintendo',
-    platform: 'Disco Físico Original',
-    imageUrl: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=300&fit=crop',
-    description: 'Carreras antigravedad a toda velocidad con pistas exclusivas de Wii U y modo multijugador online.'
-  },
-  {
-    id: 4,
-    name: 'Splatoon (Wii U)',
-    category: 'Juegos Wii U',
-    sku: 'WIIU-GME-004',
-    price: 119900,
-    costPrice: 70000,
-    stock: 14,
-    minStock: 3,
-    condition: 'Usado - Excelente',
-    warranty: '3 Meses',
-    publisher: 'Nintendo',
-    platform: 'Disco Físico Original',
-    imageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=300&fit=crop',
-    description: 'Combates de tinta 4 vs 4 usando los sensores de movimiento giroscópicos del Wii U GamePad.'
-  },
-  {
-    id: 5,
-    name: 'Super Smash Bros. for Wii U',
-    category: 'Juegos Wii U',
-    sku: 'WIIU-GME-005',
-    price: 159900,
-    costPrice: 100000,
-    stock: 20,
-    minStock: 5,
-    condition: 'Nuevo Sellado',
-    warranty: '1 Año',
-    publisher: 'Nintendo',
-    platform: 'Disco Físico Original',
-    imageUrl: 'https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=300&h=300&fit=crop',
-    description: 'El juego de peleas definitivo para 8 jugadores simultáneos con compatibilidad total de Amiibo.'
-  },
-  {
-    id: 6,
-    name: 'Consola Wii U Deluxe 32GB Black + GamePad',
-    category: 'Consolas',
-    sku: 'WIIU-CNS-001',
-    price: 850000,
-    costPrice: 620000,
-    stock: 4,
-    minStock: 2,
-    condition: 'Reacondicionado Certificado',
-    warranty: '6 Meses',
-    publisher: 'Nintendo',
-    platform: 'Consola Completa',
-    imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop',
-    description: 'Consola Wii U Negra de 32GB con GamePad pantalla táctil, barra de sensores, cables y cargadores originales.'
-  }
-];
-
-const DEFAULT_WARRANTIES = [
-  { id: 'GAR-801', client: 'Juan Camilo R.', product: 'Consola Wii U 32GB (SN: GW70291823)', buyDate: '10/08/2026', expDate: '10/02/2027', status: 'Activa' },
-  { id: 'GAR-802', client: 'Andrés Felipe G.', product: 'Zelda Breath of the Wild (WIIU-GME-001)', buyDate: '01/09/2026', expDate: '01/09/2027', status: 'Activa' },
-  { id: 'GAR-803', client: 'María Fernanda T.', product: 'Wii U GamePad Touch Screen (SN: GP481029)', buyDate: '15/05/2026', expDate: '15/11/2026', status: 'En Revisión' },
-  { id: 'GAR-804', client: 'Carlos Mario V.', product: 'Mario Kart 8 Wii U', buyDate: '12/01/2026', expDate: '12/07/2026', status: 'Expirada' }
-];
-
-const DEFAULT_MAINTENANCE = [
-  { order: 'MNT-401', equipment: 'Wii U Deluxe Black 32GB', client: 'Juan Camilo R.', tech: 'Téc. Sebastián M.', cost: '$ 65.000', status: 'En Taller' },
-  { order: 'MNT-402', equipment: 'GamePad Wii U (Calibración)', client: 'Laura Sofía M.', tech: 'Téc. David R.', cost: '$ 45.000', status: 'Listo para Entrega' },
-  { order: 'MNT-403', equipment: 'Lector Óptico Láser Wii U', client: 'Diego Alejandro P.', tech: 'Téc. Sebastián M.', cost: '$ 80.000', status: 'En Diagnóstico' }
-];
-
-const DEFAULT_REPAIRS = [
-  { ticket: 'REP-101', device: 'Wii U GamePad', defect: 'Cambio de pantalla LCD y táctil digitalizador', client: 'Andrés Felipe G.', price: '$ 150.000', status: 'En Reparación' },
-  { ticket: 'REP-102', device: 'Consola Wii U', defect: 'Error de memoria NAND / Pantalla azul', client: 'Santiago H.', price: '$ 180.000', status: 'En Espera de Repuesto' },
-  { ticket: 'REP-103', device: 'Control Wii U Pro', defect: 'Cambio de palanca joystick analógico izquierdo', client: 'Valentina O.', price: '$ 45.000', status: 'Completada' }
-];
-
-const DEFAULT_DISCOUNTS = [
-  { code: 'WIIU-VERANO20', desc: '20% OFF en todos los juegos físicos de Wii U', percent: '20%', expires: '30/09/2026', uses: '45 / 100', status: 'Activo' },
-  { code: 'NINTENDO-VIP', desc: '15% OFF para clientes frecuentes en consolas y repuestos', percent: '15%', expires: '31/12/2026', uses: '12 / 50', status: 'Activo' },
-  { code: 'RETRO-FLASH', desc: 'Rebaja especial fin de semana', percent: '10%', expires: '15/09/2026', uses: '50 / 50', status: 'Agotado' }
-];
-
-const DEFAULT_REVIEWS = [
-  { name: 'Camilo Restrepo', rating: 5, product: 'Zelda BOTW Wii U', comment: 'Llegó en perfecto estado, el disco impecable y la caja sellada. La mejor compra para revivir la Wii U.' },
-  { name: 'Natalia Gómez', rating: 5, product: 'Reparación GamePad', comment: 'Excelente servicio técnico. Arreglaron la pantalla de mi GamePad en menos de 2 días y quedó como nueva.' },
-  { name: 'Julián Mendoza', rating: 4, product: 'Super Mario 3D World', comment: 'Muy buen juego y entrega rápida. Recomendada 100% esta tienda.' },
-  { name: 'Alejandro Cruz', rating: 5, product: 'Consola Wii U Deluxe', comment: 'La consola llegó con todos sus cables, impecable y funcionando a la perfección. Gran atención.' }
-];
-
-const DEFAULT_CLIENTS = [
-  { name: 'Juan Camilo R.', phone: '+57 312 456 7890', email: 'camilo.r@gmail.com', totalSpent: '$ 1.250.000', lastVisit: 'Hoy, 14:20', level: 'VIP Gamer' },
-  { name: 'María Fernanda T.', phone: '+57 315 987 6543', email: 'mafe.t@hotmail.com', totalSpent: '$ 680.000', lastVisit: 'Ayer, 18:45', level: 'Frecuente' },
-  { name: 'Andrés Felipe G.', phone: '+57 320 112 2334', email: 'andres.fg@gmail.com', totalSpent: '$ 890.000', lastVisit: 'Hace 3 días', level: 'VIP Gamer' },
-  { name: 'Laura Sofía M.', phone: '+57 301 555 4433', email: 'laura.m@yahoo.com', totalSpent: '$ 320.000', lastVisit: '10 Sep 2026', level: 'Nuevo' }
-];
+const DEFAULT_PRODUCTS = [];
+const DEFAULT_WARRANTIES = [];
+const DEFAULT_MAINTENANCE = [];
+const DEFAULT_REPAIRS = [];
+const DEFAULT_DISCOUNTS = [];
+const DEFAULT_REVIEWS = [];
+const DEFAULT_CLIENTS = [];
 
 function initPresetData() {
   const storeDefaults = {
@@ -161,7 +31,7 @@ function initPresetData() {
 }
 
 function getProducts() {
-  return JSON.parse(localStorage.getItem('wiiu_products')) || DEFAULT_PRODUCTS;
+  return JSON.parse(localStorage.getItem('wiiu_products')) || [];
 }
 
 function saveProductsList(products) {
@@ -190,6 +60,7 @@ window.switchView = function(viewKey) {
   }
 
   const renderMap = {
+    home: renderDashboardMetrics,
     inventario: renderInventoryTable,
     garantias: renderWarrantiesTable,
     mantenimientos: renderMaintenanceTable,
@@ -203,6 +74,7 @@ window.switchView = function(viewKey) {
 };
 
 function renderAllModules() {
+  renderDashboardMetrics();
   renderInventoryTable();
   renderWarrantiesTable();
   renderMaintenanceTable();
@@ -210,6 +82,39 @@ function renderAllModules() {
   renderDiscountsTable();
   renderReviewsGrid();
   renderClientsTable();
+}
+
+function renderDashboardMetrics() {
+  const products = getProducts();
+  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
+
+  const kpiVentas = document.getElementById('kpiVentasTotales');
+  const kpiPedidos = document.getElementById('kpiTotalPedidos');
+  const kpiClientes = document.getElementById('kpiClientesNuevos');
+  const kpiConversion = document.getElementById('kpiTasaConversion');
+
+  if (kpiVentas) kpiVentas.textContent = '$ 0';
+  if (kpiPedidos) kpiPedidos.textContent = '0';
+  if (kpiClientes) kpiClientes.textContent = `${clients.length}`;
+  if (kpiConversion) kpiConversion.textContent = '0%';
+
+  const bestSellers = document.getElementById('bestSellersList');
+  if (bestSellers) {
+    bestSellers.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem;">No hay productos vendidos registrados</div>`;
+  }
+
+  const recentOrders = document.getElementById('recentOrdersBody');
+  if (recentOrders) {
+    recentOrders.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay pedidos registrados</td></tr>`;
+  }
+
+  const finIngresos = document.getElementById('finIngresos');
+  const finGastos = document.getElementById('finGastos');
+  const finUtilidad = document.getElementById('finUtilidad');
+
+  if (finIngresos) finIngresos.textContent = '$ 0';
+  if (finGastos) finGastos.textContent = '$ 0';
+  if (finUtilidad) finUtilidad.textContent = '$ 0';
 }
 
 function renderInventoryTable(itemsToRender = null) {
@@ -229,7 +134,7 @@ function renderInventoryTable(itemsToRender = null) {
   if (lowEl) lowEl.textContent = `${lowStockCount} alertas`;
 
   if (products.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos registrados</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-muted); padding:30px;">No se encontraron productos registrados en el inventario</td></tr>`;
     return;
   }
 
@@ -271,9 +176,14 @@ function renderInventoryTable(itemsToRender = null) {
 }
 
 function renderWarrantiesTable(items = null) {
-  const warranties = items || JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
+  const warranties = items || JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   const tbody = document.getElementById('garantiasTableBody');
   if (!tbody) return;
+
+  if (warranties.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay certificados de garantía registrados</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = warranties.map(w => `
     <tr>
@@ -295,9 +205,14 @@ function renderWarrantiesTable(items = null) {
 }
 
 function renderMaintenanceTable() {
-  const list = JSON.parse(localStorage.getItem('wiiu_maintenance')) || DEFAULT_MAINTENANCE;
+  const list = JSON.parse(localStorage.getItem('wiiu_maintenance')) || [];
   const tbody = document.getElementById('mantenimientosTableBody');
   if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay órdenes de mantenimiento técnico registradas</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = list.map(m => `
     <tr>
@@ -319,9 +234,14 @@ function renderMaintenanceTable() {
 }
 
 function renderRepairsTable() {
-  const list = JSON.parse(localStorage.getItem('wiiu_repairs')) || DEFAULT_REPAIRS;
+  const list = JSON.parse(localStorage.getItem('wiiu_repairs')) || [];
   const tbody = document.getElementById('reparacionesTableBody');
   if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay tickets de reparación registrados</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = list.map(r => `
     <tr>
@@ -343,9 +263,14 @@ function renderRepairsTable() {
 }
 
 function renderDiscountsTable() {
-  const list = JSON.parse(localStorage.getItem('wiiu_discounts')) || DEFAULT_DISCOUNTS;
+  const list = JSON.parse(localStorage.getItem('wiiu_discounts')) || [];
   const tbody = document.getElementById('descuentosTableBody');
   if (!tbody) return;
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay cupones de descuento activos</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = list.map(d => `
     <tr>
@@ -368,10 +293,16 @@ function renderReviewsGrid() {
   const grid = document.getElementById('reviewsGrid');
   if (!grid) return;
 
+  const reviews = JSON.parse(localStorage.getItem('wiiu_reviews')) || [];
+  if (reviews.length === 0) {
+    grid.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.9rem; grid-column:1/-1;">No hay opiniones ni reseñas registradas aún</div>`;
+    return;
+  }
+
   const starIcon = `<svg viewBox="0 0 24 24" class="review-star-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
   const gamepadTagIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><rect x="2" y="6" width="20" height="12" rx="4"/><path d="M6 12h4m-2-2v4"/><circle cx="15" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg>`;
 
-  grid.innerHTML = DEFAULT_REVIEWS.map(rev => `
+  grid.innerHTML = reviews.map(rev => `
     <div class="review-card">
       <div class="review-header">
         <span class="reviewer-name">${rev.name}</span>
@@ -387,7 +318,12 @@ function renderClientsTable() {
   const tbody = document.getElementById('clientesTableBody');
   if (!tbody) return;
 
-  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || DEFAULT_CLIENTS;
+  const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
+  if (clients.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay clientes registrados en el directorio</td></tr>`;
+    return;
+  }
+
   tbody.innerHTML = clients.map(c => `
     <tr>
       <td style="font-weight:700; color:#FFFFFF;">${c.name}</td>
@@ -408,7 +344,7 @@ window.openAddProductModal = function() {
   if (!modal) return;
 
   document.getElementById('formAddProduct').reset();
-  document.getElementById('imagePreview').src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
+  document.getElementById('imagePreview').src = 'https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa';
   document.getElementById('previewCategoryBadge').textContent = 'Juegos Wii U';
   window.generateRandomSKU();
   modal.classList.add('active');
@@ -450,7 +386,7 @@ window.setPresetCover = function(key) {
 window.previewProductImage = function(url) {
   const img = document.getElementById('imagePreview');
   if (!img) return;
-  img.src = (url && url.trim() !== '') ? url : 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
+  img.src = (url && url.trim() !== '') ? url : 'https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa';
 };
 
 window.saveProduct = function(event) {
@@ -467,7 +403,7 @@ window.saveProduct = function(event) {
   const minStock = parseInt(document.getElementById('prodMinStock').value) || 2;
   const condition = document.getElementById('prodCondition').value;
   const warranty = document.getElementById('prodWarranty').value;
-  const imageUrl = document.getElementById('prodImageUrl').value.trim() || 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop';
+  const imageUrl = document.getElementById('prodImageUrl').value.trim() || 'https://via.placeholder.com/300x300/0E214D/00D2FF?text=Producto';
   const description = document.getElementById('prodDescription').value.trim();
 
   if (!name || !sku || price <= 0 || stock < 0) {
@@ -543,7 +479,7 @@ window.saveDiscount = function(e) {
   const limit = document.getElementById('discLimit').value;
   const desc = document.getElementById('discDesc').value.trim();
 
-  const discounts = JSON.parse(localStorage.getItem('wiiu_discounts')) || DEFAULT_DISCOUNTS;
+  const discounts = JSON.parse(localStorage.getItem('wiiu_discounts')) || [];
   discounts.unshift({
     code, desc, percent, expires: '31/12/2026', uses: `0 / ${limit}`, status: 'Activo'
   });
@@ -560,12 +496,12 @@ window.exportFullReport = function() {
     const reportData = {
       tienda: 'WiiU-Games',
       fecha: new Date().toLocaleDateString('es-CO'),
-      ventasTotales: '$ 24.850.000',
-      pedidosSemana: 512,
-      clientesNuevos: 128,
-      tasaConversion: '3.48%',
+      ventasTotales: '$ 0',
+      pedidosSemana: 0,
+      clientesNuevos: (JSON.parse(localStorage.getItem('wiiu_clients')) || []).length,
+      tasaConversion: '0%',
       inventarioTotal: getProducts().length,
-      utilidadNeta: '$ 17.600.000'
+      utilidadNeta: '$ 0'
     };
     
     const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
@@ -618,7 +554,7 @@ window.filterProductsByCategory = function(category) {
 };
 
 window.filterWarranties = function(term) {
-  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
+  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   const cleanTerm = term.toLowerCase().trim();
   renderWarrantiesTable(warranties.filter(w => 
     w.client.toLowerCase().includes(cleanTerm) || 
@@ -628,7 +564,7 @@ window.filterWarranties = function(term) {
 };
 
 window.filterWarrantiesByStatus = function(status) {
-  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || DEFAULT_WARRANTIES;
+  const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   renderWarrantiesTable(status === 'todos' ? warranties : warranties.filter(w => w.status === status));
 };
 
