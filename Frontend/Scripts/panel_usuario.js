@@ -291,18 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const initial = (nombre && nombre.charAt(0)) ? nombre.charAt(0).toUpperCase() : 'U';
 
     document.querySelectorAll('.avatar-sidebar, .perfil-avatar-grande, .foto-perfil').forEach(el => {
-      if (el.classList.contains('foto-perfil')) {
-        el.textContent = initial;
-      } else {
-        el.textContent = initial;
-      }
+      el.textContent = initial;
     });
 
     document.querySelectorAll('.sidebar-perfil-info .nombre, .perfil-avatar-nombre').forEach(el => {
       el.textContent = `${nombre} ${apellidos}`.trim();
     });
 
-    document.querySelectorAll('.sidebar-perfil-info .email, .perfil-avatar-email').forEach(el => {
+    document.querySelectorAll('.sidebar-perfil-info .email, .perfil-avatar-email, .paypal-email').forEach(el => {
       el.textContent = email;
     });
 
@@ -319,16 +315,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (statNumeroDirs) statNumeroDirs.textContent = state.addresses.length;
 
     // Form inputs de perfil
-    const inputNombre = document.querySelector('#vista-perfil input[type="text"]:nth-of-type(1)');
-    const inputsPerfil = document.querySelectorAll('#vista-perfil .form-card:first-of-type .form-input');
-    if (inputsPerfil.length >= 6) {
-      inputsPerfil[0].value = nombre;
-      inputsPerfil[1].value = apellidos;
-      inputsPerfil[2].value = email;
-      inputsPerfil[3].value = telefono;
-      inputsPerfil[4].value = nacimiento;
-      inputsPerfil[5].value = documento;
-    }
+    const inpNombres   = document.getElementById('perfil-nombres');
+    const inpApellidos = document.getElementById('perfil-apellidos');
+    const inpEmail     = document.getElementById('perfil-email');
+    const inpTel       = document.getElementById('perfil-telefono');
+    const inpNac       = document.getElementById('perfil-nacimiento');
+    const inpDoc       = document.getElementById('perfil-documento');
+
+    if (inpNombres)   inpNombres.value   = nombre || '';
+    if (inpApellidos) inpApellidos.value = apellidos || '';
+    if (inpEmail)     inpEmail.value     = email || '';
+    if (inpTel)       inpTel.value       = telefono || '';
+    if (inpNac)       inpNac.value       = nacimiento || '';
+    if (inpDoc)       inpDoc.value       = documento || '';
 
     renderAddresses();
     renderCards();
@@ -339,26 +338,36 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===================================================
   // 5. PERFIL — GUARDAR DATOS & CAMBIAR CONTRASEÑA
   // ===================================================
-  const btnGuardarPerfil = document.querySelector('#vista-perfil .btn-guardar');
-  const btnCancelarPerfil = document.querySelector('#vista-perfil .btn-cancelar');
-  const btnCambiarPassword = document.querySelector('.btn-cambiar-password');
+  const formPerfilDatos     = document.getElementById('form-perfil-datos');
+  const btnCancelarPerfil   = document.getElementById('btn-cancelar-perfil');
+  const formPerfilSeguridad = document.getElementById('form-perfil-seguridad');
 
-  if (btnGuardarPerfil) {
-    btnGuardarPerfil.addEventListener('click', (e) => {
+  if (formPerfilDatos) {
+    formPerfilDatos.addEventListener('submit', (e) => {
       e.preventDefault();
-      const inputs = document.querySelectorAll('#vista-perfil .form-card:first-of-type .form-input');
-      if (inputs.length >= 6) {
-        state.profile.nombre     = inputs[0].value.trim() || 'Usuario';
-        state.profile.apellidos  = inputs[1].value.trim();
-        state.profile.email      = inputs[2].value.trim();
-        state.profile.telefono   = inputs[3].value.trim();
-        state.profile.nacimiento = inputs[4].value;
-        state.profile.documento  = inputs[5].value.trim();
 
-        saveState();
-        updateUI();
-        showToast('¡Datos personales guardados correctamente!', 'success');
+      const nuevoNombre     = document.getElementById('perfil-nombres')?.value.trim();
+      const nuevosApellidos = document.getElementById('perfil-apellidos')?.value.trim();
+      const nuevoEmail      = document.getElementById('perfil-email')?.value.trim();
+      const nuevoTel        = document.getElementById('perfil-telefono')?.value.trim();
+      const nuevoNac        = document.getElementById('perfil-nacimiento')?.value;
+      const nuevoDoc        = document.getElementById('perfil-documento')?.value.trim();
+
+      if (!nuevoNombre) {
+        showToast('El campo Nombres no puede estar vacío.', 'error');
+        return;
       }
+
+      state.profile.nombre     = nuevoNombre;
+      state.profile.apellidos  = nuevosApellidos;
+      state.profile.email      = nuevoEmail;
+      state.profile.telefono   = nuevoTel;
+      state.profile.nacimiento = nuevoNac;
+      state.profile.documento  = nuevoDoc;
+
+      saveState();
+      updateUI();
+      showToast('¡Datos personales actualizados con éxito!', 'success');
     });
   }
 
@@ -370,13 +379,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  if (btnCambiarPassword) {
-    btnCambiarPassword.addEventListener('click', (e) => {
+  if (formPerfilSeguridad) {
+    formPerfilSeguridad.addEventListener('submit', (e) => {
       e.preventDefault();
-      const passInputs = document.querySelectorAll('#vista-perfil .form-card:nth-of-type(2) .form-input');
-      const actual  = passInputs[0]?.value;
-      const nueva   = passInputs[1]?.value;
-      const confirm = passInputs[2]?.value;
+      const actual  = document.getElementById('perfil-pass-actual')?.value;
+      const nueva   = document.getElementById('perfil-pass-nueva')?.value;
+      const confirm = document.getElementById('perfil-pass-confirm')?.value;
 
       if (!actual) {
         showToast('Ingresa tu contraseña actual.', 'error');
@@ -391,7 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      passInputs.forEach(i => i.value = '');
+      document.getElementById('perfil-pass-actual').value = '';
+      document.getElementById('perfil-pass-nueva').value = '';
+      document.getElementById('perfil-pass-confirm').value = '';
       showToast('¡Contraseña actualizada con éxito!', 'success');
     });
   }

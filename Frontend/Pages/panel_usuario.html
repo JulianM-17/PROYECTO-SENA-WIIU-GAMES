@@ -289,62 +289,62 @@
             </div>
 
             <!-- Formulario de datos -->
-            <div class="form-card">
+            <form id="form-perfil-datos" class="form-card">
               <p class="form-card-titulo">Datos personales</p>
               <div class="form-grid-2">
                 <div class="form-campo">
-                  <label class="form-label">Nombres</label>
-                  <input type="text" value="Fabian" class="form-input" />
+                  <label class="form-label" for="perfil-nombres">Nombres</label>
+                  <input type="text" id="perfil-nombres" value="Fabian" class="form-input" required />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Apellidos</label>
-                  <input type="text" value="Mora Ríos" class="form-input" />
+                  <label class="form-label" for="perfil-apellidos">Apellidos</label>
+                  <input type="text" id="perfil-apellidos" value="Mora Ríos" class="form-input" required />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Correo electrónico</label>
-                  <input type="email" value="fabian@wiiu.com" class="form-input" />
+                  <label class="form-label" for="perfil-email">Correo electrónico</label>
+                  <input type="email" id="perfil-email" value="fabian@wiiu.com" class="form-input" required />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Teléfono</label>
-                  <input type="tel" value="+57 310 456 7890" class="form-input" />
+                  <label class="form-label" for="perfil-telefono">Teléfono</label>
+                  <input type="tel" id="perfil-telefono" value="+57 310 456 7890" class="form-input" />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Fecha de nacimiento</label>
-                  <input type="date" value="1998-04-15" class="form-input" />
+                  <label class="form-label" for="perfil-nacimiento">Fecha de nacimiento</label>
+                  <input type="date" id="perfil-nacimiento" value="1998-04-15" class="form-input" />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Documento de identidad</label>
-                  <input type="text" value="1098 765 432" class="form-input" />
+                  <label class="form-label" for="perfil-documento">Documento de identidad</label>
+                  <input type="text" id="perfil-documento" value="1098 765 432" class="form-input" />
                 </div>
               </div>
               <div class="form-acciones">
-                <button class="btn-cancelar">Cancelar</button>
-                <button class="btn-guardar">Guardar cambios</button>
+                <button type="button" id="btn-cancelar-perfil" class="btn-cancelar">Cancelar</button>
+                <button type="submit" id="btn-guardar-perfil" class="btn-guardar">Guardar cambios</button>
               </div>
-            </div>
+            </form>
 
             <!-- Cambio contraseña -->
-            <div class="form-card">
+            <form id="form-perfil-seguridad" class="form-card">
               <p class="form-card-titulo">Seguridad</p>
               <div class="form-grid-2">
                 <div class="form-campo">
-                  <label class="form-label">Contraseña actual</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+                  <label class="form-label" for="perfil-pass-actual">Contraseña actual</label>
+                  <input type="password" id="perfil-pass-actual" placeholder="••••••••" class="form-input" required />
                 </div>
                 <div></div>
                 <div class="form-campo">
-                  <label class="form-label">Nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+                  <label class="form-label" for="perfil-pass-nueva">Nueva contraseña</label>
+                  <input type="password" id="perfil-pass-nueva" placeholder="••••••••" class="form-input" required />
                 </div>
                 <div class="form-campo">
-                  <label class="form-label">Confirmar nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="form-input" />
+                  <label class="form-label" for="perfil-pass-confirm">Confirmar nueva contraseña</label>
+                  <input type="password" id="perfil-pass-confirm" placeholder="••••••••" class="form-input" required />
                 </div>
               </div>
               <div class="form-acciones-end">
-                <button class="btn-cambiar-password">Cambiar contraseña</button>
+                <button type="submit" id="btn-cambiar-pass" class="btn-cambiar-password">Cambiar contraseña</button>
               </div>
-            </div>
+            </form>
           </div>
 
           <!-- ===== VISTA: DIRECCIONES ===== -->
