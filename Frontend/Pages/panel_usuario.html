@@ -263,86 +263,86 @@
             </div>
 
             <!-- Card avatar + stats -->
-            <div style="display:flex;gap:20px;flex-wrap:wrap;">
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:28px;box-shadow:0 2px 10px rgba(8,15,32,.05);display:flex;align-items:center;gap:20px;flex:1;min-width:260px;">
-                <div style="width:72px;height:72px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;color:var(--dark-blue);flex-shrink:0;box-shadow:0 6px 18px rgba(245,200,66,.4);">F</div>
+            <div class="perfil-top">
+              <div class="perfil-avatar-card">
+                <div class="perfil-avatar-grande">F</div>
                 <div>
-                  <p style="font-size:18px;font-weight:700;color:var(--text-main);margin-bottom:4px;">Fabian Mora</p>
-                  <p style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">fabian@wiiu.com</p>
-                  <span style="font-size:11px;font-weight:600;background:rgba(245,200,66,.12);color:var(--dark-blue);padding:4px 12px;border-radius:20px;border:1px solid rgba(245,200,66,.3);">Cliente Premium</span>
+                  <p class="perfil-avatar-nombre">Fabian Mora</p>
+                  <p class="perfil-avatar-email">fabian@wiiu.com</p>
+                  <span class="perfil-badge">Cliente Premium</span>
                 </div>
               </div>
-              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;flex:2;min-width:280px;">
-                <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:18px;text-align:center;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-                  <p style="font-size:24px;font-weight:800;color:var(--dark-blue);">12</p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Pedidos</p>
+              <div class="perfil-stats">
+                <div class="perfil-stat-item">
+                  <p class="perfil-stat-numero">12</p>
+                  <p class="perfil-stat-label">Pedidos</p>
                 </div>
-                <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:18px;text-align:center;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-                  <p style="font-size:24px;font-weight:800;color:var(--dark-blue);">5</p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Favoritos</p>
+                <div class="perfil-stat-item">
+                  <p class="perfil-stat-numero">5</p>
+                  <p class="perfil-stat-label">Favoritos</p>
                 </div>
-                <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:18px;text-align:center;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-                  <p style="font-size:24px;font-weight:800;color:var(--dark-blue);">2</p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Direcciones</p>
+                <div class="perfil-stat-item">
+                  <p class="perfil-stat-numero">2</p>
+                  <p class="perfil-stat-label">Direcciones</p>
                 </div>
               </div>
             </div>
 
             <!-- Formulario de datos -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <p style="font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);">Datos personales</p>
-              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Nombres</label>
-                  <input type="text" value="Fabian" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+            <div class="form-card">
+              <p class="form-card-titulo">Datos personales</p>
+              <div class="form-grid-2">
+                <div class="form-campo">
+                  <label class="form-label">Nombres</label>
+                  <input type="text" value="Fabian" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Apellidos</label>
-                  <input type="text" value="Mora Ríos" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Apellidos</label>
+                  <input type="text" value="Mora Ríos" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Correo electrónico</label>
-                  <input type="email" value="fabian@wiiu.com" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Correo electrónico</label>
+                  <input type="email" value="fabian@wiiu.com" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Teléfono</label>
-                  <input type="tel" value="+57 310 456 7890" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Teléfono</label>
+                  <input type="tel" value="+57 310 456 7890" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Fecha de nacimiento</label>
-                  <input type="date" value="1998-04-15" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Fecha de nacimiento</label>
+                  <input type="date" value="1998-04-15" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Documento de identidad</label>
-                  <input type="text" value="1098 765 432" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Documento de identidad</label>
+                  <input type="text" value="1098 765 432" class="form-input" />
                 </div>
               </div>
-              <div style="margin-top:24px;display:flex;gap:12px;justify-content:flex-end;">
-                <button style="padding:11px 24px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Cancelar</button>
-                <button style="padding:11px 24px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);box-shadow:0 4px 14px rgba(245,200,66,.3);">Guardar cambios</button>
+              <div class="form-acciones">
+                <button class="btn-cancelar">Cancelar</button>
+                <button class="btn-guardar">Guardar cambios</button>
               </div>
             </div>
 
             <!-- Cambio contraseña -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:32px;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <p style="font-size:14px;font-weight:700;color:var(--text-main);margin-bottom:24px;padding-bottom:14px;border-bottom:1px solid var(--border);">Seguridad</p>
-              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Contraseña actual</label>
-                  <input type="password" placeholder="••••••••" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+            <div class="form-card">
+              <p class="form-card-titulo">Seguridad</p>
+              <div class="form-grid-2">
+                <div class="form-campo">
+                  <label class="form-label">Contraseña actual</label>
+                  <input type="password" placeholder="••••••••" class="form-input" />
                 </div>
                 <div></div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Nueva contraseña</label>
+                  <input type="password" placeholder="••••••••" class="form-input" />
                 </div>
-                <div style="display:flex;flex-direction:column;gap:6px;">
-                  <label style="font-size:12px;font-weight:600;color:var(--text-muted);">Confirmar nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" style="padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);outline:none;" />
+                <div class="form-campo">
+                  <label class="form-label">Confirmar nueva contraseña</label>
+                  <input type="password" placeholder="••••••••" class="form-input" />
                 </div>
               </div>
-              <div style="margin-top:24px;display:flex;justify-content:flex-end;">
-                <button style="padding:11px 24px;background:linear-gradient(135deg,var(--dark-blue),var(--dark-blue-3));border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--white);">Cambiar contraseña</button>
+              <div class="form-acciones-end">
+                <button class="btn-cambiar-password">Cambiar contraseña</button>
               </div>
             </div>
           </div>
@@ -358,47 +358,43 @@
             </div>
 
             <!-- Botón agregar -->
-            <div style="display:flex;justify-content:flex-end;">
-              <button style="display:flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);box-shadow:0 4px 14px rgba(245,200,66,.3);">
+            <div class="acciones-top">
+              <button class="btn-agregar">
                 <i class="fi fi-rr-plus"></i> Agregar dirección
               </button>
             </div>
 
             <!-- Tarjetas de dirección -->
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            <div class="grid-direcciones">
 
               <!-- Dirección 1 - Principal -->
-              <div style="background:var(--surface);border-radius:16px;border:1.5px solid var(--yellow);padding:24px;box-shadow:0 4px 20px rgba(245,200,66,.1);position:relative;">
-                <span style="position:absolute;top:16px;right:16px;font-size:10px;font-weight:700;background:rgba(245,200,66,.12);color:var(--dark-blue);padding:3px 10px;border-radius:20px;border:1px solid rgba(245,200,66,.3);">Principal</span>
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                  <div style="width:36px;height:36px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--dark-blue);">
-                    <i class="fi fi-rr-home"></i>
-                  </div>
-                  <p style="font-size:14px;font-weight:700;color:var(--text-main);">Casa</p>
+              <div class="dir-card principal">
+                <span class="dir-badge-principal">Principal</span>
+                <div class="dir-encabezado">
+                  <div class="dir-icono"><i class="fi fi-rr-home"></i></div>
+                  <p class="dir-tipo">Casa</p>
                 </div>
-                <p style="font-size:13px;color:var(--text-main);font-weight:600;margin-bottom:4px;">Fabian Mora</p>
-                <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">Cra. 11 #14-14, Apto 302<br/>Sogamoso, Boyacá<br/>Colombia – 152210</p>
-                <p style="font-size:12px;color:var(--text-muted);"><i class="fi fi-rr-phone-call" style="margin-right:6px;"></i>+57 310 456 7890</p>
-                <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
-                  <button style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Editar</button>
-                  <button style="flex:1;padding:8px;border:1.5px solid #fee2e2;border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:#fff5f5;color:#e74c3c;">Eliminar</button>
+                <p class="dir-nombre">Fabian Mora</p>
+                <p class="dir-detalle">Cra. 11 #14-14, Apto 302<br/>Sogamoso, Boyacá<br/>Colombia – 152210</p>
+                <p class="dir-telefono"><i class="fi fi-rr-phone-call"></i>+57 310 456 7890</p>
+                <div class="dir-acciones">
+                  <button class="btn-dir-editar">Editar</button>
+                  <button class="btn-dir-eliminar">Eliminar</button>
                 </div>
               </div>
 
               <!-- Dirección 2 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-                <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-                  <div style="width:36px;height:36px;background:rgba(8,15,32,.06);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--dark-blue);">
-                    <i class="fi fi-rr-briefcase"></i>
-                  </div>
-                  <p style="font-size:14px;font-weight:700;color:var(--text-main);">Trabajo</p>
+              <div class="dir-card">
+                <div class="dir-encabezado">
+                  <div class="dir-icono secundario"><i class="fi fi-rr-briefcase"></i></div>
+                  <p class="dir-tipo">Trabajo</p>
                 </div>
-                <p style="font-size:13px;color:var(--text-main);font-weight:600;margin-bottom:4px;">Fabian Mora</p>
-                <p style="font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">Centro Comercial Meditrópoli 1<br/>Local 126, Sogamoso, Boyacá<br/>Colombia – 152210</p>
-                <p style="font-size:12px;color:var(--text-muted);"><i class="fi fi-rr-phone-call" style="margin-right:6px;"></i>+57 300 123 4567</p>
-                <div style="display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
-                  <button style="flex:1;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Editar</button>
-                  <button style="flex:1;padding:8px;border:1.5px solid #fee2e2;border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:#fff5f5;color:#e74c3c;">Eliminar</button>
+                <p class="dir-nombre">Fabian Mora</p>
+                <p class="dir-detalle">Centro Comercial Meditrópoli 1<br/>Local 126, Sogamoso, Boyacá<br/>Colombia – 152210</p>
+                <p class="dir-telefono"><i class="fi fi-rr-phone-call"></i>+57 300 123 4567</p>
+                <div class="dir-acciones">
+                  <button class="btn-dir-editar">Editar</button>
+                  <button class="btn-dir-eliminar">Eliminar</button>
                 </div>
               </div>
 
@@ -416,80 +412,80 @@
             </div>
 
             <!-- Filtros -->
-            <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:16px 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-              <span style="font-size:12px;font-weight:600;color:var(--text-muted);">Filtrar:</span>
-              <button style="padding:6px 16px;background:linear-gradient(135deg,var(--dark-blue),var(--dark-blue-3));color:var(--white);border:none;border-radius:20px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;">Todos</button>
-              <button style="padding:6px 16px;background:transparent;color:var(--text-muted);border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;">En camino</button>
-              <button style="padding:6px 16px;background:transparent;color:var(--text-muted);border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;">Entregados</button>
-              <button style="padding:6px 16px;background:transparent;color:var(--text-muted);border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;">Cancelados</button>
+            <div class="filtros-pedidos">
+              <span class="filtros-label">Filtrar:</span>
+              <button class="btn-filtro-activo">Todos</button>
+              <button class="btn-filtro">En camino</button>
+              <button class="btn-filtro">Entregados</button>
+              <button class="btn-filtro">Cancelados</button>
             </div>
 
             <!-- Pedido 1 -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div class="pedido-card">
+              <div class="pedido-header">
                 <div>
-                  <p style="font-size:12px;color:var(--text-muted);">Pedido #<b style="color:var(--text-main);">WG-20260901</b></p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">Realizado el 1 de septiembre, 2026</p>
+                  <p class="pedido-numero">Pedido #<b>WG-20260901</b></p>
+                  <p class="pedido-fecha">Realizado el 1 de septiembre, 2026</p>
                 </div>
-                <span style="font-size:11px;font-weight:700;background:#ecfdf5;color:#059669;padding:4px 12px;border-radius:20px;border:1px solid #d1fae5;">✓ Entregado</span>
+                <span class="badge-entregado">✓ Entregado</span>
               </div>
-              <div style="padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-                <div style="width:64px;height:64px;background:#f1f4f9;border-radius:12px;overflow:hidden;flex-shrink:0;">
-                  <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=120&q=80" alt="PC Gamer" style="width:100%;height:100%;object-fit:cover;" />
+              <div class="pedido-cuerpo">
+                <div class="pedido-img">
+                  <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=120&q=80" alt="PC Gamer" />
                 </div>
-                <div style="flex:1;min-width:180px;">
-                  <p style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:4px;">MSI MEG Trident X — PC Gamer i7</p>
-                  <p style="font-size:12px;color:var(--text-muted);">Cantidad: 1 &nbsp;|&nbsp; $4,349.000 COP</p>
+                <div class="pedido-info">
+                  <p class="pedido-producto">MSI MEG Trident X — PC Gamer i7</p>
+                  <p class="pedido-cantidad">Cantidad: 1 &nbsp;|&nbsp; $4,349.000 COP</p>
                 </div>
-                <div style="display:flex;gap:8px;flex-shrink:0;">
-                  <button style="padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Ver detalle</button>
-                  <button style="padding:8px 16px;background:rgba(245,200,66,.1);border:1.5px solid rgba(245,200,66,.3);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Reordenar</button>
+                <div class="pedido-btns">
+                  <button class="btn-ver-detalle">Ver detalle</button>
+                  <button class="btn-reordenar">Reordenar</button>
                 </div>
               </div>
             </div>
 
             <!-- Pedido 2 -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div class="pedido-card">
+              <div class="pedido-header">
                 <div>
-                  <p style="font-size:12px;color:var(--text-muted);">Pedido #<b style="color:var(--text-main);">WG-20260912</b></p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">Realizado el 12 de septiembre, 2026</p>
+                  <p class="pedido-numero">Pedido #<b>WG-20260912</b></p>
+                  <p class="pedido-fecha">Realizado el 12 de septiembre, 2026</p>
                 </div>
-                <span style="font-size:11px;font-weight:700;background:#eff6ff;color:#2563eb;padding:4px 12px;border-radius:20px;border:1px solid #bfdbfe;">🚚 En camino</span>
+                <span class="badge-en-camino">🚚 En camino</span>
               </div>
-              <div style="padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-                <div style="width:64px;height:64px;background:#f1f4f9;border-radius:12px;overflow:hidden;flex-shrink:0;">
-                  <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=120&q=80" alt="Laptop" style="width:100%;height:100%;object-fit:cover;" />
+              <div class="pedido-cuerpo">
+                <div class="pedido-img">
+                  <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=120&q=80" alt="Laptop" />
                 </div>
-                <div style="flex:1;min-width:180px;">
-                  <p style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:4px;">ASUS ROG Zephyrus G14 — Gaming Laptop</p>
-                  <p style="font-size:12px;color:var(--text-muted);">Cantidad: 1 &nbsp;|&nbsp; $6,850.000 COP</p>
+                <div class="pedido-info">
+                  <p class="pedido-producto">ASUS ROG Zephyrus G14 — Gaming Laptop</p>
+                  <p class="pedido-cantidad">Cantidad: 1 &nbsp;|&nbsp; $6,850.000 COP</p>
                 </div>
-                <div style="display:flex;gap:8px;flex-shrink:0;">
-                  <button style="padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Ver detalle</button>
-                  <button style="padding:8px 16px;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:#2563eb;">Rastrear</button>
+                <div class="pedido-btns">
+                  <button class="btn-ver-detalle">Ver detalle</button>
+                  <button class="btn-rastrear">Rastrear</button>
                 </div>
               </div>
             </div>
 
             <!-- Pedido 3 -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <div style="padding:16px 24px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+            <div class="pedido-card">
+              <div class="pedido-header">
                 <div>
-                  <p style="font-size:12px;color:var(--text-muted);">Pedido #<b style="color:var(--text-main);">WG-20260815</b></p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">Realizado el 15 de agosto, 2026</p>
+                  <p class="pedido-numero">Pedido #<b>WG-20260815</b></p>
+                  <p class="pedido-fecha">Realizado el 15 de agosto, 2026</p>
                 </div>
-                <span style="font-size:11px;font-weight:700;background:#fefce8;color:#ca8a04;padding:4px 12px;border-radius:20px;border:1px solid #fef08a;">⏳ Procesando</span>
+                <span class="badge-procesando">⏳ Procesando</span>
               </div>
-              <div style="padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
-                <div style="width:64px;height:64px;background:#f1f4f9;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:28px;">🖱️</div>
-                <div style="flex:1;min-width:180px;">
-                  <p style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:4px;">Logitech G Pro X Superlight 2 — Mouse Gaming</p>
-                  <p style="font-size:12px;color:var(--text-muted);">Cantidad: 2 &nbsp;|&nbsp; $580.000 COP</p>
+              <div class="pedido-cuerpo">
+                <div class="pedido-img-emoji">🖱️</div>
+                <div class="pedido-info">
+                  <p class="pedido-producto">Logitech G Pro X Superlight 2 — Mouse Gaming</p>
+                  <p class="pedido-cantidad">Cantidad: 2 &nbsp;|&nbsp; $580.000 COP</p>
                 </div>
-                <div style="display:flex;gap:8px;flex-shrink:0;">
-                  <button style="padding:8px 16px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Ver detalle</button>
-                  <button style="padding:8px 16px;border:1.5px solid #fee2e2;border-radius:8px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:#fff5f5;color:#e74c3c;">Cancelar</button>
+                <div class="pedido-btns">
+                  <button class="btn-ver-detalle">Ver detalle</button>
+                  <button class="btn-cancelar-pedido">Cancelar</button>
                 </div>
               </div>
             </div>
@@ -507,83 +503,83 @@
             </div>
 
             <!-- Botón agregar -->
-            <div style="display:flex;justify-content:flex-end;">
-              <button style="display:flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);box-shadow:0 4px 14px rgba(245,200,66,.3);">
+            <div class="acciones-top">
+              <button class="btn-agregar">
                 <i class="fi fi-rr-plus"></i> Agregar tarjeta
               </button>
             </div>
 
             <!-- Tarjetas de crédito -->
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+            <div class="grid-tarjetas-pago">
 
               <!-- Tarjeta Visa -->
-              <div style="border-radius:18px;padding:26px;background:linear-gradient(135deg,var(--dark-blue) 0%,#1a3a7a 100%);color:var(--white);position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(8,15,32,.3);">
-                <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.04);"></div>
-                <div style="position:absolute;bottom:-30px;right:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.06);"></div>
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
-                  <div style="display:flex;flex-direction:column;">
-                    <span style="font-size:10px;opacity:.6;letter-spacing:.08em;text-transform:uppercase;">Predeterminada</span>
-                    <div style="width:36px;height:26px;background:rgba(245,200,66,.9);border-radius:5px;margin-top:8px;"></div>
+              <div class="tarjeta-pago visa">
+                <div class="tarjeta-deco-1"></div>
+                <div class="tarjeta-deco-2"></div>
+                <div class="tarjeta-top">
+                  <div class="tarjeta-info-predeterminada">
+                    <span class="tarjeta-label-predeterminada">Predeterminada</span>
+                    <div class="tarjeta-chip"></div>
                   </div>
-                  <span style="font-size:22px;font-weight:800;font-style:italic;color:rgba(255,255,255,.9);">VISA</span>
+                  <span class="tarjeta-visa-logo">VISA</span>
                 </div>
-                <p style="font-size:16px;font-weight:600;letter-spacing:.2em;margin-bottom:18px;">•••• •••• •••• 4821</p>
-                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                <p class="tarjeta-numero">•••• •••• •••• 4821</p>
+                <div class="tarjeta-footer">
                   <div>
-                    <p style="font-size:9px;opacity:.5;text-transform:uppercase;letter-spacing:.06em;">Titular</p>
-                    <p style="font-size:12px;font-weight:600;">FABIAN MORA</p>
+                    <p class="tarjeta-campo-label">Titular</p>
+                    <p class="tarjeta-campo-valor">FABIAN MORA</p>
                   </div>
-                  <div style="text-align:right;">
-                    <p style="font-size:9px;opacity:.5;text-transform:uppercase;letter-spacing:.06em;">Vence</p>
-                    <p style="font-size:12px;font-weight:600;">08/29</p>
+                  <div class="tarjeta-campo-right">
+                    <p class="tarjeta-campo-label">Vence</p>
+                    <p class="tarjeta-campo-valor">08/29</p>
                   </div>
                 </div>
-                <div style="display:flex;gap:8px;margin-top:20px;">
-                  <button style="flex:1;padding:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--white);">Editar</button>
-                  <button style="flex:1;padding:7px;background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:#ff8080;">Eliminar</button>
+                <div class="tarjeta-pago-btns">
+                  <button class="btn-tarjeta-editar">Editar</button>
+                  <button class="btn-tarjeta-eliminar">Eliminar</button>
                 </div>
               </div>
 
               <!-- Tarjeta Mastercard -->
-              <div style="border-radius:18px;padding:26px;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:var(--white);position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(8,15,32,.25);">
-                <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.03);"></div>
-                <div style="position:absolute;bottom:-30px;right:20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.05);"></div>
-                <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
-                  <div style="width:36px;height:26px;background:rgba(200,200,200,.2);border-radius:5px;margin-top:0;"></div>
-                  <div style="display:flex;position:relative;">
-                    <div style="width:28px;height:28px;border-radius:50%;background:#eb001b;opacity:.9;"></div>
-                    <div style="width:28px;height:28px;border-radius:50%;background:#f79e1b;opacity:.9;margin-left:-10px;"></div>
+              <div class="tarjeta-pago mastercard">
+                <div class="tarjeta-deco-1"></div>
+                <div class="tarjeta-deco-2"></div>
+                <div class="tarjeta-top">
+                  <div class="tarjeta-chip mc"></div>
+                  <div class="mc-logo">
+                    <div class="mc-circulo-rojo"></div>
+                    <div class="mc-circulo-naranja"></div>
                   </div>
                 </div>
-                <p style="font-size:16px;font-weight:600;letter-spacing:.2em;margin-bottom:18px;">•••• •••• •••• 7743</p>
-                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+                <p class="tarjeta-numero">•••• •••• •••• 7743</p>
+                <div class="tarjeta-footer">
                   <div>
-                    <p style="font-size:9px;opacity:.5;text-transform:uppercase;letter-spacing:.06em;">Titular</p>
-                    <p style="font-size:12px;font-weight:600;">FABIAN MORA</p>
+                    <p class="tarjeta-campo-label">Titular</p>
+                    <p class="tarjeta-campo-valor">FABIAN MORA</p>
                   </div>
-                  <div style="text-align:right;">
-                    <p style="font-size:9px;opacity:.5;text-transform:uppercase;letter-spacing:.06em;">Vence</p>
-                    <p style="font-size:12px;font-weight:600;">03/27</p>
+                  <div class="tarjeta-campo-right">
+                    <p class="tarjeta-campo-label">Vence</p>
+                    <p class="tarjeta-campo-valor">03/27</p>
                   </div>
                 </div>
-                <div style="display:flex;gap:8px;margin-top:20px;">
-                  <button style="flex:1;padding:7px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--white);">Editar</button>
-                  <button style="flex:1;padding:7px;background:rgba(231,76,60,.15);border:1px solid rgba(231,76,60,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:#ff8080;">Eliminar</button>
+                <div class="tarjeta-pago-btns">
+                  <button class="btn-tarjeta-editar">Editar</button>
+                  <button class="btn-tarjeta-eliminar">Eliminar</button>
                 </div>
               </div>
 
             </div>
 
             <!-- PayPal -->
-            <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-              <div style="display:flex;align-items:center;gap:14px;">
-                <div style="width:44px;height:44px;background:#e8f0fe;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#1a56db;">P</div>
+            <div class="paypal-row">
+              <div class="paypal-izq">
+                <div class="paypal-icono">P</div>
                 <div>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);">PayPal</p>
-                  <p style="font-size:12px;color:var(--text-muted);">fabian@wiiu.com</p>
+                  <p class="paypal-nombre">PayPal</p>
+                  <p class="paypal-email">fabian@wiiu.com</p>
                 </div>
               </div>
-              <span style="font-size:11px;font-weight:600;background:#ecfdf5;color:#059669;padding:4px 12px;border-radius:20px;">Verificado</span>
+              <span class="badge-verificado">Verificado</span>
             </div>
 
           </div>
@@ -599,91 +595,90 @@
             </div>
 
             <!-- Grid de productos favoritos -->
-            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+            <div class="grid-favoritos">
 
               <!-- Producto 1 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);transition:transform .25s,box-shadow .25s;">
-                <div style="position:relative;height:160px;overflow:hidden;background:#f1f4f9;">
-                  <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80" alt="PC Gamer" style="width:100%;height:100%;object-fit:cover;" />
-                  <button style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(231,76,60,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">&#x2665;</button>
-                  <span style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;background:var(--yellow);color:var(--dark-blue);padding:3px 8px;border-radius:20px;">-15%</span>
+              <div class="fav-card">
+                <div class="fav-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=400&q=80" alt="PC Gamer" />
+                  <button class="btn-fav-quitar">&#x2665;</button>
+                  <span class="fav-badge-descuento">-15%</span>
                 </div>
-                <div style="padding:16px;">
-                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">PC Gamer</p>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.4;">MSI MEG Trident X — i7 10700K</p>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <p style="font-size:15px;font-weight:800;color:var(--dark-blue);">$3,697.000</p>
-                    <p style="font-size:12px;color:var(--text-muted);text-decoration:line-through;">$4,349.000</p>
+                <div class="fav-body">
+                  <p class="fav-categoria">PC Gamer</p>
+                  <p class="fav-nombre">MSI MEG Trident X — i7 10700K</p>
+                  <div class="fav-precios">
+                    <p class="fav-precio-actual">$3,697.000</p>
+                    <p class="fav-precio-tachado">$4,349.000</p>
                   </div>
-                  <button style="width:100%;padding:9px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Agregar al carrito</button>
+                  <button class="btn-fav-carrito">Agregar al carrito</button>
                 </div>
               </div>
 
               <!-- Producto 2 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-                <div style="position:relative;height:160px;overflow:hidden;background:#f1f4f9;">
-                  <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&q=80" alt="Laptop" style="width:100%;height:100%;object-fit:cover;" />
-                  <button style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(231,76,60,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">&#x2665;</button>
+              <div class="fav-card">
+                <div class="fav-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=400&q=80" alt="Laptop" />
+                  <button class="btn-fav-quitar">&#x2665;</button>
                 </div>
-                <div style="padding:16px;">
-                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Gaming Laptop</p>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.4;">ASUS ROG Zephyrus G14</p>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <p style="font-size:15px;font-weight:800;color:var(--dark-blue);">$6,850.000</p>
+                <div class="fav-body">
+                  <p class="fav-categoria">Gaming Laptop</p>
+                  <p class="fav-nombre">ASUS ROG Zephyrus G14</p>
+                  <div class="fav-precios">
+                    <p class="fav-precio-actual">$6,850.000</p>
                   </div>
-                  <button style="width:100%;padding:9px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Agregar al carrito</button>
+                  <button class="btn-fav-carrito">Agregar al carrito</button>
                 </div>
               </div>
 
               <!-- Producto 3 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-                <div style="position:relative;height:160px;overflow:hidden;background:#f1f4f9;">
-                  <img src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400&q=80" alt="Monitor" style="width:100%;height:100%;object-fit:cover;" />
-                  <button style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(231,76,60,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">&#x2665;</button>
-                  <span style="position:absolute;top:10px;left:10px;font-size:10px;font-weight:700;background:#ecfdf5;color:#059669;padding:3px 8px;border-radius:20px;border:1px solid #d1fae5;">Stock bajo</span>
+              <div class="fav-card">
+                <div class="fav-img-wrap">
+                  <img src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?w=400&q=80" alt="Monitor" />
+                  <button class="btn-fav-quitar">&#x2665;</button>
+                  <span class="fav-badge-stock">Stock bajo</span>
                 </div>
-                <div style="padding:16px;">
-                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Monitor Gaming</p>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.4;">LG UltraGear 27" 165Hz QHD</p>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <p style="font-size:15px;font-weight:800;color:var(--dark-blue);">$1,250.000</p>
+                <div class="fav-body">
+                  <p class="fav-categoria">Monitor Gaming</p>
+                  <p class="fav-nombre">LG UltraGear 27" 165Hz QHD</p>
+                  <div class="fav-precios">
+                    <p class="fav-precio-actual">$1,250.000</p>
                   </div>
-                  <button style="width:100%;padding:9px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Agregar al carrito</button>
+                  <button class="btn-fav-carrito">Agregar al carrito</button>
                 </div>
               </div>
 
               <!-- Producto 4 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-                <div style="position:relative;height:160px;overflow:hidden;background:#f1f4f9;display:flex;align-items:center;justify-content:center;font-size:60px;">🖱️
-                  <button style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(231,76,60,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">&#x2665;</button>
+              <div class="fav-card">
+                <div class="fav-img-emoji">&#128433;
+                  <button class="btn-fav-quitar">&#x2665;</button>
                 </div>
-                <div style="padding:16px;">
-                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Periferico</p>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.4;">Logitech G Pro X Superlight 2</p>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <p style="font-size:15px;font-weight:800;color:var(--dark-blue);">$290.000</p>
+                <div class="fav-body">
+                  <p class="fav-categoria">Periferico</p>
+                  <p class="fav-nombre">Logitech G Pro X Superlight 2</p>
+                  <div class="fav-precios">
+                    <p class="fav-precio-actual">$290.000</p>
                   </div>
-                  <button style="width:100%;padding:9px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Agregar al carrito</button>
+                  <button class="btn-fav-carrito">Agregar al carrito</button>
                 </div>
               </div>
 
               <!-- Producto 5 -->
-              <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-                <div style="position:relative;height:160px;overflow:hidden;background:#f1f4f9;display:flex;align-items:center;justify-content:center;font-size:60px;">⌨️
-                  <button style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(231,76,60,.9);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">&#x2665;</button>
+              <div class="fav-card">
+                <div class="fav-img-emoji">&#9000;
+                  <button class="btn-fav-quitar">&#x2665;</button>
                 </div>
-                <div style="padding:16px;">
-                  <p style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Teclado</p>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:10px;line-height:1.4;">Keychron Q1 Pro — Mecánico TKL</p>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-                    <p style="font-size:15px;font-weight:800;color:var(--dark-blue);">$680.000</p>
+                <div class="fav-body">
+                  <p class="fav-categoria">Teclado</p>
+                  <p class="fav-nombre">Keychron Q1 Pro — Mecánico TKL</p>
+                  <div class="fav-precios">
+                    <p class="fav-precio-actual">$680.000</p>
                   </div>
-                  <button style="width:100%;padding:9px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Agregar al carrito</button>
+                  <button class="btn-fav-carrito">Agregar al carrito</button>
                 </div>
               </div>
 
             </div>
-          </div>
 
           <!-- ===== VISTA: SEGUIMIENTO ===== -->
           <div class="vista-panel" id="vista-seguimiento">
@@ -696,73 +691,73 @@
             </div>
 
             <!-- Buscador de pedido -->
-            <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:20px 24px;display:flex;gap:12px;align-items:center;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-              <i class="fi fi-rr-search" style="color:var(--text-muted);font-size:16px;"></i>
-              <input type="text" value="WG-20260912" style="flex:1;border:none;outline:none;font-size:14px;font-family:'Poppins',sans-serif;color:var(--text-main);" placeholder="Ingresa el número de pedido..." />
-              <button style="padding:9px 20px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:9px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);">Rastrear</button>
+            <div class="seguimiento-buscador">
+              <i class="fi fi-rr-search"></i>
+              <input type="text" value="WG-20260912" class="seguimiento-input" placeholder="Ingresa el número de pedido..." />
+              <button class="btn-rastrear-buscar">Rastrear</button>
             </div>
 
             <!-- Tarjeta resumen pedido -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);padding:24px;box-shadow:0 2px 10px rgba(8,15,32,.05);">
-              <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:24px;">
+            <div class="seguimiento-resumen-card">
+              <div class="seguimiento-top">
                 <div>
-                  <p style="font-size:12px;color:var(--text-muted);">Pedido <b style="color:var(--text-main);">#WG-20260912</b></p>
-                  <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">Estimado de entrega: <b style="color:var(--dark-blue);">19 de septiembre, 2026</b></p>
+                  <p class="seguimiento-pedido-num">Pedido <b>#WG-20260912</b></p>
+                  <p class="seguimiento-estimado">Estimado de entrega: <b>19 de septiembre, 2026</b></p>
                 </div>
-                <span style="font-size:11px;font-weight:700;background:#eff6ff;color:#2563eb;padding:5px 14px;border-radius:20px;border:1px solid #bfdbfe;">🚚 En camino</span>
+                <span class="badge-en-camino">🚚 En camino</span>
               </div>
 
               <!-- Timeline de seguimiento -->
-              <div style="display:flex;flex-direction:column;gap:0;">
+              <div class="timeline">
 
                 <!-- Paso 1: Confirmado -->
-                <div style="display:flex;gap:16px;align-items:flex-start;">
-                  <div style="display:flex;flex-direction:column;align-items:center;">
-                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--dark-blue);font-weight:700;flex-shrink:0;">&#x2713;</div>
-                    <div style="width:2px;height:40px;background:var(--yellow);margin-top:0;"></div>
+                <div class="timeline-paso">
+                  <div class="timeline-conector">
+                    <div class="timeline-circulo completado">&#x2713;</div>
+                    <div class="timeline-linea completada"></div>
                   </div>
-                  <div style="padding-bottom:24px;">
-                    <p style="font-size:13px;font-weight:700;color:var(--text-main);">Pedido Confirmado</p>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">12 Sep 2026 — 10:32 a.m.</p>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Tu pedido fue recibido y está siendo preparado.</p>
+                  <div class="timeline-texto">
+                    <p class="timeline-titulo">Pedido Confirmado</p>
+                    <p class="timeline-hora">12 Sep 2026 — 10:32 a.m.</p>
+                    <p class="timeline-desc">Tu pedido fue recibido y está siendo preparado.</p>
                   </div>
                 </div>
 
                 <!-- Paso 2: Empacado -->
-                <div style="display:flex;gap:16px;align-items:flex-start;">
-                  <div style="display:flex;flex-direction:column;align-items:center;">
-                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--dark-blue);font-weight:700;flex-shrink:0;">&#x2713;</div>
-                    <div style="width:2px;height:40px;background:var(--yellow);margin-top:0;"></div>
+                <div class="timeline-paso">
+                  <div class="timeline-conector">
+                    <div class="timeline-circulo completado">&#x2713;</div>
+                    <div class="timeline-linea completada"></div>
                   </div>
-                  <div style="padding-bottom:24px;">
-                    <p style="font-size:13px;font-weight:700;color:var(--text-main);">Empacado y Listo</p>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">13 Sep 2026 — 2:15 p.m.</p>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Tu paquete fue empacado y entregado a la transportadora.</p>
+                  <div class="timeline-texto">
+                    <p class="timeline-titulo">Empacado y Listo</p>
+                    <p class="timeline-hora">13 Sep 2026 — 2:15 p.m.</p>
+                    <p class="timeline-desc">Tu paquete fue empacado y entregado a la transportadora.</p>
                   </div>
                 </div>
 
                 <!-- Paso 3: En camino (activo) -->
-                <div style="display:flex;gap:16px;align-items:flex-start;">
-                  <div style="display:flex;flex-direction:column;align-items:center;">
-                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#1d4ed8);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;">&#x1F69A;</div>
-                    <div style="width:2px;height:40px;background:var(--border);margin-top:0;"></div>
+                <div class="timeline-paso">
+                  <div class="timeline-conector">
+                    <div class="timeline-circulo activo">&#x1F69A;</div>
+                    <div class="timeline-linea pendiente"></div>
                   </div>
-                  <div style="padding-bottom:24px;">
-                    <p style="font-size:13px;font-weight:700;color:#2563eb;">En camino — <span style="font-size:11px;background:#eff6ff;padding:2px 8px;border-radius:10px;">Ahora</span></p>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">15 Sep 2026 — 9:00 a.m.</p>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">El paquete está en tránsito hacia Sogamoso, Boyacá.</p>
+                  <div class="timeline-texto">
+                    <p class="timeline-titulo activo">En camino — <span class="timeline-titulo-now">Ahora</span></p>
+                    <p class="timeline-hora">15 Sep 2026 — 9:00 a.m.</p>
+                    <p class="timeline-desc">El paquete está en tránsito hacia Sogamoso, Boyacá.</p>
                   </div>
                 </div>
 
                 <!-- Paso 4: Entregado (pendiente) -->
-                <div style="display:flex;gap:16px;align-items:flex-start;">
-                  <div style="display:flex;flex-direction:column;align-items:center;">
-                    <div style="width:36px;height:36px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;color:var(--text-muted);">&#x1F3E0;</div>
+                <div class="timeline-paso">
+                  <div class="timeline-conector">
+                    <div class="timeline-circulo pendiente">&#x1F3E0;</div>
                   </div>
-                  <div>
-                    <p style="font-size:13px;font-weight:700;color:var(--text-muted);">Entregado</p>
-                    <p style="font-size:11px;color:var(--text-muted);margin-top:2px;">Estimado: 19 Sep 2026</p>
-                    <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Entrega en tu dirección: Cra. 11 #14-14, Apto 302.</p>
+                  <div class="timeline-texto">
+                    <p class="timeline-titulo pendiente">Entregado</p>
+                    <p class="timeline-hora">Estimado: 19 Sep 2026</p>
+                    <p class="timeline-desc">Entrega en tu dirección: Cra. 11 #14-14, Apto 302.</p>
                   </div>
                 </div>
 
@@ -770,15 +765,15 @@
             </div>
 
             <!-- Info transportadora -->
-            <div style="background:var(--surface);border-radius:14px;border:1px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;box-shadow:0 2px 8px rgba(8,15,32,.04);">
-              <div style="display:flex;align-items:center;gap:14px;">
-                <div style="width:44px;height:44px;background:rgba(8,15,32,.06);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;">📦</div>
+            <div class="seguimiento-transportadora">
+              <div class="transportadora-izq">
+                <div class="transportadora-icono">📦</div>
                 <div>
-                  <p style="font-size:13px;font-weight:700;color:var(--text-main);">Servientrega</p>
-                  <p style="font-size:12px;color:var(--text-muted);">Guía: SE-7812349-COL</p>
+                  <p class="transportadora-nombre">Servientrega</p>
+                  <p class="transportadora-guia">Guía: SE-7812349-COL</p>
                 </div>
               </div>
-              <button style="padding:9px 20px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;background:transparent;color:var(--text-muted);">Ver en transportadora</button>
+              <button class="btn-transportadora">Ver en transportadora</button>
             </div>
 
           </div>
@@ -794,70 +789,70 @@
             </div>
 
             <!-- Tabla de facturas -->
-            <div style="background:var(--surface);border-radius:16px;border:1px solid var(--border);overflow:hidden;box-shadow:0 2px 10px rgba(8,15,32,.05);">
+            <div class="tabla-facturas">
 
               <!-- Encabezado tabla -->
-              <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1fr;gap:12px;padding:14px 24px;background:var(--bg);border-bottom:1px solid var(--border);">
-                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;"># Factura</p>
-                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Descripción</p>
-                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Fecha</p>
-                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Total</p>
-                <p style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.06em;">Acción</p>
+              <div class="tabla-header">
+                <p class="tabla-th"># Factura</p>
+                <p class="tabla-th">Descripción</p>
+                <p class="tabla-th">Fecha</p>
+                <p class="tabla-th">Total</p>
+                <p class="tabla-th">Acción</p>
               </div>
 
               <!-- Fila 1 -->
-              <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1fr;gap:12px;padding:16px 24px;border-bottom:1px solid var(--border);align-items:center;">
-                <p style="font-size:12px;font-weight:700;color:var(--dark-blue);">#FAC-2026-001</p>
-                <p style="font-size:12px;color:var(--text-main);">MSI MEG Trident X PC Gamer</p>
-                <p style="font-size:12px;color:var(--text-muted);">01/09/2026</p>
-                <p style="font-size:13px;font-weight:700;color:var(--text-main);">$4,349.000</p>
-                <div style="display:flex;gap:8px;">
-                  <button style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(245,200,66,.1);border:1.5px solid rgba(245,200,66,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);"><i class="fi fi-rr-download"></i> PDF</button>
+              <div class="tabla-fila">
+                <p class="factura-num">#FAC-2026-001</p>
+                <p class="factura-desc">MSI MEG Trident X PC Gamer</p>
+                <p class="factura-fecha">01/09/2026</p>
+                <p class="factura-total">$4,349.000</p>
+                <div class="factura-accion">
+                  <button class="btn-descargar-pdf"><i class="fi fi-rr-download"></i> PDF</button>
                 </div>
               </div>
 
               <!-- Fila 2 -->
-              <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1fr;gap:12px;padding:16px 24px;border-bottom:1px solid var(--border);align-items:center;">
-                <p style="font-size:12px;font-weight:700;color:var(--dark-blue);">#FAC-2026-002</p>
-                <p style="font-size:12px;color:var(--text-main);">ASUS ROG Zephyrus G14</p>
-                <p style="font-size:12px;color:var(--text-muted);">12/09/2026</p>
-                <p style="font-size:13px;font-weight:700;color:var(--text-main);">$6,850.000</p>
-                <div style="display:flex;gap:8px;">
-                  <button style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(245,200,66,.1);border:1.5px solid rgba(245,200,66,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);"><i class="fi fi-rr-download"></i> PDF</button>
+              <div class="tabla-fila">
+                <p class="factura-num">#FAC-2026-002</p>
+                <p class="factura-desc">ASUS ROG Zephyrus G14</p>
+                <p class="factura-fecha">12/09/2026</p>
+                <p class="factura-total">$6,850.000</p>
+                <div class="factura-accion">
+                  <button class="btn-descargar-pdf"><i class="fi fi-rr-download"></i> PDF</button>
                 </div>
               </div>
 
               <!-- Fila 3 -->
-              <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1fr;gap:12px;padding:16px 24px;border-bottom:1px solid var(--border);align-items:center;">
-                <p style="font-size:12px;font-weight:700;color:var(--dark-blue);">#FAC-2026-003</p>
-                <p style="font-size:12px;color:var(--text-main);">Logitech G Pro X Superlight 2 x2</p>
-                <p style="font-size:12px;color:var(--text-muted);">15/08/2026</p>
-                <p style="font-size:13px;font-weight:700;color:var(--text-main);">$580.000</p>
-                <div style="display:flex;gap:8px;">
-                  <button style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(245,200,66,.1);border:1.5px solid rgba(245,200,66,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);"><i class="fi fi-rr-download"></i> PDF</button>
+              <div class="tabla-fila">
+                <p class="factura-num">#FAC-2026-003</p>
+                <p class="factura-desc">Logitech G Pro X Superlight 2 x2</p>
+                <p class="factura-fecha">15/08/2026</p>
+                <p class="factura-total">$580.000</p>
+                <div class="factura-accion">
+                  <button class="btn-descargar-pdf"><i class="fi fi-rr-download"></i> PDF</button>
                 </div>
               </div>
 
               <!-- Fila 4 -->
-              <div style="display:grid;grid-template-columns:1fr 1.5fr 1fr 1fr 1fr;gap:12px;padding:16px 24px;align-items:center;">
-                <p style="font-size:12px;font-weight:700;color:var(--dark-blue);">#FAC-2025-021</p>
-                <p style="font-size:12px;color:var(--text-main);">Keychron Q1 Pro Teclado Mecánico</p>
-                <p style="font-size:12px;color:var(--text-muted);">08/12/2025</p>
-                <p style="font-size:13px;font-weight:700;color:var(--text-main);">$680.000</p>
-                <div style="display:flex;gap:8px;">
-                  <button style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:rgba(245,200,66,.1);border:1.5px solid rgba(245,200,66,.3);border-radius:8px;font-size:11px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);"><i class="fi fi-rr-download"></i> PDF</button>
+              <div class="tabla-fila">
+                <p class="factura-num">#FAC-2025-021</p>
+                <p class="factura-desc">Keychron Q1 Pro Teclado Mecánico</p>
+                <p class="factura-fecha">08/12/2025</p>
+                <p class="factura-total">$680.000</p>
+                <div class="factura-accion">
+                  <button class="btn-descargar-pdf"><i class="fi fi-rr-download"></i> PDF</button>
                 </div>
               </div>
 
             </div>
 
             <!-- Resumen total -->
-            <div style="background:linear-gradient(135deg,var(--dark-blue),var(--dark-blue-3));border-radius:14px;padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+            <div class="resumen-total">
               <div>
-                <p style="font-size:11px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Total gastado en WiiU-Games</p>
-                <p style="font-size:24px;font-weight:800;color:var(--white);margin-top:4px;">$12,459.000 <span style="font-size:13px;font-weight:400;color:rgba(255,255,255,.5);">COP</span></p>
+                <p class="resumen-label">Total gastado en WiiU-Games</p>
+                <p class="resumen-monto">$12,459.000 <span>COP</span></p>
               </div>
-              <button style="display:flex;align-items:center;gap:8px;padding:11px 22px;background:linear-gradient(135deg,var(--yellow),var(--yellow-hover));border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;color:var(--dark-blue);"><i class="fi fi-rr-download"></i> Descargar todas</button>
+              <button class="btn-descargar-todas"><i class="fi fi-rr-download"></i> Descargar todas</button>
             </div>
 
           </div>
@@ -937,69 +932,7 @@
     </footer>
 
     <!-- ==================== JAVASCRIPT ==================== -->
-    <script>
-      // Navegación SPA del panel
-      const navItems = document.querySelectorAll('.nav-item[data-vista]');
-      const vistas = document.querySelectorAll('.vista-panel');
-      const migaActiva = document.getElementById('miga-activa');
-
-      // Etiquetas para el breadcrumb
-      const etiquetas = {
-        'vista-inicio':       'Mi Cuenta',
-        'vista-perfil':       'Mi Perfil',
-        'vista-direcciones':  'Direcciones de Envío',
-        'vista-pedidos':      'Mis Pedidos',
-        'vista-pagos':        'Métodos de Pago',
-        'vista-favoritos':    'Mi Lista de Favoritos',
-        'vista-seguimiento':  'Sigue tu Pedido',
-        'vista-factura':      'Descarga tu Factura',
-      };
-
-      function activarVista(vistaId, navId) {
-        // Ocultar todas las vistas
-        vistas.forEach(v => v.classList.remove('activa'));
-
-        // Quitar active de todos los nav-item
-        navItems.forEach(n => n.classList.remove('active'));
-
-        // Mostrar vista seleccionada
-        const vista = document.getElementById(vistaId);
-        if (vista) vista.classList.add('activa');
-
-        // Activar nav correspondiente
-        const navEl = document.getElementById(navId);
-        if (navEl) navEl.classList.add('active');
-
-        // Actualizar breadcrumb
-        if (migaActiva) migaActiva.textContent = etiquetas[vistaId] || 'Mi Cuenta';
-      }
-
-      // Sidebar navigation
-      navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          const vistaId = item.dataset.vista;
-          const navId = item.id;
-          activarVista(vistaId, navId);
-        });
-      });
-
-      // Tarjetas del dashboard (redirigen al nav)
-      const tarjetasNav = document.querySelectorAll('[data-nav]');
-      tarjetasNav.forEach(tarjeta => {
-        tarjeta.addEventListener('click', (e) => {
-          e.preventDefault();
-          const navId = tarjeta.dataset.nav;
-          const navEl = document.getElementById(navId);
-          if (navEl) {
-            const vistaId = navEl.dataset.vista;
-            activarVista(vistaId, navId);
-            // Scroll al top del contenido
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-        });
-      });
-    </script>
+    <script src="../Scripts/panel_usuario.js"></script>
 
   </body>
 </html>
