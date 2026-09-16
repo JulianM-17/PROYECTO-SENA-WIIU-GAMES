@@ -14,16 +14,11 @@ const DEFAULT_REPAIRS = [];
 const DEFAULT_CLIENTS = [];
 
 function initPresetData() {
-  const storeDefaults = {
-    wiiu_products: DEFAULT_PRODUCTS,
-    wiiu_warranties: DEFAULT_WARRANTIES,
-    wiiu_repairs: DEFAULT_REPAIRS,
-    wiiu_clients: DEFAULT_CLIENTS
-  };
-
-  Object.entries(storeDefaults).forEach(([key, val]) => {
-    if (!localStorage.getItem(key)) {
-      localStorage.setItem(key, JSON.stringify(val));
+  const keys = ['wiiu_products', 'wiiu_warranties', 'wiiu_repairs', 'wiiu_clients'];
+  keys.forEach(k => {
+    const val = localStorage.getItem(k);
+    if (!val || val.includes('WIIU-GME') || val.includes('GAR-801') || val.includes('REP-101')) {
+      localStorage.setItem(k, JSON.stringify([]));
     }
   });
 }
