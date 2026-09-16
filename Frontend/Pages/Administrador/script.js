@@ -14,18 +14,11 @@ const DEFAULT_REVIEWS = [];
 const DEFAULT_CLIENTS = [];
 
 function initPresetData() {
-  const storeDefaults = {
-    wiiu_products: DEFAULT_PRODUCTS,
-    wiiu_warranties: DEFAULT_WARRANTIES,
-    wiiu_maintenance: DEFAULT_MAINTENANCE,
-    wiiu_repairs: DEFAULT_REPAIRS,
-    wiiu_discounts: DEFAULT_DISCOUNTS,
-    wiiu_clients: DEFAULT_CLIENTS
-  };
-
-  Object.entries(storeDefaults).forEach(([key, val]) => {
-    if (!localStorage.getItem(key)) {
-      localStorage.setItem(key, JSON.stringify(val));
+  const keys = ['wiiu_products', 'wiiu_warranties', 'wiiu_maintenance', 'wiiu_repairs', 'wiiu_discounts', 'wiiu_reviews', 'wiiu_clients'];
+  keys.forEach(k => {
+    const val = localStorage.getItem(k);
+    if (!val || val.includes('WIIU-GME') || val.includes('GAR-801') || val.includes('MNT-401') || val.includes('REP-101') || val.includes('WIIU-VERANO20')) {
+      localStorage.setItem(k, JSON.stringify([]));
     }
   });
 }
@@ -488,33 +481,6 @@ window.saveDiscount = function(e) {
   closeDiscountModal();
   renderDiscountsTable();
   showToast(`¡Cupón promocional "${code}" activado!`);
-};
-
-window.exportFullReport = function() {
-  showToast('Generando reporte consolidado de la tienda...');
-  setTimeout(() => {
-    const reportData = {
-      tienda: 'WiiU-Games',
-      fecha: new Date().toLocaleDateString('es-CO'),
-      ventasTotales: '$ 0',
-      pedidosSemana: 0,
-      clientesNuevos: (JSON.parse(localStorage.getItem('wiiu_clients')) || []).length,
-      tasaConversion: '0%',
-      inventarioTotal: getProducts().length,
-      utilidadNeta: '$ 0'
-    };
-    
-    const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Reporte_WiiUGames_${Date.now()}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast('Reporte descargado exitosamente.');
-  }, 600);
 };
 
 function initGlobalSearch() {
