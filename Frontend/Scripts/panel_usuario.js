@@ -346,21 +346,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formPerfilDatos) {
     formPerfilDatos.addEventListener('submit', (e) => {
       e.preventDefault();
-      const inputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:first-of-type .entrada-formulario');
-      if (inputs.length >= 6) {
-        state.profile.nombre     = inputs[0].value.trim() || 'Usuario';
-        state.profile.apellidos  = inputs[1].value.trim();
-        state.profile.email      = inputs[2].value.trim();
-        state.profile.telefono   = inputs[3].value.trim();
-        state.profile.nacimiento = inputs[4].value;
-        state.profile.documento  = inputs[5].value.trim();
-
       const nuevoNombre     = document.getElementById('perfil-nombres')?.value.trim();
-      const nuevosApellidos = document.getElementById('perfil-apellidos')?.value.trim();
-      const nuevoEmail      = document.getElementById('perfil-email')?.value.trim();
-      const nuevoTel        = document.getElementById('perfil-telefono')?.value.trim();
-      const nuevoNac        = document.getElementById('perfil-nacimiento')?.value;
-      const nuevoDoc        = document.getElementById('perfil-documento')?.value.trim();
+      const nuevosApellidos = document.getElementById('perfil-apellidos')?.value.trim() || '';
+      const nuevoEmail      = document.getElementById('perfil-email')?.value.trim() || '';
+      const nuevoTel        = document.getElementById('perfil-telefono')?.value.trim() || '';
+      const nuevoNac        = document.getElementById('perfil-nacimiento')?.value || '';
+      const nuevoDoc        = document.getElementById('perfil-documento')?.value.trim() || '';
 
       if (!nuevoNombre) {
         showToast('El campo Nombres no puede estar vacío.', 'error');
@@ -391,10 +382,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formPerfilSeguridad) {
     formPerfilSeguridad.addEventListener('submit', (e) => {
       e.preventDefault();
-      const passInputs = document.querySelectorAll('#vista-perfil .tarjeta-formulario:nth-of-type(2) .entrada-formulario');
-      const actual  = passInputs[0]?.value;
-      const nueva   = passInputs[1]?.value;
-      const confirm = passInputs[2]?.value;
+      const actual  = document.getElementById('perfil-pass-actual')?.value;
+      const nueva   = document.getElementById('perfil-pass-nueva')?.value;
+      const confirm = document.getElementById('perfil-pass-confirm')?.value;
 
       if (!actual) {
         showToast('Ingresa tu contraseña actual.', 'error');
@@ -409,9 +399,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      document.getElementById('perfil-pass-actual').value = '';
-      document.getElementById('perfil-pass-nueva').value = '';
-      document.getElementById('perfil-pass-confirm').value = '';
+      const inputActual = document.getElementById('perfil-pass-actual');
+      const inputNueva = document.getElementById('perfil-pass-nueva');
+      const inputConfirm = document.getElementById('perfil-pass-confirm');
+      if (inputActual) inputActual.value = '';
+      if (inputNueva) inputNueva.value = '';
+      if (inputConfirm) inputConfirm.value = '';
+
       showToast('¡Contraseña actualizada con éxito!', 'success');
     });
   }
@@ -848,9 +842,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const orderCards = vistaPedidos.querySelectorAll('.pedido-card');
 
       orderCards.forEach(card => {
-        const badgeEntregado = card.querySelector('.badge-entregado');
-        const badgeCamino    = card.querySelector('.badge-en-camino');
-        const badgeProceso   = card.querySelector('.badge-procesando');
+        const badgeEntregado = card.querySelector('.insignia-entregado');
+        const badgeCamino    = card.querySelector('.insignia-en-camino');
+        const badgeProceso   = card.querySelector('.insignia-procesando');
 
         if (filtro === 'Todos') {
           card.style.display = 'block';

@@ -211,6 +211,16 @@ body {
   gap: 24px;
 }
 
+.vista-panel {
+  display: none;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.vista-panel.activa {
+  display: flex;
+}
+
 /* =====================================================
    BANNER BIENVENIDA
    ===================================================== */

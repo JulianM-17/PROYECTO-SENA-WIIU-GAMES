@@ -289,60 +289,60 @@
             </div>
 
             <!-- Formulario de datos -->
-            <div class="tarjeta-formulario">
+            <form id="form-perfil-datos" class="tarjeta-formulario">
               <p class="titulo-tarjeta-formulario">Datos personales</p>
               <div class="cuadricula-formulario-2">
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Nombres</label>
-                  <input type="text" value="Fabian" class="entrada-formulario" />
+                  <input type="text" id="perfil-nombres" value="Fabian" class="entrada-formulario" required />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Apellidos</label>
-                  <input type="text" value="Mora Ríos" class="entrada-formulario" />
+                  <input type="text" id="perfil-apellidos" value="Mora Ríos" class="entrada-formulario" required />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Correo electrónico</label>
-                  <input type="email" value="fabian@wiiu.com" class="entrada-formulario" />
+                  <input type="email" id="perfil-email" value="fabian@wiiu.com" class="entrada-formulario" required />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Teléfono</label>
-                  <input type="tel" value="+57 310 456 7890" class="entrada-formulario" />
+                  <input type="tel" id="perfil-telefono" value="+57 310 456 7890" class="entrada-formulario" />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Fecha de nacimiento</label>
-                  <input type="date" value="1998-04-15" class="entrada-formulario" />
+                  <input type="date" id="perfil-nacimiento" value="1998-04-15" class="entrada-formulario" />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Documento de identidad</label>
-                  <input type="text" value="1098 765 432" class="entrada-formulario" />
+                  <input type="text" id="perfil-documento" value="1098 765 432" class="entrada-formulario" />
                 </div>
               </div>
               <div class="acciones-formulario">
-                <button class="btn-cancelar">Cancelar</button>
-                <button class="btn-guardar">Guardar cambios</button>
+                <button type="button" class="btn-cancelar" id="btn-cancelar-perfil">Cancelar</button>
+                <button type="submit" class="btn-guardar">Guardar cambios</button>
               </div>
             </form>
 
             <!-- Cambio contraseña -->
-            <div class="tarjeta-formulario">
+            <form id="form-perfil-seguridad" class="tarjeta-formulario">
               <p class="titulo-tarjeta-formulario">Seguridad</p>
               <div class="cuadricula-formulario-2">
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Contraseña actual</label>
-                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
+                  <input type="password" id="perfil-pass-actual" placeholder="••••••••" class="entrada-formulario" />
                 </div>
                 <div></div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
+                  <input type="password" id="perfil-pass-nueva" placeholder="••••••••" class="entrada-formulario" />
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Confirmar nueva contraseña</label>
-                  <input type="password" placeholder="••••••••" class="entrada-formulario" />
+                  <input type="password" id="perfil-pass-confirm" placeholder="••••••••" class="entrada-formulario" />
                 </div>
               </div>
               <div class="acciones-formulario-fin">
-                <button class="btn-cambiar-password">Cambiar contraseña</button>
+                <button type="submit" class="btn-cambiar-password">Cambiar contraseña</button>
               </div>
             </form>
           </div>
