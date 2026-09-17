@@ -4,89 +4,78 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administrador - WiiU-Games</title>
-  
-  <!-- Tipografía Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Hoja de Estilos Principal -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- CONTENEDOR PRINCIPAL DEL PANEL -->
-  <div class="app-layout">
+  <div class="diseno-app">
 
-    <!-- ======================================================== -->
-    <!-- BARRA LATERAL (SIDEBAR DE NAVEGACIÓN) -->
-    <!-- ======================================================== -->
-    <aside class="sidebar" id="sidebar">
-      
-      <!-- LOGO OFICIAL DE WIIU-GAMES -->
-      <div class="brand-header">
-        <div class="brand-logo-container">
-          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="brand-logo-img">
+    <aside class="barra-lateral" id="barra-lateral">
+      <div class="encabezado-marca">
+        <div class="contenedor-logo-marca">
+          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="imagen-logo-marca">
         </div>
       </div>
 
-      <!-- MENÚ PRINCIPAL DE NAVEGACIÓN -->
-      <nav class="sidebar-nav">
-        <button class="nav-item active" data-view="home" id="nav-home">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <nav class="nav-barra-lateral">
+        <button class="elemento-nav activo" data-view="home" id="nav-home" onclick="window.switchView('home')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
             <polyline points="9 22 9 12 15 12 15 22"></polyline>
           </svg>
           <span>Home</span>
         </button>
 
-        <button class="nav-item" data-view="garantias" id="nav-garantias">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="garantias" id="nav-garantias" onclick="window.switchView('garantias')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             <polyline points="9 12 11 14 15 10"></polyline>
           </svg>
           <span>Garantías</span>
         </button>
 
-        <button class="nav-item" data-view="mantenimientos" id="nav-mantenimientos">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="mantenimientos" id="nav-mantenimientos" onclick="window.switchView('mantenimientos')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
           </svg>
           <span>Mantenimientos</span>
         </button>
 
-        <button class="nav-item" data-view="inventario" id="nav-inventario">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+        <button class="elemento-nav" data-view="inventario" id="nav-inventario" onclick="window.switchView('inventario')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"></rect>
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
           </svg>
           <span>Inventario</span>
         </button>
 
-        <button class="nav-item" data-view="reparacion" id="nav-reparacion">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="reparacion" id="nav-reparacion" onclick="window.switchView('reparacion')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
           </svg>
           <span>Reparación</span>
         </button>
 
-        <button class="nav-item" data-view="descuentos" id="nav-descuentos">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="descuentos" id="nav-descuentos" onclick="window.switchView('descuentos')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
             <path d="m9 12 2 2 4-4"></path>
           </svg>
           <span>Descuentos</span>
         </button>
 
-        <button class="nav-item" data-view="reseñas" id="nav-resenas">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="reseñas" id="nav-resenas" onclick="window.switchView('reseñas')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
           </svg>
           <span>Reseñas</span>
         </button>
 
-        <button class="nav-item" data-view="clientes" id="nav-clientes">
-          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button class="elemento-nav" data-view="clientes" id="nav-clientes" onclick="window.switchView('clientes')">
+          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -96,32 +85,25 @@
         </button>
       </nav>
 
-      <!-- PERFIL DE USUARIO ADMINISTRADOR -->
-      <div class="sidebar-footer">
-        <div class="user-profile">
-          <div class="user-avatar">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop&crop=faces" alt="Fabian V." onerror="this.src='https://ui-avatars.com/api/?name=Fabian+V&background=FBBF24&color=091024&bold=true'">
+      <div class="pie-barra-lateral">
+        <div class="perfil-usuario">
+          <div class="avatar-usuario">
+            <img src="https://ui-avatars.com/api/?name=Fabian+V&background=FBBF24&color=091024&bold=true" alt="Fabian V.">
           </div>
-          <div class="user-info">
-            <div class="user-name">Fabian V.</div>
-            <div class="user-role">Administrador</div>
+          <div class="info-usuario">
+            <div class="nombre-usuario">Fabian V.</div>
+            <div class="rol-usuario">Administrador</div>
           </div>
-          <button class="user-action-btn" title="Opciones de perfil">
+          <button class="btn-accion-usuario" title="Opciones de perfil">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
           </button>
         </div>
       </div>
-
     </aside>
 
-    <!-- ======================================================== -->
-    <!-- ÁREA DE CONTENIDO PRINCIPAL -->
-    <!-- ======================================================== -->
     <main class="main-content">
-
-      <!-- ENCABEZADO SUPERIOR -->
       <header class="top-header">
         <div class="header-greeting">
           <h1 class="greeting-title">
@@ -137,7 +119,6 @@
         </div>
 
         <div class="header-controls">
-          <!-- Buscador Global -->
           <div class="search-bar">
             <input type="text" id="globalSearchInput" placeholder="Buscar productos, pedidos, clientes...">
             <button class="search-btn" title="Buscar">
@@ -148,7 +129,6 @@
             </button>
           </div>
 
-          <!-- Selector Rápido de Rango de Fecha -->
           <div class="date-selector">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
@@ -162,28 +142,20 @@
             </svg>
           </div>
 
-          <!-- Botón de Notificaciones -->
           <div class="notification-wrapper">
-            <button class="notification-btn" id="notificationBtn" title="Notificaciones" onclick="window.showToast('Tienes 3 pedidos pendientes por despachar')">
+            <button class="notification-btn" id="notificationBtn" title="Notificaciones" onclick="window.showToast('No tienes notificaciones pendientes')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                 <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
               </svg>
-              <span class="notification-badge">3</span>
+              <span class="insignia-notificacion">0</span>
             </button>
           </div>
         </div>
       </header>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 1: HOME / DASHBOARD (MÉTRICAS Y GRÁFICOS) -->
-      <!-- ======================================================== -->
-      <section class="view-section active-view" id="view-home">
-        
-        <!-- TARJETAS DE MÉTRICAS (KPIs) -->
+      <section class="seccion-vista vista-activa" id="view-home">
         <div class="kpi-grid">
-          
-          <!-- KPI 1: Ventas Totales -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -194,27 +166,13 @@
                   </svg>
                 </div>
               </div>
-              <div class="kpi-value" id="kpiVentasTotales">$ 24.850.000</div>
+              <div class="kpi-value" id="kpiVentasTotales">$ 0</div>
               <div class="kpi-trend positive">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
-                18.6% <span class="trend-sub">vs semana pasada</span>
+                0% <span class="trend-sub">vs semana pasada</span>
               </div>
-            </div>
-            <div class="kpi-sparkline">
-              <svg viewBox="0 0 200 45" preserveAspectRatio="none">
-                <path d="M0,35 Q30,30 60,32 T120,20 T170,10 T200,6" fill="none" stroke="#2563EB" stroke-width="3"/>
-                <path d="M0,35 Q30,30 60,32 T120,20 T170,10 T200,6 L200,45 L0,45 Z" fill="url(#sparkBlue)" opacity="0.2"/>
-                <defs>
-                  <linearGradient id="sparkBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#3B82F6"/>
-                    <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
             </div>
           </div>
 
-          <!-- KPI 2: Pedidos -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -225,27 +183,13 @@
                   </svg>
                 </div>
               </div>
-              <div class="kpi-value" id="kpiTotalPedidos">512</div>
+              <div class="kpi-value" id="kpiTotalPedidos">0</div>
               <div class="kpi-trend warning">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
-                14.2% <span class="trend-sub">vs semana pasada</span>
+                0% <span class="trend-sub">vs semana pasada</span>
               </div>
-            </div>
-            <div class="kpi-sparkline">
-              <svg viewBox="0 0 200 45" preserveAspectRatio="none">
-                <path d="M0,38 Q40,38 70,25 T130,28 T170,12 T200,8" fill="none" stroke="#F59E0B" stroke-width="3"/>
-                <path d="M0,38 Q40,38 70,25 T130,28 T170,12 T200,8 L200,45 L0,45 Z" fill="url(#sparkGold)" opacity="0.2"/>
-                <defs>
-                  <linearGradient id="sparkGold" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#F59E0B"/>
-                    <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
             </div>
           </div>
 
-          <!-- KPI 3: Clientes Nuevos -->
           <div class="kpi-card light-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -256,27 +200,13 @@
                   </svg>
                 </div>
               </div>
-              <div class="kpi-value text-dark" id="kpiClientesNuevos">128</div>
+              <div class="kpi-value text-dark" id="kpiClientesNuevos">0</div>
               <div class="kpi-trend positive">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
-                22.4% <span class="trend-sub text-muted-dark">vs semana pasada</span>
+                0% <span class="trend-sub text-muted-dark">vs semana pasada</span>
               </div>
-            </div>
-            <div class="kpi-sparkline">
-              <svg viewBox="0 0 200 45" preserveAspectRatio="none">
-                <path d="M0,32 Q50,30 90,26 T150,18 T180,12 T200,8" fill="none" stroke="#2563EB" stroke-width="3"/>
-                <path d="M0,32 Q50,30 90,26 T150,18 T180,12 T200,8 L200,45 L0,45 Z" fill="url(#sparkLightBlue)" opacity="0.2"/>
-                <defs>
-                  <linearGradient id="sparkLightBlue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2563EB"/>
-                    <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
             </div>
           </div>
 
-          <!-- KPI 4: Tasa de Conversión -->
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header">
@@ -285,88 +215,48 @@
                   <span class="percent-symbol">%</span>
                 </div>
               </div>
-              <div class="kpi-value" id="kpiTasaConversion">3.48%</div>
+              <div class="kpi-value" id="kpiTasaConversion">0%</div>
               <div class="kpi-trend positive">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-icon"><polyline points="18 15 12 9 6 15"/></svg>
-                8.7% <span class="trend-sub">vs semana pasada</span>
+                0% <span class="trend-sub">vs semana pasada</span>
               </div>
             </div>
-            <div class="kpi-sparkline">
-              <svg viewBox="0 0 200 45" preserveAspectRatio="none">
-                <path d="M0,35 Q40,36 80,30 T140,22 T180,15 T200,10" fill="none" stroke="#2563EB" stroke-width="3"/>
-                <path d="M0,35 Q40,36 80,30 T140,22 T180,15 T200,10 L200,45 L0,45 Z" fill="url(#sparkBlue2)" opacity="0.2"/>
-                <defs>
-                  <linearGradient id="sparkBlue2" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#2563EB"/>
-                    <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
           </div>
-
         </div>
 
-        <!-- FILA INTERMEDIA: GRÁFICA DE VENTAS + TOP PRODUCTOS -->
         <div class="dashboard-grid-mid">
-          
-          <!-- GRÁFICO DINÁMICO DE VENTAS -->
           <div class="panel-card chart-panel">
             <div class="panel-header">
               <h2 class="panel-title">Ventas</h2>
               <div class="panel-filter-pill">
-                <span>Comparar: Semana pasada</span>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                <span>Esta semana</span>
               </div>
             </div>
 
             <div class="chart-container">
               <div class="chart-y-axis">
-                <span>25K</span>
-                <span>20K</span>
-                <span>15K</span>
                 <span>10K</span>
-                <span>5K</span>
+                <span>8K</span>
+                <span>6K</span>
+                <span>4K</span>
+                <span>2K</span>
                 <span>0</span>
               </div>
 
               <div class="chart-canvas-area">
-                <svg viewBox="0 0 650 260" class="interactive-sales-chart" preserveAspectRatio="none">
+                <svg viewBox="0 0 650 260" class="grafico-ventas-interactivo" preserveAspectRatio="none">
                   <defs>
                     <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#0066FF" stop-opacity="0.5"/>
-                      <stop offset="50%" stop-color="#0066FF" stop-opacity="0.15"/>
+                      <stop offset="0%" stop-color="#0066FF" stop-opacity="0.3"/>
                       <stop offset="100%" stop-color="#0066FF" stop-opacity="0"/>
                     </linearGradient>
-                    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
-                      <feGaussianBlur stdDeviation="4" result="blur" />
-                      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                    </filter>
                   </defs>
-
-                  <line x1="0" y1="20" x2="650" y2="20" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
-                  <line x1="0" y1="68" x2="650" y2="68" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
-                  <line x1="0" y1="116" x2="650" y2="116" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
-                  <line x1="0" y1="164" x2="650" y2="164" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
-                  <line x1="0" y1="212" x2="650" y2="212" stroke="#162447" stroke-dasharray="4 4" stroke-width="1"/>
                   <line x1="0" y1="250" x2="650" y2="250" stroke="#162447" stroke-width="1"/>
-
-                  <path d="M 25 180 C 80 180, 110 170, 160 175 C 210 180, 240 120, 290 120 C 340 120, 360 180, 410 170 C 460 160, 500 130, 550 110 C 580 95, 600 35, 625 35 L 625 250 L 25 250 Z" fill="url(#chartAreaGrad)"/>
-                  <path d="M 25 180 C 80 180, 110 170, 160 175 C 210 180, 240 120, 290 120 C 340 120, 360 180, 410 170 C 460 160, 500 130, 550 110 C 580 95, 600 35, 625 35" fill="none" stroke="#0077FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonGlow)"/>
-
-                  <circle cx="25" cy="180" r="5" fill="#00D2FF" stroke="#0B132B" stroke-width="3"/>
-                  <circle cx="160" cy="175" r="4" fill="#0077FF"/>
-                  <circle cx="290" cy="120" r="5" fill="#00D2FF" stroke="#0B132B" stroke-width="3"/>
-                  <circle cx="410" cy="170" r="4" fill="#0077FF"/>
-                  <circle cx="550" cy="110" r="4" fill="#0077FF"/>
-                  <circle cx="625" cy="35" r="7" fill="#FFFFFF" stroke="#0077FF" stroke-width="4"/>
+                  <path d="M 25 245 L 625 245" fill="none" stroke="#0077FF" stroke-width="3" stroke-linecap="round"/>
                 </svg>
 
-                <div class="chart-tooltip-badge" style="position: absolute; right: 10px; top: 15px;">
-                  <div class="tooltip-amount">$ 24.850.000</div>
-                  <div class="tooltip-label">Domingo</div>
+                <div class="insignia-tooltip-grafico" style="position: absolute; right: 10px; top: 15px;">
+                  <div class="tooltip-amount">$ 0</div>
+                  <div class="tooltip-label">Sin ventas</div>
                 </div>
               </div>
             </div>
@@ -378,80 +268,21 @@
               <span>Jue</span>
               <span>Vie</span>
               <span>Sáb</span>
-              <span class="active-day">Dom</span>
+              <span class="dia-activo">Dom</span>
             </div>
           </div>
 
-          <!-- LISTA DE PRODUCTOS MÁS VENDIDOS -->
           <div class="panel-card best-sellers-panel">
             <div class="panel-header">
               <h2 class="panel-title">Productos más vendidos</h2>
-              <button class="panel-btn-link" onclick="window.switchView('inventario')">Ver todos</button>
+              <button class="panel-btn-link" onclick="window.switchView('inventario')">Ver inventario</button>
             </div>
 
             <div class="best-sellers-list" id="bestSellersList">
-              <div class="product-rank-item">
-                <div class="rank-number rank-1">1</div>
-                <div class="product-thumb">
-                  <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=80&h=80&fit=crop" alt="Zelda BOTW" onerror="this.src='https://via.placeholder.com/48/0E214D/00D2FF?text=Zelda'">
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">The Legend of Zelda<br><span class="product-sub">Breath of the Wild (Wii U)</span></div>
-                  <div class="product-units">1.250 uds</div>
-                </div>
-                <div class="product-revenue">$ 6.250.000</div>
-              </div>
-
-              <div class="product-rank-item">
-                <div class="rank-number rank-2">2</div>
-                <div class="product-thumb">
-                  <img src="https://images.unsplash.com/photo-1612287233214-9988424269e8?w=80&h=80&fit=crop" alt="Mario 3D World" onerror="this.src='https://via.placeholder.com/48/0E214D/00D2FF?text=Mario'">
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Super Mario 3D World</div>
-                  <div class="product-units">980 uds</div>
-                </div>
-                <div class="product-revenue">$ 4.900.000</div>
-              </div>
-
-              <div class="product-rank-item">
-                <div class="rank-number rank-3">3</div>
-                <div class="product-thumb">
-                  <img src="https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=80&h=80&fit=crop" alt="Mario Kart 8" onerror="this.src='https://via.placeholder.com/48/0E214D/00D2FF?text=MK8'">
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Mario Kart 8</div>
-                  <div class="product-units">750 uds</div>
-                </div>
-                <div class="product-revenue">$ 3.750.000</div>
-              </div>
-
-              <div class="product-rank-item">
-                <div class="rank-number rank-4">4</div>
-                <div class="product-thumb">
-                  <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=80&h=80&fit=crop" alt="Splatoon" onerror="this.src='https://via.placeholder.com/48/0E214D/00D2FF?text=Splatoon'">
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Splatoon (Wii U)</div>
-                  <div class="product-units">620 uds</div>
-                </div>
-                <div class="product-revenue">$ 3.100.000</div>
-              </div>
-
-              <div class="product-rank-item">
-                <div class="rank-number rank-5">5</div>
-                <div class="product-thumb">
-                  <img src="https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=80&h=80&fit=crop" alt="Smash Bros" onerror="this.src='https://via.placeholder.com/48/0E214D/00D2FF?text=Smash'">
-                </div>
-                <div class="product-meta">
-                  <div class="product-name">Super Smash Bros. for Wii U</div>
-                  <div class="product-units">540 uds</div>
-                </div>
-                <div class="product-revenue">$ 2.700.000</div>
-              </div>
+              <div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem;">No hay productos vendidos registrados</div>
             </div>
 
-            <button class="view-all-products-btn" onclick="window.switchView('inventario')">
+            <button class="btn-ver-todos-productos" onclick="window.switchView('inventario')">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="controller-icon">
                 <rect x="2" y="6" width="20" height="12" rx="4"></rect>
                 <path d="M6 12h4m-2-2v4"></path>
@@ -461,21 +292,17 @@
               <span>Ver todos los productos</span>
             </button>
           </div>
-
         </div>
 
-        <!-- FILA INFERIOR: PEDIDOS RECIENTES + RESUMEN FINANCIERO -->
         <div class="dashboard-grid-bottom">
-          
-          <!-- TABLA DE PEDIDOS RECIENTES -->
           <div class="panel-card recent-orders-panel">
             <div class="panel-header">
               <h2 class="panel-title">Pedidos recientes</h2>
-              <button class="panel-btn-link" onclick="window.showToast('Mostrando todos los pedidos registrados')">Ver todos</button>
+              <button class="panel-btn-link" onclick="window.showToast('No hay pedidos registrados')">Ver todos</button>
             </div>
 
-            <div class="table-responsive">
-              <table class="orders-table">
+            <div class="tabla-responsiva">
+              <table class="tabla-pedidos">
                 <thead>
                   <tr>
                     <th>Pedido</th>
@@ -487,94 +314,13 @@
                 </thead>
                 <tbody id="recentOrdersBody">
                   <tr>
-                    <td>
-                      <div class="order-id-cell">
-                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                        <span class="order-code">#PED-1258</span>
-                      </div>
-                    </td>
-                    <td>Juan Camilo R.</td>
-                    <td><span class="badge-status delivered">Entregado</span></td>
-                    <td class="order-total-price">$ 189.900</td>
-                    <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1258: Entregado a Juan Camilo R.')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <div class="order-id-cell">
-                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                        <span class="order-code">#PED-1257</span>
-                      </div>
-                    </td>
-                    <td>María Fernanda T.</td>
-                    <td><span class="badge-status shipping">En camino</span></td>
-                    <td class="order-total-price">$ 259.900</td>
-                    <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1257: En camino a María Fernanda T.')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <div class="order-id-cell">
-                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                        <span class="order-code">#PED-1256</span>
-                      </div>
-                    </td>
-                    <td>Andrés Felipe G.</td>
-                    <td><span class="badge-status processing">Procesando</span></td>
-                    <td class="order-total-price">$ 129.900</td>
-                    <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1256: Procesando para Andrés Felipe G.')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                      </button>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <div class="order-id-cell">
-                        <svg class="box-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                        </svg>
-                        <span class="order-code">#PED-1255</span>
-                      </div>
-                    </td>
-                    <td>Laura Sofía M.</td>
-                    <td><span class="badge-status delivered">Entregado</span></td>
-                    <td class="order-total-price">$ 79.900</td>
-                    <td>
-                      <button class="row-more-btn" title="Opciones" onclick="window.showToast('Detalles de #PED-1255: Entregado a Laura Sofía M.')">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon-sm"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-                      </button>
-                    </td>
+                    <td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay pedidos registrados</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
 
-          <!-- RESUMEN FINANCIERO -->
           <div class="panel-card financial-panel">
             <div class="panel-header">
               <h2 class="panel-title">Resumen financiero</h2>
@@ -584,16 +330,14 @@
               <div class="donut-chart-container">
                 <svg viewBox="0 0 160 160" class="donut-svg">
                   <circle cx="80" cy="80" r="62" fill="none" stroke="#0E1B38" stroke-width="15"/>
-                  <circle cx="80" cy="80" r="62" fill="none" stroke="#0077FF" stroke-width="15" stroke-dasharray="389.5" stroke-dashoffset="109" stroke-linecap="round" transform="rotate(-90 80 80)"/>
-                  <circle cx="80" cy="80" r="62" fill="none" stroke="#FFCC00" stroke-width="15" stroke-dasharray="389.5" stroke-dashoffset="365" stroke-linecap="round" transform="rotate(160 80 80)"/>
                 </svg>
                 <div class="donut-center-label">
-                  <div class="donut-percentage">72%</div>
+                  <div class="porcentaje-dona">0%</div>
                   <div class="donut-sublabel">Meta mensual</div>
                 </div>
               </div>
 
-              <div class="financial-stats-list">
+              <div class="lista-estadisticas-financieras">
                 <div class="fin-stat-item">
                   <div class="fin-stat-icon blue">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -603,7 +347,7 @@
                   </div>
                   <div class="fin-stat-info">
                     <div class="fin-stat-label">Ingresos</div>
-                    <div class="fin-stat-value" id="finIngresos">$ 24.850.000</div>
+                    <div class="fin-stat-value" id="finIngresos">$ 0</div>
                   </div>
                 </div>
 
@@ -617,7 +361,7 @@
                   </div>
                   <div class="fin-stat-info">
                     <div class="fin-stat-label">Gastos</div>
-                    <div class="fin-stat-value" id="finGastos">$ 7.250.000</div>
+                    <div class="fin-stat-value" id="finGastos">$ 0</div>
                   </div>
                 </div>
 
@@ -631,14 +375,14 @@
                   </div>
                   <div class="fin-stat-info">
                     <div class="fin-stat-label">Utilidad</div>
-                    <div class="fin-stat-value highlight" id="finUtilidad">$ 17.600.000</div>
+                    <div class="fin-stat-value highlight" id="finUtilidad">$ 0</div>
                   </div>
                 </div>
               </div>
             </div>
 
             <div class="financial-footer">
-              <a href="javascript:void(0)" class="view-fin-details" onclick="window.showToast('Balance: 72% de meta cumplida ($17.600.000 utilidad neta)')">
+              <a href="javascript:void(0)" class="detalles-financieros-vista" onclick="window.showToast('Balance: $0')">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
@@ -648,32 +392,27 @@
               </a>
             </div>
           </div>
-
         </div>
-
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 2: GARANTÍAS -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-garantias">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-garantias">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Gestión de Garantías</h2>
             <p class="section-subtitle">Supervisa reclamaciones, estados de cobertura y términos de garantías para clientes.</p>
           </div>
-          <button class="btn-primary" onclick="window.showToast('Formulario de nueva garantía abierto')">
+          <button class="btn-primario" onclick="window.showToast('Formulario de nueva garantía abierto')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Registrar Garantía</span>
           </button>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-toolbar">
+          <div class="barra-herramientas-tabla">
             <div class="search-mini">
               <input type="text" placeholder="Buscar por cliente, serial o producto..." id="searchWarrantyInput" oninput="window.filterWarranties(this.value)">
             </div>
-            <div class="filter-group">
+            <div class="grupo-filtro">
               <select class="custom-select" id="filterWarrantyStatus" onchange="window.filterWarrantiesByStatus(this.value)">
                 <option value="todos">Todos los estados</option>
                 <option value="Activa">Activa</option>
@@ -684,8 +423,8 @@
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="orders-table" id="tableGarantias">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos" id="tableGarantias">
               <thead>
                 <tr>
                   <th>ID Garantía</th>
@@ -697,38 +436,33 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="garantiasTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="garantiasTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 3: MANTENIMIENTOS -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-mantenimientos">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-mantenimientos">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Servicio Técnico y Mantenimientos</h2>
             <p class="section-subtitle">Control de consolas y periféricos en mantenimiento preventivo y correctivo.</p>
           </div>
-          <button class="btn-primary" onclick="window.showToast('Formulario de nuevo servicio técnico iniciado')">
+          <button class="btn-primario" onclick="window.showToast('Formulario de nuevo servicio técnico iniciado')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Nuevo Mantenimiento</span>
           </button>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-toolbar">
+          <div class="barra-herramientas-tabla">
             <div class="search-mini">
               <input type="text" placeholder="Buscar orden de mantenimiento..." id="searchMaintenanceInput" oninput="window.filterMaintenance(this.value)">
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="orders-table">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos">
               <thead>
                 <tr>
                   <th>Orden</th>
@@ -740,24 +474,19 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="mantenimientosTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="mantenimientosTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 4: INVENTARIO DE PRODUCTOS -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-inventario">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-inventario">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Inventario de Productos</h2>
             <p class="section-subtitle">Administra los videojuegos, consolas, repuestos y accesorios disponibles en tienda.</p>
           </div>
-          <button class="btn-primary" onclick="window.openAddProductModal()">
+          <button class="btn-primario" onclick="window.openAddProductModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Agregar Producto</span>
           </button>
@@ -767,29 +496,29 @@
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header"><span class="kpi-title">Total de Productos</span></div>
-              <div class="kpi-value" id="invTotalCount">12 items</div>
+              <div class="kpi-value" id="invTotalCount">0 items</div>
             </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header"><span class="kpi-title">Valor en Stock</span></div>
-              <div class="kpi-value" id="invTotalValue">$ 48.950.000</div>
+              <div class="kpi-value" id="invTotalValue">$ 0</div>
             </div>
           </div>
           <div class="kpi-card">
             <div class="kpi-content">
               <div class="kpi-header"><span class="kpi-title">Stock Bajo</span></div>
-              <div class="kpi-value" id="invLowStock">2 alertas</div>
+              <div class="kpi-value" id="invLowStock">0 alertas</div>
             </div>
           </div>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-toolbar">
+          <div class="barra-herramientas-tabla">
             <div class="search-mini">
               <input type="text" placeholder="Buscar por título, SKU o categoría..." id="searchProductInput" oninput="window.filterProducts(this.value)">
             </div>
-            <div class="filter-group">
+            <div class="grupo-filtro">
               <select class="custom-select" id="filterCategory" onchange="window.filterProductsByCategory(this.value)">
                 <option value="todos">Todas las categorías</option>
                 <option value="Juegos Wii U">Juegos Wii U</option>
@@ -801,8 +530,8 @@
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="orders-table" id="productsTable">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos" id="productsTable">
               <thead>
                 <tr>
                   <th>Producto</th>
@@ -815,38 +544,33 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="inventoryTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="inventoryTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 5: REPARACIÓN -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-reparacion">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-reparacion">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Taller de Reparaciones Especializadas</h2>
             <p class="section-subtitle">Diagnósticos y reparación de Wii U GamePads, placas base, pantallas y puertos HDMI.</p>
           </div>
-          <button class="btn-primary" onclick="window.showToast('Nueva orden de reparación iniciada')">
+          <button class="btn-primario" onclick="window.showToast('Nueva orden de reparación iniciada')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Nueva Reparación</span>
           </button>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-toolbar">
+          <div class="barra-herramientas-tabla">
             <div class="search-mini">
               <input type="text" placeholder="Buscar por falla, cliente o ticket..." id="searchRepairInput" oninput="window.filterRepairs(this.value)">
             </div>
           </div>
 
-          <div class="table-responsive">
-            <table class="orders-table">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos">
               <thead>
                 <tr>
                   <th>Ticket</th>
@@ -858,32 +582,27 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="reparacionesTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="reparacionesTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 6: DESCUENTOS -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-descuentos">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-descuentos">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Promociones y Descuentos</h2>
             <p class="section-subtitle">Gestiona cupones de descuento, campañas de fin de semana y rebajas por temporada.</p>
           </div>
-          <button class="btn-primary" onclick="window.openDiscountModal()">
+          <button class="btn-primario" onclick="window.openDiscountModal()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Crear Descuento</span>
           </button>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-responsive">
-            <table class="orders-table">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos">
               <thead>
                 <tr>
                   <th>Código Cupón</th>
@@ -895,19 +614,14 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="descuentosTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="descuentosTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 7: RESEÑAS -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-reseñas">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-reseñas">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Reseñas y Opiniones</h2>
             <p class="section-subtitle">Calificaciones dejadas por clientes satisfechos en compras y reparaciones.</p>
@@ -915,30 +629,25 @@
         </div>
 
         <div class="panel-card full-panel">
-          <div class="reviews-grid" id="reviewsGrid">
-            <!-- Se pobla dinámicamente -->
-          </div>
+          <div class="cuadricula-resenas" id="reviewsGrid"></div>
         </div>
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VISTA 8: CLIENTES -->
-      <!-- ======================================================== -->
-      <section class="view-section" id="view-clientes">
-        <div class="view-header-bar">
+      <section class="seccion-vista" id="view-clientes">
+        <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Directorio de Clientes</h2>
             <p class="section-subtitle">Base de datos de compradores, historial de compras y fidelización.</p>
           </div>
-          <button class="btn-primary" onclick="window.showToast('Módulo de registro de nuevo cliente')">
+          <button class="btn-primario" onclick="window.showToast('Módulo de registro de nuevo cliente')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
             <span>Nuevo Cliente</span>
           </button>
         </div>
 
         <div class="panel-card full-panel">
-          <div class="table-responsive">
-            <table class="orders-table">
+          <div class="tabla-responsiva">
+            <table class="tabla-pedidos">
               <thead>
                 <tr>
                   <th>Cliente</th>
@@ -950,69 +659,21 @@
                   <th>Acciones</th>
                 </tr>
               </thead>
-              <tbody id="clientesTableBody">
-                <!-- Se pobla dinámicamente -->
-              </tbody>
+              <tbody id="clientesTableBody"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- BARRA DE ACCIONES RÁPIDAS (FOOTER DEL DASHBOARD) -->
-      <footer class="quick-actions-bar">
-        <div class="quick-actions-info">
-          <div class="qa-title">Acciones rápidas</div>
-          <div class="qa-subtitle">Gestiona tu tienda de forma ágil y centralizada</div>
-        </div>
-
-        <div class="quick-actions-buttons">
-          <button class="btn-action-primary" id="btnQuickAddProduct" onclick="window.openAddProductModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            <span>Agregar producto</span>
-          </button>
-
-          <button class="btn-action-secondary" onclick="window.openDiscountModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-              <line x1="7" y1="7" x2="7.01" y2="7"></line>
-            </svg>
-            <span>Crear descuento</span>
-          </button>
-
-          <button class="btn-action-secondary" onclick="window.showToast('Métricas actualizadas: Tasa de conversión 3.48% (+8.7%)')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="20" x2="18" y2="10"></line>
-              <line x1="12" y1="20" x2="12" y2="4"></line>
-              <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            <span>Ver análisis</span>
-          </button>
-
-          <button class="btn-action-secondary" onclick="window.exportFullReport()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-            <span>Exportar reporte</span>
-          </button>
-        </div>
-      </footer>
-
     </main>
 
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: FORMULARIO MEJORADO "AGREGAR PRODUCTO" -->
-  <!-- ======================================================== -->
-  <div class="modal-backdrop" id="modalAddProduct">
-    <div class="modal-window modal-lg">
-      
-      <!-- Encabezado del Modal -->
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <div class="modal-badge-icon">
+  <div class="fondo-modal" id="modalAddProduct">
+    <div class="ventana-modal modal-grande">
+      <div class="encabezado-modal">
+        <div class="caja-titulo-modal">
+          <div class="icono-insignia-modal">
             <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
               <rect x="2" y="6" width="20" height="12" rx="4"></rect>
               <path d="M6 12h4m-2-2v4"></path>
@@ -1021,31 +682,27 @@
             </svg>
           </div>
           <div>
-            <h3 class="modal-title">Agregar Nuevo Producto</h3>
-            <p class="modal-subtitle">Ingresa la información detallada para publicar el artículo en el inventario.</p>
+            <h3 class="titulo-modal">Agregar Nuevo Producto</h3>
+            <p class="subtitulo-modal">Ingresa la información detallada para publicar el artículo en el inventario.</p>
           </div>
         </div>
-        <button class="modal-close-btn" onclick="window.closeAddProductModal()">&times;</button>
+        <button class="btn-cerrar-modal" onclick="window.closeAddProductModal()">&times;</button>
       </div>
 
-      <!-- Formulario Organizado en 2 Columnas -->
       <form id="formAddProduct" onsubmit="window.saveProduct(event)">
-        <div class="modal-body-grid">
-          
-          <!-- COLUMNA IZQUIERDA: DATOS DEL PRODUCTO Y PRECIOS -->
-          <div class="form-column">
-            
-            <h4 class="form-section-title">
+        <div class="cuadricula-cuerpo-modal">
+          <div class="columna-formulario">
+            <h4 class="titulo-seccion-formulario">
               <span class="section-step">1</span> Información Principal
             </h4>
             
-            <div class="form-group">
+            <div class="grupo-formulario">
               <label for="prodName">Nombre del Producto <span class="required">*</span></label>
               <input type="text" id="prodName" required placeholder="Ej. The Legend of Zelda: Breath of the Wild (Wii U)">
             </div>
 
-            <div class="form-row-2">
-              <div class="form-group">
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
                 <label for="prodCategory">Categoría <span class="required">*</span></label>
                 <select id="prodCategory" required onchange="document.getElementById('previewCategoryBadge').textContent = this.value">
                   <option value="Juegos Wii U">Juegos Wii U</option>
@@ -1056,7 +713,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="grupo-formulario">
                 <label for="prodSKU">Código SKU <span class="required">*</span></label>
                 <div class="input-with-action">
                   <input type="text" id="prodSKU" required placeholder="WIIU-GME-001">
@@ -1067,13 +724,13 @@
               </div>
             </div>
 
-            <div class="form-row-2">
-              <div class="form-group">
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
                 <label for="prodPublisher">Distribuidor / Fabricante</label>
                 <input type="text" id="prodPublisher" placeholder="Nintendo, Ubisoft, Capcom...">
               </div>
 
-              <div class="form-group">
+              <div class="grupo-formulario">
                 <label for="prodPlatform">Plataforma / Formato</label>
                 <select id="prodPlatform">
                   <option value="Disco Físico Original">Disco Físico con Caja</option>
@@ -1085,45 +742,42 @@
               </div>
             </div>
 
-            <h4 class="form-section-title mt-4">
+            <h4 class="titulo-seccion-formulario mt-4">
               <span class="section-step">2</span> Precios e Inventario
             </h4>
 
-            <div class="form-row-2">
-              <div class="form-group">
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
                 <label for="prodPrice">Precio de Venta ($ COP) <span class="required">*</span></label>
                 <input type="number" id="prodPrice" required placeholder="189900" min="0">
               </div>
 
-              <div class="form-group">
+              <div class="grupo-formulario">
                 <label for="prodCostPrice">Precio de Costo ($ COP)</label>
                 <input type="number" id="prodCostPrice" placeholder="110000" min="0">
               </div>
             </div>
 
-            <div class="form-row-2">
-              <div class="form-group">
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
                 <label for="prodStock">Cantidad en Stock <span class="required">*</span></label>
                 <input type="number" id="prodStock" required placeholder="15" min="0">
               </div>
 
-              <div class="form-group">
+              <div class="grupo-formulario">
                 <label for="prodMinStock">Stock Mínimo Alerta</label>
                 <input type="number" id="prodMinStock" placeholder="3" min="1" value="2">
               </div>
             </div>
-
           </div>
 
-          <!-- COLUMNA DERECHA: ESTADO, GARANTÍA Y VISTA PREVIA -->
-          <div class="form-column">
-            
-            <h4 class="form-section-title">
+          <div class="columna-formulario">
+            <h4 class="titulo-seccion-formulario">
               <span class="section-step">3</span> Estado y Garantía
             </h4>
 
-            <div class="form-row-2">
-              <div class="form-group">
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
                 <label for="prodCondition">Estado Físico <span class="required">*</span></label>
                 <select id="prodCondition">
                   <option value="Nuevo Sellado">Nuevo / Sellado</option>
@@ -1133,7 +787,7 @@
                 </select>
               </div>
 
-              <div class="form-group">
+              <div class="grupo-formulario">
                 <label for="prodWarranty">Garantía <span class="required">*</span></label>
                 <select id="prodWarranty">
                   <option value="1 Mes">1 Mes</option>
@@ -1145,16 +799,15 @@
               </div>
             </div>
 
-            <h4 class="form-section-title mt-4">
+            <h4 class="titulo-seccion-formulario mt-4">
               <span class="section-step">4</span> Portada y Presentación
             </h4>
 
-            <div class="form-group">
+            <div class="grupo-formulario">
               <label for="prodImageUrl">URL de la Imagen de Portada</label>
-              <input type="url" id="prodImageUrl" placeholder="https://ejemplo.com/portada-zelda.jpg" oninput="window.previewProductImage(this.value)">
+              <input type="url" id="prodImageUrl" placeholder="https://ejemplo.com/portada.jpg" oninput="window.previewProductImage(this.value)">
             </div>
 
-            <!-- Accesos Rápidos de Portadas Recomendadas -->
             <div class="quick-cover-picker">
               <span class="cover-picker-label">Portadas rápidas sugeridas:</span>
               <div class="cover-chips">
@@ -1166,27 +819,23 @@
               </div>
             </div>
 
-            <!-- Caja de Vista Previa -->
-            <div class="image-preview-container">
-              <div class="image-preview-box" id="imagePreviewBox">
-                <img id="imagePreview" src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop" alt="Vista previa de portada">
-                <span class="preview-badge" id="previewCategoryBadge">Juegos Wii U</span>
+            <div class="contenedor-vista-previa">
+              <div class="caja-vista-previa" id="imagePreviewBox">
+                <img id="imagePreview" src="https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa" alt="Vista previa de portada">
+                <span class="insignia-vista-previa" id="previewCategoryBadge">Juegos Wii U</span>
               </div>
             </div>
 
-            <div class="form-group mt-3">
+            <div class="grupo-formulario mt-3">
               <label for="prodDescription">Descripción del Producto</label>
               <textarea id="prodDescription" rows="3" placeholder="Detalles de contenido, idioma, estado de la caja o especificaciones..."></textarea>
             </div>
-
           </div>
-
         </div>
 
-        <!-- Botones del Pie del Modal -->
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" onclick="window.closeAddProductModal()">Cancelar</button>
-          <button type="submit" class="btn-primary-glow">
+        <div class="pie-modal">
+          <button type="button" class="btn-secundario" onclick="window.closeAddProductModal()">Cancelar</button>
+          <button type="submit" class="btn-primario-brillo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
               <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
               <polyline points="17 21 17 13 7 13 7 21"></polyline>
@@ -1196,65 +845,59 @@
           </button>
         </div>
       </form>
-
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: CREAR DESCUENTO RÁPIDO -->
-  <!-- ======================================================== -->
-  <div class="modal-backdrop" id="modalDiscount">
-    <div class="modal-window">
-      <div class="modal-header">
-        <div class="modal-title-box">
-          <div class="modal-badge-icon">
+  <div class="fondo-modal" id="modalDiscount">
+    <div class="ventana-modal">
+      <div class="encabezado-modal">
+        <div class="caja-titulo-modal">
+          <div class="icono-insignia-modal">
             <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
               <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
               <circle cx="7" cy="7" r="1.5" fill="#FFB800"></circle>
             </svg>
           </div>
           <div>
-            <h3 class="modal-title">Crear Nuevo Descuento</h3>
-            <p class="modal-subtitle">Genera un cupón promocional o descuento especial.</p>
+            <h3 class="titulo-modal">Crear Nuevo Descuento</h3>
+            <p class="subtitulo-modal">Genera un cupón promocional o descuento especial.</p>
           </div>
         </div>
-        <button class="modal-close-btn" onclick="window.closeDiscountModal()">&times;</button>
+        <button class="btn-cerrar-modal" onclick="window.closeDiscountModal()">&times;</button>
       </div>
 
       <form id="formDiscount" onsubmit="window.saveDiscount(event)">
-        <div class="modal-body-single">
-          <div class="form-group">
+        <div class="individual-cuerpo-modal">
+          <div class="grupo-formulario">
             <label for="discCode">Código del Cupón</label>
             <input type="text" id="discCode" placeholder="WIIU-PROMO15" required style="text-transform: uppercase;">
           </div>
-          <div class="form-row-2">
-            <div class="form-group">
+          <div class="fila-formulario-2">
+            <div class="grupo-formulario">
               <label for="discPercent">Porcentaje (%)</label>
               <input type="number" id="discPercent" placeholder="15" min="1" max="90" required>
             </div>
-            <div class="form-group">
+            <div class="grupo-formulario">
               <label for="discLimit">Límite de Usos</label>
               <input type="number" id="discLimit" placeholder="50" min="1" value="100">
             </div>
           </div>
-          <div class="form-group">
+          <div class="grupo-formulario">
             <label for="discDesc">Descripción</label>
             <input type="text" id="discDesc" placeholder="Descuento especial fin de semana para juegos Wii U" required>
           </div>
         </div>
 
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" onclick="window.closeDiscountModal()">Cerrar</button>
-          <button type="submit" class="btn-primary-glow">Crear Cupón</button>
+        <div class="pie-modal">
+          <button type="button" class="btn-secundario" onclick="window.closeDiscountModal()">Cerrar</button>
+          <button type="submit" class="btn-primario-brillo">Crear Cupón</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- CONTENEDOR DE NOTIFICACIONES TOAST -->
-  <div class="toast-container" id="toastContainer"></div>
+  <div class="contenedor-notificacion" id="toastContainer"></div>
 
-  <!-- SCRIPT LÓGICO PRINCIPAL -->
   <script src="script.js"></script>
 </body>
 </html>

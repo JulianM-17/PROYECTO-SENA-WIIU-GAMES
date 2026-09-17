@@ -203,13 +203,13 @@
   transform: scaleX(1);
 }
 
-.enlaces-nav a.active {
+.enlaces-nav a.activo {
   color: var(--yellow);
   background: rgba(245, 200, 66, 0.1);
   font-weight: 700;
 }
 
-.enlaces-nav a.active::after {
+.enlaces-nav a.activo::after {
   transform: scaleX(1);
 }
 

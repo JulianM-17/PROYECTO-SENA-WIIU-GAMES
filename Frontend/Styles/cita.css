@@ -102,7 +102,7 @@ body {
   gap: 6px;
 }
 
-.breadcrumb .active {
+.breadcrumb .activo {
   color: var(--yellow);
   font-weight: 500;
 }
