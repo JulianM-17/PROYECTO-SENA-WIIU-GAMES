@@ -5,7 +5,7 @@
   --bg-panel-hover: #122046;
   --bg-card-secondary: #0A132B;
   --border-subtle: #172652;
-  --border-focus: #0077FF;
+  --border-focus: #FFB800;
   
   --accent-gold: #FFB800;
   --accent-gold-hover: #E5A500;
@@ -24,7 +24,7 @@
   --radius-xl: 24px;
   --radius-full: 9999px;
   --shadow-panel: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(0, 119, 255, 0.3);
+  --shadow-glow: 0 0 20px rgba(255, 184, 0, 0.3);
   --shadow-gold: 0 4px 20px rgba(255, 184, 0, 0.35);
   
   --transition-fast: 0.15s ease;
@@ -102,7 +102,7 @@ body {
   width: 100%;
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 5px 16px rgba(0, 119, 255, 0.45));
+  filter: drop-shadow(0 5px 16px rgba(255, 184, 0, 0.45));
   transition: transform var(--transition-normal);
 }
 
@@ -152,14 +152,14 @@ body {
 }
 
 .elemento-nav.activo {
-  background-color: var(--accent-blue);
-  color: #FFFFFF;
+  background-color: var(--accent-gold);
+  color: #000000;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(0, 119, 255, 0.4);
+  box-shadow: 0 4px 14px rgba(255, 184, 0, 0.4);
 }
 
 .elemento-nav.activo .icono-nav {
-  stroke: #FFFFFF;
+  stroke: #000000;
 }
 
 .pie-barra-lateral {
@@ -180,7 +180,7 @@ body {
   height: 36px;
   border-radius: var(--radius-full);
   overflow: hidden;
-  border: 2px solid var(--accent-blue);
+  border: 2px solid var(--accent-gold);
   flex-shrink: 0;
 }
 
@@ -302,7 +302,7 @@ body {
 
 .notification-btn:hover {
   color: var(--text-primary);
-  border-color: var(--accent-blue);
+  border-color: var(--accent-gold);
 }
 
 .notification-btn svg {
@@ -395,8 +395,8 @@ body {
 }
 
 .pos-search-bar input:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.2);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
 }
 
 .pos-products-grid {
@@ -418,7 +418,7 @@ body {
 }
 
 .pos-product-card:hover {
-  border-color: var(--accent-blue);
+  border-color: var(--accent-gold);
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
@@ -586,7 +586,11 @@ body {
   font-weight: 700;
 }
 
-.qty-btn:hover { background-color: var(--accent-blue); border-color: var(--accent-blue); }
+.qty-btn:hover { 
+  background-color: var(--accent-gold); 
+  border-color: var(--accent-gold); 
+  color: #000000;
+}
 
 .qty-val {
   font-size: 0.85rem;
@@ -745,8 +749,8 @@ body {
 }
 
 .insignia-estado.processing {
-  background-color: rgba(0, 119, 255, 0.15);
-  color: #3B82F6;
+  background-color: rgba(255, 184, 0, 0.15);
+  color: #FFB800;
 }
 
 .row-more-btn {
@@ -763,14 +767,14 @@ body {
 
 .row-more-btn:hover {
   background-color: rgba(255, 255, 255, 0.08);
-  color: var(--text-primary);
-  border-color: var(--accent-blue);
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
 }
 
 
 .btn-primario {
-  background-color: var(--accent-blue);
-  color: #FFFFFF;
+  background-color: var(--accent-gold);
+  color: #000000;
   border: none;
   border-radius: var(--radius-md);
   padding: 10px 18px;
@@ -781,12 +785,12 @@ body {
   gap: 8px;
   cursor: pointer;
   transition: all var(--transition-fast);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-gold);
 }
 
 .btn-primario:hover {
+  background-color: var(--accent-gold-hover);
   transform: translateY(-2px);
-  background-color: #0066EE;
 }
 
 .btn-secundario {
@@ -806,8 +810,8 @@ body {
 }
 
 .btn-primario-brillo {
-  background: linear-gradient(135deg, #0077FF 0%, #00D2FF 100%);
-  color: #FFFFFF;
+  background: linear-gradient(135deg, #FFB800 0%, #FF8C00 100%);
+  color: #000000;
   border: none;
   border-radius: var(--radius-md);
   padding: 12px 24px;
@@ -817,13 +821,13 @@ body {
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(0, 119, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(255, 184, 0, 0.4);
   transition: all var(--transition-fast);
 }
 
 .btn-primario-brillo:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(0, 119, 255, 0.6);
+  box-shadow: 0 6px 25px rgba(255, 184, 0, 0.6);
 }
 
 .btn-svg-icon {
@@ -920,8 +924,8 @@ body {
 
 .grupo-formulario input:focus,
 .grupo-formulario select:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.2);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
 }
 
 .fila-formulario-2 {
@@ -951,7 +955,7 @@ body {
 
 .toast {
   background-color: #0E1B3D;
-  border: 1px solid var(--accent-blue);
+  border: 1px solid var(--accent-gold);
   color: #FFFFFF;
   padding: 12px 18px;
   border-radius: var(--radius-md);
@@ -968,7 +972,7 @@ body {
 .icono-notificacion {
   width: 18px;
   height: 18px;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   flex-shrink: 0;
 }
 

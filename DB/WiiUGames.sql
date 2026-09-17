@@ -98,6 +98,7 @@ CREATE TABLE producto (
     id_categoria INT NOT NULL,
     FOREIGN KEY (id_categoria)
         REFERENCES categoria (id_categoria),
+    nombre VARCHAR(100) NOT NULL,
     imagen_url VARCHAR(255) NOT NULL,
     color VARCHAR(15) NULL,
     descripcion VARCHAR(100) NOT NULL,
@@ -153,6 +154,9 @@ CREATE TABLE venta (
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario)
         REFERENCES usuario (id_usuario),
+    id_empleado NULL,
+    FOREIGN KEY (id_empleado)
+        REFERENCES usuario (id_usuario),
     id_sucursal INT NOT NULL,
     FOREIGN KEY (id_sucursal)
         REFERENCES sucursal (id_sucursal),
@@ -197,6 +201,9 @@ CREATE TABLE garantia (
 
 CREATE TABLE compra (
     id_compra INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_admin INT NOT NULL,
+    FOREIGN KEY (id_admin)
+        REFERENCES usuario (id_usuario),
     id_proveedor INT NOT NULL,
     FOREIGN KEY (id_proveedor)
         REFERENCES usuario (id_usuario),
@@ -263,6 +270,8 @@ CREATE TABLE promocion (
         REFERENCES usuario (id_usuario),
     precio DECIMAL(14 , 6 ) NOT NULL,
     descripcion VARCHAR(150) NOT NULL,
+    fecha_inicio DATETIME NOT NULL,
+    fecha_fin DATETIME NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO'
 );
 
@@ -361,24 +370,31 @@ END//
 -- Suma al stock cada vez que hay una comopra de algun producto a algun proveedor
 
 CREATE TRIGGER trg_compra_aumentar_stock
-AFTER INSERT ON detalle_compra
+BEFORE INSERT ON detalle_compra
 FOR EACH ROW
 BEGIN
     DECLARE v_suc INT;
+    DECLARE v_existe INT;
 
-SELECT 
-    id_sucursal
-INTO v_suc FROM
-    compra
-WHERE
-    id_compra = NEW.id_compra;
+    --buscamos el id de la sucursal donde se esta haciendo la compra
+    SELECT id_sucursal INTO v_suc 
+    FROM compra 
+    WHERE id_compra = NEW.id_compra;
 
-UPDATE inventario 
-SET 
-    stock = stock + NEW.cantidad
-WHERE
-    id_sucursal = v_suc
-        AND id_producto = NEW.id_producto;
+    --verificamos si el producto ya existe en el inventario de esa sucursal especifica
+    SELECT COUNT(*) INTO v_existe 
+    FROM inventario 
+    WHERE id_sucursal = v_suc AND id_producto = NEW.id_producto;
+        -- si no existe, procedemos a mandar el mensaje y a crear el producto nuevo
+    IF v_existe = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Error: El producto no existe en el inventario de esta sucursal. Por favor, asigne el producto a la sucursal antes de registrar la compra.';
+    ELSE
+        -- si existe, procedemos a sumar la cantidad al stock
+        UPDATE inventario 
+        SET stock = stock + NEW.cantidad
+        WHERE id_sucursal = v_suc AND id_producto = NEW.id_producto;
+    END IF;
 END//
 
 -- -----------------------------------JDFN------------------------------------
