@@ -1,54 +1,63 @@
 /* =====================================================
    INICIO DE SESIÓN (LOGIN) — WiiU Games
-   Rediseño Premium y Moderno
+   Diseño Moderno, Limpio y Elegante (Fondo Claro)
    ===================================================== */
 
 :root {
   --yellow: #f5c842;
   --yellow-hover: #e8b830;
-  --yellow-light: rgba(245, 200, 66, 0.12);
+  --yellow-light: rgba(245, 200, 66, 0.15);
+  --yellow-glow: rgba(245, 200, 66, 0.35);
   --dark-blue: #080f20;
   --dark-blue-2: #0d1a35;
-  --dark-blue-3: #14264b;
-  --black: #000000;
-  --white: #ffffff;
-  --bg: #f1f4f9;
-  --border: #e2e8f2;
-  --text-main: #1e293b;
+  --text-main: #0f172a;
   --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --bg-page: #f8fafc;
+  --card-bg: #ffffff;
+  --border: #e2e8f0;
+  --border-focus: #f5c842;
   --danger: #ef4444;
   --danger-light: #fef2f2;
   --success: #10b981;
   --success-light: #ecfdf5;
 }
 
-/* --- Estructura Contenedora --- */
+/* --- Estructura Contenedora (Fondo Claro Elegante) --- */
 .principal-login {
-  background: linear-gradient(165deg, var(--bg) 0%, #e5ebf5 100%);
-  padding: 50px 20px 70px 20px;
+  background-color: var(--bg-page);
+  background-image: 
+    radial-gradient(circle at 12% 18%, rgba(245, 200, 66, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 82%, rgba(59, 130, 246, 0.05) 0%, transparent 45%),
+    linear-gradient(165deg, #f8fafc 0%, #eef2f7 50%, #f1f5f9 100%);
+  padding: 60px 20px 80px 20px;
   font-family: 'Poppins', sans-serif;
   color: var(--text-main);
-  min-height: 75vh;
+  min-height: 80vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .contenedor-login {
   width: 100%;
-  max-width: 1080px;
+  max-width: 1020px;
   margin: 0 auto;
 }
 
 /* --- Miga de Pan --- */
 .encabezado-login {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .miga-de-pan {
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .miga-de-pan a {
@@ -61,26 +70,45 @@
   color: var(--dark-blue);
 }
 
-/* --- Tarjeta Principal (Grid 2 Columnas) --- */
+/* --- Tarjeta Principal (Clean Light Card) --- */
 .tarjeta-login {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
-  background: var(--white);
+  background: var(--card-bg);
   border-radius: 24px;
-  box-shadow: 0 20px 50px rgba(8, 15, 32, 0.12);
-  border: 1px solid var(--border);
+  box-shadow: 
+    0 25px 60px -15px rgba(15, 23, 42, 0.1),
+    0 0 0 1px var(--border);
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* --- Columna Formulario (Izquierda) --- */
 .columna-formulario {
-  padding: 48px 44px;
-  background: var(--white);
+  padding: 46px 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .encabezado-form {
   margin-bottom: 24px;
+}
+
+.badge-bienvenida {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fef8e7;
+  color: #dbb301;
+  border: 1px solid rgba(245, 200, 66, 0.4);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
 }
 
 .titulo-login {
@@ -88,11 +116,12 @@
   font-weight: 800;
   color: var(--dark-blue);
   letter-spacing: -0.02em;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  line-height: 1.2;
 }
 
 .subtitulo-login {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -100,21 +129,28 @@
 /* --- Caja de Accesos Demo --- */
 .caja-demo {
   background: #f8fafc;
-  border: 1px dashed #cbd5e1;
+  border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
+  padding: 10px 14px;
+  margin-bottom: 22px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .etiqueta-demo {
   font-size: 12px;
   font-weight: 600;
   color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.etiqueta-demo i {
+  color: #f59e0b;
 }
 
 .botones-demo {
@@ -123,7 +159,7 @@
 }
 
 .btn-demo {
-  background: var(--white);
+  background: #ffffff;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 12px;
@@ -135,22 +171,23 @@
   align-items: center;
   gap: 5px;
   transition: all 0.2s ease;
+  font-family: 'Poppins', sans-serif;
 }
 
 .btn-demo:hover {
-  background: var(--yellow-light);
+  background: #fffdf5;
   border-color: var(--yellow);
-  color: var(--dark-blue);
+  color: #b45309;
   transform: translateY(-1px);
 }
 
-/* --- Alert Box (General) --- */
+/* --- Alerta Formulario --- */
 .alerta-formulario {
   padding: 12px 16px;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -182,25 +219,20 @@
 .grupo-entrada {
   display: flex;
   flex-direction: column;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .cabecera-campo {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 7px;
 }
 
 .etiqueta {
   font-size: 13px;
   font-weight: 600;
   color: var(--text-main);
-}
-
-.obligatorio {
-  color: var(--yellow);
-  font-weight: 800;
 }
 
 .enlace-olvido {
@@ -225,7 +257,7 @@
 
 .icono-input {
   position: absolute;
-  left: 14px;
+  left: 15px;
   color: #94a3b8;
   font-size: 16px;
   pointer-events: none;
@@ -234,20 +266,24 @@
 
 .entrada-texto {
   width: 100%;
-  padding: 13px 16px 13px 42px;
+  padding: 12.5px 16px 12.5px 44px;
+  background-color: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: 12px;
   font-size: 14px;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--white);
   color: var(--text-main);
   outline: none;
   transition: all 0.25s ease;
 }
 
+.entrada-texto::placeholder {
+  color: #94a3b8;
+}
+
 .entrada-texto:focus {
   border-color: var(--yellow);
-  box-shadow: 0 0 0 4px rgba(245, 200, 66, 0.18);
+  box-shadow: 0 0 0 4px rgba(245, 200, 66, 0.2);
 }
 
 .contenedor-input-icono:focus-within .icono-input {
@@ -271,7 +307,7 @@
   display: block;
 }
 
-/* Botón Mostrar Contraseña */
+/* Botón Ojito */
 .boton-ojito {
   position: absolute;
   right: 12px;
@@ -293,12 +329,12 @@
   background-color: #f1f5f9;
 }
 
-/* --- Opciones (Checkbox Personalizado) --- */
+/* --- Opciones (Checkbox) --- */
 .fila-opciones {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 .contenedor-casilla {
@@ -320,7 +356,7 @@
 .marca-casilla {
   height: 18px;
   width: 18px;
-  background-color: var(--white);
+  background-color: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: 5px;
   margin-right: 10px;
@@ -360,15 +396,15 @@
   color: var(--text-muted);
 }
 
-/* --- Botón Submit --- */
+/* --- Botón Submit Dorado --- */
 .boton-submit {
   width: 100%;
   background-color: var(--yellow);
   color: var(--dark-blue);
   border: none;
-  padding: 14px 24px;
+  padding: 13.5px 24px;
   border-radius: 12px;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   cursor: pointer;
@@ -415,7 +451,7 @@
 
 /* --- Divisor Social --- */
 .divisor-social {
-  margin: 28px 0 20px 0;
+  margin: 22px 0 18px 0;
   position: relative;
   text-align: center;
 }
@@ -433,7 +469,7 @@
 
 .divisor-social span {
   position: relative;
-  background-color: var(--white);
+  background-color: #ffffff;
   padding: 0 14px;
   font-size: 12px;
   color: var(--text-muted);
@@ -441,40 +477,39 @@
   z-index: 2;
 }
 
-/* --- Botones Redes --- */
+/* --- Botón Social (Google Único) --- */
 .redes-login {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 24px;
+  display: flex;
 }
 
 .btn-social {
-  background-color: var(--white);
+  width: 100%;
+  background-color: #ffffff;
   border: 1.5px solid var(--border);
   border-radius: 12px;
-  padding: 11px;
-  font-size: 13px;
+  padding: 12px 18px;
+  font-size: 13.5px;
   font-weight: 600;
   color: var(--text-main);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all 0.2s ease;
+  gap: 10px;
+  transition: all 0.25s ease;
   font-family: 'Poppins', sans-serif;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.04);
 }
 
 .btn-social:hover {
   background-color: #f8fafc;
   border-color: #cbd5e1;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
 }
 
-.icono-fb {
-  color: #1877f2;
-  font-size: 18px;
+.btn-social:active {
+  transform: translateY(0);
 }
 
 /* --- Pie de Registro --- */
@@ -482,150 +517,86 @@
   text-align: center;
   font-size: 13px;
   color: var(--text-muted);
+  margin-top: 20px;
 }
 
 .enlace-destacado {
   color: var(--dark-blue);
   font-weight: 700;
   text-decoration: none;
-  margin-left: 4px;
+  margin-left: 5px;
   border-bottom: 2px solid var(--yellow);
-  transition: border-color 0.2s, color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .enlace-destacado:hover {
-  color: #000;
+  color: #b45309;
   border-bottom-color: var(--dark-blue);
 }
 
-/* --- Columna Banner (Derecha) --- */
+/* --- Columna Banner (Derecha con Imagen de Fondo) --- */
 .columna-banner {
-  background: linear-gradient(135deg, var(--dark-blue) 0%, var(--dark-blue-2) 60%, var(--dark-blue-3) 100%);
-  padding: 48px 40px;
-  color: var(--white);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  background: url('../Assets/login-banner-bg.jpg') center/cover no-repeat;
   position: relative;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 500px;
 }
 
-.columna-banner::before {
-  content: "";
+.banner-overlay {
   position: absolute;
-  top: -100px;
-  right: -100px;
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(245, 200, 66, 0.15) 0%, rgba(245, 200, 66, 0) 70%);
-  border-radius: 50%;
-  pointer-events: none;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 15, 32, 0.45) 0%,
+    rgba(8, 15, 32, 0.15) 50%,
+    rgba(8, 15, 32, 0.7) 100%
+  );
+  z-index: 1;
+}
+
+.contenido-banner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 32px 28px;
 }
 
 .insignia-banner {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(245, 200, 66, 0.15);
+  gap: 8px;
+  background: rgba(8, 15, 32, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--yellow);
-  border: 1px solid rgba(245, 200, 66, 0.3);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  width: fit-content;
-  letter-spacing: 0.03em;
-}
-
-.titulo-banner {
-  font-size: 26px;
-  font-weight: 800;
-  line-height: 1.3;
-  margin-bottom: 14px;
-  color: var(--white);
-}
-
-.descripcion-banner {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.75);
-  line-height: 1.6;
-  margin-bottom: 32px;
-}
-
-.lista-beneficios {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  margin-bottom: 36px;
-}
-
-.item-beneficio {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-}
-
-.icono-beneficio {
-  width: 38px;
-  height: 38px;
-  min-width: 38px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--yellow);
-  font-size: 18px;
-}
-
-.item-beneficio h4 {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--white);
-  margin-bottom: 2px;
-}
-
-.item-beneficio p {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.65);
-  line-height: 1.4;
-}
-
-.tarjeta-callout {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
-  padding: 18px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.tarjeta-callout p {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--white);
-}
-
-.btn-callout {
-  background: transparent;
-  border: 1.5px solid var(--yellow);
-  color: var(--yellow);
+  border: 1px solid rgba(245, 200, 66, 0.4);
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 24px;
   font-size: 12px;
   font-weight: 700;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  letter-spacing: 0.04em;
+  width: fit-content;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
-.btn-callout:hover {
-  background: var(--yellow);
-  color: var(--dark-blue);
+.punto-live {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #10b981;
+  display: inline-block;
+  animation: pulsoLive 2s infinite ease-in-out;
+}
+
+@keyframes pulsoLive {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.3); opacity: 0.6; }
 }
 
 /* --- Modal Recuperación --- */
@@ -645,7 +616,7 @@
 }
 
 .modal-contenido {
-  background: var(--white);
+  background: #ffffff;
   border-radius: 20px;
   padding: 36px 32px;
   max-width: 440px;
@@ -676,13 +647,18 @@
   font-size: 24px;
   color: var(--text-muted);
   cursor: pointer;
+  transition: color 0.2s;
+}
+
+.cerrar-modal:hover {
+  color: var(--dark-blue);
 }
 
 .icono-modal {
   width: 54px;
   height: 54px;
   background: var(--yellow-light);
-  color: var(--yellow-hover);
+  color: #b45309;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -722,7 +698,7 @@
 
 .toast {
   background: var(--dark-blue);
-  color: var(--white);
+  color: #ffffff;
   padding: 14px 20px;
   border-radius: 12px;
   font-size: 13px;
@@ -761,7 +737,7 @@
   }
   
   .columna-banner {
-    display: none; /* Se oculta banner en pantallas pequeñas para dar protagonismo al formulario */
+    display: none;
   }
 
   .columna-formulario {
@@ -771,7 +747,7 @@
 
 @media (max-width: 480px) {
   .principal-login {
-    padding: 24px 12px;
+    padding: 30px 14px;
   }
 
   .caja-demo {
@@ -779,7 +755,7 @@
     align-items: flex-start;
   }
 
-  .redes-login {
-    grid-template-columns: 1fr;
+  .titulo-login {
+    font-size: 26px;
   }
 }
