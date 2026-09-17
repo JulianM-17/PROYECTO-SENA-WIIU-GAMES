@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión - WiiU-WEB</title>
+    <link rel="stylesheet" href="../Styles/Login_Styles.css" />
+    <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css"
+    />
+  </head>
+  <body>
+    <!-- ENCABEZADO -->
+    <header>
+      <!-- BARRA SUPERIOR -->
+      <div class="barra-superior">
+        <div class="seccion-horario">
+          Lunes-Sábado: <b>8:00 a.m. –</b> <br />
+          <b>12:30 p.m. 2:00–7:00 p.m.</b>
+        </div>
+        <div class="seccion-direccion">
+          Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá
+          <a href="contactanos.html" class="link-contacto">Contáctanos</a>
+        </div>
+        <div class="seccion-contacto">
+          Llámanos: <b>(00) 1234 5678</b>
+          <a href="https://facebook.com/wiiugames" target="_blank" class="red-social" aria-label="Facebook"><i class="fi fi-brands-facebook"></i></a>
+          <a href="https://instagram.com/wiiugames" target="_blank" class="red-social" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
+        </div>
+      </div>
+      <!-- NAVBAR -->
+      <div class="menu-principal">
+        <div class="seccion-logo">
+          <a href="../Index.html">
+            <img src="../Assets/LogoSinFondo.png" alt="wiiu logo" />
+          </a>
+        </div>
+        <div class="contenido-menu">
+          <div class="enlaces-nav">
+            <a href="../Index.html">Inicio</a>
+            <a href="Catalog.html">Catálogo</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="garantias.html">Garantías</a>
+          </div>
+          <div class="botones-ingreso">
+            <a href="Login.html" class="btn-iniciar activo">Iniciar sesión</a>
+            <a href="Registro.html" class="btn-registrar">Registrarse</a>
+          </div>
+          <div class="iconos-usuario">
+            <a href="Catalog.html" style="color: inherit; text-decoration: none;"><i class="fi fi-rr-search icono-menu"></i></a>
+            <a href="carrito.html" class="contenedor-carrito">
+              <i class="fi fi-rr-shopping-cart icono-menu"></i>
+              <b class="burbuja-carrito">2</b>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- SECCIÓN PRINCIPAL DE LOGIN -->
+    <main class="principal-login">
+      <div class="contenedor-login">
+        <!-- MIGA DE PAN -->
+        <div class="encabezado-login">
+          <p class="miga-de-pan"><a href="../Index.html">Inicio</a> &gt; Iniciar Sesión</p>
+        </div>
+
+        <!-- TARJETA DE LOGIN -->
+        <div class="tarjeta-login">
+          <!-- COLUMNA IZQUIERDA: FORMULARIO -->
+          <div class="columna-formulario">
+            <div class="encabezado-form">
+              <h1 class="titulo-login">¡Hola de nuevo! 👋</h1>
+              <p class="subtitulo-login">Ingresa a tu cuenta de WiiU-Games para gestionar tus pedidos y servicios.</p>
+            </div>
+
+            <!-- DEMO ACCESOS RÁPIDOS -->
+            <div class="caja-demo">
+              <span class="etiqueta-demo">Accesos de Prueba:</span>
+              <div class="botones-demo">
+                <button type="button" class="btn-demo" id="demo-cliente">
+                  <i class="fi fi-rr-user"></i> Cliente
+                </button>
+                <button type="button" class="btn-demo" id="demo-admin">
+                  <i class="fi fi-rr-shield-check"></i> Admin
+                </button>
+              </div>
+            </div>
+
+            <!-- FORMULARIO -->
+            <form id="form-login" class="formulario-login" novalidate>
+              <!-- ALERTA DE ERROR/ÉXITO GENERAL -->
+              <div id="alerta-formulario" class="alerta-formulario oculta" role="alert"></div>
+
+              <!-- CAMPO: CORREO ELECTRÓNICO -->
+              <div class="grupo-entrada">
+                <label for="correo" class="etiqueta">
+                  Correo Electrónico <span class="obligatorio">*</span>
+                </label>
+                <div class="contenedor-input-icono">
+                  <i class="fi fi-rr-envelope icono-input"></i>
+                  <input
+                    type="email"
+                    id="correo"
+                    name="correo"
+                    class="entrada-texto"
+                    placeholder="ejemplo@correo.com"
+                    autocomplete="email"
+                    required
+                  />
+                </div>
+                <span class="mensaje-error" id="error-correo"></span>
+              </div>
+
+              <!-- CAMPO: CONTRASEÑA -->
+              <div class="grupo-entrada">
+                <div class="cabecera-campo">
+                  <label for="contrasena" class="etiqueta">
+                    Contraseña <span class="obligatorio">*</span>
+                  </label>
+                  <a href="#" id="link-olvido" class="enlace-olvido">¿Olvidaste tu contraseña?</a>
+                </div>
+                <div class="contenedor-input-icono">
+                  <i class="fi fi-rr-lock icono-input"></i>
+                  <input
+                    type="password"
+                    id="contrasena"
+                    name="contrasena"
+                    class="entrada-texto"
+                    placeholder="••••••••"
+                    autocomplete="current-password"
+                    required
+                  />
+                  <button type="button" class="boton-ojito" id="toggle-password" aria-label="Mostrar u ocultar contraseña">
+                    <i class="fi fi-rr-eye" id="icono-ojito"></i>
+                  </button>
+                </div>
+                <span class="mensaje-error" id="error-contrasena"></span>
+              </div>
+
+              <!-- OPCIONES ADICIONALES: RECORDAR SESIÓN -->
+              <div class="fila-opciones">
+                <label class="contenedor-casilla">
+                  <input type="checkbox" id="recordar-correo" class="casilla-verificacion" />
+                  <span class="marca-casilla"></span>
+                  <span class="texto-casilla">Recordar mi correo</span>
+                </label>
+              </div>
+
+              <!-- BOTÓN INICIAR SESIÓN -->
+              <button type="submit" class="boton-submit" id="btn-submit">
+                <span class="texto-btn">Iniciar Sesión</span>
+                <i class="fi fi-rr-arrow-right icono-btn"></i>
+                <div class="spinner oculta" id="spinner"></div>
+              </button>
+
+              <!-- DIVISOR SOCIAL -->
+              <div class="divisor-social">
+                <span>O continúa con</span>
+              </div>
+
+              <!-- OPCIONES SOCIALES -->
+              <div class="redes-login">
+                <button type="button" class="btn-social" id="btn-google">
+                  <svg width="18" height="18" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                  </svg>
+                  Google
+                </button>
+                <button type="button" class="btn-social" id="btn-facebook">
+                  <i class="fi fi-brands-facebook icono-fb"></i>
+                  Facebook
+                </button>
+              </div>
+
+              <!-- LINK A REGISTRO -->
+              <p class="pie-registro">
+                ¿No tienes una cuenta aún?
+                <a href="Registro.html" class="enlace-destacado">Regístrate aquí</a>
+              </p>
+            </form>
+          </div>
+
+          <!-- COLUMNA DERECHA: PANEL INFORMATIVO / BANNER -->
+          <div class="columna-banner">
+            <div class="contenido-banner">
+              <div class="insignia-banner">
+                <i class="fi fi-rr-gamepad"></i> WiiU-Games Portal
+              </div>
+              <h2 class="titulo-banner">Tu Experiencia Gamer al Siguiente Nivel</h2>
+              <p class="descripcion-banner">
+                Accede a tu panel para ver el estado de tus mantenimientos, historial de compras, garantías y repuestos exclusivos.
+              </p>
+
+              <div class="lista-beneficios">
+                <div class="item-beneficio">
+                  <div class="icono-beneficio"><i class="fi fi-rr-box-alt"></i></div>
+                  <div>
+                    <h4>Rastreo de Pedidos</h4>
+                    <p>Monitorea en tiempo real tus compras de consolas y componentes.</p>
+                  </div>
+                </div>
+                <div class="item-beneficio">
+                  <div class="icono-beneficio"><i class="fi fi-rr-wrench"></i></div>
+                  <div>
+                    <h4>Servicio Técnico & Citas</h4>
+                    <p>Consulta el diagnóstico y avance de tus mantenimientos.</p>
+                  </div>
+                </div>
+                <div class="item-beneficio">
+                  <div class="icono-beneficio"><i class="fi fi-rr-shield-check"></i></div>
+                  <div>
+                    <h4>Gestión de Garantías</h4>
+                    <p>Valida tus productos registrados y solicitudes de soporte.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tarjeta-callout">
+                <p>¿Nuevo en la plataforma?</p>
+                <a href="Registro.html" class="btn-callout">Crear Cuenta Gratis</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- MODAL RECUPERAR CONTRASEÑA -->
+    <div id="modal-recuperar" class="modal-backdrop oculta">
+      <div class="modal-contenido">
+        <button type="button" id="cerrar-modal" class="cerrar-modal">&times;</button>
+        <div class="icono-modal">
+          <i class="fi fi-rr-key"></i>
+        </div>
+        <h3 class="titulo-modal">Recuperar Contraseña</h3>
+        <p class="subtitulo-modal">Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu acceso.</p>
+
+        <form id="form-recuperar" class="form-modal">
+          <div class="grupo-entrada">
+            <label for="correo-recuperar" class="etiqueta">Correo de Registro</label>
+            <input type="email" id="correo-recuperar" class="entrada-texto" placeholder="ejemplo@correo.com" required />
+          </div>
+          <button type="submit" class="boton-submit">Enviar Enlace de Recuperación</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- CONTENEDOR DE TOAST NOTIFICATIONS -->
+    <div id="contenedor-toast" class="contenedor-toast"></div>
+
+    <!-- PIE DE PÁGINA (FOOTER) -->
+    <footer class="sitio-footer">
+      <div class="seccion-boletin"></div>
+      <div class="cuadricula-footer">
+        <div class="columna-footer">
+          <h3>Información</h3>
+          <ul>
+            <li><a href="Catalog.html">Acerca de nosotros</a></li>
+            <li><a href="Catalog.html">Política de Privacidad</a></li>
+            <li><a href="Catalog.html">Buscar</a></li>
+            <li><a href="Catalog.html">Términos y Condiciones</a></li>
+            <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
+            <li><a href="contactanos.html">Contáctanos</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Componentes PC</h3>
+          <ul>
+            <li><a href="Catalog.html">CPUs</a></li>
+            <li><a href="Catalog.html">Discos Duros</a></li>
+            <li><a href="Catalog.html">Tarjetas Gráficas</a></li>
+            <li><a href="Catalog.html">Teclados / Mouse</a></li>
+            <li><a href="Catalog.html">Gabinetes / Fuentes</a></li>
+            <li><a href="Catalog.html">Memoria RAM</a></li>
+            <li><a href="Catalog.html">Software</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Consolas & PCs</h3>
+          <ul>
+            <li><a href="Catalog.html">Custom PCs</a></li>
+            <li><a href="Catalog.html">Consolas Videojuegos</a></li>
+            <li><a href="Catalog.html">All-in-One PCs</a></li>
+            <li><a href="Catalog.html">Accesorios Gaming</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Categorías</h3>
+          <ul>
+            <li><a href="Catalog.html">Laptops Gaming</a></li>
+            <li><a href="Catalog.html">Controles & Periféricos</a></li>
+            <li><a href="servicios.html">Mantenimiento Preventivo</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer columna-contacto">
+          <h3>Contacto</h3>
+          <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
+          <p>Teléfono: <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5678</a></p>
+          <p>Lunes-Sábado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
+          <p>E-mail: <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado">wiiugames2026@gmail.com</a></p>
+        </div>
+      </div>
+      <div class="barra-inferior-footer">
+        <div class="redes-footer">
+          <a href="https://facebook.com/wiiugames" target="_blank" aria-label="Facebook"><i class="fi fi-brands-facebook"></i></a>
+          <a href="https://instagram.com/wiiugames" target="_blank" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
+        </div>
+        <div class="metodos-pago">
+          <span class="tarjeta-icono">PayPal</span>
+          <span class="tarjeta-icono">Visa</span>
+          <span class="tarjeta-icono">MasterCard</span>
+        </div>
+        <div class="copyright">
+          <p>Copyright © 2026 WiiU-Games. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- SCRIPT DE LOGIN -->
+    <script src="../Scripts/login.js"></script>
+  </body>
+</html>
