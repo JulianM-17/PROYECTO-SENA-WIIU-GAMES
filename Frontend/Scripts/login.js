@@ -31,9 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const cerrarModal = document.getElementById('cerrar-modal');
   const formRecuperar = document.getElementById('form-recuperar');
 
-  // Botones Redes Sociales
+  // Botón Social
   const btnGoogle = document.getElementById('btn-google');
-  const btnFacebook = document.getElementById('btn-facebook');
 
   // Contenedor de Toasts
   const contenedorToast = document.getElementById('contenedor-toast');
@@ -261,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // -----------------------------------------------------
-  // 7. BOTONES SOCIALES (Google / Facebook)
+  // 7. BOTÓN SOCIAL (Google)
   // -----------------------------------------------------
   if (btnGoogle) {
     btnGoogle.addEventListener('click', () => {
@@ -270,22 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const sesionUsuario = {
           correo: 'usuario.google@gmail.com',
           nombre: 'Gamer Google',
-          rol: 'Cliente',
-          fechaIngreso: new Date().toISOString()
-        };
-        sessionStorage.setItem('wiiu_usuario_activo', JSON.stringify(sesionUsuario));
-        window.location.href = 'panel_usuario.html';
-      }, 1000);
-    });
-  }
-
-  if (btnFacebook) {
-    btnFacebook.addEventListener('click', () => {
-      mostrarToast('Conectando con Facebook...', 'exito');
-      setTimeout(() => {
-        const sesionUsuario = {
-          correo: 'usuario.facebook@fb.com',
-          nombre: 'Gamer Facebook',
           rol: 'Cliente',
           fechaIngreso: new Date().toISOString()
         };

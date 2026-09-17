@@ -81,18 +81,19 @@
           <p class="miga-de-pan"><a href="../Index.html">Inicio</a> &gt; Iniciar Sesión</p>
         </div>
 
-        <!-- TARJETA DE LOGIN -->
+        <!-- TARJETA DE LOGIN ELEGANTE -->
         <div class="tarjeta-login">
           <!-- COLUMNA IZQUIERDA: FORMULARIO -->
           <div class="columna-formulario">
             <div class="encabezado-form">
-              <h1 class="titulo-login">¡Hola de nuevo! 👋</h1>
-              <p class="subtitulo-login">Ingresa a tu cuenta de WiiU-Games para gestionar tus pedidos y servicios.</p>
+              <span class="badge-bienvenida"><i class="fi fi-rr-sparkles"></i> Bienvenido</span>
+              <h1 class="titulo-login">Iniciar Sesión</h1>
+              <p class="subtitulo-login">Accede a tu cuenta oficial para gestionar tus pedidos y servicios de consola.</p>
             </div>
 
             <!-- DEMO ACCESOS RÁPIDOS -->
             <div class="caja-demo">
-              <span class="etiqueta-demo">Accesos de Prueba:</span>
+              <span class="etiqueta-demo"><i class="fi fi-rr-bolt"></i> Accesos Demo:</span>
               <div class="botones-demo">
                 <button type="button" class="btn-demo" id="demo-cliente">
                   <i class="fi fi-rr-user"></i> Cliente
@@ -111,7 +112,7 @@
               <!-- CAMPO: CORREO ELECTRÓNICO -->
               <div class="grupo-entrada">
                 <label for="correo" class="etiqueta">
-                  Correo Electrónico <span class="obligatorio">*</span>
+                  Correo Electrónico
                 </label>
                 <div class="contenedor-input-icono">
                   <i class="fi fi-rr-envelope icono-input"></i>
@@ -120,7 +121,7 @@
                     id="correo"
                     name="correo"
                     class="entrada-texto"
-                    placeholder="ejemplo@correo.com"
+                    placeholder="nombre@ejemplo.com"
                     autocomplete="email"
                     required
                   />
@@ -132,7 +133,7 @@
               <div class="grupo-entrada">
                 <div class="cabecera-campo">
                   <label for="contrasena" class="etiqueta">
-                    Contraseña <span class="obligatorio">*</span>
+                    Contraseña
                   </label>
                   <a href="#" id="link-olvido" class="enlace-olvido">¿Olvidaste tu contraseña?</a>
                 </div>
@@ -143,7 +144,7 @@
                     id="contrasena"
                     name="contrasena"
                     class="entrada-texto"
-                    placeholder="••••••••"
+                    placeholder="Ingresa tu contraseña"
                     autocomplete="current-password"
                     required
                   />
@@ -159,85 +160,50 @@
                 <label class="contenedor-casilla">
                   <input type="checkbox" id="recordar-correo" class="casilla-verificacion" />
                   <span class="marca-casilla"></span>
-                  <span class="texto-casilla">Recordar mi correo</span>
+                  <span class="texto-casilla">Mantener sesión iniciada</span>
                 </label>
               </div>
 
               <!-- BOTÓN INICIAR SESIÓN -->
               <button type="submit" class="boton-submit" id="btn-submit">
-                <span class="texto-btn">Iniciar Sesión</span>
+                <span class="texto-btn">Acceder a mi Cuenta</span>
                 <i class="fi fi-rr-arrow-right icono-btn"></i>
                 <div class="spinner oculta" id="spinner"></div>
               </button>
 
               <!-- DIVISOR SOCIAL -->
               <div class="divisor-social">
-                <span>O continúa con</span>
+                <span>o conéctate con</span>
               </div>
 
-              <!-- OPCIONES SOCIALES -->
+              <!-- OPCIONES SOCIALES (SOLO GOOGLE) -->
               <div class="redes-login">
-                <button type="button" class="btn-social" id="btn-google">
+                <button type="button" class="btn-social btn-google" id="btn-google">
                   <svg width="18" height="18" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                   </svg>
-                  Google
-                </button>
-                <button type="button" class="btn-social" id="btn-facebook">
-                  <i class="fi fi-brands-facebook icono-fb"></i>
-                  Facebook
+                  Continuar con Google
                 </button>
               </div>
 
-              <!-- LINK A REGISTRO -->
+              <!-- LINK A REGISTRO (ÚNICO) -->
               <p class="pie-registro">
                 ¿No tienes una cuenta aún?
-                <a href="Registro.html" class="enlace-destacado">Regístrate aquí</a>
+                <a href="Registro.html" class="enlace-destacado">Regístrate</a>
               </p>
             </form>
           </div>
 
-          <!-- COLUMNA DERECHA: PANEL INFORMATIVO / BANNER -->
+          <!-- COLUMNA DERECHA: BANNER VISUAL CON IMAGEN DE FONDO -->
           <div class="columna-banner">
+            <div class="banner-overlay"></div>
             <div class="contenido-banner">
               <div class="insignia-banner">
-                <i class="fi fi-rr-gamepad"></i> WiiU-Games Portal
-              </div>
-              <h2 class="titulo-banner">Tu Experiencia Gamer al Siguiente Nivel</h2>
-              <p class="descripcion-banner">
-                Accede a tu panel para ver el estado de tus mantenimientos, historial de compras, garantías y repuestos exclusivos.
-              </p>
-
-              <div class="lista-beneficios">
-                <div class="item-beneficio">
-                  <div class="icono-beneficio"><i class="fi fi-rr-box-alt"></i></div>
-                  <div>
-                    <h4>Rastreo de Pedidos</h4>
-                    <p>Monitorea en tiempo real tus compras de consolas y componentes.</p>
-                  </div>
-                </div>
-                <div class="item-beneficio">
-                  <div class="icono-beneficio"><i class="fi fi-rr-wrench"></i></div>
-                  <div>
-                    <h4>Servicio Técnico & Citas</h4>
-                    <p>Consulta el diagnóstico y avance de tus mantenimientos.</p>
-                  </div>
-                </div>
-                <div class="item-beneficio">
-                  <div class="icono-beneficio"><i class="fi fi-rr-shield-check"></i></div>
-                  <div>
-                    <h4>Gestión de Garantías</h4>
-                    <p>Valida tus productos registrados y solicitudes de soporte.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="tarjeta-callout">
-                <p>¿Nuevo en la plataforma?</p>
-                <a href="Registro.html" class="btn-callout">Crear Cuenta Gratis</a>
+                <span class="punto-live"></span>
+                <i class="fi fi-rr-gamepad"></i> WiiU Gaming Portal
               </div>
             </div>
           </div>

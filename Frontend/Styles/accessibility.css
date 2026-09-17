@@ -1,0 +1,284 @@
+/* =====================================================
+   ACCESIBILIDAD — WiiU Games
+   Solución robusta:
+   1. El botón NUNCA se mueve al footer (sin filter en body/html)
+   2. Funcionalidades reales y comprobadas
+   ===================================================== */
+
+:root {
+  --a11y-gold: #f5c842;
+  --a11y-gold-hover: #ffd752;
+  --a11y-dark: #080f20;
+  --a11y-dark-card: rgba(13, 31, 60, 0.9);
+}
+
+/* =====================================================
+   BOTÓN FLOTANTE (Siempre Fijo en el Viewport)
+   ===================================================== */
+#a11y-trigger-btn {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 50% !important;
+  background: var(--a11y-dark) !important;
+  border: 2px solid var(--a11y-gold) !important;
+  color: var(--a11y-gold) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 200, 66, 0.25) !important;
+  cursor: pointer !important;
+  z-index: 2147483647 !important; /* Máximo z-index del navegador */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  outline: none !important;
+  transform: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+#a11y-trigger-btn:hover {
+  transform: scale(1.08) !important;
+  border-color: var(--a11y-gold-hover) !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 200, 66, 0.5) !important;
+}
+
+#a11y-trigger-btn:active {
+  transform: scale(0.95) !important;
+}
+
+#a11y-trigger-btn.has-active-mode {
+  box-shadow: 0 0 18px rgba(245, 200, 66, 0.7), 0 4px 15px rgba(0, 0, 0, 0.6) !important;
+  border-color: #ffffff !important;
+  background: #0d1f3c !important;
+}
+
+#a11y-trigger-btn svg {
+  width: 26px !important;
+  height: 26px !important;
+  fill: currentColor !important;
+  pointer-events: none !important;
+}
+
+/* =====================================================
+   MENÚ FLOTANTE COMPACTO
+   ===================================================== */
+#a11y-menu {
+  position: fixed !important;
+  bottom: 84px !important;
+  right: 24px !important;
+  width: 250px !important;
+  background: rgba(8, 15, 32, 0.98) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1.5px solid rgba(245, 200, 66, 0.4) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(245, 200, 66, 0.15) !important;
+  z-index: 2147483647 !important;
+  font-family: 'Poppins', sans-serif !important;
+  color: #ffffff !important;
+  padding: 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  opacity: 0 !important;
+  transform: translateY(10px) scale(0.95) !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease, transform 0.2s ease !important;
+}
+
+#a11y-menu.a11y-open {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+}
+
+.a11y-menu-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  border-bottom: 1px solid rgba(245, 200, 66, 0.25) !important;
+  padding-bottom: 8px !important;
+}
+
+.a11y-menu-header span {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--a11y-gold) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.a11y-menu-close {
+  background: none !important;
+  border: none !important;
+  color: #94a3b8 !important;
+  font-size: 20px !important;
+  cursor: pointer !important;
+  line-height: 1 !important;
+  padding: 0 4px !important;
+  transition: color 0.15s ease !important;
+}
+
+.a11y-menu-close:hover {
+  color: #ffffff !important;
+}
+
+/* Lista de Opciones */
+.a11y-options-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.a11y-option-item {
+  background: var(--a11y-dark-card) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 10px 12px !important;
+  color: #e2e8f0 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  transition: all 0.18s ease !important;
+  outline: none !important;
+  user-select: none !important;
+}
+
+.a11y-option-item:hover {
+  background: rgba(26, 58, 122, 0.6) !important;
+  border-color: rgba(245, 200, 66, 0.5) !important;
+  color: #ffffff !important;
+}
+
+.a11y-option-item.selected {
+  background: rgba(245, 200, 66, 0.2) !important;
+  border-color: var(--a11y-gold) !important;
+  color: var(--a11y-gold) !important;
+  font-weight: 600 !important;
+}
+
+.a11y-radio-circle {
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 50% !important;
+  border: 1.5px solid #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+
+.a11y-option-item.selected .a11y-radio-circle {
+  border-color: var(--a11y-gold) !important;
+  background: var(--a11y-gold) !important;
+}
+
+.a11y-radio-circle::after {
+  content: '' !important;
+  width: 4px !important;
+  height: 4px !important;
+  border-radius: 50% !important;
+  background: #080f20 !important;
+  display: none !important;
+}
+
+.a11y-option-item.selected .a11y-radio-circle::after {
+  display: block !important;
+}
+
+/* =====================================================
+   1. ESCALA DE GRISES (SIN ROMPER POSITION FIXED)
+   ===================================================== */
+/* NUNCA poner filter en body ni en html porque rompe position: fixed */
+body.a11y-mode-grayscale > *:not(#a11y-trigger-btn):not(#a11y-menu) {
+  filter: grayscale(100%) !important;
+}
+
+/* =====================================================
+   2. TEXTO GRANDE (FUNCIONAMIENTO REAL CON ZOOM Y FUENTES)
+   ===================================================== */
+body.a11y-mode-large-text > *:not(#a11y-trigger-btn):not(#a11y-menu) {
+  zoom: 1.15;
+}
+
+/* Respaldo para navegadores o elementos con fuentes específicas */
+body.a11y-mode-large-text p,
+body.a11y-mode-large-text a:not(.a11y-menu *),
+body.a11y-mode-large-text li,
+body.a11y-mode-large-text span:not(.a11y-menu *):not(#a11y-trigger-btn *) {
+  letter-spacing: 0.02em;
+}
+
+/* =====================================================
+   3. ALTO CONTRASTE (FONDO NEGRO PURO Y TEXTO DORADO/BLANCO)
+   ===================================================== */
+body.a11y-mode-high-contrast {
+  --bg: #000000 !important;
+  --surface: #101010 !important;
+  --white: #141414 !important;
+  --border: #f5c842 !important;
+  --text-main: #ffffff !important;
+  --text-muted: #e2e8f0 !important;
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-principal,
+body.a11y-mode-high-contrast .contenedor-principal-catalogo,
+body.a11y-mode-high-contrast main,
+body.a11y-mode-high-contrast section {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .tarjeta-producto,
+body.a11y-mode-high-contrast .barra-lateral,
+body.a11y-mode-high-contrast article,
+body.a11y-mode-high-contrast .categoria-tarjeta,
+body.a11y-mode-high-contrast .formulario-contacto,
+body.a11y-mode-high-contrast input,
+body.a11y-mode-high-contrast select,
+body.a11y-mode-high-contrast textarea {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #f5c842 !important;
+}
+
+body.a11y-mode-high-contrast h1,
+body.a11y-mode-high-contrast h2,
+body.a11y-mode-high-contrast h3,
+body.a11y-mode-high-contrast h4,
+body.a11y-mode-high-contrast b,
+body.a11y-mode-high-contrast strong,
+body.a11y-mode-high-contrast .precio-actual,
+body.a11y-mode-high-contrast .enlace-resaltado {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a) {
+  color: #ffff00 !important;
+  text-decoration: underline !important;
+}
+
+/* Responsivo para móviles */
+@media (max-width: 480px) {
+  #a11y-trigger-btn {
+    bottom: 16px !important;
+    right: 16px !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  #a11y-menu {
+    right: 16px !important;
+    bottom: 74px !important;
+    width: calc(100vw - 32px) !important;
+  }
+}
