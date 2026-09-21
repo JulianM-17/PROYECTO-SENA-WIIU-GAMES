@@ -78,6 +78,8 @@
   bottom: 84px !important;
   right: 24px !important;
   width: 250px !important;
+  max-height: calc(100vh - 110px) !important;
+  overflow-y: auto !important;
   background: rgba(8, 15, 32, 0.98) !important;
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
@@ -344,49 +346,340 @@ body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a) {
 }
 
 /* =====================================================
-   4. MODO OSCURO
+   4. MODO OSCURO (COMPLETO PARA TODAS LAS PÁGINAS)
    ===================================================== */
+html.a11y-mode-dark-mode,
 body.a11y-mode-dark-mode {
-  --bg: #080f20 !important;
-  --surface: #111d31 !important;
-  --white: #111d31 !important;
-  --border: #263752 !important;
+  --bg: #070d1e !important;
+  --bg-page: #070d1e !important;
+  --surface: #0e1834 !important;
+  --surface-light: #132247 !important;
+  --card-bg: #0e1834 !important;
+  --white: #0e1834 !important;
+  --Whitelight: #122044 !important;
+  --border: #1a2c5b !important;
+  --border-subtle: #172652 !important;
   --text-main: #f8fafc !important;
-  --text-muted: #b4c0d1 !important;
-  background: #080f20 !important;
+  --text-primary: #f8fafc !important;
+  --text-muted: #94a3b8 !important;
+  --text-secondary: #94a3b8 !important;
+  --gray-400: #8899b5 !important;
+  --gray-600: #cbd5e1 !important;
+  --dark-blue: #f8fafc !important;
+  --dark-blue-2: #0b152d !important;
+  --dark-blue-3: #0e1b38 !important;
+  --DarkBlue: #f8fafc !important;
+  --black: #ffffff !important;
+  --Black: #ffffff !important;
+  background-color: #070d1e !important;
   color: #f8fafc !important;
 }
 
+/* Contenedores Principales y Secciones */
 body.a11y-mode-dark-mode main,
 body.a11y-mode-dark-mode section,
 body.a11y-mode-dark-mode .contenedor-principal,
 body.a11y-mode-dark-mode .contenedor-principal-catalogo,
 body.a11y-mode-dark-mode .seccion-categoria,
-body.a11y-mode-dark-mode .seccion-productos {
-  background-color: #080f20 !important;
+body.a11y-mode-dark-mode .seccion-productos,
+body.a11y-mode-dark-mode .seccion-carrito,
+body.a11y-mode-dark-mode .panel-layout,
+body.a11y-mode-dark-mode .diseno-app,
+body.a11y-mode-dark-mode .seccion-vista,
+body.a11y-mode-dark-mode .seccion-container {
+  background-color: #070d1e !important;
   color: #f8fafc !important;
 }
 
-body.a11y-mode-dark-mode .tarjeta-producto,
-body.a11y-mode-dark-mode .barra-lateral,
-body.a11y-mode-dark-mode .formulario-contacto,
-body.a11y-mode-dark-mode input,
-body.a11y-mode-dark-mode select,
-body.a11y-mode-dark-mode textarea,
-body.a11y-mode-dark-mode .dato-producto {
-  background-color: #111d31 !important;
-  color: #f8fafc !important;
-  border-color: #263752 !important;
-}
-
+/* Encabezados y Textos */
 body.a11y-mode-dark-mode h1,
 body.a11y-mode-dark-mode h2,
 body.a11y-mode-dark-mode h3,
 body.a11y-mode-dark-mode h4,
+body.a11y-mode-dark-mode h5,
+body.a11y-mode-dark-mode h6,
 body.a11y-mode-dark-mode .titulo-producto,
-body.a11y-mode-dark-mode .precio-actual {
+body.a11y-mode-dark-mode .titulo-registro,
+body.a11y-mode-dark-mode .titulo-carrito,
+body.a11y-mode-dark-mode .titulo-login,
+body.a11y-mode-dark-mode .title-seccion,
+body.a11y-mode-dark-mode .encabezado-principal h1,
+body.a11y-mode-dark-mode .encabezado-productos h2,
+body.a11y-mode-dark-mode .title-porque {
   color: #f8fafc !important;
 }
+
+body.a11y-mode-dark-mode p,
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *),
+body.a11y-mode-dark-mode label {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .precio-actual {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .precio-anterior {
+  color: #64748b !important;
+}
+
+body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos) {
+  color: #f5c842;
+}
+
+/* Tarjetas y Paneles Generales */
+body.a11y-mode-dark-mode .tarjeta-producto,
+body.a11y-mode-dark-mode .barra-lateral,
+body.a11y-mode-dark-mode .formulario-contacto,
+body.a11y-mode-dark-mode .formulario-container,
+body.a11y-mode-dark-mode .info-bloque,
+body.a11y-mode-dark-mode .dato-producto,
+body.a11y-mode-dark-mode .tarjeta-servicios,
+body.a11y-mode-dark-mode .tarjeta-clara,
+body.a11y-mode-dark-mode .acordeon-item,
+body.a11y-mode-dark-mode .tarjeta-garantia {
+  background-color: #0e1834 !important;
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Entradas de Formulario */
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
+body.a11y-mode-dark-mode select,
+body.a11y-mode-dark-mode textarea {
+  background-color: #070d1e !important;
+  color: #f8fafc !important;
+  border: 1.5px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode input::placeholder,
+body.a11y-mode-dark-mode textarea::placeholder {
+  color: #64748b !important;
+}
+
+body.a11y-mode-dark-mode input:focus,
+body.a11y-mode-dark-mode select:focus,
+body.a11y-mode-dark-mode textarea:focus {
+  border-color: #f5c842 !important;
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
+}
+
+/* Login */
+body.a11y-mode-dark-mode .principal-login {
+  background: #070d1e !important;
+  background-image: 
+    radial-gradient(circle at 12% 18%, rgba(245, 200, 66, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 82%, rgba(0, 119, 255, 0.08) 0%, transparent 45%),
+    linear-gradient(165deg, #070d1e 0%, #0b152d 50%, #080f22 100%) !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-login {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .caja-input {
+  background: #070d1e !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .caja-input input {
+  background: transparent !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .icono-input {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-beneficio {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-beneficio h4 {
+  color: #f5c842 !important;
+}
+
+/* Registro */
+body.a11y-mode-dark-mode .principal-registro {
+  background: #070d1e !important;
+  background-image: linear-gradient(165deg, #070d1e 0%, #0b152d 100%) !important;
+}
+
+body.a11y-mode-dark-mode .formulario-registro {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .columna-izquierda {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .columna-derecha {
+  background: #0a1329 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .titulo-seccion::after {
+  background: #1a2c5b !important;
+}
+
+/* Panel de Usuario */
+body.a11y-mode-dark-mode .panel-barra-lateral,
+body.a11y-mode-dark-mode .panel-seccion,
+body.a11y-mode-dark-mode .tarjeta-resumen,
+body.a11y-mode-dark-mode .tarjeta-pedido,
+body.a11y-mode-dark-mode .tarjeta-direccion,
+body.a11y-mode-dark-mode .tarjeta-metodo,
+body.a11y-mode-dark-mode .panel-tarjeta,
+body.a11y-mode-dark-mode .item-pedido,
+body.a11y-mode-dark-mode .modal-contenido {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.a11y-mode-dark-mode .panel-menu a {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .panel-menu a:hover {
+  background: rgba(245, 200, 66, 0.08) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .panel-menu a.activo {
+  background: rgba(245, 200, 66, 0.15) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .tabla-pedidos th {
+  background-color: #0a1329 !important;
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .tabla-pedidos td {
+  border-color: #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .tabla-pedidos tr:hover td {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Carrito */
+body.a11y-mode-dark-mode .tarjeta-carrito,
+body.a11y-mode-dark-mode .item-carrito,
+body.a11y-mode-dark-mode .resumen-pedido,
+body.a11y-mode-dark-mode .cupon-descuento,
+body.a11y-mode-dark-mode .desglose-resumen,
+body.a11y-mode-dark-mode .carrito-vacio {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .btn-cantidad {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .linea-resumen {
+  border-color: #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .linea-total {
+  border-color: #1a2c5b !important;
+  color: #ffffff !important;
+}
+
+/* Catálogo y Producto */
+body.a11y-mode-dark-mode .contador {
+  background-color: #070d1e !important;
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .btn-limpiar,
+body.a11y-mode-dark-mode .btn-todas-marcas {
+  border-color: #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .btn-limpiar:hover,
+body.a11y-mode-dark-mode .btn-todas-marcas:hover {
+  background: rgba(245, 200, 66, 0.08) !important;
+  border-color: #f5c842 !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .galeria-producto,
+body.a11y-mode-dark-mode .tarjeta-garantia,
+body.a11y-mode-dark-mode .tab-especificaciones,
+body.a11y-mode-dark-mode .caja-especificaciones {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .zip-logo {
+  background-color: #070d1e !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .paginacion button,
+body.a11y-mode-dark-mode .paginacion a {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .paginacion button.activo,
+body.a11y-mode-dark-mode .paginacion a.activo {
+  background-color: #f5c842 !important;
+  color: #070d1e !important;
+  font-weight: 700 !important;
+}
+
+/* Servicios y Otros */
+body.a11y-mode-dark-mode .porque-container {
+  background: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .seccion-header::after {
+  background: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .flecha-carrusel {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .flecha-carrusel:hover {
+  background-color: #f5c842 !important;
+  color: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .tab {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .tab.activa {
+  color: #f5c842 !important;
+  background: rgba(245, 200, 66, 0.12) !important;
+  border-bottom-color: #f5c842 !important;
+}
+
+
 
 /* =====================================================
    5. SUBRAYAR ENLACES Y REDUCIR MOVIMIENTO
