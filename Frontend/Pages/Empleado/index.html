@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Empleado - WiiU-Games</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="../../Styles/accessibility.css">
-  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
 </head>
+
 <body>
 
   <div class="diseno-app">
@@ -52,7 +54,9 @@
 
         <button class="elemento-nav" data-view="taller" id="nav-taller" onclick="window.switchView('taller')">
           <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+            <path
+              d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+            </path>
           </svg>
           <span>Recepción Taller</span>
         </button>
@@ -70,10 +74,11 @@
       <div class="pie-barra-lateral">
         <div class="perfil-usuario">
           <div class="avatar-usuario">
-            <img src="https://ui-avatars.com/api/?name=Carlos+M&background=FFB800&color=000000&bold=true" alt="Carlos M.">
+            <img src="https://ui-avatars.com/api/?name=Carlos+M&background=FFB800&color=000000&bold=true"
+              alt="Carlos M.">
           </div>
           <div class="info-usuario">
-            <div class="nombre-usuario">Carlos M.</div>
+            <div class="nombre-usuario">Usuario</div>
             <div class="rol-usuario">Asesor de Ventas</div>
           </div>
           <span class="user-status-online" title="En servicio"></span>
@@ -99,7 +104,8 @@
             <span class="shift-dot"></span> Turno Actual
           </div>
 
-          <button class="notification-btn" title="Solicitudes de clientes" onclick="window.showToast('No hay clientes en espera')">
+          <button class="notification-btn" title="Solicitudes de clientes"
+            onclick="window.showToast('No hay clientes en espera')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -113,8 +119,10 @@
         <div class="pos-layout">
           <div class="pos-products-area">
             <div class="pos-search-bar">
-              <input type="text" id="posSearchInput" placeholder="Buscar por nombre de juego, consola o SKU..." oninput="window.filterPosProducts(this.value)">
-              <select id="posCategoryFilter" class="custom-select" onchange="window.filterPosProductsByCategory(this.value)">
+              <input type="text" id="posSearchInput" placeholder="Buscar por nombre de juego, consola o SKU..."
+                oninput="window.filterPosProducts(this.value)">
+              <select id="posCategoryFilter" class="custom-select"
+                onchange="window.filterPosProductsByCategory(this.value)">
                 <option value="todos">Todas las categorías</option>
                 <option value="Juegos Wii U">Juegos Wii U</option>
                 <option value="Consolas">Consolas</option>
@@ -129,7 +137,11 @@
           <div class="pos-cart-panel">
             <div class="cart-header">
               <h3 class="cart-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                  <circle cx="9" cy="21" r="1" />
+                  <circle cx="20" cy="21" r="1" />
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+                </svg>
                 Orden de Venta en Caja
               </h3>
               <button class="cart-clear-btn" onclick="window.clearCart()">Vaciar</button>
@@ -163,14 +175,18 @@
               <div class="payment-method-group">
                 <label>Método de Pago:</label>
                 <div class="payment-radios">
-                  <label class="pay-radio"><input type="radio" name="payMethod" value="Efectivo" checked> Efectivo</label>
+                  <label class="pay-radio"><input type="radio" name="payMethod" value="Efectivo" checked>
+                    Efectivo</label>
                   <label class="pay-radio"><input type="radio" name="payMethod" value="Nequi / Daviplata"> Nequi</label>
-                  <label class="pay-radio"><input type="radio" name="payMethod" value="Tarjeta Débito/Crédito"> Tarjeta</label>
+                  <label class="pay-radio"><input type="radio" name="payMethod" value="Tarjeta Débito/Crédito">
+                    Tarjeta</label>
                 </div>
               </div>
 
               <button class="btn-primario-brillo btn-checkout" onclick="window.processCheckout()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><polyline points="20 6 9 17 4 12"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
                 <span>COMPLETAR VENTA Y RECIBO</span>
               </button>
             </div>
@@ -182,14 +198,16 @@
         <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Catálogo y Stock en Tienda</h2>
-            <p class="section-subtitle">Verifica disponibilidad de productos, precios al público y referencias SKU en vivo.</p>
+            <p class="section-subtitle">Verifica disponibilidad de productos, precios al público y referencias SKU en
+              vivo.</p>
           </div>
         </div>
 
         <div class="panel-card full-panel">
           <div class="barra-herramientas-tabla">
             <div class="search-mini">
-              <input type="text" placeholder="Buscar por juego, consola o SKU..." id="empSearchProductInput" oninput="window.filterEmpProducts(this.value)">
+              <input type="text" placeholder="Buscar por juego, consola o SKU..." id="empSearchProductInput"
+                oninput="window.filterEmpProducts(this.value)">
             </div>
           </div>
 
@@ -216,10 +234,14 @@
         <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Registro y Emisión de Garantías</h2>
-            <p class="section-subtitle">Genera comprobantes de garantía para clientes y consulta certificados existentes.</p>
+            <p class="section-subtitle">Genera comprobantes de garantía para clientes y consulta certificados
+              existentes.</p>
           </div>
           <button class="btn-primario" onclick="window.openAddWarrantyModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
             <span>Registrar Nueva Garantía</span>
           </button>
         </div>
@@ -248,10 +270,14 @@
         <div class="barra-encabezado-vista">
           <div>
             <h2 class="section-title">Recepción de Equipos en Taller</h2>
-            <p class="section-subtitle">Recibe GamePads y consolas Wii U defectuosas e ingresa la orden para el técnico.</p>
+            <p class="section-subtitle">Recibe GamePads y consolas Wii U defectuosas e ingresa la orden para el técnico.
+            </p>
           </div>
           <button class="btn-primario" onclick="window.openAddRepairModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
             <span>Ingresar Orden a Taller</span>
           </button>
         </div>
@@ -283,7 +309,10 @@
             <p class="section-subtitle">Registra nuevos compradores para acumulación de puntos y beneficios.</p>
           </div>
           <button class="btn-primario" onclick="window.openAddClientModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
             <span>Registrar Nuevo Cliente</span>
           </button>
         </div>
@@ -306,82 +335,6 @@
         </div>
       </section>
 
-      <!-- ==================== FOOTER ==================== -->
-      <footer class="sitio-footer">
-        <div class="cuadricula-footer">
-          <div class="columna-footer">
-            <h3>Información</h3>
-            <ul>
-              <li><a href="../Catalog.html">Acerca de nosotros</a></li>
-              <li><a href="../Catalog.html">Política de Privacidad</a></li>
-              <li><a href="../Catalog.html">Buscar</a></li>
-              <li><a href="../Catalog.html">Términos y Condiciones</a></li>
-              <li><a href="../Catalog.html">Pedidos y devoluciones</a></li>
-              <li><a href="../contactanos.html">Contáctanos</a></li>
-            </ul>
-          </div>
-          <div class="columna-footer">
-            <h3>Componentes de PC</h3>
-            <ul>
-              <li><a href="../Catalog.html">CPUS</a></li>
-              <li><a href="../Catalog.html">Discos Duros</a></li>
-              <li><a href="../Catalog.html">Tarjetas Gráficas</a></li>
-              <li><a href="../Catalog.html">Teclados / Mouse</a></li>
-              <li><a href="../Catalog.html">Gabinetes / Fuentes / Refrigeración</a></li>
-              <li><a href="../Catalog.html">RAM (Memoria)</a></li>
-              <li><a href="../Catalog.html">Software</a></li>
-            </ul>
-          </div>
-          <div class="columna-footer">
-            <h3>Computadores de escritorio</h3>
-            <ul>
-              <li><a href="../Catalog.html">PC personalizados</a></li>
-              <li><a href="../Catalog.html">Servidores</a></li>
-              <li><a href="../Catalog.html">PCs todo en uno</a></li>
-              <li><a href="../Catalog.html">HP/Compaq PCs</a></li>
-              <li><a href="../Catalog.html">ASUS PCs</a></li>
-            </ul>
-          </div>
-          <div class="columna-footer">
-            <h3>Portátiles</h3>
-            <ul>
-              <li><a href="../Catalog.html">Portátiles para todos los días</a></li>
-              <li><a href="../Catalog.html">Portátiles gaming</a></li>
-            </ul>
-          </div>
-          <div class="columna-footer columna-contacto">
-            <h3>Dirección</h3>
-            <p>
-              Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
-              Sogamoso, Boyacá
-            </p>
-            <p>
-              Teléfonos:
-              <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
-            </p>
-            <p>Lunes-Sábado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
-            <p>
-              Correo electrónico:
-              <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado">wiiugames2026@gmail.com</a>
-            </p>
-          </div>
-        </div>
-        <div class="barra-inferior-footer">
-          <div class="redes-footer">
-            <a href="https://facebook.com/wiiugames" target="_blank" aria-label="Facebook"><i class="fi fi-brands-facebook"></i></a>
-            <a href="https://instagram.com/wiiugames" target="_blank" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
-          </div>
-          <div class="metodos-pago">
-            <span class="tarjeta-icono">PayPal</span>
-            <span class="tarjeta-icono">Visa</span>
-            <span class="tarjeta-icono">MasterCard</span>
-          </div>
-          <div class="copyright">
-            <p>Copyright © 2026 WiiU-Games. Todos los derechos reservados.</p>
-          </div>
-        </div>
-      </footer>
-
     </main>
 
   </div>
@@ -400,7 +353,8 @@
           </div>
           <div class="grupo-formulario">
             <label for="warProduct">Producto y Serial <span class="required">*</span></label>
-            <input type="text" id="warProduct" required minlength="3" placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
+            <input type="text" id="warProduct" required minlength="3"
+              placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
           </div>
           <div class="fila-formulario-2">
             <div class="grupo-formulario">
@@ -436,11 +390,13 @@
         <div class="individual-cuerpo-modal">
           <div class="grupo-formulario">
             <label for="repDevice">Dispositivo / Consola <span class="required">*</span></label>
-            <input type="text" id="repDevice" required minlength="3" placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
+            <input type="text" id="repDevice" required minlength="3"
+              placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
           </div>
           <div class="grupo-formulario">
             <label for="repDefect">Falla Reportada por el Cliente <span class="required">*</span></label>
-            <input type="text" id="repDefect" required minlength="3" placeholder="Ej. Pantalla táctil no responde / No enciende">
+            <input type="text" id="repDefect" required minlength="3"
+              placeholder="Ej. Pantalla táctil no responde / No enciende">
           </div>
           <div class="fila-formulario-2">
             <div class="grupo-formulario">
@@ -499,4 +455,5 @@
   <script src="script.js"></script>
   <script src="../../Scripts/accessibility.js" defer></script>
 </body>
+
 </html>

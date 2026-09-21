@@ -450,7 +450,11 @@ body.a11y-mode-dark-mode .dato-producto,
 body.a11y-mode-dark-mode .tarjeta-servicios,
 body.a11y-mode-dark-mode .tarjeta-clara,
 body.a11y-mode-dark-mode .acordeon-item,
-body.a11y-mode-dark-mode .tarjeta-garantia {
+body.a11y-mode-dark-mode .tarjeta-garantia,
+body.a11y-mode-dark-mode .preview-card,
+body.a11y-mode-dark-mode .config-card,
+body.a11y-mode-dark-mode .compatibility,
+body.a11y-mode-dark-mode .total-card {
   background-color: #0e1834 !important;
   color: #f8fafc !important;
   border-color: #1a2c5b !important;

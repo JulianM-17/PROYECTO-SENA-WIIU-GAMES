@@ -217,14 +217,25 @@ body {
   box-shadow: 0 0 8px var(--accent-green);
 }
 
+.columna-principal-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+  width: 100%;
+  background-color: var(--bg-app);
+}
+
 .main-content {
+  flex: 1 0 auto;
   padding: 24px 32px 40px 32px;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  max-width: 1400px;
+  max-width: 1600px;
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -1112,10 +1123,15 @@ body.a11y-mode-dark-mode .btn-secundario {
   border-top: 1px solid rgba(245, 200, 66, 0.15);
   position: relative;
   overflow: hidden;
-  margin-top: 40px;
-  margin-left: -32px;
-  margin-right: -32px;
-  margin-bottom: -40px;
+  margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contenedor-interno-footer {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 .sitio-footer::before {
@@ -1129,15 +1145,13 @@ body.a11y-mode-dark-mode .btn-secundario {
 }
 
 .cuadricula-footer {
-  display: flex;
-  justify-content: space-between;
-  gap: 28px;
-  margin-bottom: 8px;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 32px;
+  margin-bottom: 28px;
 }
 
 .columna-footer {
-  flex: 1;
   min-width: 140px;
 }
 
@@ -1162,40 +1176,38 @@ body.a11y-mode-dark-mode .btn-secundario {
 }
 
 .columna-footer ul li a {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255, 0.65);
   text-decoration: none;
-  font-size: 13px;
-  transition: color 0.25s ease, padding-left 0.2s ease;
+  font-size: 12px;
+  transition: all 0.2s ease;
   display: inline-block;
 }
 
 .columna-footer ul li a:hover {
   color: #f5c842;
-  padding-left: 5px;
+  transform: translateX(3px);
 }
 
 .columna-contacto p {
-  font-size: 13px;
-  line-height: 1.7;
-  margin-bottom: 8px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  margin-bottom: 10px;
+  line-height: 1.6;
 }
 
-.enlace-resaltado {
+.columna-contacto a.enlace-resaltado {
   color: #f5c842;
   text-decoration: none;
-  transition: color 0.2s ease;
+  font-weight: 600;
 }
 
-.enlace-resaltado:hover {
-  color: #ffd95a;
+.columna-contacto a.enlace-resaltado:hover {
   text-decoration: underline;
 }
 
 .barra-inferior-footer {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 24px;
-  margin-top: 40px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1209,8 +1221,8 @@ body.a11y-mode-dark-mode .btn-secundario {
 }
 
 .redes-footer a {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1218,9 +1230,9 @@ body.a11y-mode-dark-mode .btn-secundario {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   color: rgba(255, 255, 255, 0.55);
-  font-size: 16px;
+  font-size: 15px;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 
 .redes-footer a:hover {
@@ -1228,7 +1240,6 @@ body.a11y-mode-dark-mode .btn-secundario {
   border-color: rgba(245, 200, 66, 0.4);
   color: #f5c842;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.2);
 }
 
 .metodos-pago {
@@ -1257,13 +1268,10 @@ body.a11y-mode-dark-mode .btn-secundario {
 @media (max-width: 768px) {
   .sitio-footer {
     padding: 36px 16px 20px 16px;
-    margin-left: -16px;
-    margin-right: -16px;
-    margin-bottom: -20px;
   }
   .cuadricula-footer {
-    flex-direction: column;
-    gap: 20px;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
   .barra-inferior-footer {
     flex-direction: column;
