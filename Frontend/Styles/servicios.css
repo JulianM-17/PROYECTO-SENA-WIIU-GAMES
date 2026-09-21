@@ -41,7 +41,7 @@ body {
    SECCIÓN HERO
    ===================================================== */
 .seccion-header {
-  background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 60%, #0a1628 100%);
+  background: linear-gradient(135deg, #080f20 0%, #0c1e40 60%, #0a1628 100%);
   padding: 52px 0;
   line-height: 1.5;
   position: relative;
@@ -73,6 +73,7 @@ body {
   flex-direction: column;
   gap: 14px;
   box-sizing: border-box;
+  background: transparent;
 }
 
 .breadcrumb {
