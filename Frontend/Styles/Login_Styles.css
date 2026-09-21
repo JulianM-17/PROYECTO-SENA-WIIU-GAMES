@@ -236,16 +236,39 @@
 }
 
 .enlace-olvido {
-  font-size: 12px;
-  color: #2563eb;
+  font-size: 11.5px;
+  color: #78350f;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef08a 100%);
+  border: 1.5px solid var(--yellow);
+  padding: 4px 12px;
+  border-radius: 9999px;
   text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s;
+  font-weight: 700;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 6px rgba(245, 200, 66, 0.25);
+}
+
+.enlace-olvido i {
+  font-size: 11px;
+  color: #b45309;
+  transition: transform 0.2s ease;
 }
 
 .enlace-olvido:hover {
+  background: var(--yellow);
   color: var(--dark-blue);
-  text-decoration: underline;
+  border-color: var(--yellow-hover);
+  box-shadow: 0 4px 12px rgba(245, 200, 66, 0.45);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.enlace-olvido:hover i {
+  transform: rotate(-15deg);
+  color: var(--dark-blue);
 }
 
 /* Input con Iconos */
