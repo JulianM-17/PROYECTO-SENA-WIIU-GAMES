@@ -304,11 +304,24 @@ body.a11y-mode-large-text span:not(.a11y-menu *):not(#a11y-trigger-btn *) {
    ===================================================== */
 body.a11y-mode-high-contrast {
   --bg: #000000 !important;
+  --bg-page: #000000 !important;
   --surface: #101010 !important;
+  --surface-light: #161616 !important;
+  --card-bg: #101010 !important;
   --white: #141414 !important;
   --border: #f5c842 !important;
+  --border-subtle: #f5c842 !important;
   --text-main: #ffffff !important;
+  --text-primary: #ffffff !important;
   --text-muted: #e2e8f0 !important;
+  --text-secondary: #e2e8f0 !important;
+  /* Reasignar variables de texto oscuro para que sean legibles */
+  --dark-blue: #ffffff !important;
+  --dark-blue-2: #e2e8f0 !important;
+  --dark-blue-3: #cbd5e1 !important;
+  --DarkBlue: #ffffff !important;
+  --black: #ffffff !important;
+  --Black: #ffffff !important;
   background-color: #000000 !important;
   color: #ffffff !important;
 }
@@ -316,38 +329,177 @@ body.a11y-mode-high-contrast {
 body.a11y-mode-high-contrast .contenedor-principal,
 body.a11y-mode-high-contrast .contenedor-principal-catalogo,
 body.a11y-mode-high-contrast main,
-body.a11y-mode-high-contrast section {
+body.a11y-mode-high-contrast section,
+body.a11y-mode-high-contrast .panel-layout,
+body.a11y-mode-high-contrast .diseno-app,
+body.a11y-mode-high-contrast .seccion-vista,
+body.a11y-mode-high-contrast .hero,
+body.a11y-mode-high-contrast .seccion-carrito,
+body.a11y-mode-high-contrast .formulario-cita {
   background-color: #000000 !important;
   color: #ffffff !important;
 }
 
+/* Tarjetas, Paneles, Modales y Contenedores */
 body.a11y-mode-high-contrast .tarjeta-producto,
 body.a11y-mode-high-contrast .barra-lateral,
 body.a11y-mode-high-contrast article,
 body.a11y-mode-high-contrast .categoria-tarjeta,
 body.a11y-mode-high-contrast .formulario-contacto,
-body.a11y-mode-high-contrast input,
-body.a11y-mode-high-contrast select,
-body.a11y-mode-high-contrast textarea {
-  background-color: #121212 !important;
+body.a11y-mode-high-contrast .formulario-container,
+body.a11y-mode-high-contrast .info-bloque,
+body.a11y-mode-high-contrast .dato-producto,
+body.a11y-mode-high-contrast .tarjeta-servicios,
+body.a11y-mode-high-contrast .tarjeta-armatupc,
+body.a11y-mode-high-contrast .tarjeta-clara,
+body.a11y-mode-high-contrast .acordeon-item,
+body.a11y-mode-high-contrast .tarjeta-garantia,
+body.a11y-mode-high-contrast .preview-card,
+body.a11y-mode-high-contrast .config-card,
+body.a11y-mode-high-contrast .compatibility,
+body.a11y-mode-high-contrast .total-card,
+body.a11y-mode-high-contrast .panel-tarjeta,
+body.a11y-mode-high-contrast .tarjeta-carrito,
+body.a11y-mode-high-contrast .item-carrito,
+body.a11y-mode-high-contrast .resumen-pedido,
+body.a11y-mode-high-contrast .caja-registro,
+body.a11y-mode-high-contrast .caja-login,
+body.a11y-mode-high-contrast .caja-modal-terminos,
+body.a11y-mode-high-contrast .modal-contenido,
+body.a11y-mode-high-contrast .modal-tarjeta-exito,
+body.a11y-mode-high-contrast .toast {
+  background-color: #101010 !important;
   color: #ffffff !important;
   border: 1.5px solid #f5c842 !important;
 }
 
+/* Formularios y Controles */
+body.a11y-mode-high-contrast input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+body.a11y-mode-high-contrast select,
+body.a11y-mode-high-contrast textarea {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  border: 1.5px solid #f5c842 !important;
+}
+
+body.a11y-mode-high-contrast input::placeholder,
+body.a11y-mode-high-contrast textarea::placeholder {
+  color: #cbd5e1 !important;
+}
+
+/* Títulos y Énfasis */
 body.a11y-mode-high-contrast h1,
 body.a11y-mode-high-contrast h2,
 body.a11y-mode-high-contrast h3,
 body.a11y-mode-high-contrast h4,
+body.a11y-mode-high-contrast h5,
+body.a11y-mode-high-contrast h6,
 body.a11y-mode-high-contrast b,
 body.a11y-mode-high-contrast strong,
 body.a11y-mode-high-contrast .precio-actual,
-body.a11y-mode-high-contrast .enlace-resaltado {
+body.a11y-mode-high-contrast .enlace-resaltado,
+body.a11y-mode-high-contrast .titulo-producto {
   color: #ffff00 !important;
 }
 
-body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a) {
+/* Textos Generales */
+body.a11y-mode-high-contrast p,
+body.a11y-mode-high-contrast span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.tag):not(.zip-brand):not(.insignia-descuento-favorito):not(.check-porque),
+body.a11y-mode-high-contrast li,
+body.a11y-mode-high-contrast label,
+body.a11y-mode-high-contrast small,
+body.a11y-mode-high-contrast td,
+body.a11y-mode-high-contrast th,
+body.a11y-mode-high-contrast div:not(.tag):not(.zip-brand):not(.insignia-descuento-favorito):not(.check-porque) {
+  color: #ffffff;
+}
+
+/* Enlaces */
+body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a):not(.btn-iniciar):not(.btn-registrar):not(.boton-submit):not(.btn-accion):not(.btn-agendar):not(.btn-añadir):not(.buy):not(.save):not(.btn-demo):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.btn-primary):not(.btn-secondary):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-agendar-porque):not(.btn-reservar) {
   color: #ffff00 !important;
   text-decoration: underline !important;
+}
+
+/* Botones en Alto Contraste */
+body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(.a11y-menu *),
+body.a11y-mode-high-contrast .boton-submit,
+body.a11y-mode-high-contrast .boton-enviar,
+body.a11y-mode-high-contrast .btn-primario,
+body.a11y-mode-high-contrast .btn-secundario,
+body.a11y-mode-high-contrast .btn-accion,
+body.a11y-mode-high-contrast .btn-agendar,
+body.a11y-mode-high-contrast .btn-agendar-porque,
+body.a11y-mode-high-contrast .btn-reservar,
+body.a11y-mode-high-contrast .btn-iniciar,
+body.a11y-mode-high-contrast .btn-registrar,
+body.a11y-mode-high-contrast .btn-añadir,
+body.a11y-mode-high-contrast .btn-demo,
+body.a11y-mode-high-contrast .btn-social,
+body.a11y-mode-high-contrast .btn-google,
+body.a11y-mode-high-contrast .btn-guardar,
+body.a11y-mode-high-contrast .btn-cambiar-password,
+body.a11y-mode-high-contrast .btn-modal-cancelar,
+body.a11y-mode-high-contrast .btn-modal-aceptar,
+body.a11y-mode-high-contrast .btn-pago-amarillo,
+body.a11y-mode-high-contrast .btn-pago-naranja,
+body.a11y-mode-high-contrast .btn-pago-blanco,
+body.a11y-mode-high-contrast .buy,
+body.a11y-mode-high-contrast .save,
+body.a11y-mode-high-contrast .btn-primary,
+body.a11y-mode-high-contrast .btn-secondary {
+  background-color: #000000 !important;
+  color: #ffff00 !important;
+  border: 2px solid #ffff00 !important;
+  text-decoration: none !important;
+}
+
+body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(.a11y-menu *) *,
+body.a11y-mode-high-contrast .boton-submit *,
+body.a11y-mode-high-contrast .btn-iniciar *,
+body.a11y-mode-high-contrast .btn-demo * {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(.a11y-menu *),
+body.a11y-mode-high-contrast .boton-submit:hover,
+body.a11y-mode-high-contrast .btn-accion:hover,
+body.a11y-mode-high-contrast .btn-agendar:hover,
+body.a11y-mode-high-contrast .btn-reservar:hover,
+body.a11y-mode-high-contrast .btn-iniciar:hover,
+body.a11y-mode-high-contrast .btn-registrar:hover,
+body.a11y-mode-high-contrast .btn-añadir:hover,
+body.a11y-mode-high-contrast .btn-demo:hover,
+body.a11y-mode-high-contrast .buy:hover,
+body.a11y-mode-high-contrast .save:hover,
+body.a11y-mode-high-contrast .btn-primary:hover {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+  border-color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(.a11y-menu *) *,
+body.a11y-mode-high-contrast .boton-submit:hover *,
+body.a11y-mode-high-contrast .btn-iniciar:hover *,
+body.a11y-mode-high-contrast .btn-demo:hover * {
+  color: #000000 !important;
+}
+
+/* Insignias, Tags y Etiquetas */
+body.a11y-mode-high-contrast .tag,
+body.a11y-mode-high-contrast .zip-brand,
+body.a11y-mode-high-contrast .check-porque,
+body.a11y-mode-high-contrast .insignia-descuento-favorito,
+body.a11y-mode-high-contrast .insignia-stock-favorito {
+  background-color: #ffff00 !important;
+  color: #000000 !important;
+  font-weight: 800 !important;
+  border: 1px solid #ffff00 !important;
+}
+
+/* Header */
+body.a11y-mode-high-contrast header:not(.a11y-menu *) {
+  background-color: #000000 !important;
+  border-bottom: 2px solid #ffff00 !important;
 }
 
 /* =====================================================
@@ -370,10 +522,12 @@ body.a11y-mode-dark-mode {
   --text-secondary: #94a3b8 !important;
   --gray-400: #8899b5 !important;
   --gray-600: #cbd5e1 !important;
-  --dark-blue: #070d1e !important;
-  --dark-blue-2: #0b152d !important;
-  --dark-blue-3: #0e1b38 !important;
-  --DarkBlue: #070d1e !important;
+  /* ── Variables de color-texto oscuro reasignadas a claro en modo oscuro ── */
+  /* Esto evita que cualquier color: var(--dark-blue) quede invisible */
+  --dark-blue: #f8fafc !important;
+  --dark-blue-2: #e2e8f0 !important;
+  --dark-blue-3: #cbd5e1 !important;
+  --DarkBlue: #f8fafc !important;
   --black: #ffffff !important;
   --Black: #ffffff !important;
   background-color: #070d1e !important;
@@ -436,7 +590,7 @@ body.a11y-mode-dark-mode .precio-anterior {
   color: #64748b !important;
 }
 
-body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque) {
+body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar) {
   color: #f5c842;
 }
 
@@ -448,6 +602,7 @@ body.a11y-mode-dark-mode .formulario-container,
 body.a11y-mode-dark-mode .info-bloque,
 body.a11y-mode-dark-mode .dato-producto,
 body.a11y-mode-dark-mode .tarjeta-servicios,
+body.a11y-mode-dark-mode .tarjeta-armatupc,
 body.a11y-mode-dark-mode .tarjeta-clara,
 body.a11y-mode-dark-mode .acordeon-item,
 body.a11y-mode-dark-mode .tarjeta-garantia,
@@ -459,6 +614,13 @@ body.a11y-mode-dark-mode .total-card {
   color: #f8fafc !important;
   border-color: #1a2c5b !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-servicios h2,
+body.a11y-mode-dark-mode .tarjeta-armatupc h2,
+body.a11y-mode-high-contrast .tarjeta-servicios h2,
+body.a11y-mode-high-contrast .tarjeta-armatupc h2 {
+  background: transparent !important;
 }
 
 /* Botones de acción en tarjetas de servicios (Solicitar Servicio) */
@@ -1079,6 +1241,146 @@ body.a11y-mode-dark-mode .tab.activa {
   color: #f5c842 !important;
   background: rgba(245, 200, 66, 0.12) !important;
   border-bottom-color: #f5c842 !important;
+}
+
+/* =====================================================
+   CORRECCIÓN DE ELEMENTOS CON FONDOS CLAROS O DORADOS EN MODO OSCURO
+   ===================================================== */
+body.a11y-mode-dark-mode .btn-agendar-porque {
+  background: #f5c842 !important;
+  color: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .toast {
+  background: #0e1834 !important;
+  color: #f8fafc !important;
+  border: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode header:not(.a11y-menu *) {
+  background-color: #070d1e !important;
+}
+
+/* Botón de acción en página de servicios */
+body.a11y-mode-dark-mode .btn-accion {
+  background: linear-gradient(135deg, #f5c842 0%, #e5b324 100%) !important;
+  color: #070d1e !important;
+}
+
+/* Spinner en botón submit dorado */
+body.a11y-mode-dark-mode .spinner {
+  border-color: rgba(8, 15, 32, 0.2) !important;
+  border-top-color: #080f20 !important;
+}
+
+/* Checkmark en checkbox marcado */
+body.a11y-mode-dark-mode .marca-casilla::after {
+  border-color: #080f20 !important;
+}
+
+/* Botones demo en Login */
+body.a11y-mode-dark-mode .btn-demo {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .btn-demo:hover {
+  background: #132247 !important;
+  border-color: #f5c842 !important;
+  color: #f5c842 !important;
+}
+
+/* Servicios: botón reservar al hover y checks de beneficios */
+body.a11y-mode-dark-mode .btn-reservar:hover {
+  background: #f5c842 !important;
+  border-color: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .check-porque {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+/* Panel Usuario: insignias doradas */
+body.a11y-mode-dark-mode .insignia-descuento-favorito {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+/* Carrito: etiqueta de marca zip */
+body.a11y-mode-dark-mode .zip-brand {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+/* Página de Producto: botón añadir al carrito */
+body.a11y-mode-dark-mode .btn-añadir {
+  background: linear-gradient(135deg, #f5c842 0%, #e8b830 100%) !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .btn-añadir:hover {
+  background: linear-gradient(135deg, #ffd95a 0%, #f5c842 100%) !important;
+  color: #080f20 !important;
+}
+
+/* Arma tu PC: botón buy, btn-primary y tag */
+body.a11y-mode-dark-mode .buy,
+body.a11y-mode-dark-mode .btn-primary {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .buy:hover,
+body.a11y-mode-dark-mode .btn-primary:hover {
+  background: #e8b830 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .tag {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+/* Botones de navegación en Header */
+body.a11y-mode-dark-mode .btn-iniciar {
+  background: linear-gradient(135deg, #f5c842 0%, #e8b830 100%) !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .btn-iniciar:hover {
+  background: linear-gradient(135deg, #ffd95a 0%, #f5c842 100%) !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .btn-registrar:hover {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+/* Carrito: botón proceder al pago */
+body.a11y-mode-dark-mode .btn-pago-amarillo,
+body.a11y-mode-dark-mode a.btn-pago-amarillo {
+  background: linear-gradient(135deg, #f5c842 0%, #e8b830 100%) !important;
+  color: #080f20 !important;
+  font-weight: 800 !important;
+  text-decoration: none !important;
+}
+
+body.a11y-mode-dark-mode .btn-pago-amarillo:hover,
+body.a11y-mode-dark-mode a.btn-pago-amarillo:hover {
+  background: linear-gradient(135deg, #ffd95a 0%, #f5c842 100%) !important;
+  color: #080f20 !important;
+}
+
+/* Íconos sobre círculos amarillos */
+body.a11y-mode-dark-mode .icono-beneficio,
+body.a11y-mode-dark-mode .icono-beneficio i,
+body.a11y-mode-dark-mode .circulo-icono,
+body.a11y-mode-dark-mode .circulo-icono i {
+  color: #080f20 !important;
 }
 
 
