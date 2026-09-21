@@ -692,25 +692,31 @@ body {
   overflow: visible;
 }
 
+.grafico-ventas-interactivo line {
+  stroke: var(--border-subtle);
+}
+
 .insignia-tooltip-grafico {
-  background: #09142E;
-  border: 1px solid #1E3A8A;
+  background: var(--bg-card-secondary);
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
   padding: 6px 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 119, 255, 0.4);
+  box-shadow: var(--shadow-panel);
   text-align: right;
   pointer-events: none;
+  transition: all var(--transition-fast);
 }
 
 .tooltip-amount {
   font-size: 0.88rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: var(--text-primary);
 }
 
 .tooltip-label {
   font-size: 0.72rem;
-  color: var(--accent-cyan);
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .chart-x-axis {
@@ -1685,4 +1691,18 @@ body.a11y-mode-dark-mode .btn-secundario {
   background-color: #0A132B !important;
   border-color: #172652 !important;
   color: #8E9DB8 !important;
+}
+
+body.a11y-mode-dark-mode .insignia-tooltip-grafico {
+  background-color: #0E1834 !important;
+  border-color: #1E3A8A !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.a11y-mode-dark-mode .tooltip-amount {
+  color: #FFFFFF !important;
+}
+
+body.a11y-mode-dark-mode .tooltip-label {
+  color: var(--accent-cyan) !important;
 }

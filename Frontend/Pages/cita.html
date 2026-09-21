@@ -106,58 +106,61 @@
     <!--Campos de espacio-->
     <section class="formulario-cita">
       <div class="formulario-container">
-        <form action="#" method="post" class="formulario">
+        <form action="#" method="post" class="formulario" id="form-cita" novalidate>
           <div class="campo">
-            <label for="nombre">Nombre*</label>
+            <label for="nombre">Nombre completo*</label>
             <input
               type="text"
               id="nombre"
               name="nombre"
-              placeholder="Tu nombre"
+              placeholder="Ej: Carlos Gómez"
               required
+              autocomplete="name"
             />
+            <span class="error-mensaje" id="error-nombre"></span>
           </div>
 
           <div class="campo">
-            <label for="email">Nombre del equipo</label>
+            <label for="equipo">Nombre del equipo / Dispositivo*</label>
             <input
               type="text"
-              id="email"
-              name="email"
-              placeholder="Ej: PS4, Xbox 360"
+              id="equipo"
+              name="equipo"
+              placeholder="Ej: PS4, Xbox Series X, PC Gamer"
               required
             />
+            <span class="error-mensaje" id="error-equipo"></span>
           </div>
 
           <div class="campo">
-            <label for="telefono">Numero de telefono</label>
+            <label for="telefono">Número de teléfono*</label>
             <input
-              type="number"
+              type="tel"
               id="telefono"
               name="telefono"
-              placeholder="Numero de telefono"
+              placeholder="Ej: 3046616081 (10 dígitos)"
+              maxlength="10"
+              inputmode="numeric"
               required
+              autocomplete="tel"
             />
+            <span class="error-mensaje" id="error-telefono"></span>
           </div>
 
           <div class="campo">
-            <label for="fecha">Fecha</label>
+            <label for="fecha">Fecha de la cita*</label>
             <input type="date" id="fecha" name="fecha" required />
+            <span class="error-mensaje" id="error-fecha"></span>
           </div>
 
-          <div class="campo">
-            <label for="servicio">Servicio a Usar*</label>
-            <input
-              type="text"
-              id="servicio"
-              name="servicio"
-              list="servicios"
-              required
-            />
-            <datalist id="servicios">
-              <option value="MANTENIMIENTO"></option>
-              <option value="REPARACION"></option>
-            </datalist>
+          <div class="campo" style="grid-column: 1 / -1;">
+            <label for="servicio">Servicio a solicitar*</label>
+            <select id="servicio" name="servicio" required>
+              <option value="" disabled selected>Selecciona un servicio...</option>
+              <option value="MANTENIMIENTO">Mantenimiento preventivo / Limpieza interna</option>
+              <option value="REPARACION">Reparación técnica de componentes</option>
+            </select>
+            <span class="error-mensaje" id="error-servicio"></span>
           </div>
           <button type="submit" class="btn-agendar">Agendar Cita</button>
         </form>
@@ -285,6 +288,7 @@
         </div>
       </div>
     </footer>
+    <script src="../Scripts/cita.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
   </body>
 </html>
