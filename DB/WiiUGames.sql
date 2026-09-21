@@ -168,6 +168,7 @@ CREATE TABLE venta (
     tipo_venta ENUM('DOMICILIO', 'SUCURSAL') NOT NULL DEFAULT 'SUCURSAL',
     ciudad VARCHAR(100) NULL,
     direccion_entrega VARCHAR(180) NULL,
+    numero_guia VARCHAR(30) NULL,
     notas VARCHAR(300) NULL,
     estado ENUM('PAGADA', 'ANULADA') NOT NULL DEFAULT 'PAGADA'
 );
