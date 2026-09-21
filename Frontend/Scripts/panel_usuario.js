@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function updateUI() {
     // 4.1 Carrito en Header
     const burbujaCarrito = document.querySelector('.burbuja-carrito');
-    if (burbujaCarrito) burbujaCarrito.textContent = state.cartCount || 0;
+    if (burbujaCarrito) burbujaCarrito.textContent = (state.cartCount && state.cartCount > 0) ? state.cartCount : '';
 
     // 4.2 Datos del Perfil (Header, Sidebar, Banner, Cards)
     const { nombre, apellidos, email, telefono, nacimiento, documento } = state.profile;

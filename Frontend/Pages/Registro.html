@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Registro-WiiuWEB</title>
-    <link rel="stylesheet" href="../Styles/Registro_Styles.css" />
+    <title>Registro - WiiU Games</title>
     <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
+    <link rel="stylesheet" href="../Styles/Registro_Styles.css" />
     <link rel="stylesheet" href="../Styles/accessibility.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -27,59 +27,61 @@
     />
   </head>
   <body>
+    <!-- ENCABEZADO ESTÁNDAR WIIU-GAMES -->
     <header>
-      <!--NAVBAR Y INFO-->
+      <!-- BARRA SUPERIOR -->
       <div class="barra-superior">
         <div class="seccion-horario">
-          Lunes-Sabado: <b>8:00 a.m. –</b> <br />
-          <b>12:30 p.m. 2:00–7:00 p.m.</b>
+          Lunes - Sábado: <b>8:00 a.m. –</b> <br />
+          <b>12:30 p.m. | 2:00 – 7:00 p.m.</b>
         </div>
         <div class="seccion-direccion">
-          Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
-          Boyacá
-          <a href="contactanos.html" class="link-contacto">Contactanos</a>
+          Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá
+          <a href="contactanos.html" class="link-contacto">Contáctanos</a>
         </div>
         <div class="seccion-contacto">
-          Llamanos: <b>(00) 1234 5678</b>
+          Llámanos: <b>(00) 1234 5678</b>
           <a
             href="https://facebook.com/wiiugames"
             target="_blank"
             class="red-social"
+            aria-label="Facebook"
             ><i class="fi fi-brands-facebook"></i
           ></a>
           <a
             href="https://instagram.com/wiiugames"
             target="_blank"
             class="red-social"
+            aria-label="Instagram"
             ><i class="fi fi-brands-instagram"></i
           ></a>
         </div>
       </div>
-      <!--NAVBAR-->
+      <!-- NAVBAR PRINCIPAL -->
       <div class="menu-principal">
         <div class="seccion-logo">
           <a href="../Index.html">
-            <img src="../Assets/LogoSinFondo.png" alt="wiiu logo" />
+            <img src="../Assets/LogoSinFondo.png" alt="WiiU Games Logo" />
           </a>
         </div>
         <div class="contenido-menu">
           <div class="enlaces-nav">
             <a href="../Index.html">Inicio</a>
-            <a href="Catalog.html">Catalogo</a>
+            <a href="Catalog.html">Catálogo</a>
             <a href="servicios.html">Servicios</a>
-            <a href="garantias.html">Garantias</a>
+            <a href="garantias.html">Garantías</a>
           </div>
           <div class="botones-ingreso">
-            <a href="Login.html" class="btn-iniciar">Iniciar sesion</a>
-            <a href="Registro.html" class="btn-registrar">Registrarse</a>
+            <a href="Login.html" class="btn-iniciar">Iniciar sesión</a>
+            <a href="Registro.html" class="btn-registrar activo">Registrarse</a>
           </div>
           <div class="iconos-usuario">
             <a href="Catalog.html" style="color: inherit; text-decoration: none"
-              ><i class="fi fi-rr-search icono-menu"></i
+              ><i class="fi fi-rr-search icono-menu" title="Buscar"></i
             ></a>
-            <a href="carrito.html" class="contenedor-carrito">
+            <a href="carrito.html" class="contenedor-carrito" title="Ver carrito">
               <i class="fi fi-rr-shopping-cart icono-menu"></i>
-              <b class="burbuja-carrito">2</b>
+              <b class="burbuja-carrito"></b>
             </a>
           </div>
         </div>
@@ -89,40 +91,44 @@
     <main class="principal-registro">
       <div class="contenedor-registro">
         <div class="encabezado-registro">
-          <p class="miga-de-pan">Inicio > Registrarse</p>
+          <p class="miga-de-pan">
+            <a href="../Index.html">Inicio</a> › <span>Registrarse</span>
+          </p>
           <h1 class="titulo-registro">
-            Registro de Nuevo Cliente de WiiU-Games
+            Registro de Nuevo Cliente
           </h1>
           <p class="subtitulo-registro">
-            Cree una cuenta para agilizar sus compras, rastrear sus pedidos y
-            más.
+            Crea una cuenta oficial para acceder a compras seguras, rastrear pedidos y disfrutar de soporte técnico garantizado.
           </p>
         </div>
 
-        <form class="formulario-registro" action="#" method="POST">
+        <form class="formulario-registro" id="form-registro" novalidate>
+          <!-- COLUMNA IZQUIERDA: INFORMACIÓN PERSONAL Y CUENTA -->
           <div class="columna-izquierda">
             <h3 class="titulo-seccion">Información Personal</h3>
 
             <div class="fila-formulario">
               <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
+                <label class="etiqueta" for="nombre"
                   >Nombre <span class="obligatorio">*</span></label
                 >
                 <input
                   type="text"
+                  id="nombre"
                   class="entrada-texto"
-                  placeholder="Nombre"
+                  placeholder="Tu nombre"
                   required
                 />
               </div>
               <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
+                <label class="etiqueta" for="apellido"
                   >Apellido <span class="obligatorio">*</span></label
                 >
                 <input
                   type="text"
+                  id="apellido"
                   class="entrada-texto"
-                  placeholder="Apellido"
+                  placeholder="Tu apellido"
                   required
                 />
               </div>
@@ -133,144 +139,199 @@
                 >Fecha de Nacimiento <span class="obligatorio">*</span></label
               >
               <div class="fila-formulario">
-                <select class="entrada-seleccion ancho-tercio">
-                  <option>Día</option>
+                <select class="entrada-seleccion ancho-tercio" id="nacimiento-dia" required>
+                  <option value="">Día</option>
                 </select>
-                <select class="entrada-seleccion ancho-tercio">
-                  <option>Mes</option>
+                <select class="entrada-seleccion ancho-tercio" id="nacimiento-mes" required>
+                  <option value="">Mes</option>
                 </select>
-                <select class="entrada-seleccion ancho-tercio">
-                  <option>Año</option>
+                <select class="entrada-seleccion ancho-tercio" id="nacimiento-anio" required>
+                  <option value="">Año</option>
                 </select>
               </div>
             </div>
 
             <h3 class="titulo-seccion margen-superior">
-              Credenciales de la Cuenta
+              Credenciales de Acceso
             </h3>
 
             <div class="grupo-entrada">
-              <label class="etiqueta"
+              <label class="etiqueta" for="correo"
                 >Correo Electrónico <span class="obligatorio">*</span></label
               >
               <input
                 type="email"
+                id="correo"
                 class="entrada-texto"
-                placeholder="Correo Electrónico"
+                placeholder="ejemplo@correo.com"
                 required
               />
             </div>
 
             <div class="grupo-entrada">
-              <label class="etiqueta"
+              <label class="etiqueta" for="confirmar-correo"
                 >Confirmar Correo Electrónico
                 <span class="obligatorio">*</span></label
               >
               <input
                 type="email"
+                id="confirmar-correo"
                 class="entrada-texto"
-                placeholder="Confirmar Correo Electrónico"
+                placeholder="Repite tu correo electrónico"
                 required
               />
             </div>
 
             <div class="grupo-entrada">
-              <div class="cabecera-contrasena">
-                <label class="etiqueta"
-                  >Contraseña <span class="obligatorio">*</span></label
+              <label class="etiqueta" for="contrasena"
+                >Contraseña <span class="obligatorio">*</span></label
+              >
+              <div class="contenedor-icono-entrada">
+                <input
+                  type="password"
+                  id="contrasena"
+                  class="entrada-texto"
+                  placeholder="Mínimo 8 caracteres"
+                  required
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-pass"
+                  data-target="contrasena"
+                  aria-label="Mostrar contraseña"
                 >
-                <span class="mostrar-contrasena"
-                  ><i class="icono-ojo"></i> Mostrar Contraseña</span
-                >
+                  <i class="fi fi-rr-eye"></i>
+                </button>
               </div>
-              <input
-                type="password"
-                class="entrada-texto"
-                placeholder="Contraseña"
-                required
-              />
-              <div class="barra-seguridad-fuerte"></div>
-              <small class="texto-seguridad">Contraseña fuerte</small>
+              <div class="barra-seguridad-wrap">
+                <div class="barra-seguridad" id="barra-seguridad"></div>
+              </div>
+              <small class="texto-seguridad" id="texto-seguridad">Ingresa al menos 8 caracteres</small>
             </div>
 
             <div class="grupo-entrada">
-              <label class="etiqueta"
+              <label class="etiqueta" for="confirmar-contrasena"
                 >Confirmar Contraseña <span class="obligatorio">*</span></label
               >
               <div class="contenedor-icono-entrada">
                 <input
                   type="password"
+                  id="confirmar-contrasena"
                   class="entrada-texto"
-                  placeholder="Confirmar Contraseña"
+                  placeholder="Repite tu contraseña"
                   required
                 />
-                <span class="icono-derecha"
-                  ><i class="icono-ojo-tachado"></i
-                ></span>
+                <button
+                  type="button"
+                  class="btn-toggle-pass"
+                  data-target="confirmar-contrasena"
+                  aria-label="Mostrar contraseña"
+                >
+                  <i class="fi fi-rr-eye"></i>
+                </button>
               </div>
             </div>
           </div>
 
+          <!-- COLUMNA DERECHA: FONDO AZUL OSCURO (DIRECCIÓN Y CONTACTO) -->
           <div class="columna-derecha">
             <h3 class="titulo-seccion">Dirección de Envío y Contacto</h3>
 
             <div class="grupo-entrada">
-              <label class="etiqueta"
-                >Dirección Principal (Street, Apt/Ste)
+              <label class="etiqueta" for="direccion"
+                >Dirección Principal (Calle, Carrera, Av, Casa)
                 <span class="obligatorio">*</span></label
               >
               <input
                 type="text"
+                id="direccion"
                 class="entrada-texto"
-                placeholder="Street, Apt/Ste"
+                placeholder="Ej: Carrera 11 # 14 - 14 Local 126"
                 required
               />
-              <small class="texto-ayuda">Apt/Ste</small>
+              <small class="texto-ayuda">Apartamento, torre, suite o conjunto (opcional)</small>
             </div>
 
             <div class="fila-formulario">
               <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
+                <label class="etiqueta" for="ciudad"
                   >Ciudad <span class="obligatorio">*</span></label
                 >
                 <input
                   type="text"
+                  id="ciudad"
                   class="entrada-texto"
-                  placeholder="Ciudad"
+                  placeholder="Ej: Sogamoso"
                   required
                 />
               </div>
               <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
-                  >Estado/Provincia <span class="obligatorio">*</span></label
+                <label class="etiqueta" for="departamento"
+                  >Departamento / Región <span class="obligatorio">*</span></label
+                >
+                <select class="entrada-seleccion" id="departamento" required>
+                  <option value="">Selecciona</option>
+                  <option value="Boyacá" selected>Boyacá</option>
+                  <option value="Bogotá D.C.">Bogotá D.C.</option>
+                  <option value="Cundinamarca">Cundinamarca</option>
+                  <option value="Antioquia">Antioquia</option>
+                  <option value="Santander">Santander</option>
+                  <option value="Valle del Cauca">Valle del Cauca</option>
+                  <option value="Atlántico">Atlántico</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="fila-formulario">
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="pais"
+                  >País <span class="obligatorio">*</span></label
+                >
+                <select class="entrada-seleccion" id="pais" required>
+                  <option value="Colombia" selected>Colombia</option>
+                  <option value="México">México</option>
+                  <option value="España">España</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Estados Unidos">Estados Unidos</option>
+                </select>
+              </div>
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="codigo-postal"
+                  >Código Postal <span class="opcional">(Opcional)</span></label
                 >
                 <input
                   type="text"
+                  id="codigo-postal"
                   class="entrada-texto"
-                  placeholder="Estado/Provincia"
-                  required
+                  placeholder="Ej: 152210"
                 />
               </div>
             </div>
 
             <div class="fila-formulario">
               <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
-                  >Código Postal <span class="obligatorio">*</span></label
-                >
-                <select class="entrada-seleccion">
-                  <option>País</option>
-                </select>
-              </div>
-              <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta"
-                  >Teléfono <span class="obligatorio">*</span></label
+                <label class="etiqueta" for="telefono-principal"
+                  >Teléfono Principal <span class="obligatorio">*</span></label
                 >
                 <input
                   type="tel"
+                  id="telefono-principal"
                   class="entrada-texto"
-                  placeholder="Teléfono"
+                  placeholder="Ej: 312 345 6789"
                   required
+                />
+              </div>
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="telefono-secundario"
+                  >Teléfono Secundario <span class="opcional">(Opcional)</span></label
+                >
+                <input
+                  type="tel"
+                  id="telefono-secundario"
+                  class="entrada-texto"
+                  placeholder="Ej: (608) 770 1234"
                 />
               </div>
             </div>
@@ -280,13 +341,14 @@
                 type="checkbox"
                 id="misma-direccion"
                 class="casilla-verificacion"
+                checked
               />
               <label for="misma-direccion" class="etiqueta-casilla"
                 >Usar la misma dirección para facturación</label
               >
             </div>
 
-            <h3 class="titulo-seccion margen-superior">Preferencias</h3>
+            <h3 class="titulo-seccion margen-superior">Términos y Privacidad</h3>
 
             <div class="grupo-casilla">
               <input
@@ -296,21 +358,86 @@
                 required
               />
               <label for="aceptar-terminos" class="etiqueta-casilla"
-                >Acepto los
-                <a href="Catalog.html" class="enlace-terminos"
+                >He leído y acepto los
+                <a href="#" id="abrir-terminos" class="enlace-terminos"
                   >términos y condiciones</a
                 >
-                de WiiU-Games.</label
+                y el tratamiento de mis datos personales de WiiU-Games.</label
               >
             </div>
 
-            <button type="submit" class="boton-enviar">
-              Crear cuenta y continuar
+            <button type="submit" class="boton-enviar" id="btn-registro">
+              <i class="fi fi-rr-user-add"></i> Crear cuenta y registrarse
             </button>
           </div>
         </form>
+
+        <!-- SECCIÓN DE BENEFICIOS INFERIOR -->
+        <div class="beneficios-registro">
+          <div class="item-beneficio">
+            <div class="circulo-icono">
+              <i class="fi fi-rr-shield-check"></i>
+            </div>
+            <p class="texto-beneficio">Garantía de hasta 3 Años</p>
+          </div>
+          <div class="item-beneficio">
+            <div class="circulo-icono">
+              <i class="fi fi-rr-truck-side"></i>
+            </div>
+            <p class="texto-beneficio">Envíos Rápidos y Seguros</p>
+          </div>
+          <div class="item-beneficio">
+            <div class="circulo-icono">
+              <i class="fi fi-rr-headset"></i>
+            </div>
+            <p class="texto-beneficio">Soporte Técnico Especializado</p>
+          </div>
+          <div class="item-beneficio">
+            <div class="circulo-icono">
+              <i class="fi fi-rr-badge-percent"></i>
+            </div>
+            <p class="texto-beneficio">Precios y Promociones Exclusivas</p>
+          </div>
+        </div>
       </div>
     </main>
+
+    <!-- MODAL DE TÉRMINOS Y CONDICIONES -->
+    <div class="fondo-modal-terminos" id="modal-terminos">
+      <div class="caja-modal-terminos">
+        <div class="cabecera-modal-terminos">
+          <h3><i class="fi fi-rr-document"></i> Términos y Condiciones — WiiU-Games</h3>
+          <button type="button" class="btn-cerrar-terminos" id="btn-cerrar-terminos" aria-label="Cerrar modal">&times;</button>
+        </div>
+        <div class="cuerpo-modal-terminos">
+          <h4>1. Aceptación del Servicio</h4>
+          <p>
+            Al crear una cuenta en la plataforma de WiiU-Games, usted manifiesta su conformidad con los presentes Términos y Condiciones, así como con nuestras políticas de entrega, garantías y privacidad de datos.
+          </p>
+
+          <h4>2. Registro y Seguridad de la Cuenta</h4>
+          <p>
+            El usuario es responsable de mantener la confidencialidad de su contraseña y de toda actividad realizada desde su cuenta. WiiU-Games no se hace responsable por accesos no autorizados derivados de negligencia en el resguardo de credenciales.
+          </p>
+
+          <h4>3. Garantías de Productos y Servicios</h4>
+          <p>
+            Todos nuestros computadores gamer, portátiles y consolas cuentan con un periodo de garantía de hasta 3 años según las especificaciones del fabricante y nuestros sellos autorizados de soporte técnico.
+          </p>
+
+          <h4>4. Protección y Tratamiento de Datos</h4>
+          <p>
+            Sus datos personales y direcciones de envío serán procesados bajo estrictos protocolos de cifrado y confidencialidad conforme a la legislación vigente de protección de datos personales.
+          </p>
+        </div>
+        <div class="pie-modal-terminos">
+          <button type="button" class="btn-modal-cancelar" id="btn-cancelar-terminos">Cerrar</button>
+          <button type="button" class="btn-modal-aceptar" id="btn-aceptar-terminos">Aceptar y Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
     <footer class="sitio-footer">
       <div class="seccion-boletin"></div>
       <div class="cuadricula-footer">
@@ -320,26 +447,26 @@
             <li><a href="Catalog.html">Acerca de nosotros</a></li>
             <li><a href="Catalog.html">Política de Privacidad</a></li>
             <li><a href="Catalog.html">Buscar</a></li>
-            <li><a href="Catalog.html">Terminos y Condiciones</a></li>
+            <li><a href="Catalog.html">Términos y Condiciones</a></li>
             <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
-            <li><a href="contactanos.html">Contactanos</a></li>
+            <li><a href="contactanos.html">Contáctanos</a></li>
           </ul>
         </div>
         <div class="columna-footer">
           <h3>Componentes de PC</h3>
           <ul>
-            <li><a href="Catalog.html">CPUS</a></li>
+            <li><a href="Catalog.html">CPUs</a></li>
             <li><a href="Catalog.html">Discos Duros</a></li>
-            <li><a href="Catalog.html">Tarjetas Graficas</a></li>
+            <li><a href="Catalog.html">Tarjetas Gráficas</a></li>
             <li><a href="Catalog.html">Teclados / Mouse</a></li>
             <li>
               <a href="Catalog.html"
-                >Gabinetes / Fuentes de Poder / Refrigeracion</a
+                >Gabinetes / Fuentes de Poder / Refrigeración</a
               >
             </li>
             <li><a href="Catalog.html">RAM (Memoria)</a></li>
             <li><a href="Catalog.html">Software</a></li>
-            <li><a href="Catalog.html">Altavoces / Audifonos</a></li>
+            <li><a href="Catalog.html">Altavoces / Audífonos</a></li>
             <li><a href="Catalog.html">Motherboards</a></li>
           </ul>
         </div>
@@ -371,13 +498,13 @@
             Teléfonos:
             <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
           </p>
-          <p>Lunes-Sabado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
           <p>
             Correo electrónico:
             <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado"
               >wiiugames2026@gmail.com</a
             >
           </p>
+          <p>Lunes - Sábado: 8:00 a.m. – 12:30 p.m. | 2:00 – 7:00 p.m.</p>
         </div>
       </div>
       <div class="barra-inferior-footer">
@@ -405,6 +532,8 @@
         </div>
       </div>
     </footer>
+
     <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../Scripts/registro.js" defer></script>
   </body>
 </html>

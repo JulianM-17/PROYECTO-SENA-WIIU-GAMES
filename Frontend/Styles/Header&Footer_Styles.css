@@ -309,6 +309,10 @@
   box-shadow: 0 2px 8px rgba(245, 200, 66, 0.5);
 }
 
+.burbuja-carrito:empty {
+  display: none !important;
+}
+
 .foto-perfil {
   width: 36px;
   height: 36px;

@@ -146,6 +146,15 @@
   function initialize() {
     createUI();
     applyPreferences();
+
+    // Ocultar burbuja del carrito si no tiene productos
+    document.querySelectorAll('.burbuja-carrito').forEach((burbuja) => {
+      const texto = burbuja.textContent.trim();
+      if (!texto || texto === '0') {
+        burbuja.textContent = '';
+        burbuja.style.display = 'none';
+      }
+    });
   }
 
   if (document.readyState === "loading") {
