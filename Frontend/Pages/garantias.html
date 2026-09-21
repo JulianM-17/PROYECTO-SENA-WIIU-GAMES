@@ -102,56 +102,58 @@
     <!--Campos de espacio-->
     <section class="formulario-cita">
       <div class="formulario-container">
-        <form action="#" method="post" class="formulario">
+        <form action="#" method="post" class="formulario" id="form-garantia" novalidate>
           <div class="campo">
-            <label for="nombre">Numero de pedido/Factura</label>
+            <label for="id-pedido">Número de pedido / Factura*</label>
             <input
-              type="number"
+              type="text"
+              inputmode="numeric"
               id="id-pedido"
               name="id-pedido"
-              placeholder="Inserte el numero de pedido o factura"
+              placeholder="Ej: 104582 (Solo números)"
+              maxlength="12"
               required
             />
+            <span class="error-mensaje" id="error-id-pedido"></span>
           </div>
 
           <div class="campo">
-            <label for="email">Numero de serie del producto</label>
+            <label for="id-producto">Número de serie del producto*</label>
             <input
-              type="number"
+              type="text"
               id="id-producto"
               name="id-producto"
-              placeholder="Inserte el numero de serie del producto"
+              placeholder="Ej: SN-9842104"
+              maxlength="25"
               required
             />
+            <span class="error-mensaje" id="error-id-producto"></span>
           </div>
 
-          <div class="campo">
-            <label for="servicio">Categoria del producto</label>
-            <input
-              type="option"
-              id="categoria-producto"
-              name="categoria-producto"
-              list="categorias"
+          <div class="campo" style="grid-column: 1 / -1;">
+            <label for="categoria-producto">Categoría del producto*</label>
+            <select id="categoria-producto" name="categoria-producto" required>
+              <option value="" disabled selected>Selecciona una categoría...</option>
+              <option value="Laptops">Laptops</option>
+              <option value="Consola">Consola</option>
+              <option value="Periferico">Periférico</option>
+              <option value="Computador de Escritorio">Computador de Escritorio</option>
+            </select>
+            <span class="error-mensaje" id="error-categoria-producto"></span>
+          </div>
+
+          <div class="consulta">
+            <label for="consulta">Descripción detallada del problema*</label>
+            <textarea
+              id="consulta"
+              name="consulta"
+              placeholder="Describe detalladamente la falla que presenta el equipo (mínimo 15 caracteres)..."
+              rows="4"
               required
-            />
-
-            <div class="consulta">
-              <label for="consulta">Descripcion detallada del problema</label>
-              <textarea
-                id="consulta"
-                name="consulta"
-                placeholder="Describe detalladamente el problema"
-                required
-              ></textarea>
-            </div>
-
-            <datalist id="categorias">
-              <option value="Laptops"></option>
-              <option value="Consola"></option>
-              <option value="Periferico"></option>
-              <option value="Computador de Escritorio"></option>
-            </datalist>
+            ></textarea>
+            <span class="error-mensaje" id="error-consulta"></span>
           </div>
+
           <button type="submit" class="btn-agendar">
             Agregar nueva garantía
           </button>
@@ -279,6 +281,7 @@
         </div>
       </div>
     </footer>
+    <script src="../Scripts/garantias.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
   </body>
 </html>
