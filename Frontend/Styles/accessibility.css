@@ -1010,3 +1010,27 @@ body.a11y-mode-reduced-motion *::after {
     transform: translateY(var(--a11y-shift-y, 0px)) scale(1) !important;
   }
 }
+
+/* =====================================================
+   FIXES PARA CARRITO Y ARMA TU PC EN MODO OSCURO
+   ===================================================== */
+body.a11y-mode-dark-mode #btn-vaciar,
+body.a11y-mode-dark-mode #btn-actualizar,
+body.a11y-mode-dark-mode .btn-negro,
+body.a11y-mode-dark-mode .btn-negro-secundario,
+body.a11y-mode-dark-mode .btn-primary {
+  color: #080f20 !important;
+  background-color: #f5c842 !important;
+  border-color: #f5c842 !important;
+  font-weight: bold !important;
+}
+
+body.a11y-mode-dark-mode #btn-vaciar:hover,
+body.a11y-mode-dark-mode #btn-actualizar:hover,
+body.a11y-mode-dark-mode .btn-negro:hover,
+body.a11y-mode-dark-mode .btn-negro-secundario:hover,
+body.a11y-mode-dark-mode .btn-primary:hover {
+  background-color: #e0b435 !important;
+  border-color: #e0b435 !important;
+  color: #080f20 !important;
+}
