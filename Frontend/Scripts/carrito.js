@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartCount = id('cart-count');
 
     if (cartCount) {
-      cartCount.textContent = totalItems;
+      cartCount.textContent = totalItems > 0 ? totalItems : '';
     }
 
     if (filas.length === 0) {
