@@ -10,15 +10,18 @@
   --a11y-gold-hover: #ffd752;
   --a11y-dark: #080f20;
   --a11y-dark-card: rgba(13, 31, 60, 0.9);
+  --a11y-shift-y: 0px;
 }
 
 /* =====================================================
-   BOTÓN FLOTANTE (Siempre Fijo en el Viewport)
+   BOTÓN FLOTANTE (Fijo con Desplazamiento Inteligente)
    ===================================================== */
 #a11y-trigger-btn {
   position: fixed !important;
   bottom: 24px !important;
   right: 24px !important;
+  top: auto !important;
+  left: auto !important;
   width: 52px !important;
   height: 52px !important;
   border-radius: 50% !important;
@@ -35,15 +38,15 @@
   justify-content: center !important;
   padding: 0 !important;
   outline: none !important;
-  transform: none;
+  transform: translateY(var(--a11y-shift-y, 0px)) !important;
   transition:
-    transform 0.2s ease,
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.2s ease !important;
   -webkit-tap-highlight-color: transparent;
 }
 
 #a11y-trigger-btn:hover {
-  transform: scale(1.08) !important;
+  transform: translateY(var(--a11y-shift-y, 0px)) scale(1.08) !important;
   border-color: var(--a11y-gold-hover) !important;
   color: #ffffff !important;
   box-shadow:
@@ -52,7 +55,7 @@
 }
 
 #a11y-trigger-btn:active {
-  transform: scale(0.95) !important;
+  transform: translateY(var(--a11y-shift-y, 0px)) scale(0.95) !important;
 }
 
 #a11y-trigger-btn.has-active-mode {
@@ -77,6 +80,8 @@
   position: fixed !important;
   bottom: 84px !important;
   right: 24px !important;
+  top: auto !important;
+  left: auto !important;
   width: 250px !important;
   max-height: calc(100vh - 110px) !important;
   overflow-y: auto !important;
@@ -96,16 +101,16 @@
   flex-direction: column !important;
   gap: 10px !important;
   opacity: 0 !important;
-  transform: translateY(10px) scale(0.95) !important;
+  transform: translateY(calc(var(--a11y-shift-y, 0px) + 10px)) scale(0.95) !important;
   pointer-events: none !important;
   transition:
     opacity 0.2s ease,
-    transform 0.2s ease !important;
+    transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 #a11y-menu.a11y-open {
   opacity: 1 !important;
-  transform: translateY(0) scale(1) !important;
+  transform: translateY(var(--a11y-shift-y, 0px)) scale(1) !important;
   pointer-events: auto !important;
 }
 
@@ -712,13 +717,23 @@ body.a11y-mode-reduced-motion *::after {
   #a11y-trigger-btn {
     bottom: 16px !important;
     right: 16px !important;
+    top: auto !important;
+    left: auto !important;
     width: 48px !important;
     height: 48px !important;
+    transform: translateY(var(--a11y-shift-y, 0px)) !important;
   }
 
   #a11y-menu {
     right: 16px !important;
     bottom: 74px !important;
+    top: auto !important;
+    left: auto !important;
     width: calc(100vw - 32px) !important;
+    transform: translateY(calc(var(--a11y-shift-y, 0px) + 10px)) scale(0.95) !important;
+  }
+
+  #a11y-menu.a11y-open {
+    transform: translateY(var(--a11y-shift-y, 0px)) scale(1) !important;
   }
 }
