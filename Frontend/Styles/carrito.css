@@ -53,6 +53,22 @@ body {
   gap: 6px;
 }
 
+.migas-pan a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.migas-pan a:hover {
+  color: var(--dark-blue);
+  text-decoration: underline;
+}
+
+.migas-pan span {
+  color: var(--dark-blue);
+  font-weight: 600;
+}
+
 .titulo-carrito {
   font-size: 34px;
   font-weight: 800;
@@ -92,13 +108,23 @@ body {
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  align-items: center;
+}
+
+.enc-acciones {
+  text-align: center;
+}
+
+.lista-productos-carrito {
+  display: flex;
+  flex-direction: column;
 }
 
 .fila-producto {
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr 60px;
   align-items: center;
-  padding: 28px 0;
+  padding: 24px 0;
   border-bottom: 1px solid var(--border);
   gap: 20px;
   transition: background 0.3s ease;
@@ -112,7 +138,7 @@ body {
   background: rgba(245, 200, 66, 0.02);
   border-radius: 12px;
   margin: 0 -12px;
-  padding: 28px 12px;
+  padding: 24px 12px;
 }
 
 .celda-item {
@@ -145,9 +171,10 @@ body {
 }
 
 .celda-precio {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
 }
 
 .celda-cantidad-wrapper {
@@ -163,12 +190,13 @@ body {
   border: 1.5px solid var(--border);
   border-radius: 8px;
   padding: 8px 14px;
-  min-width: 72px;
+  min-width: 76px;
   background: var(--white);
   font-weight: 700;
   font-size: 15px;
   color: var(--dark-blue);
   transition: border-color 0.2s ease;
+  user-select: none;
 }
 
 .celda-cantidad:hover {
@@ -180,23 +208,29 @@ body {
   flex-direction: column;
   gap: 2px;
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
+}
+
+.flechitas i {
+  transition: color 0.15s ease, transform 0.15s ease;
 }
 
 .flechitas i:hover {
   color: var(--yellow);
+  transform: scale(1.2);
 }
 
 .celda-subtotal {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--dark-blue);
+  white-space: nowrap;
 }
 
 .celda-acciones {
   display: flex;
-  gap: 12px;
+  gap: 8px;
   justify-content: center;
 }
 
@@ -204,13 +238,15 @@ body {
   font-size: 18px;
   cursor: pointer;
   transition: all 0.2s ease;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
   background: var(--bg);
+  border: none;
+  outline: none;
 }
 
 .icono-accion:hover {
@@ -240,10 +276,21 @@ body {
   margin-top: 36px;
   flex-wrap: wrap;
   gap: 16px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.grupo-btn-izq {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .btn-linea {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 28px;
   border: 1.5px solid var(--border);
   border-radius: 9999px;
@@ -253,17 +300,20 @@ body {
   text-decoration: none;
   transition: all 0.3s ease;
   background: var(--white);
+  cursor: pointer;
 }
 
 .btn-linea:hover {
   border-color: var(--yellow);
   color: var(--dark-blue);
-  background: rgba(245, 200, 66, 0.05);
+  background: rgba(245, 200, 66, 0.08);
   transform: translateY(-1px);
 }
 
-.btn-negro {
-  display: inline-block;
+.btn-negro, .btn-negro-secundario {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 12px 28px;
   background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
   border: none;
@@ -274,11 +324,35 @@ body {
   text-decoration: none;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(8, 15, 32, 0.2);
+  cursor: pointer;
 }
 
-.btn-negro:hover {
+.btn-negro:hover, .btn-negro-secundario:hover {
   box-shadow: 0 6px 20px rgba(8, 15, 32, 0.3);
   transform: translateY(-1px);
+  background: linear-gradient(135deg, #0f1c38 0%, #152b52 100%);
+}
+
+/* Estado de carrito vacío */
+.carrito-vacio {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted);
+}
+.carrito-vacio i {
+  font-size: 48px;
+  color: var(--yellow);
+  margin-bottom: 16px;
+  display: block;
+}
+.carrito-vacio h3 {
+  font-size: 20px;
+  color: var(--dark-blue);
+  margin-bottom: 8px;
+}
+.carrito-vacio p {
+  font-size: 14px;
+  margin-bottom: 24px;
 }
 
 /* =====================================================
@@ -327,37 +401,75 @@ body {
 
 .texto-gris {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.55);
   line-height: 1.5;
-  margin-top: 6px;
+  margin-top: 4px;
   margin-bottom: 16px;
+}
+
+.desglose-totales {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
 }
 
 .fila-total {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
+  align-items: flex-start;
+  padding: 8px 0;
   font-size: 14px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.85);
+  gap: 12px;
+}
+
+.fila-total span {
+  font-weight: 500;
 }
 
 .fila-total b {
   color: var(--white);
   font-weight: 700;
+  white-space: nowrap;
+}
+
+.fila-total.fila-envio {
+  align-items: flex-start;
+}
+
+.info-envio {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.texto-gris-envio {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+  margin-top: 2px;
 }
 
 .fila-total.total-grande {
   border-top: 2px dashed rgba(245, 200, 66, 0.3);
-  margin-top: 20px;
+  margin-top: 16px;
   padding-top: 20px;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
+  color: var(--yellow);
+  align-items: center;
+}
+
+.fila-total.total-grande span {
+  font-size: 16px;
+  font-weight: 700;
   color: var(--yellow);
 }
 
 .fila-total.total-grande b {
-  font-size: 24px;
+  font-size: 22px;
   color: var(--yellow);
 }
 
@@ -532,18 +644,22 @@ body {
     align-items: flex-start;
   }
 
+  .celda-acciones {
+    justify-content: flex-start;
+  }
+
   .botones-inferiores-izq {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .botones-inferiores-izq div {
-    display: flex;
+  .grupo-btn-izq {
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
   }
 
   .btn-negro {
-    margin-left: 0;
+    width: 100%;
+    text-align: center;
   }
 }
