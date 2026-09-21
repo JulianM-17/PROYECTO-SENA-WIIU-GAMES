@@ -168,39 +168,94 @@ document.addEventListener('DOMContentLoaded', () => {
       // Iniciar estado de carga
       setEstadoCargando(true);
 
-      // Simulación de autenticación (API / backend simulation)
       setTimeout(() => {
-        // Guardar preferencia de recordar correo
+        // Cuentas de demostración predefinidas
+        const cuentasDemo = [
+          { email: 'cliente@wiiugames.com', pass: '123456', nombre: 'Fabian Mora', rol: 'Cliente' },
+          { email: 'admin@wiiugames.com', pass: 'admin123', nombre: 'Administrador WiiU', rol: 'Administrador' }
+        ];
+
+        // Obtener usuarios registrados desde localStorage
+        let usuariosRegistrados = [];
+        try {
+          usuariosRegistrados = JSON.parse(localStorage.getItem('wiiu_registered_users') || '[]');
+          const usuarioUnico = JSON.parse(localStorage.getItem('wiiu_user') || 'null');
+          if (usuarioUnico && !usuariosRegistrados.some(u => u.email === usuarioUnico.email)) {
+            usuariosRegistrados.push(usuarioUnico);
+          }
+        } catch (err) {
+          console.warn('Error leyendo usuarios de localStorage:', err);
+        }
+
+        // Buscar coincidencia de correo
+        const correoNormalizado = correo.toLowerCase();
+        let usuarioEncontrado = cuentasDemo.find(c => c.email.toLowerCase() === correoNormalizado);
+        let passwordCorrecta = usuarioEncontrado ? usuarioEncontrado.pass : null;
+
+        if (!usuarioEncontrado) {
+          const regUser = usuariosRegistrados.find(u => u.email && u.email.toLowerCase() === correoNormalizado);
+          if (regUser) {
+            usuarioEncontrado = {
+              email: regUser.email,
+              nombre: `${regUser.nombre || ''} ${regUser.apellido || ''}`.trim() || 'Usuario WiiU',
+              rol: regUser.rol || 'Cliente'
+            };
+            passwordCorrecta = regUser.password;
+          }
+        }
+
+        // 1. Caso: El correo no existe
+        if (!usuarioEncontrado) {
+          setEstadoCargando(false);
+          mostrarErrorCampo(inputCorreo, 'error-correo', 'No existe ninguna cuenta registrada con este correo electrónico.');
+          if (alertaFormulario) {
+            alertaFormulario.textContent = 'No encontramos tu cuenta. Verifica el correo o crea una cuenta nueva en "Regístrate".';
+            alertaFormulario.className = 'alerta-formulario error';
+          }
+          mostrarToast('Correo electrónico no registrado.', 'error');
+          inputCorreo.focus();
+          return;
+        }
+
+        // 2. Caso: Contraseña incorrecta
+        if (passwordCorrecta && contrasena !== passwordCorrecta) {
+          setEstadoCargando(false);
+          mostrarErrorCampo(inputContrasena, 'error-contrasena', 'La contraseña ingresada es incorrecta.');
+          if (alertaFormulario) {
+            alertaFormulario.textContent = 'La contraseña ingresada no es válida para este usuario. Inténtalo nuevamente.';
+            alertaFormulario.className = 'alerta-formulario error';
+          }
+          mostrarToast('Contraseña incorrecta. Por favor intenta de nuevo.', 'error');
+          inputContrasena.focus();
+          return;
+        }
+
+        // 3. Caso: Credenciales exitosas
         if (checkRecordar && checkRecordar.checked) {
           localStorage.setItem('wiiu_remember_email', correo);
         } else {
           localStorage.removeItem('wiiu_remember_email');
         }
 
-        // Determinar rol y simular datos de usuario
-        const esAdmin = correo.includes('admin');
-        const nombreUsuario = esAdmin ? 'Administrador WiiU' : 'Usuario Cliente';
-        const rolUsuario = esAdmin ? 'Administrador' : 'Cliente';
-
-        // Guardar sesión activa en sessionStorage
         const sesionUsuario = {
-          correo: correo,
-          nombre: nombreUsuario,
-          rol: rolUsuario,
+          correo: usuarioEncontrado.email,
+          nombre: usuarioEncontrado.nombre,
+          rol: usuarioEncontrado.rol,
           fechaIngreso: new Date().toISOString()
         };
         sessionStorage.setItem('wiiu_usuario_activo', JSON.stringify(sesionUsuario));
 
-        // Feedback de éxito
         setEstadoCargando(false);
-        mostrarToast(`¡Bienvenido de nuevo, ${nombreUsuario}! Redirigiendo...`, 'exito');
+        if (alertaFormulario) {
+          alertaFormulario.textContent = `¡Bienvenido de nuevo, ${usuarioEncontrado.nombre}! Redirigiendo a tu panel...`;
+          alertaFormulario.className = 'alerta-formulario exito';
+        }
+        mostrarToast(`¡Bienvenido, ${usuarioEncontrado.nombre}!`, 'exito');
 
-        // Redirección progresiva al panel de usuario
         setTimeout(() => {
           window.location.href = 'panel_usuario.html';
         }, 1200);
-
-      }, 1000);
+      }, 900);
     });
   }
 

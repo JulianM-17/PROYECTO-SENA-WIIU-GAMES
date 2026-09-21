@@ -257,8 +257,23 @@
   display: block;
 }
 
+.columna-derecha .mensaje-error {
+  color: #fca5a5;
+  font-weight: 500;
+}
+
 .input-error {
   border-color: #ef4444 !important;
+  background-color: #fff8f8 !important;
+}
+
+.columna-derecha .input-error {
+  border-color: #f87171 !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+}
+
+.input-valido {
+  border-color: #10b981 !important;
 }
 
 /* --- Contenedor con Ojito Mostrar/Ocultar --- */
@@ -354,28 +369,76 @@
   color: #10b981;
 }
 
-/* --- Casillas de Verificación (Checkboxes) --- */
-.grupo-casilla {
+/* --- Controles de Selección Cohesivos e Idénticos (Checkboxes Personalizados) --- */
+.control-seleccion {
+  margin-bottom: 20px;
+}
+
+.opcion-seleccion {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 18px;
-}
-
-.casilla-verificacion {
-  margin-top: 3px;
-  width: 18px;
-  height: 18px;
-  accent-color: var(--yellow);
-  cursor: pointer;
-}
-
-.etiqueta-casilla {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.5;
   cursor: pointer;
   user-select: none;
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.check-oculto {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.caja-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+  margin-top: 1px;
+}
+
+.caja-check i {
+  color: #080f20;
+  font-size: 11px;
+  font-weight: 900;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: all 0.2s ease;
+}
+
+/* Estado activo / checked */
+.check-oculto:checked + .caja-check {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  box-shadow: 0 0 10px rgba(245, 200, 66, 0.45);
+}
+
+.check-oculto:checked + .caja-check i {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.opcion-seleccion:hover .caja-check {
+  border-color: var(--yellow);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.check-oculto:focus-visible + .caja-check {
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.4);
+}
+
+.texto-seleccion {
+  flex: 1;
 }
 
 .enlace-terminos {

@@ -119,6 +119,7 @@
                   placeholder="Tu nombre"
                   required
                 />
+                <span class="mensaje-error" id="error-nombre"></span>
               </div>
               <div class="grupo-entrada ancho-mitad">
                 <label class="etiqueta" for="apellido"
@@ -131,6 +132,7 @@
                   placeholder="Tu apellido"
                   required
                 />
+                <span class="mensaje-error" id="error-apellido"></span>
               </div>
             </div>
 
@@ -149,6 +151,7 @@
                   <option value="">Año</option>
                 </select>
               </div>
+              <span class="mensaje-error" id="error-nacimiento"></span>
             </div>
 
             <h3 class="titulo-seccion margen-superior">
@@ -166,6 +169,7 @@
                 placeholder="ejemplo@correo.com"
                 required
               />
+              <span class="mensaje-error" id="error-correo"></span>
             </div>
 
             <div class="grupo-entrada">
@@ -180,6 +184,7 @@
                 placeholder="Repite tu correo electrónico"
                 required
               />
+              <span class="mensaje-error" id="error-confirmar-correo"></span>
             </div>
 
             <div class="grupo-entrada">
@@ -207,6 +212,7 @@
                 <div class="barra-seguridad" id="barra-seguridad"></div>
               </div>
               <small class="texto-seguridad" id="texto-seguridad">Ingresa al menos 8 caracteres</small>
+              <span class="mensaje-error" id="error-contrasena"></span>
             </div>
 
             <div class="grupo-entrada">
@@ -230,6 +236,7 @@
                   <i class="fi fi-rr-eye"></i>
                 </button>
               </div>
+              <span class="mensaje-error" id="error-confirmar-contrasena"></span>
             </div>
           </div>
 
@@ -250,53 +257,31 @@
                 required
               />
               <small class="texto-ayuda">Apartamento, torre, suite o conjunto (opcional)</small>
+              <span class="mensaje-error" id="error-direccion"></span>
             </div>
 
             <div class="fila-formulario">
-              <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta" for="ciudad"
-                  >Ciudad <span class="obligatorio">*</span></label
-                >
-                <input
-                  type="text"
-                  id="ciudad"
-                  class="entrada-texto"
-                  placeholder="Ej: Sogamoso"
-                  required
-                />
-              </div>
               <div class="grupo-entrada ancho-mitad">
                 <label class="etiqueta" for="departamento"
-                  >Departamento / Región <span class="obligatorio">*</span></label
+                  >Departamento <span class="obligatorio">*</span></label
                 >
                 <select class="entrada-seleccion" id="departamento" required>
-                  <option value="">Selecciona</option>
-                  <option value="Boyacá" selected>Boyacá</option>
-                  <option value="Bogotá D.C.">Bogotá D.C.</option>
-                  <option value="Cundinamarca">Cundinamarca</option>
-                  <option value="Antioquia">Antioquia</option>
-                  <option value="Santander">Santander</option>
-                  <option value="Valle del Cauca">Valle del Cauca</option>
-                  <option value="Atlántico">Atlántico</option>
-                  <option value="Otro">Otro</option>
+                  <option value="">Selecciona un departamento</option>
                 </select>
+                <span class="mensaje-error" id="error-departamento"></span>
+              </div>
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="municipio"
+                  >Municipio / Ciudad <span class="obligatorio">*</span></label
+                >
+                <select class="entrada-seleccion" id="municipio" required>
+                  <option value="">Primero elige un departamento</option>
+                </select>
+                <span class="mensaje-error" id="error-municipio"></span>
               </div>
             </div>
 
             <div class="fila-formulario">
-              <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta" for="pais"
-                  >País <span class="obligatorio">*</span></label
-                >
-                <select class="entrada-seleccion" id="pais" required>
-                  <option value="Colombia" selected>Colombia</option>
-                  <option value="México">México</option>
-                  <option value="España">España</option>
-                  <option value="Argentina">Argentina</option>
-                  <option value="Chile">Chile</option>
-                  <option value="Estados Unidos">Estados Unidos</option>
-                </select>
-              </div>
               <div class="grupo-entrada ancho-mitad">
                 <label class="etiqueta" for="codigo-postal"
                   >Código Postal <span class="opcional">(Opcional)</span></label
@@ -308,9 +293,6 @@
                   placeholder="Ej: 152210"
                 />
               </div>
-            </div>
-
-            <div class="fila-formulario">
               <div class="grupo-entrada ancho-mitad">
                 <label class="etiqueta" for="telefono-principal"
                   >Teléfono Principal <span class="obligatorio">*</span></label
@@ -322,48 +304,59 @@
                   placeholder="Ej: 312 345 6789"
                   required
                 />
-              </div>
-              <div class="grupo-entrada ancho-mitad">
-                <label class="etiqueta" for="telefono-secundario"
-                  >Teléfono Secundario <span class="opcional">(Opcional)</span></label
-                >
-                <input
-                  type="tel"
-                  id="telefono-secundario"
-                  class="entrada-texto"
-                  placeholder="Ej: (608) 770 1234"
-                />
+                <span class="mensaje-error" id="error-telefono"></span>
               </div>
             </div>
 
-            <div class="grupo-casilla">
-              <input
-                type="checkbox"
-                id="misma-direccion"
-                class="casilla-verificacion"
-                checked
-              />
-              <label for="misma-direccion" class="etiqueta-casilla"
-                >Usar la misma dirección para facturación</label
+            <div class="grupo-entrada">
+              <label class="etiqueta" for="telefono-secundario"
+                >Teléfono Secundario <span class="opcional">(Opcional)</span></label
               >
+              <input
+                type="tel"
+                id="telefono-secundario"
+                class="entrada-texto"
+                placeholder="Ej: (608) 770 1234 o número de respaldo"
+              />
+            </div>
+
+            <div class="control-seleccion">
+              <label class="opcion-seleccion" for="misma-direccion">
+                <input
+                  type="checkbox"
+                  id="misma-direccion"
+                  class="check-oculto"
+                  checked
+                />
+                <span class="caja-check">
+                  <i class="fi fi-rr-check"></i>
+                </span>
+                <span class="texto-seleccion">Usar la misma dirección para facturación</span>
+              </label>
             </div>
 
             <h3 class="titulo-seccion margen-superior">Términos y Privacidad</h3>
 
-            <div class="grupo-casilla">
-              <input
-                type="checkbox"
-                id="aceptar-terminos"
-                class="casilla-verificacion"
-                required
-              />
-              <label for="aceptar-terminos" class="etiqueta-casilla"
-                >He leído y acepto los
-                <a href="#" id="abrir-terminos" class="enlace-terminos"
-                  >términos y condiciones</a
+            <div class="control-seleccion">
+              <label class="opcion-seleccion" for="aceptar-terminos">
+                <input
+                  type="checkbox"
+                  id="aceptar-terminos"
+                  class="check-oculto"
+                  required
+                />
+                <span class="caja-check">
+                  <i class="fi fi-rr-check"></i>
+                </span>
+                <span class="texto-seleccion"
+                  >He leído y acepto los
+                  <a href="#" id="abrir-terminos" class="enlace-terminos"
+                    >términos y condiciones</a
+                  >
+                  y la política de tratamiento de datos personales de WiiU-Games.</span
                 >
-                y el tratamiento de mis datos personales de WiiU-Games.</label
-              >
+              </label>
+              <span class="mensaje-error" id="error-terminos"></span>
             </div>
 
             <button type="submit" class="boton-enviar" id="btn-registro">

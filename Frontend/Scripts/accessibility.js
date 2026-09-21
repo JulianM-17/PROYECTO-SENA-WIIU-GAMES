@@ -148,13 +148,63 @@
     applyPreferences();
 
     // Ocultar burbuja del carrito si no tiene productos
-    document.querySelectorAll('.burbuja-carrito').forEach((burbuja) => {
+    document.querySelectorAll(".burbuja-carrito").forEach((burbuja) => {
       const texto = burbuja.textContent.trim();
-      if (!texto || texto === '0') {
-        burbuja.textContent = '';
-        burbuja.style.display = 'none';
+      if (!texto || texto === "0") {
+        burbuja.textContent = "";
+        burbuja.style.display = "none";
       }
     });
+
+    setupNotificationWatcher();
+  }
+
+  function setupNotificationWatcher() {
+    let updateTimer = null;
+
+    function adjustPosition() {
+      const activeToasts = document.querySelectorAll(
+        ".toast, .notificacion-alerta, .toast-notification, .contenedor-notificacion .toast, .contenedor-toast .toast, #toastContainer .toast"
+      );
+
+      if (!activeToasts || activeToasts.length === 0) {
+        document.documentElement.style.setProperty("--a11y-shift-y", "0px");
+        return;
+      }
+
+      const toastContainers = document.querySelectorAll(
+        "#toastContainer, .contenedor-notificacion, .contenedor-toast, #contenedor-toast, #contenedor-notificacion"
+      );
+
+      let maxOffset = 0;
+      toastContainers.forEach((container) => {
+        if (container && container.children.length > 0) {
+          const rect = container.getBoundingClientRect();
+          if (rect.height > maxOffset) {
+            maxOffset = rect.height;
+          }
+        }
+      });
+
+      if (maxOffset === 0) {
+        maxOffset = activeToasts.length * 66;
+      }
+
+      const shiftPx = Math.round(maxOffset + 16);
+      document.documentElement.style.setProperty("--a11y-shift-y", `-${shiftPx}px`);
+    }
+
+    const observer = new MutationObserver(() => {
+      clearTimeout(updateTimer);
+      updateTimer = setTimeout(adjustPosition, 30);
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    adjustPosition();
   }
 
   if (document.readyState === "loading") {
