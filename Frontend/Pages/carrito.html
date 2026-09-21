@@ -31,26 +31,28 @@
       <!--NAVBAR Y INFO-->
       <div class="barra-superior">
         <div class="seccion-horario">
-          Lunes-Sabado: <b>8:00 a.m. –</b> <br />
-          <b>12:30 p.m. 2:00–7:00 p.m.</b>
+          Lunes - Sábado: <b>8:00 a.m. –</b> <br />
+          <b>12:30 p.m. | 2:00 – 7:00 p.m.</b>
         </div>
         <div class="seccion-direccion">
           Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
           Boyacá
-          <a href="contactanos.html" class="link-contacto">Contactanos</a>
+          <a href="contactanos.html" class="link-contacto">Contáctanos</a>
         </div>
         <div class="seccion-contacto">
-          Llamanos: <b>(00) 1234 5678</b>
+          Llámanos: <b>(00) 1234 5678</b>
           <a
             href="https://facebook.com/wiiugames"
             target="_blank"
             class="red-social"
+            aria-label="Facebook"
             ><i class="fi fi-brands-facebook"></i
           ></a>
           <a
             href="https://instagram.com/wiiugames"
             target="_blank"
             class="red-social"
+            aria-label="Instagram"
             ><i class="fi fi-brands-instagram"></i
           ></a>
         </div>
@@ -65,21 +67,21 @@
         <div class="contenido-menu">
           <div class="enlaces-nav">
             <a href="../Index.html">Inicio</a>
-            <a href="Catalog.html">Catalogo</a>
+            <a href="Catalog.html">Catálogo</a>
             <a href="servicios.html">Servicios</a>
-            <a href="garantias.html">Garantias</a>
+            <a href="garantias.html">Garantías</a>
           </div>
           <div class="botones-ingreso">
-            <a href="Login.html" class="btn-iniciar">Iniciar sesion</a>
+            <a href="Login.html" class="btn-iniciar">Iniciar sesión</a>
             <a href="Registro.html" class="btn-registrar">Registrarse</a>
           </div>
           <div class="iconos-usuario">
             <a href="Catalog.html" style="color: inherit; text-decoration: none"
-              ><i class="fi fi-rr-search icono-menu"></i
+              ><i class="fi fi-rr-search icono-menu" title="Buscar"></i
             ></a>
-            <a href="carrito.html" class="contenedor-carrito">
+            <a href="carrito.html" class="contenedor-carrito" title="Ver carrito">
               <i class="fi fi-rr-shopping-cart icono-menu"></i>
-              <b class="burbuja-carrito">2</b>
+              <b class="burbuja-carrito" id="cart-count">0</b>
             </a>
           </div>
         </div>
@@ -87,88 +89,31 @@
     </header>
 
     <main class="seccion-carrito">
-      <div class="migas-pan">Inicio › Iniciar sesion</div>
+      <div class="migas-pan">
+        <a href="../Index.html">Inicio</a> › <span>Carrito de compras</span>
+      </div>
       <h1 class="titulo-carrito">Carrito de compras</h1>
 
       <div class="contenedor-columnas">
         <div class="columna-productos">
           <div class="encabezados-productos">
-            <div class="enc-item">Articulo</div>
+            <div class="enc-item">Artículo</div>
             <div class="enc-precio">Precio</div>
             <div class="enc-cantidad">Cantidad</div>
             <div class="enc-subtotal">Subtotal</div>
+            <div class="enc-acciones">Acciones</div>
           </div>
 
-          <div class="fila-producto">
-            <div class="celda-item">
-              <img
-                src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=150&amp;q=80"
-                alt="PC Gamer"
-                class="img-producto"
-              />
-              <div class="texto-producto">
-                MSI MEG Trident X 10SD-1012AU Intel i7 10700K, 2070 SUPER, 32GB
-                RAM, 1TB SSD, Windows 10 Home, Gaming Keyboard and Mouse 3 Years
-                Warranty
-              </div>
-            </div>
-            <div class="celda-precio">$4,349.00</div>
-            <div class="celda-cantidad-wrapper">
-              <div class="celda-cantidad">
-                <p>1</p>
-                <div class="flechitas">
-                  <i class="fi fi-rr-angle-small-up"></i>
-                  <i class="fi fi-rr-angle-small-down"></i>
-                </div>
-              </div>
-            </div>
-            <div class="celda-subtotal">$13,047.00</div>
-            <div class="celda-acciones">
-              <i class="fi fi-rr-cross-circle icono-accion eliminar"></i>
-              <i class="fi fi-rr-pencil icono-accion editar"></i>
-            </div>
-          </div>
-
-          <div class="fila-producto">
-            <div class="celda-item">
-              <img
-                src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?ixlib=rb-4.0.3&amp;auto=format&amp;fit=crop&amp;w=150&amp;q=80"
-                alt="Laptop"
-                class="img-producto"
-              />
-              <div class="texto-producto">
-                MSI MEG Trident X 10SD-1012AU Intel i7 10700K, 2070 SUPER, 32GB
-                RAM, 1TB SSD, Windows 10 Home, Gaming Keyboard and Mouse 3 Years
-                Warranty
-              </div>
-            </div>
-            <div class="celda-precio">$4,349.00</div>
-            <div class="celda-cantidad-wrapper">
-              <div class="celda-cantidad">
-                <span>1</span>
-                <div class="flechitas">
-                  <i class="fi fi-rr-angle-small-up"></i>
-                  <i class="fi fi-rr-angle-small-down"></i>
-                </div>
-              </div>
-            </div>
-            <div class="celda-subtotal">$13,047.00</div>
-            <div class="celda-acciones">
-              <i class="fi fi-rr-cross-circle icono-accion eliminar"></i>
-              <i class="fi fi-rr-pencil icono-accion editar"></i>
-            </div>
+          <div class="lista-productos-carrito" id="lista-productos">
+            <!-- El carrito se muestra vacío por defecto -->
           </div>
 
           <div class="botones-inferiores-izq">
-            <div>
+            <div class="grupo-btn-izq">
               <a href="Catalog.html" class="btn-linea">Seguir comprando</a>
-              <a href="Catalog.html" class="btn-negro"
-                >Limpiar carrito de compras</a
-              >
+              <button class="btn-negro-secundario" id="btn-vaciar">Limpiar carrito de compras</button>
             </div>
-            <a href="Catalog.html" class="btn-negro"
-              >Actualizar carrito de compras</a
-            >
+            <button class="btn-negro" id="btn-actualizar">Actualizar carrito de compras</button>
           </div>
         </div>
 
@@ -176,43 +121,45 @@
           <h2 class="titulo-resumen">Resumen</h2>
 
           <div class="acordeon">
-            <p>Estimado de envio e inpuesto</p>
+            <p>Estimación de envío e impuestos</p>
             <i class="fi fi-rr-angle-small-down"></i>
           </div>
           <p class="texto-gris">
-            Ingresa tu destino para obtener un estimado de envio.
+            Ingresa tu destino para obtener un estimado exacto de envío.
           </p>
 
           <div class="acordeon acordeon-linea">
-            <p>Aplicar codigo de descuento</p>
+            <p>Aplicar código de descuento</p>
             <i class="fi fi-rr-angle-small-down"></i>
           </div>
 
-          <div class="fila-total">
-            <p>Subtotal</p>
-            <b>$13,047.00</b>
-          </div>
-          <div class="fila-total">
-            <p>Shipping <br /></p>
-            <div class="texto-gris">
-              (Standard Rate - Price may vary depending on the item/destination.
-              TECS Staff will contact you.)
+          <div class="desglose-totales">
+            <div class="fila-total">
+              <span>Subtotal</span>
+              <b id="resumen-subtotal">$0 COP</b>
             </div>
-            <p></p>
-            <b>$21.00</b>
-          </div>
-          <div class="fila-total">
-            <p>Tax</p>
-            <b>$1.91</b>
-          </div>
-          <div class="fila-total">
-            <p>GST (10%)</p>
-            <b>$1.91</b>
-          </div>
+            <div class="fila-total fila-envio">
+              <div class="info-envio">
+                <span>Envío estimado</span>
+                <p class="texto-gris-envio">
+                  (Tarifa estándar: el precio final puede variar según el producto o destino. El equipo de WiiU Games te contactará para confirmar).
+                </p>
+              </div>
+              <b id="resumen-envio">$0 COP</b>
+            </div>
+            <div class="fila-total">
+              <span>Impuestos (IVA 19%)</span>
+              <b id="resumen-impuestos">$0 COP</b>
+            </div>
+            <div class="fila-total">
+              <span>Tasa de servicio (10%)</span>
+              <b id="resumen-tasa">$0 COP</b>
+            </div>
 
-          <div class="fila-total total-grande">
-            <p>Orden Total</p>
-            <b>$13,068.00</b>
+            <div class="fila-total total-grande">
+              <span>Total de la orden</span>
+              <b id="resumen-total">$0 COP</b>
+            </div>
           </div>
 
           <a href="Catalog.html" class="btn-pago-amarillo">Proceder al pago</a>
@@ -224,10 +171,10 @@
           >
 
           <div class="zip-banner">
-            <p class="zip-brand">zip</p>
+            <p class="zip-brand">ZIP</p>
             <p class="zip-text">
-              adquierelo ahora, hasta 6 meses sin intereses.
-              <a href="Catalog.html">Saber mas</a>
+              Adquiérelo ahora, hasta 6 meses sin intereses.
+              <a href="Catalog.html">Saber más</a>
             </p>
           </div>
         </div>
@@ -240,7 +187,7 @@
           <i class="fi fi-rr-headset"></i>
         </div>
         <h3>Soporte de producto</h3>
-        <p>Hasta 3 años de garantia disponible para tu tranquilidad.</p>
+        <p>Hasta 3 años de garantía disponible para tu tranquilidad.</p>
       </div>
 
       <div class="beneficio-tarjeta">
@@ -249,7 +196,7 @@
         </div>
         <h3>Cuenta Personal</h3>
         <p>
-          Con grandes descuentos, envio gratis y un especialista de soporte
+          Con grandes descuentos, envío gratis y un especialista de soporte
           dedicado.
         </p>
       </div>
@@ -258,10 +205,9 @@
         <div class="beneficio-icono amarillo">
           <i class="fi fi-rr-tags"></i>
         </div>
-        <h3>Ahorros increibles</h3>
+        <h3>Ahorros increíbles</h3>
         <p>
-          Hasta un 70% de descuento en productos nuevos. puedes estar seguro del
-          mejor precio.
+          Hasta un 70% de descuento en productos nuevos. Garantizamos el mejor precio del mercado.
         </p>
       </div>
     </section>
@@ -275,26 +221,26 @@
             <li><a href="Catalog.html">Acerca de nosotros</a></li>
             <li><a href="Catalog.html">Política de Privacidad</a></li>
             <li><a href="Catalog.html">Buscar</a></li>
-            <li><a href="Catalog.html">Terminos y Condiciones</a></li>
+            <li><a href="Catalog.html">Términos y Condiciones</a></li>
             <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
-            <li><a href="contactanos.html">Contactanos</a></li>
+            <li><a href="contactanos.html">Contáctanos</a></li>
           </ul>
         </div>
         <div class="columna-footer">
           <h3>Componentes de PC</h3>
           <ul>
-            <li><a href="Catalog.html">CPUS</a></li>
+            <li><a href="Catalog.html">CPUs</a></li>
             <li><a href="Catalog.html">Discos Duros</a></li>
-            <li><a href="Catalog.html">Tarjetas Graficas</a></li>
+            <li><a href="Catalog.html">Tarjetas Gráficas</a></li>
             <li><a href="Catalog.html">Teclados / Mouse</a></li>
             <li>
               <a href="Catalog.html"
-                >Gabinetes / Fuentes de Poder / Refrigeracion</a
+                >Gabinetes / Fuentes de Poder / Refrigeración</a
               >
             </li>
             <li><a href="Catalog.html">RAM (Memoria)</a></li>
             <li><a href="Catalog.html">Software</a></li>
-            <li><a href="Catalog.html">Altavoces / Audifonos</a></li>
+            <li><a href="Catalog.html">Altavoces / Audífonos</a></li>
             <li><a href="Catalog.html">Motherboards</a></li>
           </ul>
         </div>
@@ -326,24 +272,13 @@
             Teléfonos:
             <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
           </p>
-
-          <p>
-            Teléfonos:
-            <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
-          </p>
           <p>
             Correo electrónico:
             <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado"
               >wiiugames2026@gmail.com</a
             >
           </p>
-          <p>Lunes-Sabado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
-          <p>
-            Correo electrónico:
-            <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado"
-              >wiiugames2026@gmail.com</a
-            >
-          </p>
+          <p>Lunes - Sábado: 8:00 a.m. – 12:30 p.m. | 2:00 – 7:00 p.m.</p>
         </div>
       </div>
       <div class="barra-inferior-footer">
@@ -372,5 +307,6 @@
       </div>
     </footer>
     <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../Scripts/carrito.js" defer></script>
   </body>
 </html>
