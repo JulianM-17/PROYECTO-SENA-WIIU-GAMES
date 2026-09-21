@@ -19,9 +19,9 @@
 
     <aside class="barra-lateral" id="barra-lateral">
       <div class="encabezado-marca">
-        <div class="contenedor-logo-marca">
+        <a href="../../Index.html" class="contenedor-logo-marca" title="Ir al Inicio de la tienda">
           <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="imagen-logo-marca">
-        </div>
+        </a>
       </div>
 
       <nav class="nav-barra-lateral">
@@ -72,16 +72,37 @@
       </nav>
 
       <div class="pie-barra-lateral">
-        <div class="perfil-usuario">
+        <div class="perfil-usuario" id="perfilUsuario">
           <div class="avatar-usuario">
             <img src="https://ui-avatars.com/api/?name=Carlos+M&background=FFB800&color=000000&bold=true"
               alt="Carlos M.">
           </div>
           <div class="info-usuario">
-            <div class="nombre-usuario">Usuario</div>
+            <div class="nombre-usuario">Carlos M.</div>
             <div class="rol-usuario">Asesor de Ventas</div>
           </div>
-          <span class="user-status-online" title="En servicio"></span>
+          <button class="btn-accion-usuario" id="btnMenuUsuario" type="button" aria-expanded="false" aria-haspopup="true" title="Opciones de perfil">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+        </div>
+
+        <!-- MENÚ DESPLEGABLE DE PERFIL -->
+        <div class="menu-desplegable-usuario" id="menuUsuario">
+          <a href="../panel_usuario.html" class="opcion-menu-usuario">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Mi Cuenta</span>
+          </a>
+          <a href="../../Index.html" class="opcion-menu-usuario">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Ir a la Tienda</span>
+          </a>
+          <div class="separador-menu-usuario"></div>
+          <button type="button" class="opcion-menu-usuario opcion-cerrar-sesion" id="btnCerrarSesion">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Cerrar sesión</span>
+          </button>
         </div>
       </div>
     </aside>

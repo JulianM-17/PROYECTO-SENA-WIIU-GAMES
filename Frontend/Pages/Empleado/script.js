@@ -3,10 +3,64 @@ let cartItems = [];
 document.addEventListener('DOMContentLoaded', () => {
   initPresetData();
   initNavigation();
+  initUserProfileMenu();
   renderPosProductsGrid();
   renderCart();
   renderAllEmployeeTables();
 });
+
+function initUserProfileMenu() {
+  const btnMenu = document.getElementById("btnMenuUsuario");
+  const menuUsuario = document.getElementById("menuUsuario");
+  const perfilUsuario = document.getElementById("perfilUsuario");
+  const btnCerrarSesion = document.getElementById("btnCerrarSesion");
+
+  if (!btnMenu || !menuUsuario) return;
+
+  const toggleMenu = (e) => {
+    e.stopPropagation();
+    const isOpen = menuUsuario.classList.toggle("mostrar");
+    btnMenu.classList.toggle("activo", isOpen);
+    perfilUsuario?.classList.toggle("activo", isOpen);
+    btnMenu.setAttribute("aria-expanded", String(isOpen));
+  };
+
+  btnMenu.addEventListener("click", toggleMenu);
+  perfilUsuario?.addEventListener("click", (e) => {
+    if (!e.target.closest("#menuUsuario") && !e.target.closest("#btnMenuUsuario")) {
+      toggleMenu(e);
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#perfilUsuario") && !e.target.closest("#menuUsuario")) {
+      menuUsuario.classList.remove("mostrar");
+      btnMenu.classList.remove("activo");
+      perfilUsuario?.classList.remove("activo");
+      btnMenu.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      menuUsuario.classList.remove("mostrar");
+      btnMenu.classList.remove("activo");
+      perfilUsuario?.classList.remove("activo");
+      btnMenu.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  btnCerrarSesion?.addEventListener("click", (e) => {
+    e.preventDefault();
+    try {
+      localStorage.removeItem("wiiu_current_session");
+      localStorage.removeItem("wiiu_logged_user");
+      sessionStorage.clear();
+    } catch (err) {}
+    window.location.href = "../Login.html";
+  });
+}
+
 
 const DEFAULT_PRODUCTS = [];
 const DEFAULT_WARRANTIES = [];

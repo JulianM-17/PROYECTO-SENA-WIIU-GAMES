@@ -180,13 +180,22 @@ body {
   padding-top: 14px;
   border-top: 1px solid var(--border-subtle);
   margin-top: auto;
+  position: relative;
 }
 
 .perfil-usuario {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 4px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  user-select: none;
+}
+
+.perfil-usuario:hover {
+  background-color: var(--bg-panel-hover);
 }
 
 .avatar-usuario {
@@ -228,19 +237,118 @@ body {
   border: none;
   color: var(--text-secondary);
   cursor: pointer;
-  padding: 4px;
+  padding: 6px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
-  transition: color var(--transition-fast);
+  justify-content: center;
+  transition: color var(--transition-fast), transform var(--transition-fast);
 }
 
 .btn-accion-usuario svg {
   width: 16px;
   height: 16px;
+  transition: transform var(--transition-normal);
+}
+
+.btn-accion-usuario.activo svg,
+.perfil-usuario.activo .btn-accion-usuario svg {
+  transform: rotate(180deg);
 }
 
 .btn-accion-usuario:hover {
   color: var(--text-primary);
+}
+
+/* MENÚ DESPLEGABLE DE PERFIL */
+.menu-desplegable-usuario {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.04);
+  padding: 6px;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  z-index: 100;
+  animation: subirMenuPerfil 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.menu-desplegable-usuario.mostrar {
+  display: flex;
+}
+
+@keyframes subirMenuPerfil {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.opcion-menu-usuario {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.opcion-menu-usuario svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--text-secondary);
+  flex-shrink: 0;
+  transition: stroke var(--transition-fast);
+}
+
+.opcion-menu-usuario:hover {
+  background-color: var(--bg-panel-hover);
+  color: var(--accent-gold);
+}
+
+.opcion-menu-usuario:hover svg {
+  stroke: var(--accent-gold);
+}
+
+.separador-menu-usuario {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 4px 0;
+}
+
+.opcion-menu-usuario.opcion-cerrar-sesion {
+  color: var(--accent-red);
+}
+
+.opcion-menu-usuario.opcion-cerrar-sesion svg {
+  stroke: var(--accent-red);
+}
+
+.opcion-menu-usuario.opcion-cerrar-sesion:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: var(--accent-red);
+}
+
+.opcion-menu-usuario.opcion-cerrar-sesion:hover svg {
+  stroke: var(--accent-red);
 }
 
 .columna-principal-panel {
