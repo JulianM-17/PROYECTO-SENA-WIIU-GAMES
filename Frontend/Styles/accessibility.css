@@ -423,7 +423,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *),
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -497,27 +497,149 @@ body.a11y-mode-dark-mode .tarjeta-login {
   box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
 }
 
-body.a11y-mode-dark-mode .caja-input {
-  background: #070d1e !important;
-  border-color: #1a2c5b !important;
+body.a11y-mode-dark-mode .columna-formulario {
+  background-color: #0e1834 !important;
 }
 
-body.a11y-mode-dark-mode .caja-input input {
+body.a11y-mode-dark-mode .caja-input,
+body.a11y-mode-dark-mode .contenedor-input-icono {
   background: transparent !important;
-  color: #f8fafc !important;
 }
 
 body.a11y-mode-dark-mode .icono-input {
   color: #94a3b8 !important;
 }
 
-body.a11y-mode-dark-mode .tarjeta-beneficio {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+body.a11y-mode-dark-mode .contenedor-input-icono:focus-within .icono-input {
+  color: #f5c842 !important;
 }
 
-body.a11y-mode-dark-mode .tarjeta-beneficio h4 {
+/* Botón Submit Dorado y su texto interno */
+body.a11y-mode-dark-mode .boton-submit {
+  background-color: #f5c842 !important;
+  color: #080f20 !important;
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .boton-submit .texto-btn,
+body.a11y-mode-dark-mode .boton-submit .icono-btn,
+body.a11y-mode-dark-mode .boton-submit span,
+body.a11y-mode-dark-mode .boton-submit i {
+  color: #080f20 !important;
+  font-weight: 700 !important;
+}
+
+body.a11y-mode-dark-mode .boton-submit:hover {
+  background-color: #e0b435 !important;
+  box-shadow: 0 8px 24px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Divisor Social "o conéctate con" */
+body.a11y-mode-dark-mode .divisor-social::before {
+  background-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .divisor-social span {
+  background-color: #0e1834 !important;
+  color: #94a3b8 !important;
+}
+
+/* Botón Social de Google */
+body.a11y-mode-dark-mode .btn-social,
+body.a11y-mode-dark-mode .btn-google {
+  background-color: #0a1329 !important;
+  border: 1.5px solid #1a2c5b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.a11y-mode-dark-mode .btn-social:hover,
+body.a11y-mode-dark-mode .btn-google:hover {
+  background-color: #132247 !important;
+  border-color: #2b4582 !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Enlace Olvidaste tu contraseña */
+body.a11y-mode-dark-mode .enlace-olvido,
+body.a11y-mode-dark-mode a.enlace-olvido {
+  background: rgba(245, 200, 66, 0.15) !important;
+  border: 1.5px solid #f5c842 !important;
   color: #f5c842 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 10px rgba(245, 200, 66, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido i {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido:hover,
+body.a11y-mode-dark-mode a.enlace-olvido:hover {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+  border-color: #e0b435 !important;
+  box-shadow: 0 0 16px rgba(245, 200, 66, 0.5) !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido:hover i {
+  color: #080f20 !important;
+}
+
+/* Checkbox "Mantener sesión iniciada" */
+body.a11y-mode-dark-mode .marca-casilla {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .casilla-verificacion:checked ~ .marca-casilla {
+  background-color: #f5c842 !important;
+  border-color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .texto-casilla {
+  color: #cbd5e1 !important;
+}
+
+/* Enlace a Registro */
+body.a11y-mode-dark-mode .pie-registro {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-destacado {
+  color: #f5c842 !important;
+  border-bottom-color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-destacado:hover {
+  color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
+}
+
+/* Alertas de Login */
+body.a11y-mode-dark-mode .alerta-formulario.error {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #fca5a5 !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+body.a11y-mode-dark-mode .alerta-formulario.exito {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #6ee7b7 !important;
+  border-color: rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Ojito en Login y Registro */
+body.a11y-mode-dark-mode .boton-ojito,
+body.a11y-mode-dark-mode .btn-toggle-pass {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .boton-ojito:hover,
+body.a11y-mode-dark-mode .btn-toggle-pass:hover {
+  color: #f5c842 !important;
+  background-color: rgba(245, 200, 66, 0.1) !important;
 }
 
 /* Registro */
@@ -544,6 +666,153 @@ body.a11y-mode-dark-mode .columna-derecha {
 
 body.a11y-mode-dark-mode .titulo-seccion::after {
   background: #1a2c5b !important;
+}
+
+/* Mensajes de Error y Obligatorios en Rojo Luminoso (Registro y Login) */
+body.a11y-mode-dark-mode .obligatorio,
+body.a11y-mode-dark-mode span.obligatorio {
+  color: #ff5c5c !important;
+  font-weight: 700 !important;
+}
+
+body.a11y-mode-dark-mode .mensaje-error,
+body.a11y-mode-dark-mode span.mensaje-error,
+body.a11y-mode-dark-mode .columna-derecha .mensaje-error {
+  color: #ff6b6b !important;
+  font-weight: 600 !important;
+}
+
+body.a11y-mode-dark-mode .mensaje-error.visible {
+  display: block !important;
+  color: #ff6b6b !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .input-error,
+body.a11y-mode-dark-mode .columna-derecha .input-error,
+body.a11y-mode-dark-mode .entrada-texto.input-error {
+  border-color: #ff5c5c !important;
+  background-color: rgba(255, 92, 92, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .input-valido,
+body.a11y-mode-dark-mode .columna-derecha .input-valido {
+  border-color: #10b981 !important;
+}
+
+/* Indicador de Seguridad de Contraseña en Registro */
+body.a11y-mode-dark-mode .barra-seguridad-wrap {
+  background-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-debil {
+  color: #ff6b6b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-medio {
+  color: #f59e0b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-fuerte {
+  color: #10b981 !important;
+}
+
+/* Botón Enviar en Registro */
+body.a11y-mode-dark-mode .boton-enviar {
+  background: linear-gradient(135deg, #f5c842 0%, #e0b435 100%) !important;
+  color: #080f20 !important;
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .boton-enviar:hover {
+  filter: brightness(1.08) !important;
+  box-shadow: 0 8px 25px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Modal de Términos y Condiciones (Registro) */
+body.a11y-mode-dark-mode .fondo-modal-terminos {
+  background: rgba(4, 8, 18, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.a11y-mode-dark-mode .caja-modal-terminos {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7) !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos {
+  background: #0a1329 !important;
+  border-bottom: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos h3 {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos h3 i {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .btn-cerrar-terminos {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .btn-cerrar-terminos:hover {
+  color: #ff5c5c !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos {
+  background: #0e1834 !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos h4 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos p {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .pie-modal-terminos {
+  background: #0a1329 !important;
+  border-top: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-cancelar {
+  background: #0e1834 !important;
+  border: 1.5px solid #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-cancelar:hover {
+  background: #14234b !important;
+  border-color: #2b4582 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-aceptar {
+  background: linear-gradient(135deg, #f5c842 0%, #e0b435 100%) !important;
+  color: #080f20 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.35) !important;
+}
+
+/* Beneficios inferiores en Registro */
+body.a11y-mode-dark-mode .beneficios-registro {
+  border-top-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .texto-beneficio {
+  color: #f8fafc !important;
 }
 
 /* Panel de Usuario */

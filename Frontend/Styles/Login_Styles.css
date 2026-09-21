@@ -782,3 +782,186 @@
     font-size: 26px;
   }
 }
+
+/* =====================================================
+   INICIO DE SESIÓN — MODO OSCURO (a11y-mode-dark-mode)
+   ===================================================== */
+body.a11y-mode-dark-mode .principal-login {
+  background: #070d1e !important;
+  background-image: 
+    radial-gradient(circle at 12% 18%, rgba(245, 200, 66, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 88% 82%, rgba(0, 119, 255, 0.08) 0%, transparent 45%),
+    linear-gradient(165deg, #070d1e 0%, #0b152d 50%, #080f22 100%) !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-login {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .columna-formulario {
+  background-color: #0e1834 !important;
+}
+
+body.a11y-mode-dark-mode .titulo-login {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .subtitulo-login {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .etiqueta {
+  color: #f8fafc !important;
+}
+
+/* Inputs en modo oscuro */
+body.a11y-mode-dark-mode .entrada-texto {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto:focus {
+  border-color: #f5c842 !important;
+  box-shadow: 0 0 0 4px rgba(245, 200, 66, 0.2) !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto::placeholder {
+  color: #64748b !important;
+}
+
+body.a11y-mode-dark-mode .icono-input {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-input-icono:focus-within .icono-input {
+  color: #f5c842 !important;
+}
+
+/* Botón "¿Olvidaste tu contraseña?" */
+body.a11y-mode-dark-mode .enlace-olvido,
+body.a11y-mode-dark-mode a.enlace-olvido {
+  background: rgba(245, 200, 66, 0.15) !important;
+  border: 1.5px solid #f5c842 !important;
+  color: #f5c842 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 10px rgba(245, 200, 66, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido i {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido:hover,
+body.a11y-mode-dark-mode a.enlace-olvido:hover {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+  border-color: #e0b435 !important;
+  box-shadow: 0 0 16px rgba(245, 200, 66, 0.5) !important;
+}
+
+body.a11y-mode-dark-mode .enlace-olvido:hover i {
+  color: #080f20 !important;
+}
+
+/* Botón Submit "Acceder a mi Cuenta" */
+body.a11y-mode-dark-mode .boton-submit {
+  background-color: #f5c842 !important;
+  color: #080f20 !important;
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .boton-submit .texto-btn,
+body.a11y-mode-dark-mode .boton-submit .icono-btn,
+body.a11y-mode-dark-mode .boton-submit span,
+body.a11y-mode-dark-mode .boton-submit i {
+  color: #080f20 !important;
+  font-weight: 700 !important;
+}
+
+body.a11y-mode-dark-mode .boton-submit:hover {
+  background-color: #e0b435 !important;
+  box-shadow: 0 8px 24px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Divisor Social "o conéctate con" */
+body.a11y-mode-dark-mode .divisor-social::before {
+  background-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .divisor-social span {
+  background-color: #0e1834 !important;
+  color: #94a3b8 !important;
+}
+
+/* Botón Google */
+body.a11y-mode-dark-mode .btn-social,
+body.a11y-mode-dark-mode .btn-google {
+  background-color: #0a1329 !important;
+  border: 1.5px solid #1a2c5b !important;
+  color: #f8fafc !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.a11y-mode-dark-mode .btn-social:hover,
+body.a11y-mode-dark-mode .btn-google:hover {
+  background-color: #132247 !important;
+  border-color: #2b4582 !important;
+  color: #ffffff !important;
+}
+
+/* Enlace a Registro */
+body.a11y-mode-dark-mode .pie-registro {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-destacado {
+  color: #f5c842 !important;
+  border-bottom-color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .enlace-destacado:hover {
+  color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
+}
+
+/* Mensajes de error en Login */
+body.a11y-mode-dark-mode .mensaje-error {
+  color: #ff6b6b !important;
+  font-weight: 500 !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto.input-error {
+  border-color: #ff5c5c !important;
+  background-color: rgba(255, 92, 92, 0.12) !important;
+}
+
+/* Modal Recuperar Contraseña en Login */
+body.a11y-mode-dark-mode .modal-contenido {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .titulo-modal {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .subtitulo-modal {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .icono-modal {
+  background: rgba(245, 200, 66, 0.12) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .cerrar-modal {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .cerrar-modal:hover {
+  color: #ff5c5c !important;
+}
