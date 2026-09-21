@@ -317,21 +317,22 @@
       <form onsubmit="window.saveWarranty(event)">
         <div class="individual-cuerpo-modal">
           <div class="grupo-formulario">
-            <label>Nombre del Cliente <span class="required">*</span></label>
-            <input type="text" id="warClient" required placeholder="Ej. Juan Camilo R.">
+            <label for="warClient">Nombre del Cliente <span class="required">*</span></label>
+            <input type="text" id="warClient" required minlength="3" placeholder="Ej. Juan Camilo R.">
           </div>
           <div class="grupo-formulario">
-            <label>Producto y Serial <span class="required">*</span></label>
-            <input type="text" id="warProduct" required placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
+            <label for="warProduct">Producto y Serial <span class="required">*</span></label>
+            <input type="text" id="warProduct" required minlength="3" placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
           </div>
           <div class="fila-formulario-2">
             <div class="grupo-formulario">
-              <label>Fecha de Compra</label>
-              <input type="text" id="warBuyDate" value="Hoy" required>
+              <label for="warBuyDate">Fecha de Compra <span class="required">*</span></label>
+              <input type="date" id="warBuyDate" required>
             </div>
             <div class="grupo-formulario">
-              <label>Periodo de Cobertura</label>
-              <select id="warDuration">
+              <label for="warDuration">Periodo de Cobertura <span class="required">*</span></label>
+              <select id="warDuration" required>
+                <option value="1 Mes">1 Mes</option>
                 <option value="3 Meses">3 Meses</option>
                 <option value="6 Meses" selected>6 Meses</option>
                 <option value="1 Año">1 Año Completo</option>
@@ -350,33 +351,35 @@
   <div class="fondo-modal" id="modalAddRepair">
     <div class="ventana-modal">
       <div class="encabezado-modal">
-        <h3 class="titulo-modal">Ingresar Orden de Reparación / Taller</h3>
+        <h3 class="titulo-modal">Ingresar Orden de Reparación / Recepción Taller</h3>
         <button class="btn-cerrar-modal" onclick="window.closeAddRepairModal()">&times;</button>
       </div>
       <form onsubmit="window.saveRepairOrder(event)">
         <div class="individual-cuerpo-modal">
           <div class="grupo-formulario">
-            <label>Dispositivo / Consola <span class="required">*</span></label>
-            <input type="text" id="repDevice" required placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
+            <label for="repDevice">Dispositivo / Consola <span class="required">*</span></label>
+            <input type="text" id="repDevice" required minlength="3" placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
           </div>
           <div class="grupo-formulario">
-            <label>Falla Reportada por el Cliente <span class="required">*</span></label>
-            <input type="text" id="repDefect" required placeholder="Ej. Pantalla táctil no responde / No enciende">
+            <label for="repDefect">Falla Reportada por el Cliente <span class="required">*</span></label>
+            <input type="text" id="repDefect" required minlength="3" placeholder="Ej. Pantalla táctil no responde / No enciende">
           </div>
           <div class="fila-formulario-2">
             <div class="grupo-formulario">
-              <label>Cliente Contacto</label>
-              <input type="text" id="repClient" required placeholder="Nombre de cliente">
+              <label for="repClient">Cliente Contacto</label>
+              <select id="repClient" class="custom-select">
+                <option value="">-- Seleccionar cliente contacto --</option>
+              </select>
             </div>
             <div class="grupo-formulario">
-              <label>Presupuesto Estimado ($ COP)</label>
-              <input type="text" id="repPrice" placeholder="$ 85.000">
+              <label for="repPrice">Presupuesto Estimado ($ COP)</label>
+              <input type="number" id="repPrice" min="0" step="1000" placeholder="85000">
             </div>
           </div>
         </div>
         <div class="pie-modal">
           <button type="button" class="btn-secundario" onclick="window.closeAddRepairModal()">Cancelar</button>
-          <button type="submit" class="btn-primario-brillo">Generar Orden</button>
+          <button type="submit" class="btn-primario-brillo">Generar Orden Taller</button>
         </div>
       </form>
     </div>
@@ -391,17 +394,17 @@
       <form onsubmit="window.saveClient(event)">
         <div class="individual-cuerpo-modal">
           <div class="grupo-formulario">
-            <label>Nombre Completo <span class="required">*</span></label>
-            <input type="text" id="cliName" required placeholder="Ej. Mario Alejandro Pérez">
+            <label for="cliName">Nombre Completo <span class="required">*</span></label>
+            <input type="text" id="cliName" required minlength="3" placeholder="Ej. Mario Alejandro Pérez">
           </div>
           <div class="fila-formulario-2">
             <div class="grupo-formulario">
-              <label>Teléfono Contacto</label>
-              <input type="text" id="cliPhone" placeholder="+57 300 123 4567">
+              <label for="cliPhone">Teléfono Contacto <span class="required">*</span></label>
+              <input type="tel" id="cliPhone" required pattern="[0-9\+\-\s\(\)]{7,15}" placeholder="+57 300 123 4567">
             </div>
             <div class="grupo-formulario">
-              <label>Correo Electrónico</label>
-              <input type="email" id="cliEmail" placeholder="cliente@gmail.com">
+              <label for="cliEmail">Correo Electrónico <span class="required">*</span></label>
+              <input type="email" id="cliEmail" required placeholder="cliente@gmail.com">
             </div>
           </div>
         </div>

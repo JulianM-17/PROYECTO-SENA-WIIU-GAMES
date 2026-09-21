@@ -928,6 +928,12 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 184, 0, 0.2);
 }
 
+.grupo-formulario input:invalid:focus,
+.grupo-formulario select:invalid:focus {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
 .fila-formulario-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -967,6 +973,11 @@ body {
   gap: 10px;
   pointer-events: auto;
   animation: slideInToast 0.3s ease, fadeOutToast 0.3s ease 3.7s forwards;
+}
+
+.toast.toast-error {
+  border-color: #EF4444;
+  background-color: #2D0F16;
 }
 
 .icono-notificacion {

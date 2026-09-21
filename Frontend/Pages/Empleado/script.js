@@ -321,10 +321,33 @@ function renderEmpClientsTable() {
   `).join('');
 }
 
+window.populateClientDropdown = function (selectId = "repClient") {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  let html = '<option value="">-- Seleccionar cliente contacto --</option>';
+
+  if (clients.length > 0) {
+    clients.forEach((c) => {
+      html += `<option value="${c.name}">${c.name} (${c.phone || "Sin tel"})</option>`;
+    });
+  }
+  select.innerHTML = html;
+};
+
 window.openAddWarrantyModal = function() {
   const modal = document.getElementById('modalAddWarranty');
-  if (modal) modal.classList.add('activo');
+  if (!modal) return;
+  const form = modal.querySelector('form');
+  if (form) form.reset();
+  const dateInput = document.getElementById('warBuyDate');
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split('T')[0];
+  }
+  modal.classList.add('activo');
 };
+
 window.closeAddWarrantyModal = function() {
   const modal = document.getElementById('modalAddWarranty');
   if (modal) modal.classList.remove('activo');
@@ -332,14 +355,31 @@ window.closeAddWarrantyModal = function() {
 
 window.saveWarranty = function(e) {
   e.preventDefault();
-  const client = document.getElementById('warClient').value.trim();
-  const product = document.getElementById('warProduct').value.trim();
-  const duration = document.getElementById('warDuration').value;
+  const clientInput = document.getElementById('warClient');
+  const productInput = document.getElementById('warProduct');
+  const buyDateInput = document.getElementById('warBuyDate');
+  const durationInput = document.getElementById('warDuration');
+
+  const client = clientInput ? clientInput.value.trim() : '';
+  const product = productInput ? productInput.value.trim() : '';
+  const buyDate = buyDateInput && buyDateInput.value ? buyDateInput.value : new Date().toLocaleDateString('es-CO');
+  const duration = durationInput ? durationInput.value : '3 Meses';
+
+  if (!client || client.length < 3) {
+    showToast('Por favor ingresa un nombre de cliente válido (mínimo 3 caracteres).', 'error');
+    if (clientInput) clientInput.focus();
+    return;
+  }
+  if (!product || product.length < 3) {
+    showToast('Por favor ingresa el producto y serial correspondiente.', 'error');
+    if (productInput) productInput.focus();
+    return;
+  }
 
   const warranties = JSON.parse(localStorage.getItem('wiiu_warranties')) || [];
   const newWar = {
     id: `GAR-${Math.floor(850 + Math.random() * 100)}`,
-    client, product, buyDate: new Date().toLocaleDateString('es-CO'), expDate: duration, status: 'Activa'
+    client, product, buyDate, expDate: duration, status: 'Activa'
   };
 
   warranties.unshift(newWar);
@@ -351,8 +391,13 @@ window.saveWarranty = function(e) {
 
 window.openAddRepairModal = function() {
   const modal = document.getElementById('modalAddRepair');
-  if (modal) modal.classList.add('activo');
+  if (!modal) return;
+  const form = modal.querySelector('form');
+  if (form) form.reset();
+  populateClientDropdown('repClient');
+  modal.classList.add('activo');
 };
+
 window.closeAddRepairModal = function() {
   const modal = document.getElementById('modalAddRepair');
   if (modal) modal.classList.remove('activo');
@@ -360,15 +405,36 @@ window.closeAddRepairModal = function() {
 
 window.saveRepairOrder = function(e) {
   e.preventDefault();
-  const device = document.getElementById('repDevice').value.trim();
-  const defect = document.getElementById('repDefect').value.trim();
-  const client = document.getElementById('repClient').value.trim();
-  const price = document.getElementById('repPrice').value.trim() || '$ 60.000';
+  const devInput = document.getElementById('repDevice');
+  const defInput = document.getElementById('repDefect');
+  const cliSelect = document.getElementById('repClient');
+  const priceInput = document.getElementById('repPrice');
+
+  const device = devInput ? devInput.value.trim() : '';
+  const defect = defInput ? defInput.value.trim() : '';
+  const client = (cliSelect && cliSelect.value) ? cliSelect.value : 'Cliente Mostrador';
+  const priceVal = priceInput && priceInput.value !== '' ? parseFloat(priceInput.value) : 60000;
+
+  if (!device || device.length < 3) {
+    showToast('Por favor ingresa el dispositivo o consola defectuosa.', 'error');
+    if (devInput) devInput.focus();
+    return;
+  }
+  if (!defect || defect.length < 3) {
+    showToast('Por favor detalla la falla reportada por el cliente.', 'error');
+    if (defInput) defInput.focus();
+    return;
+  }
+  if (isNaN(priceVal) || priceVal < 0) {
+    showToast('El presupuesto debe ser un monto válido mayor o igual a 0.', 'error');
+    if (priceInput) priceInput.focus();
+    return;
+  }
 
   const repairs = JSON.parse(localStorage.getItem('wiiu_repairs')) || [];
   const newRepair = {
     ticket: `REP-${Math.floor(105 + Math.random() * 90)}`,
-    device, defect, client, price, status: 'Ingresado en Taller'
+    device, defect, client, price: `$ ${priceVal.toLocaleString('es-CO')}`, status: 'Ingresado en Taller'
   };
 
   repairs.unshift(newRepair);
@@ -380,8 +446,12 @@ window.saveRepairOrder = function(e) {
 
 window.openAddClientModal = function() {
   const modal = document.getElementById('modalAddClient');
-  if (modal) modal.classList.add('activo');
+  if (!modal) return;
+  const form = modal.querySelector('form');
+  if (form) form.reset();
+  modal.classList.add('activo');
 };
+
 window.closeAddClientModal = function() {
   const modal = document.getElementById('modalAddClient');
   if (modal) modal.classList.remove('activo');
@@ -389,9 +459,31 @@ window.closeAddClientModal = function() {
 
 window.saveClient = function(e) {
   e.preventDefault();
-  const name = document.getElementById('cliName').value.trim();
-  const phone = document.getElementById('cliPhone').value.trim() || 'Sin teléfono';
-  const email = document.getElementById('cliEmail').value.trim() || 'Sin correo';
+  const nameInput = document.getElementById('cliName');
+  const phoneInput = document.getElementById('cliPhone');
+  const emailInput = document.getElementById('cliEmail');
+
+  const name = nameInput ? nameInput.value.trim() : '';
+  const phone = phoneInput ? phoneInput.value.trim() : '';
+  const email = emailInput ? emailInput.value.trim() : '';
+
+  if (!name || name.length < 3) {
+    showToast('Por favor ingresa el nombre completo del cliente (mínimo 3 caracteres).', 'error');
+    if (nameInput) nameInput.focus();
+    return;
+  }
+  const phoneRegex = /^[0-9\+\-\s\(\)]{7,15}$/;
+  if (!phone || !phoneRegex.test(phone)) {
+    showToast('Ingresa un número de teléfono válido (ej: +57 300 123 4567).', 'error');
+    if (phoneInput) phoneInput.focus();
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    showToast('Ingresa un correo electrónico válido (ej: cliente@gmail.com).', 'error');
+    if (emailInput) emailInput.focus();
+    return;
+  }
 
   const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
   clients.unshift({ name, phone, email, totalSpent: '$ 0', level: 'Nuevo' });
@@ -401,13 +493,13 @@ window.saveClient = function(e) {
   showToast(`¡Cliente "${name}" registrado correctamente!`);
 };
 
-window.showToast = function(message) {
+window.showToast = function(message, type = 'info') {
   const container = document.getElementById('toastContainer');
   if (!container) return;
 
   const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icono-notificacion"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
   const toast = document.createElement('div');
-  toast.className = 'toast';
+  toast.className = `toast ${type === 'error' ? 'toast-error' : ''}`;
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;
   container.appendChild(toast);
 

@@ -1307,6 +1307,36 @@ body {
   padding: 24px;
 }
 
+.cuadricula-cuerpo-modal.modal-producto-organizado {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+}
+
+.bloque-formulario-card {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.preview-description-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .preview-description-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .individual-cuerpo-modal {
   padding: 24px;
   display: flex;
@@ -1387,6 +1417,14 @@ body {
 .grupo-formulario textarea:focus {
   border-color: var(--accent-blue);
   box-shadow: 0 0 0 3px rgba(0, 119, 255, 0.2);
+}
+
+.grupo-formulario input:invalid:focus,
+.grupo-formulario select:invalid:focus,
+.grupo-formulario input.is-invalid,
+.grupo-formulario select.is-invalid {
+  border-color: #EF4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
 }
 
 .fila-formulario-2 {

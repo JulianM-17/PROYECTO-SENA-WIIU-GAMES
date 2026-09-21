@@ -407,6 +407,21 @@ function renderClientsTable() {
     .join("");
 }
 
+window.populateClientDropdown = function (selectId = "repClient") {
+  const select = document.getElementById(selectId);
+  if (!select) return;
+
+  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  let html = '<option value="">-- Seleccionar cliente contacto --</option>';
+
+  if (clients.length > 0) {
+    clients.forEach((c) => {
+      html += `<option value="${c.name}">${c.name} (${c.phone || "Sin tel"})</option>`;
+    });
+  }
+  select.innerHTML = html;
+};
+
 window.openAddProductModal = function () {
   const modal = document.getElementById("modalAddProduct");
   if (!modal) return;
@@ -469,16 +484,20 @@ window.previewProductImage = function (url) {
 window.saveProduct = function (event) {
   event.preventDefault();
 
-  const name = document.getElementById("prodName").value.trim();
+  const nameInput = document.getElementById("prodName");
+  const skuInput = document.getElementById("prodSKU");
+  const priceInput = document.getElementById("prodPrice");
+  const stockInput = document.getElementById("prodStock");
+
+  const name = nameInput.value.trim();
   const category = document.getElementById("prodCategory").value;
-  const sku = document.getElementById("prodSKU").value.trim();
+  const sku = skuInput.value.trim();
   const publisher =
     document.getElementById("prodPublisher").value.trim() || "Nintendo";
   const platform = document.getElementById("prodPlatform").value;
-  const price = parseFloat(document.getElementById("prodPrice").value) || 0;
+  const price = parseFloat(priceInput.value) || 0;
   const costPrice =
     parseFloat(document.getElementById("prodCostPrice").value) || price * 0.6;
-  const stockInput = document.getElementById("prodStock");
   const stockValue = Number(stockInput.value);
   const stock = Number.isInteger(stockValue) ? stockValue : -1;
   const minStock = parseInt(document.getElementById("prodMinStock").value) || 2;
@@ -489,25 +508,29 @@ window.saveProduct = function (event) {
     "https://via.placeholder.com/300x300/0E214D/00D2FF?text=Producto";
   const description = document.getElementById("prodDescription").value.trim();
 
-  if (
-    !name ||
-    !sku ||
-    price <= 0 ||
-    !Number.isInteger(stockValue) ||
-    stock < 0
-  ) {
-    showToast(
-      "Por favor completa todos los campos requeridos correctamente.",
-      "error",
-    );
-    stockInput.setCustomValidity(
-      "El stock debe ser un número entero igual o mayor que 0.",
-    );
-    stockInput.reportValidity();
+  if (!name || name.length < 3) {
+    showToast("Por favor ingresa un nombre de producto válido (mínimo 3 caracteres).", "error");
+    nameInput.focus();
     return;
   }
 
-  stockInput.setCustomValidity("");
+  if (!sku || sku.length < 3) {
+    showToast("Por favor ingresa un código SKU válido.", "error");
+    skuInput.focus();
+    return;
+  }
+
+  if (isNaN(price) || price <= 0) {
+    showToast("El precio de venta debe ser un número mayor a 0.", "error");
+    priceInput.focus();
+    return;
+  }
+
+  if (!Number.isInteger(stockValue) || stock < 0) {
+    showToast("La cantidad en stock debe ser un número entero mayor o igual a 0.", "error");
+    stockInput.focus();
+    return;
+  }
 
   const products = getProducts();
   const newProduct = {
@@ -573,6 +596,236 @@ window.editProduct = function (id) {
   saveProductsList(products.filter((p) => p.id !== id));
 };
 
+// Modal Garantías
+window.openAddWarrantyModal = function () {
+  const modal = document.getElementById("modalAddWarranty");
+  if (!modal) return;
+  const form = document.getElementById("formAddWarranty");
+  if (form) form.reset();
+  const dateInput = document.getElementById("warBuyDate");
+  if (dateInput && !dateInput.value) {
+    dateInput.value = new Date().toISOString().split("T")[0];
+  }
+  modal.classList.add("activo");
+};
+
+window.closeAddWarrantyModal = function () {
+  const modal = document.getElementById("modalAddWarranty");
+  if (modal) modal.classList.remove("activo");
+};
+
+window.saveWarranty = function (e) {
+  e.preventDefault();
+  const clientInput = document.getElementById("warClient");
+  const productInput = document.getElementById("warProduct");
+  const buyDateInput = document.getElementById("warBuyDate");
+  const durationInput = document.getElementById("warDuration");
+
+  const client = clientInput ? clientInput.value.trim() : "";
+  const product = productInput ? productInput.value.trim() : "";
+  const buyDate = buyDateInput && buyDateInput.value ? buyDateInput.value : new Date().toLocaleDateString("es-CO");
+  const duration = durationInput ? durationInput.value : "3 Meses";
+
+  if (!client || client.length < 3) {
+    showToast("Por favor ingresa un nombre de cliente válido (mínimo 3 caracteres).", "error");
+    if (clientInput) clientInput.focus();
+    return;
+  }
+  if (!product || product.length < 3) {
+    showToast("Por favor ingresa el producto y serial correspondiente.", "error");
+    if (productInput) productInput.focus();
+    return;
+  }
+
+  const warranties = JSON.parse(localStorage.getItem("wiiu_warranties")) || [];
+  const newWar = {
+    id: `GAR-${Math.floor(850 + Math.random() * 100)}`,
+    client,
+    product,
+    buyDate,
+    expDate: duration,
+    status: "Activa",
+  };
+
+  warranties.unshift(newWar);
+  localStorage.setItem("wiiu_warranties", JSON.stringify(warranties));
+  closeAddWarrantyModal();
+  renderWarrantiesTable();
+  showToast(`¡Certificado de garantía ${newWar.id} emitido para ${client}!`);
+};
+
+// Modal Mantenimientos
+window.openAddMaintenanceModal = function () {
+  const modal = document.getElementById("modalAddMaintenance");
+  if (!modal) return;
+  const form = document.getElementById("formAddMaintenance");
+  if (form) form.reset();
+  modal.classList.add("activo");
+};
+
+window.closeAddMaintenanceModal = function () {
+  const modal = document.getElementById("modalAddMaintenance");
+  if (modal) modal.classList.remove("activo");
+};
+
+window.saveMaintenance = function (e) {
+  e.preventDefault();
+  const eqInput = document.getElementById("mntEquipment");
+  const cliInput = document.getElementById("mntClient");
+  const techInput = document.getElementById("mntTech");
+  const costInput = document.getElementById("mntCost");
+  const statusInput = document.getElementById("mntStatus");
+
+  const equipment = eqInput ? eqInput.value.trim() : "";
+  const client = cliInput ? cliInput.value.trim() : "";
+  const tech = techInput ? techInput.value : "Ing. Mateo";
+  const costVal = costInput ? parseFloat(costInput.value) : 0;
+  const status = statusInput ? statusInput.value : "En Taller";
+
+  if (!equipment || equipment.length < 3) {
+    showToast("Por favor ingresa el equipo o consola a mantenimiento.", "error");
+    if (eqInput) eqInput.focus();
+    return;
+  }
+  if (!client || client.length < 3) {
+    showToast("Por favor ingresa el nombre del cliente.", "error");
+    if (cliInput) cliInput.focus();
+    return;
+  }
+  if (isNaN(costVal) || costVal < 0) {
+    showToast("El costo del mantenimiento debe ser un valor mayor o igual a 0.", "error");
+    if (costInput) costInput.focus();
+    return;
+  }
+
+  const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
+  const newMnt = {
+    order: `MNT-${Math.floor(400 + Math.random() * 100)}`,
+    equipment,
+    client,
+    tech,
+    cost: `$ ${costVal.toLocaleString("es-CO")}`,
+    status,
+  };
+
+  list.unshift(newMnt);
+  localStorage.setItem("wiiu_maintenance", JSON.stringify(list));
+  closeAddMaintenanceModal();
+  renderMaintenanceTable();
+  showToast(`¡Orden de mantenimiento ${newMnt.order} creada con éxito!`);
+};
+
+// Modal Recepción Taller / Reparaciones
+window.openAddRepairModal = function () {
+  const modal = document.getElementById("modalAddRepair");
+  if (!modal) return;
+  const form = document.getElementById("formAddRepair");
+  if (form) form.reset();
+  populateClientDropdown("repClient");
+  modal.classList.add("activo");
+};
+
+window.closeAddRepairModal = function () {
+  const modal = document.getElementById("modalAddRepair");
+  if (modal) modal.classList.remove("activo");
+};
+
+window.saveRepairOrder = function (e) {
+  e.preventDefault();
+  const devInput = document.getElementById("repDevice");
+  const defInput = document.getElementById("repDefect");
+  const cliSelect = document.getElementById("repClient");
+  const priceInput = document.getElementById("repPrice");
+
+  const device = devInput ? devInput.value.trim() : "";
+  const defect = defInput ? defInput.value.trim() : "";
+  const client = (cliSelect && cliSelect.value) ? cliSelect.value : "Cliente Mostrador";
+  const priceVal = priceInput && priceInput.value !== "" ? parseFloat(priceInput.value) : 60000;
+
+  if (!device || device.length < 3) {
+    showToast("Por favor ingresa el dispositivo o consola defectuosa.", "error");
+    if (devInput) devInput.focus();
+    return;
+  }
+  if (!defect || defect.length < 3) {
+    showToast("Por favor detalla la falla reportada por el cliente.", "error");
+    if (defInput) defInput.focus();
+    return;
+  }
+  if (isNaN(priceVal) || priceVal < 0) {
+    showToast("El presupuesto debe ser un monto válido mayor o igual a 0.", "error");
+    if (priceInput) priceInput.focus();
+    return;
+  }
+
+  const repairs = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
+  const newRepair = {
+    ticket: `REP-${Math.floor(105 + Math.random() * 90)}`,
+    device,
+    defect,
+    client,
+    price: `$ ${priceVal.toLocaleString("es-CO")}`,
+    status: "Ingresado en Taller",
+  };
+
+  repairs.unshift(newRepair);
+  localStorage.setItem("wiiu_repairs", JSON.stringify(repairs));
+  closeAddRepairModal();
+  renderRepairsTable();
+  showToast(`¡Orden de recepción taller ${newRepair.ticket} registrada!`);
+};
+
+// Modal Nuevos Clientes
+window.openAddClientModal = function () {
+  const modal = document.getElementById("modalAddClient");
+  if (!modal) return;
+  const form = document.getElementById("formAddClient");
+  if (form) form.reset();
+  modal.classList.add("activo");
+};
+
+window.closeAddClientModal = function () {
+  const modal = document.getElementById("modalAddClient");
+  if (modal) modal.classList.remove("activo");
+};
+
+window.saveClient = function (e) {
+  e.preventDefault();
+  const nameInput = document.getElementById("cliName");
+  const phoneInput = document.getElementById("cliPhone");
+  const emailInput = document.getElementById("cliEmail");
+
+  const name = nameInput ? nameInput.value.trim() : "";
+  const phone = phoneInput ? phoneInput.value.trim() : "";
+  const email = emailInput ? emailInput.value.trim() : "";
+
+  if (!name || name.length < 3) {
+    showToast("Por favor ingresa el nombre completo del cliente (mínimo 3 caracteres).", "error");
+    if (nameInput) nameInput.focus();
+    return;
+  }
+  const phoneRegex = /^[0-9\+\-\s\(\)]{7,15}$/;
+  if (!phone || !phoneRegex.test(phone)) {
+    showToast("Ingresa un número de teléfono válido (ej: +57 300 123 4567).", "error");
+    if (phoneInput) phoneInput.focus();
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    showToast("Ingresa un correo electrónico válido (ej: cliente@gmail.com).", "error");
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  clients.unshift({ name, phone, email, totalSpent: "$ 0", level: "Nuevo" });
+  localStorage.setItem("wiiu_clients", JSON.stringify(clients));
+  closeAddClientModal();
+  renderClientsTable();
+  showToast(`¡Cliente "${name}" registrado exitosamente en el directorio!`);
+};
+
+// Modal Descuentos
 window.openDiscountModal = function () {
   const modal = document.getElementById("modalDiscount");
   if (modal) {
@@ -588,18 +841,44 @@ window.closeDiscountModal = function () {
 
 window.saveDiscount = function (e) {
   e.preventDefault();
-  const code = document.getElementById("discCode").value.toUpperCase().trim();
-  const percent = document.getElementById("discPercent").value + "%";
-  const limit = document.getElementById("discLimit").value;
-  const desc = document.getElementById("discDesc").value.trim();
+  const codeInput = document.getElementById("discCode");
+  const percentInput = document.getElementById("discPercent");
+  const limitInput = document.getElementById("discLimit");
+  const descInput = document.getElementById("discDesc");
+
+  const code = codeInput ? codeInput.value.toUpperCase().trim() : "";
+  const percentVal = percentInput ? parseInt(percentInput.value) : 0;
+  const limitVal = limitInput ? parseInt(limitInput.value) : 0;
+  const desc = descInput ? descInput.value.trim() : "";
+
+  if (!code || code.length < 3) {
+    showToast("Por favor ingresa un código de cupón válido (mínimo 3 caracteres).", "error");
+    if (codeInput) codeInput.focus();
+    return;
+  }
+  if (isNaN(percentVal) || percentVal < 1 || percentVal > 100) {
+    showToast("El porcentaje de descuento debe estar entre 1% y 100%.", "error");
+    if (percentInput) percentInput.focus();
+    return;
+  }
+  if (isNaN(limitVal) || limitVal < 1) {
+    showToast("El límite de usos debe ser mayor a 0.", "error");
+    if (limitInput) limitInput.focus();
+    return;
+  }
+  if (!desc || desc.length < 3) {
+    showToast("Ingresa una breve descripción de la promoción.", "error");
+    if (descInput) descInput.focus();
+    return;
+  }
 
   const discounts = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
   discounts.unshift({
     code,
     desc,
-    percent,
+    percent: `${percentVal}%`,
     expires: "31/12/2026",
-    uses: `0 / ${limit}`,
+    uses: `0 / ${limitVal}`,
     status: "Activo",
   });
 
@@ -678,13 +957,13 @@ window.filterWarrantiesByStatus = function (status) {
   );
 };
 
-window.showToast = function (message) {
+window.showToast = function (message, type = "info") {
   const container = document.getElementById("toastContainer");
   if (!container) return;
 
   const infoIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icono-notificacion"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
   const toast = document.createElement("div");
-  toast.className = "toast";
+  toast.className = `toast ${type === "error" ? "toast-error" : ""}`;
   toast.innerHTML = `${infoIcon}<span>${message}</span>`;
   container.appendChild(toast);
 

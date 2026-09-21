@@ -705,7 +705,7 @@
             </div>
             <button
               class="btn-primario"
-              onclick="window.showToast('Formulario de nueva garantía abierto')"
+              onclick="window.openAddWarrantyModal()"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -776,11 +776,7 @@
             </div>
             <button
               class="btn-primario"
-              onclick="
-                window.showToast(
-                  'Formulario de nuevo servicio técnico iniciado',
-                )
-              "
+              onclick="window.openAddMaintenanceModal()"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -939,7 +935,7 @@
             </div>
             <button
               class="btn-primario"
-              onclick="window.showToast('Nueva orden de reparación iniciada')"
+              onclick="window.openAddRepairModal()"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -1057,7 +1053,7 @@
             </div>
             <button
               class="btn-primario"
-              onclick="window.showToast('Módulo de registro de nuevo cliente')"
+              onclick="window.openAddClientModal()"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -1115,8 +1111,7 @@
             <div>
               <h3 class="titulo-modal">Agregar Nuevo Producto</h3>
               <p class="subtitulo-modal">
-                Ingresa la información detallada para publicar el artículo en el
-                inventario.
+                Ingresa la información detallada para publicar el artículo en el inventario.
               </p>
             </div>
           </div>
@@ -1129,12 +1124,12 @@
         </div>
 
         <form id="formAddProduct" onsubmit="window.saveProduct(event)">
-          <div class="cuadricula-cuerpo-modal">
-            <div class="columna-formulario">
+          <div class="cuadricula-cuerpo-modal modal-producto-organizado">
+            <!-- Bloque 1: Datos Principales -->
+            <div class="bloque-formulario-card">
               <h4 class="titulo-seccion-formulario">
-                <span class="section-step">1</span> Información Principal
+                <span class="section-step">1</span> Datos Principales del Producto
               </h4>
-
               <div class="grupo-formulario">
                 <label for="prodName"
                   >Nombre del Producto <span class="required">*</span></label
@@ -1143,6 +1138,7 @@
                   type="text"
                   id="prodName"
                   required
+                  minlength="3"
                   placeholder="Ej. The Legend of Zelda: Breath of the Wild (Wii U)"
                 />
               </div>
@@ -1180,6 +1176,7 @@
                       type="text"
                       id="prodSKU"
                       required
+                      pattern="[A-Za-z0-9\-]+"
                       placeholder="WIIU-GME-001"
                     />
                     <button
@@ -1234,11 +1231,13 @@
                   </select>
                 </div>
               </div>
+            </div>
 
-              <h4 class="titulo-seccion-formulario mt-4">
+            <!-- Bloque 2: Precios e Inventario -->
+            <div class="bloque-formulario-card">
+              <h4 class="titulo-seccion-formulario">
                 <span class="section-step">2</span> Precios e Inventario
               </h4>
-
               <div class="fila-formulario-2">
                 <div class="grupo-formulario">
                   <label for="prodPrice"
@@ -1251,6 +1250,7 @@
                     required
                     placeholder="189900"
                     min="0"
+                    step="100"
                   />
                 </div>
 
@@ -1261,6 +1261,7 @@
                     id="prodCostPrice"
                     placeholder="110000"
                     min="0"
+                    step="100"
                   />
                 </div>
               </div>
@@ -1285,15 +1286,17 @@
                   <input
                     type="number"
                     id="prodMinStock"
-                    placeholder="3"
-                    min="1"
+                    placeholder="2"
+                    min="0"
+                    step="1"
                     value="2"
                   />
                 </div>
               </div>
             </div>
 
-            <div class="columna-formulario">
+            <!-- Bloque 3: Estado y Garantía -->
+            <div class="bloque-formulario-card">
               <h4 class="titulo-seccion-formulario">
                 <span class="section-step">3</span> Estado y Garantía
               </h4>
@@ -1303,7 +1306,7 @@
                   <label for="prodCondition"
                     >Estado Físico <span class="required">*</span></label
                   >
-                  <select id="prodCondition">
+                  <select id="prodCondition" required>
                     <option value="Nuevo Sellado">Nuevo / Sellado</option>
                     <option value="Usado - Excelente">
                       Usado - Como Nuevo (10/10)
@@ -1321,7 +1324,7 @@
                   <label for="prodWarranty"
                     >Garantía <span class="required">*</span></label
                   >
-                  <select id="prodWarranty">
+                  <select id="prodWarranty" required>
                     <option value="1 Mes">1 Mes</option>
                     <option value="3 Meses" selected>3 Meses</option>
                     <option value="6 Meses">6 Meses</option>
@@ -1330,8 +1333,11 @@
                   </select>
                 </div>
               </div>
+            </div>
 
-              <h4 class="titulo-seccion-formulario mt-4">
+            <!-- Bloque 4: Portada y Presentación -->
+            <div class="bloque-formulario-card">
+              <h4 class="titulo-seccion-formulario">
                 <span class="section-step">4</span> Portada y Presentación
               </h4>
 
@@ -1388,26 +1394,28 @@
                 </div>
               </div>
 
-              <div class="contenedor-vista-previa">
-                <div class="caja-vista-previa" id="imagePreviewBox">
-                  <img
-                    id="imagePreview"
-                    src="https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa"
-                    alt="Vista previa de portada"
-                  />
-                  <span class="insignia-vista-previa" id="previewCategoryBadge"
-                    >Juegos Wii U</span
-                  >
+              <div class="preview-description-grid">
+                <div class="contenedor-vista-previa">
+                  <div class="caja-vista-previa" id="imagePreviewBox">
+                    <img
+                      id="imagePreview"
+                      src="https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa"
+                      alt="Vista previa de portada"
+                    />
+                    <span class="insignia-vista-previa" id="previewCategoryBadge"
+                      >Juegos Wii U</span
+                    >
+                  </div>
                 </div>
-              </div>
 
-              <div class="grupo-formulario mt-3">
-                <label for="prodDescription">Descripción del Producto</label>
-                <textarea
-                  id="prodDescription"
-                  rows="3"
-                  placeholder="Detalles de contenido, idioma, estado de la caja o especificaciones..."
-                ></textarea>
+                <div class="grupo-formulario">
+                  <label for="prodDescription">Descripción del Producto</label>
+                  <textarea
+                    id="prodDescription"
+                    rows="4"
+                    placeholder="Detalles de contenido, idioma, estado de la caja o especificaciones..."
+                  ></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -1441,6 +1449,212 @@
       </div>
     </div>
 
+    <!-- Modal Garantías -->
+    <div class="fondo-modal" id="modalAddWarranty">
+      <div class="ventana-modal">
+        <div class="encabezado-modal">
+          <div class="caja-titulo-modal">
+            <div class="icono-insignia-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#00D2FF" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </div>
+            <div>
+              <h3 class="titulo-modal">Registrar Nueva Garantía</h3>
+              <p class="subtitulo-modal">Emisión de certificado de garantía para productos y reparaciones.</p>
+            </div>
+          </div>
+          <button class="btn-cerrar-modal" onclick="window.closeAddWarrantyModal()">&times;</button>
+        </div>
+        <form id="formAddWarranty" onsubmit="window.saveWarranty(event)">
+          <div class="individual-cuerpo-modal">
+            <div class="grupo-formulario">
+              <label for="warClient">Nombre del Cliente <span class="required">*</span></label>
+              <input type="text" id="warClient" required minlength="3" placeholder="Ej. Juan Camilo Rodríguez">
+            </div>
+            <div class="grupo-formulario">
+              <label for="warProduct">Producto / Consola y Serial <span class="required">*</span></label>
+              <input type="text" id="warProduct" required minlength="3" placeholder="Ej. Consola Wii U Deluxe 32GB (SN: FW709182)">
+            </div>
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
+                <label for="warBuyDate">Fecha de Compra <span class="required">*</span></label>
+                <input type="date" id="warBuyDate" required>
+              </div>
+              <div class="grupo-formulario">
+                <label for="warDuration">Periodo Cobertura <span class="required">*</span></label>
+                <select id="warDuration" required>
+                  <option value="1 Mes">1 Mes</option>
+                  <option value="3 Meses" selected>3 Meses</option>
+                  <option value="6 Meses">6 Meses</option>
+                  <option value="1 Año">1 Año Completo</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="pie-modal">
+            <button type="button" class="btn-secundario" onclick="window.closeAddWarrantyModal()">Cancelar</button>
+            <button type="submit" class="btn-primario-brillo">Guardar Certificado</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Mantenimientos -->
+    <div class="fondo-modal" id="modalAddMaintenance">
+      <div class="ventana-modal">
+        <div class="encabezado-modal">
+          <div class="caja-titulo-modal">
+            <div class="icono-insignia-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="titulo-modal">Registrar Mantenimiento Técnico</h3>
+              <p class="subtitulo-modal">Orden de servicio preventivo y limpieza de hardware.</p>
+            </div>
+          </div>
+          <button class="btn-cerrar-modal" onclick="window.closeAddMaintenanceModal()">&times;</button>
+        </div>
+        <form id="formAddMaintenance" onsubmit="window.saveMaintenance(event)">
+          <div class="individual-cuerpo-modal">
+            <div class="grupo-formulario">
+              <label for="mntEquipment">Equipo / Consola <span class="required">*</span></label>
+              <input type="text" id="mntEquipment" required minlength="3" placeholder="Ej. Wii U GamePad Black / Consola Basic 8GB">
+            </div>
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
+                <label for="mntClient">Cliente <span class="required">*</span></label>
+                <input type="text" id="mntClient" required minlength="3" placeholder="Ej. Andrés Felipe Ruiz">
+              </div>
+              <div class="grupo-formulario">
+                <label for="mntTech">Técnico Asignado <span class="required">*</span></label>
+                <select id="mntTech" required>
+                  <option value="Ing. Mateo">Ing. Mateo</option>
+                  <option value="Técnico Alex">Técnico Alex</option>
+                  <option value="Laboratorio WiiU">Laboratorio WiiU</option>
+                </select>
+              </div>
+            </div>
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
+                <label for="mntCost">Costo Servicio ($ COP) <span class="required">*</span></label>
+                <input type="number" id="mntCost" required min="0" step="1000" placeholder="45000">
+              </div>
+              <div class="grupo-formulario">
+                <label for="mntStatus">Estado <span class="required">*</span></label>
+                <select id="mntStatus" required>
+                  <option value="En Taller">En Taller</option>
+                  <option value="En Diagnóstico">En Diagnóstico</option>
+                  <option value="Listo para Entrega">Listo para Entrega</option>
+                  <option value="Completado">Completado</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="pie-modal">
+            <button type="button" class="btn-secundario" onclick="window.closeAddMaintenanceModal()">Cancelar</button>
+            <button type="submit" class="btn-primario-brillo">Registrar Mantenimiento</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Recepción Taller / Reparación -->
+    <div class="fondo-modal" id="modalAddRepair">
+      <div class="ventana-modal">
+        <div class="encabezado-modal">
+          <div class="caja-titulo-modal">
+            <div class="icono-insignia-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#FF5555" stroke-width="2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              </svg>
+            </div>
+            <div>
+              <h3 class="titulo-modal">Nueva Orden de Reparación (Recepción Taller)</h3>
+              <p class="subtitulo-modal">Registro de recepción de equipos con fallas en laboratorio.</p>
+            </div>
+          </div>
+          <button class="btn-cerrar-modal" onclick="window.closeAddRepairModal()">&times;</button>
+        </div>
+        <form id="formAddRepair" onsubmit="window.saveRepairOrder(event)">
+          <div class="individual-cuerpo-modal">
+            <div class="grupo-formulario">
+              <label for="repDevice">Dispositivo / Consola <span class="required">*</span></label>
+              <input type="text" id="repDevice" required minlength="3" placeholder="Ej. Wii U GamePad (Pantalla rota) / Placa Madre">
+            </div>
+            <div class="grupo-formulario">
+              <label for="repDefect">Falla Reportada <span class="required">*</span></label>
+              <input type="text" id="repDefect" required minlength="3" placeholder="Ej. Sin señal HDMI / Táctil no responde">
+            </div>
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
+                <label for="repClient">Cliente Contacto</label>
+                <select id="repClient" class="custom-select">
+                  <option value="">-- Seleccionar cliente contacto --</option>
+                </select>
+              </div>
+              <div class="grupo-formulario">
+                <label for="repPrice">Presupuesto Estimado ($ COP)</label>
+                <input type="number" id="repPrice" min="0" step="1000" placeholder="85000">
+              </div>
+            </div>
+          </div>
+          <div class="pie-modal">
+            <button type="button" class="btn-secundario" onclick="window.closeAddRepairModal()">Cancelar</button>
+            <button type="submit" class="btn-primario-brillo">Generar Orden Taller</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Nuevos Clientes -->
+    <div class="fondo-modal" id="modalAddClient">
+      <div class="ventana-modal">
+        <div class="encabezado-modal">
+          <div class="caja-titulo-modal">
+            <div class="icono-insignia-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              </svg>
+            </div>
+            <div>
+              <h3 class="titulo-modal">Registrar Nuevo Cliente</h3>
+              <p class="subtitulo-modal">Alta de cliente para directorio y programa de fidelización.</p>
+            </div>
+          </div>
+          <button class="btn-cerrar-modal" onclick="window.closeAddClientModal()">&times;</button>
+        </div>
+        <form id="formAddClient" onsubmit="window.saveClient(event)">
+          <div class="individual-cuerpo-modal">
+            <div class="grupo-formulario">
+              <label for="cliName">Nombre Completo <span class="required">*</span></label>
+              <input type="text" id="cliName" required minlength="3" placeholder="Ej. Mario Alejandro Pérez">
+            </div>
+            <div class="fila-formulario-2">
+              <div class="grupo-formulario">
+                <label for="cliPhone">Teléfono Contacto <span class="required">*</span></label>
+                <input type="tel" id="cliPhone" required pattern="[0-9\+\-\s\(\)]{7,15}" placeholder="+57 300 123 4567">
+              </div>
+              <div class="grupo-formulario">
+                <label for="cliEmail">Correo Electrónico <span class="required">*</span></label>
+                <input type="email" id="cliEmail" required placeholder="cliente@gmail.com">
+              </div>
+            </div>
+          </div>
+          <div class="pie-modal">
+            <button type="button" class="btn-secundario" onclick="window.closeAddClientModal()">Cancelar</button>
+            <button type="submit" class="btn-primario-brillo">Guardar Cliente</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Descuentos -->
     <div class="fondo-modal" id="modalDiscount">
       <div class="ventana-modal">
         <div class="encabezado-modal">
@@ -1476,45 +1690,48 @@
         <form id="formDiscount" onsubmit="window.saveDiscount(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="discCode">Código del Cupón</label>
+              <label for="discCode">Código del Cupón <span class="required">*</span></label>
               <input
                 type="text"
                 id="discCode"
                 placeholder="WIIU-PROMO15"
                 required
+                minlength="3"
                 style="text-transform: uppercase"
               />
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="discPercent">Porcentaje (%)</label>
+                <label for="discPercent">Porcentaje (%) <span class="required">*</span></label>
                 <input
                   type="number"
                   id="discPercent"
                   placeholder="15"
                   min="1"
-                  max="90"
+                  max="100"
                   required
                 />
               </div>
               <div class="grupo-formulario">
-                <label for="discLimit">Límite de Usos</label>
+                <label for="discLimit">Límite de Usos <span class="required">*</span></label>
                 <input
                   type="number"
                   id="discLimit"
                   placeholder="50"
                   min="1"
                   value="100"
+                  required
                 />
               </div>
             </div>
             <div class="grupo-formulario">
-              <label for="discDesc">Descripción</label>
+              <label for="discDesc">Descripción <span class="required">*</span></label>
               <input
                 type="text"
                 id="discDesc"
                 placeholder="Descuento especial fin de semana para juegos Wii U"
                 required
+                minlength="3"
               />
             </div>
           </div>
