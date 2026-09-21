@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const STORAGE_KEY = 'wiiu_user_panel_data';
 
   const defaultState = {
-    cartCount: 2,
+    cartCount: 0,
     profile: {
       nombre: 'Fabian',
       apellidos: 'Mora Ríos',
