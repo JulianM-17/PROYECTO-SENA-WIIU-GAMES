@@ -290,13 +290,23 @@
   color: var(--dark-blue);
 }
 
-.entrada-texto.input-error {
-  border-color: var(--danger) !important;
+.entrada-texto.input-error,
+input.input-error,
+.input-recuperar.input-error {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
   background-color: #fff8f8;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  outline: none !important;
 }
 
-.entrada-texto.input-error:focus {
-  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
+.entrada-texto.input-error:focus,
+input.input-error:focus,
+.input-recuperar.input-error:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+  outline: none !important;
 }
 
 .mensaje-error {

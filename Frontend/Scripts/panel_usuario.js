@@ -343,18 +343,63 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCancelarPerfil   = document.getElementById('btn-cancelar-perfil');
   const formPerfilSeguridad = document.getElementById('form-perfil-seguridad');
 
+  // Validación en tiempo real para todos los campos de formularios del panel
+  document.querySelectorAll('#form-perfil-datos, #form-perfil-seguridad, #form-modal-direccion, #form-modal-tarjeta').forEach(f => {
+    f.querySelectorAll('input, select, textarea').forEach(input => {
+      if (input.hasAttribute('required')) {
+        input.addEventListener('blur', () => {
+          if (!input.value.trim()) {
+            input.classList.add('input-error');
+          } else {
+            input.classList.remove('input-error');
+          }
+        });
+        input.addEventListener('input', () => {
+          if (input.value.trim()) {
+            input.classList.remove('input-error');
+          }
+        });
+        input.addEventListener('change', () => {
+          if (input.value.trim()) {
+            input.classList.remove('input-error');
+          }
+        });
+      }
+    });
+  });
+
   if (formPerfilDatos) {
     formPerfilDatos.addEventListener('submit', (e) => {
       e.preventDefault();
-      const nuevoNombre     = document.getElementById('perfil-nombres')?.value.trim();
-      const nuevosApellidos = document.getElementById('perfil-apellidos')?.value.trim() || '';
-      const nuevoEmail      = document.getElementById('perfil-email')?.value.trim() || '';
+      const inputNombre     = document.getElementById('perfil-nombres');
+      const inputApellidos  = document.getElementById('perfil-apellidos');
+      const inputEmail      = document.getElementById('perfil-email');
+      const nuevoNombre     = inputNombre?.value.trim();
+      const nuevosApellidos = inputApellidos?.value.trim() || '';
+      const nuevoEmail      = inputEmail?.value.trim() || '';
       const nuevoTel        = document.getElementById('perfil-telefono')?.value.trim() || '';
       const nuevoNac        = document.getElementById('perfil-nacimiento')?.value || '';
       const nuevoDoc        = document.getElementById('perfil-documento')?.value.trim() || '';
 
+      let valido = true;
       if (!nuevoNombre) {
-        showToast('El campo Nombres no puede estar vacío.', 'error');
+        if (inputNombre) inputNombre.classList.add('input-error');
+        valido = false;
+      } else if (inputNombre) {
+        inputNombre.classList.remove('input-error');
+      }
+
+      if (!nuevoEmail) {
+        if (inputEmail) inputEmail.classList.add('input-error');
+        valido = false;
+      } else if (inputEmail) {
+        inputEmail.classList.remove('input-error');
+      }
+
+      if (!valido) {
+        showToast('Por favor completa los campos obligatorios.', 'error');
+        const primerError = formPerfilDatos.querySelector('.input-error');
+        if (primerError) primerError.focus();
         return;
       }
 
@@ -374,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCancelarPerfil) {
     btnCancelarPerfil.addEventListener('click', (e) => {
       e.preventDefault();
+      document.querySelectorAll('#form-perfil-datos .input-error').forEach(el => el.classList.remove('input-error'));
       updateUI();
       showToast('Cambios cancelados.', 'info');
     });
@@ -382,26 +428,48 @@ document.addEventListener('DOMContentLoaded', () => {
   if (formPerfilSeguridad) {
     formPerfilSeguridad.addEventListener('submit', (e) => {
       e.preventDefault();
-      const actual  = document.getElementById('perfil-pass-actual')?.value;
-      const nueva   = document.getElementById('perfil-pass-nueva')?.value;
-      const confirm = document.getElementById('perfil-pass-confirm')?.value;
-
-      if (!actual) {
-        showToast('Ingresa tu contraseña actual.', 'error');
-        return;
-      }
-      if (!nueva || nueva.length < 6) {
-        showToast('La nueva contraseña debe tener al menos 6 caracteres.', 'error');
-        return;
-      }
-      if (nueva !== confirm) {
-        showToast('Las contraseñas no coinciden.', 'error');
-        return;
-      }
-
-      const inputActual = document.getElementById('perfil-pass-actual');
-      const inputNueva = document.getElementById('perfil-pass-nueva');
+      const inputActual  = document.getElementById('perfil-pass-actual');
+      const inputNueva   = document.getElementById('perfil-pass-nueva');
       const inputConfirm = document.getElementById('perfil-pass-confirm');
+      const actual  = inputActual?.value;
+      const nueva   = inputNueva?.value;
+      const confirm = inputConfirm?.value;
+
+      let valido = true;
+      if (!actual) {
+        if (inputActual) inputActual.classList.add('input-error');
+        valido = false;
+      } else if (inputActual) {
+        inputActual.classList.remove('input-error');
+      }
+
+      if (!nueva || nueva.length < 6) {
+        if (inputNueva) inputNueva.classList.add('input-error');
+        valido = false;
+      } else if (inputNueva) {
+        inputNueva.classList.remove('input-error');
+      }
+
+      if (!confirm || nueva !== confirm) {
+        if (inputConfirm) inputConfirm.classList.add('input-error');
+        valido = false;
+      } else if (inputConfirm) {
+        inputConfirm.classList.remove('input-error');
+      }
+
+      if (!valido) {
+        if (!actual) {
+          showToast('Ingresa tu contraseña actual.', 'error');
+        } else if (!nueva || nueva.length < 6) {
+          showToast('La nueva contraseña debe tener al menos 6 caracteres.', 'error');
+        } else {
+          showToast('Las contraseñas no coinciden.', 'error');
+        }
+        const primerError = formPerfilSeguridad.querySelector('.input-error');
+        if (primerError) primerError.focus();
+        return;
+      }
+
       if (inputActual) inputActual.value = '';
       if (inputNueva) inputNueva.value = '';
       if (inputConfirm) inputConfirm.value = '';
@@ -496,10 +564,42 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const id = document.getElementById('dir-edit-id').value;
       const tipo = document.getElementById('dir-input-tipo').value;
-      const nombre = document.getElementById('dir-input-nombre').value.trim();
-      const detalle = document.getElementById('dir-input-detalle').value.trim();
-      const telefono = document.getElementById('dir-input-telefono').value.trim();
+      const inputNombre = document.getElementById('dir-input-nombre');
+      const inputDetalle = document.getElementById('dir-input-detalle');
+      const inputTelefono = document.getElementById('dir-input-telefono');
+      const nombre = inputNombre.value.trim();
+      const detalle = inputDetalle.value.trim();
+      const telefono = inputTelefono.value.trim();
       const principal = document.getElementById('dir-input-principal').checked;
+
+      let valido = true;
+      if (!nombre) {
+        inputNombre.classList.add('input-error');
+        valido = false;
+      } else {
+        inputNombre.classList.remove('input-error');
+      }
+
+      if (!detalle) {
+        inputDetalle.classList.add('input-error');
+        valido = false;
+      } else {
+        inputDetalle.classList.remove('input-error');
+      }
+
+      if (!telefono) {
+        inputTelefono.classList.add('input-error');
+        valido = false;
+      } else {
+        inputTelefono.classList.remove('input-error');
+      }
+
+      if (!valido) {
+        showToast('Por favor completa todos los campos requeridos de la dirección.', 'error');
+        const primerError = formDir.querySelector('.input-error');
+        if (primerError) primerError.focus();
+        return;
+      }
 
       if (principal) {
         state.addresses.forEach(d => d.principal = false);
@@ -636,10 +736,51 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const id = document.getElementById('card-edit-id').value;
       const tipo = document.getElementById('card-input-tipo').value;
-      const rawNumero = document.getElementById('card-input-numero').value.trim();
-      const titular = document.getElementById('card-input-titular').value.trim().toUpperCase();
-      const vence = document.getElementById('card-input-vence').value.trim();
+      const inputNumero = document.getElementById('card-input-numero');
+      const inputTitular = document.getElementById('card-input-titular');
+      const inputVence = document.getElementById('card-input-vence');
+      const inputCvc = document.getElementById('card-input-cvc');
+      const rawNumero = inputNumero ? inputNumero.value.trim() : '';
+      const titular = inputTitular ? inputTitular.value.trim().toUpperCase() : '';
+      const vence = inputVence ? inputVence.value.trim() : '';
+      const cvc = inputCvc ? inputCvc.value.trim() : '';
       const predeterminada = document.getElementById('card-input-predeterminada').checked;
+
+      let valido = true;
+      if (!rawNumero) {
+        if (inputNumero) inputNumero.classList.add('input-error');
+        valido = false;
+      } else if (inputNumero) {
+        inputNumero.classList.remove('input-error');
+      }
+
+      if (!titular) {
+        if (inputTitular) inputTitular.classList.add('input-error');
+        valido = false;
+      } else if (inputTitular) {
+        inputTitular.classList.remove('input-error');
+      }
+
+      if (!vence) {
+        if (inputVence) inputVence.classList.add('input-error');
+        valido = false;
+      } else if (inputVence) {
+        inputVence.classList.remove('input-error');
+      }
+
+      if (!cvc) {
+        if (inputCvc) inputCvc.classList.add('input-error');
+        valido = false;
+      } else if (inputCvc) {
+        inputCvc.classList.remove('input-error');
+      }
+
+      if (!valido) {
+        showToast('Por favor completa todos los campos de la tarjeta.', 'error');
+        const primerError = formCard.querySelector('.input-error');
+        if (primerError) primerError.focus();
+        return;
+      }
 
       const maskedNumero = rawNumero.length >= 4 ? `•••• •••• •••• ${rawNumero.slice(-4)}` : rawNumero;
 

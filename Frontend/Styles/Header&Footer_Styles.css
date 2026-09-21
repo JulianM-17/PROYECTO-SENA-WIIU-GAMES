@@ -24,6 +24,14 @@
   --Footer: #080e1d;
   --White: #ffffff;
   --Whitelight: #f0f4fa;
+
+  /* Validación de Formularios Universal */
+  --error-color: #ef4444;
+  --error-border: #ef4444;
+  --error-bg-light: #fff8f8;
+  --error-bg-dark: rgba(239, 68, 68, 0.12);
+  --error-glow: rgba(239, 68, 68, 0.25);
+  --error-glow-focus: rgba(239, 68, 68, 0.35);
 }
 
 * {
@@ -511,7 +519,7 @@
 
 .breadcrumb a:hover {
   color: var(--yellow, #f5c842);
-  text-decoration: underline;
+  text-decoration: none;
   transform: translateY(-1px);
 }
 

@@ -114,7 +114,7 @@ body {
 
 .breadcrumb a:hover {
   color: var(--yellow);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .breadcrumb .activo {
@@ -322,8 +322,19 @@ body {
 .campo-invalido input,
 .campo-invalido select,
 .campo-invalido textarea {
+  border: 1.5px solid #ef4444 !important;
   border-color: #ef4444 !important;
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  outline: none !important;
+}
+
+.campo-invalido input:focus,
+.campo-invalido select:focus,
+.campo-invalido textarea:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+  outline: none !important;
 }
 
 .campo-valido input,

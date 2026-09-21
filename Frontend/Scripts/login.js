@@ -122,12 +122,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  // Escuchar inputs para limpiar errores al escribir
+  // Escuchar inputs para validar y limpiar errores
   if (inputCorreo) {
-    inputCorreo.addEventListener('input', () => limpiarErrorCampo(inputCorreo, 'error-correo'));
+    inputCorreo.addEventListener('blur', () => {
+      const val = inputCorreo.value.trim();
+      if (!val) {
+        mostrarErrorCampo(inputCorreo, 'error-correo', 'El correo electrónico es obligatorio.');
+      } else if (!validarEmailFormat(val)) {
+        mostrarErrorCampo(inputCorreo, 'error-correo', 'Por favor ingresa un correo electrónico válido.');
+      } else {
+        limpiarErrorCampo(inputCorreo, 'error-correo');
+      }
+    });
+
+    inputCorreo.addEventListener('input', () => {
+      if (inputCorreo.classList.contains('input-error')) {
+        const val = inputCorreo.value.trim();
+        if (val && validarEmailFormat(val)) {
+          limpiarErrorCampo(inputCorreo, 'error-correo');
+        }
+      }
+    });
   }
+
   if (inputContrasena) {
-    inputContrasena.addEventListener('input', () => limpiarErrorCampo(inputContrasena, 'error-contrasena'));
+    inputContrasena.addEventListener('blur', () => {
+      const val = inputContrasena.value.trim();
+      if (!val) {
+        mostrarErrorCampo(inputContrasena, 'error-contrasena', 'La contraseña es obligatoria.');
+      } else if (val.length < 5) {
+        mostrarErrorCampo(inputContrasena, 'error-contrasena', 'La contraseña debe tener al menos 5 caracteres.');
+      } else {
+        limpiarErrorCampo(inputContrasena, 'error-contrasena');
+      }
+    });
+
+    inputContrasena.addEventListener('input', () => {
+      if (inputContrasena.classList.contains('input-error')) {
+        const val = inputContrasena.value.trim();
+        if (val.length >= 5) {
+          limpiarErrorCampo(inputContrasena, 'error-contrasena');
+        }
+      }
+    });
   }
 
   // -----------------------------------------------------
@@ -297,17 +334,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const correoRecuperar = document.getElementById('correo-recuperar');
+  if (correoRecuperar) {
+    correoRecuperar.addEventListener('blur', () => {
+      const val = correoRecuperar.value.trim();
+      if (!val || !validarEmailFormat(val)) {
+        correoRecuperar.classList.add('input-error');
+      } else {
+        correoRecuperar.classList.remove('input-error');
+      }
+    });
+
+    correoRecuperar.addEventListener('input', () => {
+      if (correoRecuperar.value.trim() && validarEmailFormat(correoRecuperar.value.trim())) {
+        correoRecuperar.classList.remove('input-error');
+      }
+    });
+  }
+
   if (formRecuperar) {
     formRecuperar.addEventListener('submit', (e) => {
       e.preventDefault();
-      const correoRecuperar = document.getElementById('correo-recuperar');
       const val = correoRecuperar ? correoRecuperar.value.trim() : '';
 
       if (!val || !validarEmailFormat(val)) {
+        if (correoRecuperar) {
+          correoRecuperar.classList.add('input-error');
+          correoRecuperar.focus();
+        }
         mostrarToast('Ingresa un correo válido para recuperar tu contraseña', 'error');
         return;
       }
 
+      if (correoRecuperar) correoRecuperar.classList.remove('input-error');
       modalRecuperar.classList.add('oculta');
       if (correoRecuperar) correoRecuperar.value = '';
       mostrarToast(`Instrucciones enviadas a ${val}`, 'exito');

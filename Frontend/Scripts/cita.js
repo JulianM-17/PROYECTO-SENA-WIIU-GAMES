@@ -222,6 +222,12 @@ document.addEventListener("DOMContentLoaded", () => {
         marcarValido(fechaInput);
       }
     });
+
+    fechaInput.addEventListener("blur", () => {
+      if (!fechaInput.value) {
+        mostrarError(fechaInput, "Debes seleccionar una fecha para la cita.");
+      }
+    });
   }
 
   // ============================================================
@@ -229,6 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // ============================================================
   if (servicioInput) {
     servicioInput.addEventListener("change", () => {
+      if (!servicioInput.value || servicioInput.value === "") {
+        mostrarError(servicioInput, "Debes seleccionar un tipo de servicio.");
+      } else {
+        marcarValido(servicioInput);
+      }
+    });
+
+    servicioInput.addEventListener("blur", () => {
       if (!servicioInput.value || servicioInput.value === "") {
         mostrarError(servicioInput, "Debes seleccionar un tipo de servicio.");
       } else {

@@ -71,10 +71,42 @@ function initPresetData() {
   const keys = ['wiiu_products', 'wiiu_warranties', 'wiiu_repairs', 'wiiu_clients'];
   keys.forEach(k => {
     const val = localStorage.getItem(k);
-    if (!val || val.includes('WIIU-GME') || val.includes('GAR-801') || val.includes('REP-101')) {
+    if (
+      !val ||
+      val.includes('WIIU-GME') ||
+      val.includes('GAR-801') ||
+      val.includes('REP-101') ||
+      val.includes('Juan Camilo') ||
+      val.includes('camilo.r@gmail.com') ||
+      val.includes('VIP Gamer') ||
+      val.includes('María Fernanda') ||
+      val.includes('Andrés Felipe') ||
+      val.includes('Laura Sofía')
+    ) {
       localStorage.setItem(k, JSON.stringify([]));
     }
   });
+
+  // Limpieza directa garantizada para clientes de prueba predeterminados
+  try {
+    const clients = JSON.parse(localStorage.getItem('wiiu_clients')) || [];
+    const cleanClients = clients.filter(
+      c =>
+        c.name !== 'Juan Camilo R.' &&
+        c.name !== 'María Fernanda T.' &&
+        c.name !== 'Andrés Felipe G.' &&
+        c.name !== 'Laura Sofía M.' &&
+        !c.email?.includes('camilo.r') &&
+        !c.email?.includes('mafe.t') &&
+        !c.email?.includes('andres.fg') &&
+        !c.email?.includes('laura.m')
+    );
+    if (cleanClients.length !== clients.length) {
+      localStorage.setItem('wiiu_clients', JSON.stringify(cleanClients));
+    }
+  } catch (e) {
+    localStorage.setItem('wiiu_clients', JSON.stringify([]));
+  }
 }
 
 function getProducts() {

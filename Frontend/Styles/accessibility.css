@@ -436,7 +436,7 @@ body.a11y-mode-dark-mode .precio-anterior {
   color: #64748b !important;
 }
 
-body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos) {
+body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque) {
   color: #f5c842;
 }
 
@@ -461,10 +461,126 @@ body.a11y-mode-dark-mode .total-card {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
+/* Botones de acción en tarjetas de servicios (Solicitar Servicio) */
+body.a11y-mode-dark-mode .btn-accion,
+body.a11y-mode-dark-mode .tarjeta-clara .btn-accion,
+body.a11y-mode-dark-mode .tarjeta-oscura .btn-accion {
+  background: linear-gradient(135deg, #f5c842 0%, #e5b324 100%) !important;
+  color: #070d1e !important;
+  font-weight: 800 !important;
+  border: none !important;
+  box-shadow: 0 4px 18px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .btn-accion:hover,
+body.a11y-mode-dark-mode .tarjeta-clara .btn-accion:hover,
+body.a11y-mode-dark-mode .tarjeta-oscura .btn-accion:hover {
+  background: linear-gradient(135deg, #ffcf4d 0%, #f5c842 100%) !important;
+  color: #000000 !important;
+  box-shadow: 0 8px 26px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Sección ¿Por qué trabajar con nosotros? y Razones en Modo Oscuro */
+body.a11y-mode-dark-mode .porque {
+  background: #070d1e !important;
+  border-top-color: #172652 !important;
+  border-bottom-color: #172652 !important;
+}
+
+body.a11y-mode-dark-mode .porque-container {
+  background: transparent !important;
+}
+
+body.a11y-mode-dark-mode .porque-img img {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+body.a11y-mode-dark-mode .title-porque {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-dark-mode .subtitulo-porque {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .lista-beneficios-porque li strong {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .lista-beneficios-porque li p {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .check-porque {
+  background: #f5c842 !important;
+  color: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .btn-agendar-porque {
+  background: #f5c842 !important;
+  color: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode .btn-agendar-porque:hover {
+  background: #ffcf4d !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-dark-mode .razon1 {
+  background: linear-gradient(135deg, #070d1e 0%, #0a1733 100%) !important;
+}
+
+body.a11y-mode-dark-mode .razon2 {
+  background: linear-gradient(135deg, #091329 0%, #0d1f42 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.a11y-mode-dark-mode .razon3 {
+  background: linear-gradient(135deg, #0a1733 0%, #070d1e 100%) !important;
+}
+
+body.a11y-mode-dark-mode .razon1-container,
+body.a11y-mode-dark-mode .razon2-container,
+body.a11y-mode-dark-mode .razon3-container {
+  background: transparent !important;
+}
+
+body.a11y-mode-dark-mode .razon2 .numero-paso-razon,
+body.a11y-mode-dark-mode .razon2-container .numero-paso-razon {
+  background: rgba(245, 200, 66, 0.2) !important;
+  color: #f5c842 !important;
+  border-color: rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .title-razon2 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .description-razon2 {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .razon1-img img,
+body.a11y-mode-dark-mode .razon2-img img,
+body.a11y-mode-dark-mode .razon3-img img {
+  border: 1px solid #1a2c5b !important;
+}
+
+/* Eliminación global de subrayado en migas de pan */
+.breadcrumb a,
+.breadcrumb a:hover,
+.breadcrumb a:focus,
+.breadcrumb-armatupc a,
+.breadcrumb-armatupc a:hover,
+.breadcrumb-armatupc a:focus {
+  text-decoration: none !important;
+}
+
 /* Entradas de Formulario */
-body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
-body.a11y-mode-dark-mode select,
-body.a11y-mode-dark-mode textarea {
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not(.input-error):not(:user-invalid),
+body.a11y-mode-dark-mode select:not(.input-error):not(:user-invalid),
+body.a11y-mode-dark-mode textarea:not(.input-error):not(:user-invalid) {
   background-color: #070d1e !important;
   color: #f8fafc !important;
   border: 1.5px solid #1a2c5b !important;
@@ -475,9 +591,9 @@ body.a11y-mode-dark-mode textarea::placeholder {
   color: #64748b !important;
 }
 
-body.a11y-mode-dark-mode input:focus,
-body.a11y-mode-dark-mode select:focus,
-body.a11y-mode-dark-mode textarea:focus {
+body.a11y-mode-dark-mode input:focus:not(.input-error):not(:user-invalid),
+body.a11y-mode-dark-mode select:focus:not(.input-error):not(:user-invalid),
+body.a11y-mode-dark-mode textarea:focus:not(.input-error):not(:user-invalid) {
   border-color: #f5c842 !important;
   box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
 }
@@ -714,6 +830,376 @@ body.a11y-mode-reduced-motion *::after {
   animation-iteration-count: 1 !important;
   scroll-behavior: auto !important;
   transition-duration: 0.01ms !important;
+}
+
+/* =====================================================
+   FORMULARIOS — Campos obligatorios en rojo (Modo Oscuro)
+   ===================================================== */
+
+/* Asterisco obligatorio siempre rojo en modo oscuro */
+body.a11y-mode-dark-mode .required {
+  color: #ef4444 !important;
+}
+
+/* Campos required inválidos: borde rojo al enfocar */
+body.a11y-mode-dark-mode .grupo-formulario input[required]:invalid:focus,
+body.a11y-mode-dark-mode .grupo-formulario select[required]:invalid:focus,
+body.a11y-mode-dark-mode .grupo-formulario textarea[required]:invalid:focus {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Campos required vacíos que ya fueron tocados (user-invalid) */
+body.a11y-mode-dark-mode .grupo-formulario input[required]:user-invalid,
+body.a11y-mode-dark-mode .grupo-formulario select[required]:user-invalid,
+body.a11y-mode-dark-mode .grupo-formulario textarea[required]:user-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Clase .is-invalid aplicada por JS */
+body.a11y-mode-dark-mode .grupo-formulario input.is-invalid,
+body.a11y-mode-dark-mode .grupo-formulario select.is-invalid,
+body.a11y-mode-dark-mode .grupo-formulario textarea.is-invalid {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Labels de campos obligatorios en modo oscuro */
+body.a11y-mode-dark-mode .grupo-formulario label {
+  color: #cbd5e1 !important;
+}
+
+/* =====================================================
+   MODALES DE PANELES (Admin/Empleado) — Modo Oscuro
+   ===================================================== */
+
+/* Fondo del overlay modal */
+body.a11y-mode-dark-mode .fondo-modal {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Ventana del modal */
+body.a11y-mode-dark-mode .ventana-modal {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7) !important;
+  color: #f8fafc !important;
+}
+
+/* Encabezado del modal */
+body.a11y-mode-dark-mode .encabezado-modal {
+  border-bottom-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .titulo-modal {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .subtitulo-modal {
+  color: #94a3b8 !important;
+}
+
+/* Botón cerrar modal */
+body.a11y-mode-dark-mode .btn-cerrar-modal {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .btn-cerrar-modal:hover {
+  color: #f8fafc !important;
+}
+
+/* Cuerpo del modal */
+body.a11y-mode-dark-mode .individual-cuerpo-modal {
+  background-color: #0e1834 !important;
+}
+
+/* Inputs y selects dentro de modales */
+body.a11y-mode-dark-mode .grupo-formulario input,
+body.a11y-mode-dark-mode .grupo-formulario select,
+body.a11y-mode-dark-mode .grupo-formulario textarea {
+  background-color: #070d1e !important;
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .grupo-formulario input:focus,
+body.a11y-mode-dark-mode .grupo-formulario select:focus,
+body.a11y-mode-dark-mode .grupo-formulario textarea:focus {
+  border-color: #f5c842 !important;
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
+}
+
+body.a11y-mode-dark-mode .grupo-formulario input::placeholder {
+  color: #64748b !important;
+}
+
+/* Pie del modal */
+body.a11y-mode-dark-mode .pie-modal {
+  border-top-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .btn-secundario {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .btn-secundario:hover {
+  background-color: #0e1834 !important;
+  border-color: #f5c842 !important;
+  color: #f8fafc !important;
+}
+
+/* =====================================================
+   FORMULARIOS LOGIN/REGISTRO — Validación en rojo (Modo Oscuro)
+   ===================================================== */
+
+/* Inputs inválidos en Login y Registro */
+body.a11y-mode-dark-mode .entrada-texto[required]:invalid:focus,
+body.a11y-mode-dark-mode .entrada-seleccion[required]:invalid:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto[required]:user-invalid,
+body.a11y-mode-dark-mode .entrada-seleccion[required]:user-invalid {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+/* Validación Universal en Formularios (Modo Base) */
+.input-error,
+input.input-error,
+select.input-error,
+textarea.input-error,
+.entrada-texto.input-error,
+.entrada-seleccion.input-error,
+.campo-invalido input,
+.campo-invalido select,
+.campo-invalido textarea,
+.campo-formulario.campo-invalido .entrada-formulario,
+.entrada-formulario.input-error,
+input:user-invalid,
+select:user-invalid,
+textarea:user-invalid {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  outline: none !important;
+}
+
+.input-error:focus,
+input.input-error:focus,
+select.input-error:focus,
+textarea.input-error:focus,
+.entrada-texto.input-error:focus,
+.entrada-seleccion.input-error:focus,
+.campo-invalido input:focus,
+.campo-invalido select:focus,
+.campo-invalido textarea:focus,
+.campo-formulario.campo-invalido .entrada-formulario:focus,
+.entrada-formulario.input-error:focus,
+input:user-invalid:focus,
+select:user-invalid:focus,
+textarea:user-invalid:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+  outline: none !important;
+}
+
+/* Validación Universal en Formularios (Modo Oscuro) */
+body.a11y-mode-dark-mode .input-error,
+body.a11y-mode-dark-mode input.input-error,
+body.a11y-mode-dark-mode select.input-error,
+body.a11y-mode-dark-mode textarea.input-error,
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]).input-error,
+body.a11y-mode-dark-mode .entrada-texto.input-error,
+body.a11y-mode-dark-mode .entrada-seleccion.input-error,
+body.a11y-mode-dark-mode .caja-input.input-error,
+body.a11y-mode-dark-mode .caja-input.input-error input,
+body.a11y-mode-dark-mode .campo-invalido input,
+body.a11y-mode-dark-mode .campo-invalido select,
+body.a11y-mode-dark-mode .campo-invalido textarea,
+body.a11y-mode-dark-mode .campo-formulario.campo-invalido .entrada-formulario,
+body.a11y-mode-dark-mode .entrada-formulario.input-error,
+body.a11y-mode-dark-mode input:user-invalid,
+body.a11y-mode-dark-mode select:user-invalid,
+body.a11y-mode-dark-mode textarea:user-invalid,
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]):user-invalid {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+  outline: none !important;
+}
+
+body.a11y-mode-dark-mode .input-error:focus,
+body.a11y-mode-dark-mode input.input-error:focus,
+body.a11y-mode-dark-mode select.input-error:focus,
+body.a11y-mode-dark-mode textarea.input-error:focus,
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]).input-error:focus,
+body.a11y-mode-dark-mode .entrada-texto.input-error:focus,
+body.a11y-mode-dark-mode .entrada-seleccion.input-error:focus,
+body.a11y-mode-dark-mode .caja-input.input-error:focus,
+body.a11y-mode-dark-mode .caja-input.input-error input:focus,
+body.a11y-mode-dark-mode .campo-invalido input:focus,
+body.a11y-mode-dark-mode .campo-invalido select:focus,
+body.a11y-mode-dark-mode .campo-invalido textarea:focus,
+body.a11y-mode-dark-mode .campo-formulario.campo-invalido .entrada-formulario:focus,
+body.a11y-mode-dark-mode .entrada-formulario.input-error:focus,
+body.a11y-mode-dark-mode input:user-invalid:focus,
+body.a11y-mode-dark-mode select:user-invalid:focus,
+body.a11y-mode-dark-mode textarea:user-invalid:focus,
+body.a11y-mode-dark-mode input:not([type="submit"]):not([type="button"]):user-invalid:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.16) !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+  outline: none !important;
+}
+
+/* Texto de error en formularios — TODOS */
+body.a11y-mode-dark-mode .texto-error,
+body.a11y-mode-dark-mode .mensaje-error,
+body.a11y-mode-dark-mode .error-mensaje,
+body.a11y-mode-dark-mode .error-mensaje-campo {
+  color: #ef4444 !important;
+}
+
+/* Genérico: cualquier input required inválido en modo oscuro al enfocar */
+body.a11y-mode-dark-mode input[required]:invalid:focus,
+body.a11y-mode-dark-mode select[required]:invalid:focus,
+body.a11y-mode-dark-mode textarea[required]:invalid:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* =====================================================
+   FORMULARIOS PÚBLICOS (Garantías, Citas, Contacto) — Modo Oscuro
+   Clases: .campo, .consulta, .campo-invalido, .formulario-container
+   ===================================================== */
+
+/* Contenedor del formulario */
+body.a11y-mode-dark-mode .formulario-container {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Labels de campos */
+body.a11y-mode-dark-mode .campo label,
+body.a11y-mode-dark-mode .consulta label {
+  color: #cbd5e1 !important;
+}
+
+/* Inputs en formularios públicos */
+body.a11y-mode-dark-mode .campo input,
+body.a11y-mode-dark-mode .campo select,
+body.a11y-mode-dark-mode .consulta textarea {
+  background-color: #070d1e !important;
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .campo input::placeholder,
+body.a11y-mode-dark-mode .consulta textarea::placeholder {
+  color: #64748b !important;
+}
+
+body.a11y-mode-dark-mode .campo input:focus,
+body.a11y-mode-dark-mode .campo select:focus,
+body.a11y-mode-dark-mode .consulta textarea:focus {
+  border-color: #f5c842 !important;
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
+}
+
+/* Campo inválido — borde y glow ROJO UNIFICADO #ef4444 */
+body.a11y-mode-dark-mode .campo-invalido input,
+body.a11y-mode-dark-mode .campo-invalido select,
+body.a11y-mode-dark-mode .campo-invalido textarea {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .campo-invalido input:focus,
+body.a11y-mode-dark-mode .campo-invalido select:focus,
+body.a11y-mode-dark-mode .campo-invalido textarea:focus {
+  border: 1.5px solid #ef4444 !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
+}
+
+/* Campo válido — verde en modo oscuro */
+body.a11y-mode-dark-mode .campo-valido input,
+body.a11y-mode-dark-mode .campo-valido select,
+body.a11y-mode-dark-mode .campo-valido textarea {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Aside de información de contacto */
+body.a11y-mode-dark-mode .informacion-contacto .info-bloque {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+  border-left-color: #f5c842 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+body.a11y-mode-dark-mode .informacion-contacto .info-bloque h3 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .informacion-contacto .info-bloque p {
+  color: #94a3b8 !important;
+}
+
+/* Botón agendar en formularios públicos */
+body.a11y-mode-dark-mode .btn-agendar {
+  background: linear-gradient(135deg, #f5c842 0%, #e5b324 100%) !important;
+  color: #070d1e !important;
+  box-shadow: 0 4px 18px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .btn-agendar:hover {
+  background: linear-gradient(135deg, #ffcf4d 0%, #f5c842 100%) !important;
+  color: #000000 !important;
+  box-shadow: 0 8px 26px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Sección formulario-cita fondo oscuro */
+body.a11y-mode-dark-mode .formulario-cita {
+  background-color: #070d1e !important;
+}
+
+/* Modal de éxito/confirmación */
+body.a11y-mode-dark-mode .modal-overlay-a11y {
+  background: rgba(0, 0, 0, 0.75) !important;
+}
+
+body.a11y-mode-dark-mode .modal-tarjeta-exito {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .modal-tarjeta-exito h2 {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .modal-tarjeta-exito p {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .detalles-resumen-cita {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #cbd5e1 !important;
 }
 
 /* Responsivo para móviles */

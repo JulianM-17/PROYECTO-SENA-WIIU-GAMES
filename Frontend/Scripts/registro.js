@@ -377,10 +377,34 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validarFechaNacimiento() {
-    if (!selectDia.value || !selectMes.value || !selectAnio.value) {
-      return mostrarError(null, 'error-nacimiento', 'Selecciona tu fecha de nacimiento completa.');
+    let completo = true;
+    if (selectDia && !selectDia.value) {
+      selectDia.classList.add('input-error');
+      completo = false;
+    } else if (selectDia) {
+      selectDia.classList.remove('input-error');
     }
+    if (selectMes && !selectMes.value) {
+      selectMes.classList.add('input-error');
+      completo = false;
+    } else if (selectMes) {
+      selectMes.classList.remove('input-error');
+    }
+    if (selectAnio && !selectAnio.value) {
+      selectAnio.classList.add('input-error');
+      completo = false;
+    } else if (selectAnio) {
+      selectAnio.classList.remove('input-error');
+    }
+
     const span = document.getElementById('error-nacimiento');
+    if (!completo) {
+      if (span) {
+        span.textContent = 'Selecciona tu fecha de nacimiento completa.';
+        span.classList.add('visible');
+      }
+      return false;
+    }
     if (span) {
       span.textContent = '';
       span.classList.remove('visible');
@@ -471,13 +495,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validarTerminos() {
+    const cajaCheck = checkTerminos ? checkTerminos.closest('.control-seleccion')?.querySelector('.caja-check') : null;
     if (!checkTerminos.checked) {
+      if (cajaCheck) {
+        cajaCheck.style.borderColor = '#ef4444';
+        cajaCheck.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.25)';
+      }
       const span = document.getElementById('error-terminos');
       if (span) {
         span.textContent = 'Debes aceptar los términos y condiciones.';
         span.classList.add('visible');
       }
       return false;
+    }
+    if (cajaCheck) {
+      cajaCheck.style.borderColor = '';
+      cajaCheck.style.boxShadow = '';
     }
     const span = document.getElementById('error-terminos');
     if (span) {
@@ -498,9 +531,18 @@ document.addEventListener('DOMContentLoaded', () => {
     inputApellido.addEventListener('input', () => { if (inputApellido.classList.contains('input-error')) validarApellido(); });
   }
 
-  if (selectDia) selectDia.addEventListener('change', validarFechaNacimiento);
-  if (selectMes) selectMes.addEventListener('change', validarFechaNacimiento);
-  if (selectAnio) selectAnio.addEventListener('change', validarFechaNacimiento);
+  if (selectDia) {
+    selectDia.addEventListener('change', validarFechaNacimiento);
+    selectDia.addEventListener('blur', validarFechaNacimiento);
+  }
+  if (selectMes) {
+    selectMes.addEventListener('change', validarFechaNacimiento);
+    selectMes.addEventListener('blur', validarFechaNacimiento);
+  }
+  if (selectAnio) {
+    selectAnio.addEventListener('change', validarFechaNacimiento);
+    selectAnio.addEventListener('blur', validarFechaNacimiento);
+  }
 
   if (inputCorreo) {
     inputCorreo.addEventListener('blur', validarCorreo);
@@ -530,7 +572,15 @@ document.addEventListener('DOMContentLoaded', () => {
     inputDireccion.addEventListener('input', () => { if (inputDireccion.classList.contains('input-error')) validarDireccion(); });
   }
 
-  if (selectMunicipio) selectMunicipio.addEventListener('change', validarMunicipio);
+  if (selectDepartamento) {
+    selectDepartamento.addEventListener('blur', validarDepartamento);
+    selectDepartamento.addEventListener('change', validarDepartamento);
+  }
+
+  if (selectMunicipio) {
+    selectMunicipio.addEventListener('blur', validarMunicipio);
+    selectMunicipio.addEventListener('change', validarMunicipio);
+  }
 
   if (inputTelefonoPrincipal) {
     inputTelefonoPrincipal.addEventListener('blur', validarTelefono);
