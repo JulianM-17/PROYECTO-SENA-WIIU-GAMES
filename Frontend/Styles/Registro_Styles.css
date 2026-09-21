@@ -790,3 +790,231 @@ input.input-error:focus,
     gap: 20px;
   }
 }
+
+/* =====================================================
+   REGISTRO — MODO OSCURO (a11y-mode-dark-mode)
+   ===================================================== */
+body.a11y-mode-dark-mode .principal-registro {
+  background: #070d1e !important;
+  background-image: linear-gradient(165deg, #070d1e 0%, #0b152d 100%) !important;
+}
+
+body.a11y-mode-dark-mode .formulario-registro {
+  background-color: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .columna-izquierda {
+  background-color: #0e1834 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .columna-derecha {
+  background: #0a1329 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .titulo-registro {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .subtitulo-registro {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .titulo-seccion {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .titulo-seccion::after {
+  background: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .etiqueta {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .columna-izquierda .etiqueta {
+  color: #f8fafc !important;
+}
+
+/* Asterisco obligatorio en rojo vivo */
+body.a11y-mode-dark-mode .obligatorio,
+body.a11y-mode-dark-mode span.obligatorio {
+  color: #ff5c5c !important;
+  font-weight: 700 !important;
+}
+
+/* Mensajes de error en rojo vivo para evitar que se pierdan */
+body.a11y-mode-dark-mode .mensaje-error,
+body.a11y-mode-dark-mode span.mensaje-error,
+body.a11y-mode-dark-mode .columna-derecha .mensaje-error {
+  color: #ff6b6b !important;
+  font-weight: 600 !important;
+}
+
+body.a11y-mode-dark-mode .mensaje-error.visible {
+  display: block !important;
+  color: #ff6b6b !important;
+  font-weight: 600 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
+}
+
+body.a11y-mode-dark-mode .input-error,
+body.a11y-mode-dark-mode .columna-derecha .input-error,
+body.a11y-mode-dark-mode .entrada-texto.input-error {
+  border-color: #ff5c5c !important;
+  background-color: rgba(255, 92, 92, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .input-valido,
+body.a11y-mode-dark-mode .columna-derecha .input-valido {
+  border-color: #10b981 !important;
+}
+
+/* Inputs y Selects */
+body.a11y-mode-dark-mode .entrada-texto,
+body.a11y-mode-dark-mode .entrada-seleccion {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .entrada-seleccion option {
+  background-color: #070d1e !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto:focus,
+body.a11y-mode-dark-mode .entrada-seleccion:focus {
+  border-color: #f5c842 !important;
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
+}
+
+body.a11y-mode-dark-mode .texto-ayuda {
+  color: #94a3b8 !important;
+}
+
+/* Ojito de Contraseña en Registro */
+body.a11y-mode-dark-mode .btn-toggle-pass {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .btn-toggle-pass:hover {
+  color: #f5c842 !important;
+}
+
+/* Indicador de seguridad de contraseña */
+body.a11y-mode-dark-mode .barra-seguridad-wrap {
+  background-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-debil {
+  color: #ff6b6b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-medio {
+  color: #f59e0b !important;
+}
+
+body.a11y-mode-dark-mode .texto-seguridad.nivel-fuerte {
+  color: #10b981 !important;
+}
+
+/* Botón Crear Cuenta */
+body.a11y-mode-dark-mode .boton-enviar {
+  background: linear-gradient(135deg, #f5c842 0%, #e0b435 100%) !important;
+  color: #080f20 !important;
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .boton-enviar:hover {
+  filter: brightness(1.08) !important;
+  box-shadow: 0 8px 25px rgba(245, 200, 66, 0.5) !important;
+}
+
+/* Modal de Términos y Condiciones Completo en Modo Oscuro */
+body.a11y-mode-dark-mode .fondo-modal-terminos {
+  background: rgba(4, 8, 18, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.a11y-mode-dark-mode .caja-modal-terminos {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.7) !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos {
+  background: #0a1329 !important;
+  border-bottom: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos h3 {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .cabecera-modal-terminos h3 i {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .btn-cerrar-terminos {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .btn-cerrar-terminos:hover {
+  color: #ff5c5c !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos {
+  background: #0e1834 !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos h4 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .cuerpo-modal-terminos p {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .pie-modal-terminos {
+  background: #0a1329 !important;
+  border-top: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-cancelar {
+  background: #0e1834 !important;
+  border: 1.5px solid #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-cancelar:hover {
+  background: #14234b !important;
+  border-color: #2b4582 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-dark-mode .btn-modal-aceptar {
+  background: linear-gradient(135deg, #f5c842 0%, #e0b435 100%) !important;
+  color: #080f20 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.35) !important;
+}
+
+/* Beneficios Inferiores */
+body.a11y-mode-dark-mode .beneficios-registro {
+  border-top-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .texto-beneficio {
+  color: #f8fafc !important;
+}
