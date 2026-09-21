@@ -1,7 +1,4 @@
-/* =====================================================
-   DETALLE PRODUCTO — WiiU Games
-   Rediseño Premium
-   ===================================================== */
+
 
 :root {
   --yellow: #f5c842;
@@ -14,8 +11,6 @@
   --border: #e2e8f2;
   --text-main: #1e293b;
   --text-muted: #64748b;
-
-  /* Compatibilidad con código anterior */
   --Yelow: #f5c842;
   --DarkBlue: #080f20;
   --Black: #000000;
