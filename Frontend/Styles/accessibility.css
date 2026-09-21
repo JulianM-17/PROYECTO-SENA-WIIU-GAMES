@@ -365,10 +365,10 @@ body.a11y-mode-dark-mode {
   --text-secondary: #94a3b8 !important;
   --gray-400: #8899b5 !important;
   --gray-600: #cbd5e1 !important;
-  --dark-blue: #f8fafc !important;
+  --dark-blue: #070d1e !important;
   --dark-blue-2: #0b152d !important;
   --dark-blue-3: #0e1b38 !important;
-  --DarkBlue: #f8fafc !important;
+  --DarkBlue: #070d1e !important;
   --black: #ffffff !important;
   --Black: #ffffff !important;
   background-color: #070d1e !important;
@@ -377,7 +377,7 @@ body.a11y-mode-dark-mode {
 
 /* Contenedores Principales y Secciones */
 body.a11y-mode-dark-mode main,
-body.a11y-mode-dark-mode section,
+body.a11y-mode-dark-mode section:not(.seccion-header),
 body.a11y-mode-dark-mode .contenedor-principal,
 body.a11y-mode-dark-mode .contenedor-principal-catalogo,
 body.a11y-mode-dark-mode .seccion-categoria,
@@ -385,10 +385,18 @@ body.a11y-mode-dark-mode .seccion-productos,
 body.a11y-mode-dark-mode .seccion-carrito,
 body.a11y-mode-dark-mode .panel-layout,
 body.a11y-mode-dark-mode .diseno-app,
-body.a11y-mode-dark-mode .seccion-vista,
-body.a11y-mode-dark-mode .seccion-container {
+body.a11y-mode-dark-mode .seccion-vista {
   background-color: #070d1e !important;
   color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .seccion-header {
+  background: linear-gradient(135deg, #070d1e 0%, #0c1e40 60%, #0a1628 100%) !important;
+}
+
+body.a11y-mode-dark-mode .seccion-container {
+  background: transparent !important;
+  background-color: transparent !important;
 }
 
 /* Encabezados y Textos */
