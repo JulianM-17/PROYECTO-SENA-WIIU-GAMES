@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Arma tu PC | WiiU-Games</title>
+
+    <link rel="stylesheet" href="../Styles/armatupc.css" />
+    <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
+    <link rel="stylesheet" href="../Styles/accessibility.css" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <div class="barra-superior">
+        <div class="seccion-horario">
+          Lunes-Sabado: <b>8:00 a.m. –</b> <br />
+          <b>12:30 p.m. 2:00–7:00 p.m.</b>
+        </div>
+        <div class="seccion-direccion">
+          Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
+          Boyacá
+          <a href="contactanos.html" class="link-contacto">Contactanos</a>
+        </div>
+        <div class="seccion-contacto">
+          Llamanos: <b>(00) 1234 5678</b>
+          <a
+            href="https://facebook.com/wiiugames"
+            target="_blank"
+            class="red-social"
+            aria-label="Facebook"
+            ><i class="fi fi-brands-facebook"></i
+          ></a>
+          <a
+            href="https://instagram.com/wiiugames"
+            target="_blank"
+            class="red-social"
+            aria-label="Instagram"
+            ><i class="fi fi-brands-instagram"></i
+          ></a>
+        </div>
+      </div>
+      <div class="menu-principal">
+        <div class="seccion-logo">
+          <a href="../Index.html"
+            ><img src="../Assets/LogoSinFondo.png" alt="WiiU Games"
+          /></a>
+        </div>
+        <div class="contenido-menu">
+          <div class="enlaces-nav">
+            <a href="../Index.html">Inicio</a>
+            <a href="Catalog.html">Catalogo</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="garantias.html">Garantias</a>
+          </div>
+          <div class="botones-ingreso">
+            <a href="Login.html" class="btn-iniciar">Iniciar sesion</a>
+            <a href="Registro.html" class="btn-registrar">Registrarse</a>
+          </div>
+          <div class="iconos-usuario">
+            <a
+              href="Catalog.html"
+              style="color: inherit; text-decoration: none"
+              aria-label="Buscar"
+              ><i class="fi fi-rr-search icono-menu"></i
+            ></a>
+            <a
+              href="carrito.html"
+              class="contenedor-carrito"
+              aria-label="Carrito"
+              ><i class="fi fi-rr-shopping-cart icono-menu"></i
+              ><b class="burbuja-carrito">2</b></a
+            >
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="particles"></div>
+
+    <section class="hero">
+      <div class="hero-text">
+        <span class="tag">CONFIGURADOR PREMIUM</span>
+
+        <h1>Crea el PC de tus sueños</h1>
+
+        <p>Elige cada componente y conoce el precio al instante.</p>
+
+        <div class="hero-buttons">
+          <a href="#builder" class="btn-primary"> Comenzar </a>
+
+          <a href="../Pages/Product.html" class="btn-secondary">
+            Ver PCs armados
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <AsyncImage
+          query="RGB gaming PC case with purple blue lighting futuristic"
+          aspectRatio="1:1"
+          maxWidth="420"
+        />
+      </div>
+    </section>
+
+    <section class="builder" id="builder">
+      <div class="preview-card">
+        <h2>Vista previa</h2>
+
+        <div class="pc-preview">
+          <AsyncImage
+            query="white RGB gaming PC case side panel purple blue lighting"
+            aspectRatio="4:5"
+          />
+
+          <div class="rgb-ring"></div>
+        </div>
+
+        <div class="color-picker">
+          <button class="color active" data-color="#00d4ff"></button>
+          <button class="color" data-color="#8b5cf6"></button>
+          <button class="color" data-color="#ff0055"></button>
+          <button class="color" data-color="#22c55e"></button>
+        </div>
+      </div>
+
+      <div class="config-card">
+        <h2>Selecciona tus componentes</h2>
+
+        <div class="option">
+          <label>Procesador</label>
+
+          <select id="cpu">
+            <option value="0">Seleccionar</option>
+            <option value="1200000">Ryzen 7 7700X</option>
+            <option value="1500000">Ryzen 9 7900X</option>
+            <option value="1800000">Intel i7-14700K</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Tarjeta gráfica</label>
+
+          <select id="gpu">
+            <option value="0">Seleccionar</option>
+            <option value="2100000">RTX 4060</option>
+            <option value="3200000">RTX 4070</option>
+            <option value="4500000">RTX 4080</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Memoria RAM</label>
+
+          <select id="ram">
+            <option value="0">Seleccionar</option>
+            <option value="350000">16GB RGB</option>
+            <option value="600000">32GB RGB</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>SSD</label>
+
+          <select id="ssd">
+            <option value="0">Seleccionar</option>
+            <option value="300000">1TB NVMe</option>
+            <option value="520000">2TB NVMe</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Refrigeración</label>
+
+          <select id="cooler">
+            <option value="0">Seleccionar</option>
+            <option value="250000">Aire RGB</option>
+            <option value="700000">Líquida 360mm</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Fuente de Poder</label>
+
+          <select id="psu">
+            <option value="0">Seleccionar</option>
+            <option value="450000">750W Gold</option>
+            <option value="650000">850W Gold</option>
+          </select>
+        </div>
+
+        <div class="option">
+          <label>Gabinete</label>
+
+          <select id="case">
+            <option value="0">Seleccionar</option>
+            <option value="450000">NZXT Style</option>
+            <option value="550000">Lian Li Style</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="summary">
+      <div class="compatibility">
+        <i class="fa-solid fa-shield-halved"></i>
+
+        <div>
+          <h3>Compatibilidad</h3>
+          <p>Todos los componentes seleccionados son compatibles.</p>
+        </div>
+
+        <div class="progress">
+          <div class="progress-fill"></div>
+        </div>
+      </div>
+
+      <div class="total-card">
+        <div>
+          <h2>Total</h2>
+
+          <h1 id="total">$0</h1>
+        </div>
+
+        <div class="buttons">
+          <button class="buy">
+            <i class="fa-solid fa-cart-shopping"></i>
+            Añadir al carrito
+          </button>
+
+          <button class="save">
+            <i class="fa-solid fa-floppy-disk"></i>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="sitio-footer">
+      <div class="seccion-boletin"></div>
+      <div class="cuadricula-footer">
+        <div class="columna-footer">
+          <h3>Información</h3>
+          <ul>
+            <li><a href="Catalog.html">Acerca de nosotros</a></li>
+            <li><a href="Catalog.html">Política de Privacidad</a></li>
+            <li><a href="Catalog.html">Buscar</a></li>
+            <li><a href="Catalog.html">Términos y Condiciones</a></li>
+            <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
+            <li><a href="contactanos.html">Contáctanos</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Componentes de PC</h3>
+          <ul>
+            <li><a href="Catalog.html">CPUs</a></li>
+            <li><a href="Catalog.html">Discos Duros</a></li>
+            <li><a href="Catalog.html">Tarjetas Gráficas</a></li>
+            <li><a href="Catalog.html">Teclados / Mouse</a></li>
+            <li>
+              <a href="Catalog.html">Gabinetes / Fuentes / Refrigeración</a>
+            </li>
+            <li><a href="Catalog.html">Memoria RAM</a></li>
+            <li><a href="Catalog.html">Software</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Computadores de escritorio</h3>
+          <ul>
+            <li><a href="ArmaTuPC.html">PC personalizados</a></li>
+            <li><a href="Catalog.html">Servidores</a></li>
+            <li><a href="Catalog.html">PCs todo en uno</a></li>
+            <li><a href="Catalog.html">PCs HP/Compaq</a></li>
+            <li><a href="Catalog.html">PCs ASUS</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Portátiles</h3>
+          <ul>
+            <li><a href="Catalog.html">Portátiles para todos los días</a></li>
+            <li><a href="Catalog.html">Portátiles gaming</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer columna-contacto">
+          <h3>Dirección</h3>
+          <p>
+            Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+            Sogamoso, Boyacá
+          </p>
+          <p>
+            Teléfonos:
+            <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
+          </p>
+          <p>Lunes-Sabado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
+          <p>
+            Correo electrónico:
+            <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado"
+              >wiiugames2026@gmail.com</a
+            >
+          </p>
+        </div>
+      </div>
+      <div class="barra-inferior-footer">
+        <div class="redes-footer">
+          <a
+            href="https://facebook.com/wiiugames"
+            target="_blank"
+            aria-label="Facebook"
+            ><i class="fi fi-brands-facebook"></i
+          ></a>
+          <a
+            href="https://instagram.com/wiiugames"
+            target="_blank"
+            aria-label="Instagram"
+            ><i class="fi fi-brands-instagram"></i
+          ></a>
+        </div>
+        <div class="metodos-pago">
+          <span class="tarjeta-icono">PayPal</span>
+          <span class="tarjeta-icono">Visa</span>
+          <span class="tarjeta-icono">MasterCard</span>
+        </div>
+        <div class="copyright"><p>Copyright © 2026 WiiU-Games.</p></div>
+      </div>
+    </footer>
+    <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../JS/armatupc.js"></script>
+  </body>
+</html>

@@ -1,185 +1,156 @@
-/**
- * ACCESIBILIDAD — WiiU Games
- * Selección única: Solo una opción activa a la vez.
- * Al seleccionar una opción, se aplica inmediatamente y el menú se cierra
- * para no quedarse fijo en pantalla.
- */
-
 (function () {
-  'use strict';
+  "use strict";
 
-  const STORAGE_KEY = 'wiiu_a11y_active_mode';
-  // Modos disponibles: 'normal' | 'large-text' | 'high-contrast' | 'grayscale'
-  let activeMode = 'normal';
+  const STORAGE_KEY = "wiiu_a11y_preferences";
+  const MODES = [
+    "dark-mode",
+    "large-text",
+    "high-contrast",
+    "grayscale",
+    "underline-links",
+    "reduced-motion",
+  ];
+  let preferences = loadPreferences();
   let isMenuOpen = false;
 
-  // Cargar modo guardado
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && ['normal', 'large-text', 'high-contrast', 'grayscale'].includes(saved)) {
-      activeMode = saved;
+  function loadPreferences() {
+    const defaults = Object.fromEntries(MODES.map((mode) => [mode, false]));
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+      const legacyMode = localStorage.getItem("wiiu_a11y_active_mode");
+      if (legacyMode === "large-text") defaults["large-text"] = true;
+      if (legacyMode === "high-contrast") defaults["high-contrast"] = true;
+      if (legacyMode === "grayscale") defaults.grayscale = true;
+      return {
+        ...defaults,
+        ...Object.fromEntries(
+          MODES.map((mode) => [mode, saved[mode] === true]),
+        ),
+      };
+    } catch (error) {
+      return defaults;
     }
-  } catch (e) {}
+  }
 
-  // Aplicar modo al documento
-  function applyMode() {
-    const html = document.documentElement;
+  function savePreferences() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
+      localStorage.removeItem("wiiu_a11y_active_mode");
+    } catch (error) {}
+  }
+
+  function applyPreferences() {
+    const root = document.documentElement;
     const body = document.body;
-    const trigger = document.getElementById('a11y-trigger-btn');
-
-    // 1. Limpiar todos los modos previos
-    html.classList.remove('a11y-mode-large-text', 'a11y-mode-high-contrast', 'a11y-mode-grayscale');
-    body.classList.remove('a11y-mode-large-text', 'a11y-mode-high-contrast', 'a11y-mode-grayscale');
-
-    // 2. Aplicar el modo seleccionado si no es 'normal'
-    if (activeMode === 'large-text') {
-      body.classList.add('a11y-mode-large-text');
-      html.classList.add('a11y-mode-large-text');
-    } else if (activeMode === 'high-contrast') {
-      body.classList.add('a11y-mode-high-contrast');
-      html.classList.add('a11y-mode-high-contrast');
-    } else if (activeMode === 'grayscale') {
-      body.classList.add('a11y-mode-grayscale');
-      html.classList.add('a11y-mode-grayscale');
-    }
-
-    // 3. Actualizar elementos visuales en el menú
-    document.querySelectorAll('.a11y-option-item').forEach((item) => {
-      const mode = item.getAttribute('data-mode');
-      item.classList.toggle('selected', mode === activeMode);
+    MODES.forEach((mode) => {
+      const className = `a11y-mode-${mode}`;
+      root.classList.toggle(className, preferences[mode]);
+      body.classList.toggle(className, preferences[mode]);
     });
 
-    // 4. Indicador en el botón flotante si hay un modo activo
-    if (trigger) {
-      trigger.classList.toggle('has-active-mode', activeMode !== 'normal');
-    }
+    const hasActivePreference = MODES.some((mode) => preferences[mode]);
+    document
+      .getElementById("a11y-trigger-btn")
+      ?.classList.toggle("has-active-mode", hasActivePreference);
+    document.querySelectorAll(".a11y-option-item").forEach((item) => {
+      item.classList.toggle(
+        "selected",
+        preferences[item.dataset.mode] === true,
+      );
+      item.setAttribute(
+        "aria-pressed",
+        String(preferences[item.dataset.mode] === true),
+      );
+    });
   }
 
-  // Guardar en localStorage
-  function saveMode() {
-    try {
-      localStorage.setItem(STORAGE_KEY, activeMode);
-    } catch (e) {}
+  function resetPreferences() {
+    MODES.forEach((mode) => {
+      preferences[mode] = false;
+    });
+    savePreferences();
+    applyPreferences();
   }
 
-  // Crear la interfaz
   function createUI() {
-    if (document.getElementById('a11y-trigger-btn')) return;
+    if (document.getElementById("a11y-trigger-btn")) return;
 
-    // Botón flotante
-    const trigger = document.createElement('button');
-    trigger.id = 'a11y-trigger-btn';
-    trigger.setAttribute('aria-label', 'Accesibilidad');
-    trigger.setAttribute('title', 'Accesibilidad');
-    trigger.innerHTML = `
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
-      </svg>
-    `;
+    const trigger = document.createElement("button");
+    trigger.id = "a11y-trigger-btn";
+    trigger.type = "button";
+    trigger.setAttribute("aria-label", "Abrir opciones de accesibilidad");
+    trigger.setAttribute("title", "Opciones de accesibilidad");
+    trigger.innerHTML =
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>';
 
-    // Menú compacto de opciones exclusivas
-    const menu = document.createElement('div');
-    menu.id = 'a11y-menu';
-    menu.setAttribute('role', 'dialog');
-    menu.setAttribute('aria-label', 'Opciones de accesibilidad');
+    const menu = document.createElement("div");
+    menu.id = "a11y-menu";
+    menu.setAttribute("role", "dialog");
+    menu.setAttribute("aria-label", "Opciones de accesibilidad");
     menu.innerHTML = `
       <div class="a11y-menu-header">
-        <span>
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-            <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
-          </svg>
-          Accesibilidad
-        </span>
-        <button class="a11y-menu-close" id="a11y-close-btn" aria-label="Cerrar">&times;</button>
+        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>Accesibilidad</span>
+        <button class="a11y-menu-close" id="a11y-close-btn" type="button" aria-label="Cerrar">&times;</button>
       </div>
-
+      <p class="a11y-menu-help">Activa una o varias ayudas para adaptar la página.</p>
       <div class="a11y-options-list">
-        <div class="a11y-option-item" data-mode="normal">
-          <span>Vista Normal</span>
-          <span class="a11y-radio-circle"></span>
-        </div>
-
-        <div class="a11y-option-item" data-mode="large-text">
-          <span>Texto Grande</span>
-          <span class="a11y-radio-circle"></span>
-        </div>
-
-        <div class="a11y-option-item" data-mode="high-contrast">
-          <span>Alto Contraste</span>
-          <span class="a11y-radio-circle"></span>
-        </div>
-
-        <div class="a11y-option-item" data-mode="grayscale">
-          <span>Escala de Grises</span>
-          <span class="a11y-radio-circle"></span>
-        </div>
+        <button class="a11y-option-item" type="button" data-mode="dark-mode"><span><b aria-hidden="true">◐</b> Modo oscuro</span><span class="a11y-switch"></span></button>
+        <button class="a11y-option-item" type="button" data-mode="large-text"><span><b aria-hidden="true">A+</b> Texto grande</span><span class="a11y-switch"></span></button>
+        <button class="a11y-option-item" type="button" data-mode="high-contrast"><span><b aria-hidden="true">◑</b> Alto contraste</span><span class="a11y-switch"></span></button>
+        <button class="a11y-option-item" type="button" data-mode="grayscale"><span><b aria-hidden="true">◒</b> Escala de grises</span><span class="a11y-switch"></span></button>
+        <button class="a11y-option-item" type="button" data-mode="underline-links"><span><b aria-hidden="true">U</b> Subrayar enlaces</span><span class="a11y-switch"></span></button>
+        <button class="a11y-option-item" type="button" data-mode="reduced-motion"><span><b aria-hidden="true">||</b> Reducir movimiento</span><span class="a11y-switch"></span></button>
       </div>
+      <button class="a11y-reset-btn" id="a11y-reset-btn" type="button">Restablecer opciones</button>
     `;
 
-    document.body.appendChild(trigger);
-    document.body.appendChild(menu);
+    document.body.append(trigger, menu);
 
-    // Funciones para abrir y cerrar
-    function closeMenu() {
+    const closeMenu = () => {
       isMenuOpen = false;
-      menu.classList.remove('a11y-open');
-      trigger.blur();
-    }
+      menu.classList.remove("a11y-open");
+      trigger.setAttribute("aria-expanded", "false");
+    };
 
-    function toggleMenu() {
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.addEventListener("click", (event) => {
+      event.stopPropagation();
       isMenuOpen = !isMenuOpen;
-      menu.classList.toggle('a11y-open', isMenuOpen);
-      if (!isMenuOpen) trigger.blur();
-    }
-
-    // Eventos
-    trigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleMenu();
+      menu.classList.toggle("a11y-open", isMenuOpen);
+      trigger.setAttribute("aria-expanded", String(isMenuOpen));
     });
 
-    document.getElementById('a11y-close-btn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeMenu();
-    });
-
-    // Cerrar al hacer clic fuera
-    document.addEventListener('click', (e) => {
-      if (isMenuOpen && !menu.contains(e.target) && e.target !== trigger) {
-        closeMenu();
-      }
-    });
-
-    // Selección exclusiva de opciones (solo una activa)
-    menu.querySelectorAll('.a11y-option-item').forEach((item) => {
-      item.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const selectedMode = item.getAttribute('data-mode');
-
-        // Si hace clic en la que ya está activa y no es normal, regresa a normal
-        if (activeMode === selectedMode && selectedMode !== 'normal') {
-          activeMode = 'normal';
-        } else {
-          activeMode = selectedMode;
-        }
-
-        applyMode();
-        saveMode();
-
-        // Cierra el menú tras seleccionar para que no quede fijo en pantalla
-        setTimeout(closeMenu, 180);
+    menu.querySelector("#a11y-close-btn").addEventListener("click", closeMenu);
+    menu
+      .querySelector("#a11y-reset-btn")
+      .addEventListener("click", resetPreferences);
+    menu.querySelectorAll(".a11y-option-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const mode = item.dataset.mode;
+        preferences[mode] = !preferences[mode];
+        savePreferences();
+        applyPreferences();
       });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (
+        isMenuOpen &&
+        !menu.contains(event.target) &&
+        event.target !== trigger
+      )
+        closeMenu();
     });
   }
 
-  // Inicializar
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      createUI();
-      applyMode();
-    });
-  } else {
+  function initialize() {
     createUI();
-    applyMode();
+    applyPreferences();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initialize);
+  } else {
+    initialize();
   }
 })();

@@ -107,6 +107,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
+    animation:flotar 4s ease-in-out infinite;
 }
 
 .imagen-logo-marca {

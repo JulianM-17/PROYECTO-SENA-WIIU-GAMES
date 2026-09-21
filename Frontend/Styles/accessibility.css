@@ -25,7 +25,9 @@
   background: var(--a11y-dark) !important;
   border: 2px solid var(--a11y-gold) !important;
   color: var(--a11y-gold) !important;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(245, 200, 66, 0.25) !important;
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.5),
+    0 0 10px rgba(245, 200, 66, 0.25) !important;
   cursor: pointer !important;
   z-index: 2147483647 !important; /* Máximo z-index del navegador */
   display: flex !important;
@@ -34,7 +36,9 @@
   padding: 0 !important;
   outline: none !important;
   transform: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease !important;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -42,7 +46,9 @@
   transform: scale(1.08) !important;
   border-color: var(--a11y-gold-hover) !important;
   color: #ffffff !important;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), 0 0 16px rgba(245, 200, 66, 0.5) !important;
+  box-shadow:
+    0 6px 20px rgba(0, 0, 0, 0.6),
+    0 0 16px rgba(245, 200, 66, 0.5) !important;
 }
 
 #a11y-trigger-btn:active {
@@ -50,7 +56,9 @@
 }
 
 #a11y-trigger-btn.has-active-mode {
-  box-shadow: 0 0 18px rgba(245, 200, 66, 0.7), 0 4px 15px rgba(0, 0, 0, 0.6) !important;
+  box-shadow:
+    0 0 18px rgba(245, 200, 66, 0.7),
+    0 4px 15px rgba(0, 0, 0, 0.6) !important;
   border-color: #ffffff !important;
   background: #0d1f3c !important;
 }
@@ -75,9 +83,11 @@
   -webkit-backdrop-filter: blur(16px) !important;
   border: 1.5px solid rgba(245, 200, 66, 0.4) !important;
   border-radius: 14px !important;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.75), 0 0 20px rgba(245, 200, 66, 0.15) !important;
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.75),
+    0 0 20px rgba(245, 200, 66, 0.15) !important;
   z-index: 2147483647 !important;
-  font-family: 'Poppins', sans-serif !important;
+  font-family: "Poppins", sans-serif !important;
   color: #ffffff !important;
   padding: 14px !important;
   display: flex !important;
@@ -86,7 +96,9 @@
   opacity: 0 !important;
   transform: translateY(10px) scale(0.95) !important;
   pointer-events: none !important;
-  transition: opacity 0.2s ease, transform 0.2s ease !important;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease !important;
 }
 
 #a11y-menu.a11y-open {
@@ -110,6 +122,13 @@
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
+}
+
+.a11y-menu-help {
+  margin: 0 !important;
+  color: #94a3b8 !important;
+  font-size: 11px !important;
+  line-height: 1.45 !important;
 }
 
 .a11y-menu-close {
@@ -151,6 +170,63 @@
   user-select: none !important;
 }
 
+.a11y-option-item b {
+  display: inline-block !important;
+  width: 22px !important;
+  color: var(--a11y-gold) !important;
+  font-size: 12px !important;
+  text-align: center !important;
+}
+
+.a11y-switch {
+  width: 30px !important;
+  height: 16px !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  border-radius: 999px !important;
+  background: #475569 !important;
+  transition: background 0.18s ease !important;
+}
+
+.a11y-switch::after {
+  content: "" !important;
+  position: absolute !important;
+  top: 3px !important;
+  left: 3px !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  transition: transform 0.18s ease !important;
+}
+
+.a11y-option-item.selected .a11y-switch {
+  background: var(--a11y-gold) !important;
+}
+
+.a11y-option-item.selected .a11y-switch::after {
+  transform: translateX(14px) !important;
+  background: var(--a11y-dark) !important;
+}
+
+.a11y-reset-btn {
+  width: 100% !important;
+  padding: 9px 12px !important;
+  color: var(--a11y-gold) !important;
+  background: transparent !important;
+  border: 1px solid rgba(245, 200, 66, 0.4) !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font: inherit !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+.a11y-reset-btn:hover {
+  color: var(--a11y-dark) !important;
+  background: var(--a11y-gold) !important;
+}
+
 .a11y-option-item:hover {
   background: rgba(26, 58, 122, 0.6) !important;
   border-color: rgba(245, 200, 66, 0.5) !important;
@@ -181,7 +257,7 @@
 }
 
 .a11y-radio-circle::after {
-  content: '' !important;
+  content: "" !important;
   width: 4px !important;
   height: 4px !important;
   border-radius: 50% !important;
@@ -265,6 +341,69 @@ body.a11y-mode-high-contrast .enlace-resaltado {
 body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a) {
   color: #ffff00 !important;
   text-decoration: underline !important;
+}
+
+/* =====================================================
+   4. MODO OSCURO
+   ===================================================== */
+body.a11y-mode-dark-mode {
+  --bg: #080f20 !important;
+  --surface: #111d31 !important;
+  --white: #111d31 !important;
+  --border: #263752 !important;
+  --text-main: #f8fafc !important;
+  --text-muted: #b4c0d1 !important;
+  background: #080f20 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode main,
+body.a11y-mode-dark-mode section,
+body.a11y-mode-dark-mode .contenedor-principal,
+body.a11y-mode-dark-mode .contenedor-principal-catalogo,
+body.a11y-mode-dark-mode .seccion-categoria,
+body.a11y-mode-dark-mode .seccion-productos {
+  background-color: #080f20 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto,
+body.a11y-mode-dark-mode .barra-lateral,
+body.a11y-mode-dark-mode .formulario-contacto,
+body.a11y-mode-dark-mode input,
+body.a11y-mode-dark-mode select,
+body.a11y-mode-dark-mode textarea,
+body.a11y-mode-dark-mode .dato-producto {
+  background-color: #111d31 !important;
+  color: #f8fafc !important;
+  border-color: #263752 !important;
+}
+
+body.a11y-mode-dark-mode h1,
+body.a11y-mode-dark-mode h2,
+body.a11y-mode-dark-mode h3,
+body.a11y-mode-dark-mode h4,
+body.a11y-mode-dark-mode .titulo-producto,
+body.a11y-mode-dark-mode .precio-actual {
+  color: #f8fafc !important;
+}
+
+/* =====================================================
+   5. SUBRAYAR ENLACES Y REDUCIR MOVIMIENTO
+   ===================================================== */
+body.a11y-mode-underline-links a:not(#a11y-trigger-btn):not(#a11y-menu a) {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+}
+
+body.a11y-mode-reduced-motion *,
+body.a11y-mode-reduced-motion *::before,
+body.a11y-mode-reduced-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* Responsivo para móviles */

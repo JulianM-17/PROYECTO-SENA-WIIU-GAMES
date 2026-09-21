@@ -261,6 +261,7 @@ body {
   background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
   color: var(--dark-blue);
   box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 .tarjeta-oscura .btn-accion:hover {
