@@ -166,6 +166,14 @@ document.addEventListener("DOMContentLoaded", () => {
         marcarValido(categoriaSelect);
       }
     });
+
+    categoriaSelect.addEventListener("blur", () => {
+      if (!categoriaSelect.value || categoriaSelect.value === "") {
+        mostrarError(categoriaSelect, "Debes seleccionar una categoría válida.");
+      } else {
+        marcarValido(categoriaSelect);
+      }
+    });
   }
 
   // ============================================================

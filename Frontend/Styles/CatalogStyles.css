@@ -63,7 +63,7 @@ body {
 
 .contenedor-miga-catalogo .breadcrumb a:hover {
   color: var(--yellow);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .contenedor-miga-catalogo .breadcrumb .breadcrumb-separator {

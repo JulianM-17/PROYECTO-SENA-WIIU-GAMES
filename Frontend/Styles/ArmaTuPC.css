@@ -113,7 +113,7 @@ body {
 
 .breadcrumb-armatupc a:hover {
   color: var(--yellow);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .breadcrumb-armatupc .breadcrumb-separator {
