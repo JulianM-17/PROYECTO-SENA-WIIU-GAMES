@@ -78,13 +78,40 @@ body {
 
 .breadcrumb {
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.breadcrumb a:hover {
+  color: var(--yellow);
+  text-decoration: underline;
 }
 
 .breadcrumb-separator {
-  margin: 0 6px;
-  color: rgba(255, 255, 255, 0.25);
+  margin: 0 4px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 11px;
+  user-select: none;
 }
+
+.breadcrumb .activo {
+  color: var(--yellow);
+  font-weight: 600;
+}
+
 
 .title-seccion {
   font-size: 38px;

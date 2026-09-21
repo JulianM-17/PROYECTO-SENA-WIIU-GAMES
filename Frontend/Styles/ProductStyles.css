@@ -174,12 +174,38 @@ body {
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 500;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 14px;
-  background: rgba(0,0,0,0.03);
+  background: rgba(0, 0, 0, 0.04);
   border-radius: 9999px;
   margin-bottom: 20px;
 }
+
+.categoria-ruta a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.categoria-ruta a:hover {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+
+.categoria-ruta .miga-separador {
+  color: #94a3b8;
+  font-size: 11px;
+  user-select: none;
+}
+
+.categoria-ruta .miga-activa {
+  color: var(--dark-blue);
+  font-weight: 600;
+}
+
 
 .info-producto h1 {
   font-size: 38px;

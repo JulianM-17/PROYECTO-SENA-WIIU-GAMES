@@ -90,6 +90,37 @@ body {
   min-height: 90vh;
 }
 
+.breadcrumb-armatupc {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+}
+
+.breadcrumb-armatupc a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-armatupc a:hover {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+
+.breadcrumb-armatupc .breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 11px;
+  user-select: none;
+}
+
+.breadcrumb-armatupc .activo {
+  color: var(--yellow);
+  font-weight: 600;
+}
+
 .tag {
   display: inline-block;
 

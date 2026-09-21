@@ -40,10 +40,46 @@ body {
 /* =====================================================
    ESTRUCTURA PRINCIPAL
    ===================================================== */
+.contenedor-miga-catalogo {
+  max-width: 1400px;
+  margin: 24px auto 0;
+  padding: 0 32px;
+}
+
+.contenedor-miga-catalogo .breadcrumb {
+  font-size: 13px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.contenedor-miga-catalogo .breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.contenedor-miga-catalogo .breadcrumb a:hover {
+  color: var(--yellow);
+  text-decoration: underline;
+}
+
+.contenedor-miga-catalogo .breadcrumb .breadcrumb-separator {
+  color: #94a3b8;
+  margin: 0 4px;
+}
+
+.contenedor-miga-catalogo .breadcrumb .activo {
+  color: var(--dark-blue);
+  font-weight: 600;
+}
+
 .contenedor-principal-catalogo {
   display: flex;
   max-width: 1400px;
-  margin: 40px auto 80px;
+  margin: 24px auto 80px;
   padding: 0 32px;
   gap: 40px;
   align-items: flex-start;
