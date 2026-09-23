@@ -10,15 +10,13 @@
   --border: #e2e8f2;
   --text-main: #1e293b;
   --text-muted: #64748b;
-
-  /* Compat */
   --Yelow: #f5c842;
   --YelowHover: #e8b830;
   --DarkBlue: #080f20;
   --Black: #000000;
   --Footer: #080e1d;
   --White: #ffffff;
-  --Whitelight: #f0f4fa;
+  --Whitelight: #f0f4fa;   
 }
 
 * {
@@ -33,9 +31,6 @@ body {
   color: var(--text-main);
 }
 
-/* =====================================================
-   SECCIÓN HERO
-   ===================================================== */
 .seccion-header {
   background: linear-gradient(135deg, #080f20 0%, #0c1e40 60%, #0a1628 100%);
   padding: 52px 0;
@@ -118,9 +113,6 @@ body {
   text-shadow: 0 2px 20px rgba(0,0,0,0.4);
 }
 
-/* =====================================================
-   SECCIÓN SERVICIOS
-   ===================================================== */
 .barra-navegacion {
   background: linear-gradient(135deg, var(--dark-blue) 0%, #0c1e40 100%);
   padding: 14px 40px;
@@ -177,9 +169,6 @@ body {
   font-weight: 800;
 }
 
-/* =====================================================
-   TARJETAS DE SERVICIO
-   ===================================================== */
 .contenedor-servicios {
   display: grid;
   grid-template-columns: 1fr;
@@ -250,7 +239,6 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Tema Claro (Reparación) */
 .tarjeta-clara {
   background: var(--white);
   color: var(--text-main);
@@ -268,7 +256,6 @@ body {
   box-shadow: 0 8px 28px rgba(8, 15, 32, 0.4);
 }
 
-/* Tema Oscuro (Mantenimiento) */
 .tarjeta-oscura {
   background: linear-gradient(160deg, #0a1628 0%, #0d1f3c 100%);
   color: rgba(255, 255, 255, 0.85);
@@ -297,9 +284,6 @@ body {
   box-shadow: 0 8px 28px rgba(245, 200, 66, 0.5);
 }
 
-/* =====================================================
-   SECCIÓN ¿POR QUÉ TRABAJAR CON NOSOTROS?
-   ===================================================== */
 .porque {
   background: #f8fafc;
   border-top: 1px solid #e2e8f0;
@@ -352,7 +336,6 @@ body {
   margin: 0 0 8px 0;
 }
 
-/* Lista de beneficios — diseño limpio */
 .lista-beneficios-porque {
   list-style: none;
   padding: 0;
@@ -419,9 +402,6 @@ body {
   color: #ffffff;
 }
 
-/* =====================================================
-   SECCIÓN RAZONES DETALLADAS
-   ===================================================== */
 .razon1-container,
 .razon2-container,
 .razon3-container {
@@ -543,9 +523,6 @@ body {
   transform: translateY(-4px);
 }
 
-/* =====================================================
-   RESPONSIVE
-   ===================================================== */
 @media (max-width: 992px) {
   .porque-container {
     flex-direction: column;
@@ -607,5 +584,4 @@ body {
     flex-direction: column;
     align-items: center;
   }
-
-  .botones-ingreso {
+  
