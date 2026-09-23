@@ -2,7 +2,9 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WiiU-Games - Computadores y Videojuegos</title>
+    <meta name="description" content="Encuentra el mejor hardware, laptops gaming y componentes de alto rendimiento al mejor precio en Sogamoso. WiiU-Games, tu tienda de tecnología de confianza." />
     <link rel="stylesheet" href="Index_Styles.css" />
     <link rel="stylesheet" href="Styles/Header&Footer_Styles.css" />
     <link rel="stylesheet" href="Styles/accessibility.css" />
@@ -87,462 +89,362 @@
         </div>
       </div>
     </header>
-    <main class="contenedor-principal">
-      <!-- Banner principal o hero de la página de inicio -->
-      <section class="banner-principal">
-        <!-- Columna izquierda: Información y llamado a la acción -->
-        <div class="banner-info">
-          <span class="etiqueta-destacada">¡Novedad Exclusiva!</span>
-          <h1 class="banner-titulo">WiiU-Games Store</h1>
-          <p class="banner-descripcion">
-            Encuentra el mejor hardware, laptops gaming y componentes de alto
-            rendimiento al mejor precio en Sogamoso.
-          </p>
-          <div class="banner-acciones">
-            <a href="/Frontend/Pages/Catalog.html" class="btn-principal"
-              >Ver Catálogo</a
-            >
-            <a href="/Frontend/Pages/servicios.html" class="btn-secundario"
-              >Servicio Técnico</a
-            >
+
+    <main>
+      <!-- =====================================================
+           HERO SLIDER - Full Width tipo Corsair
+           ===================================================== -->
+      <section class="hero-slider" id="heroSlider">
+        <div class="hero-slides">
+          <!-- Slide 1 -->
+          <div class="hero-slide active" style="background-image: url('Assets/TORRECUSTOM.png');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content" data-animate="fade-up">
+              <span class="hero-badge">¡Novedad Exclusiva!</span>
+              <h1 class="hero-title">WIIU-GAMES<br/><span class="hero-title-accent">STORE</span></h1>
+              <p class="hero-subtitle">Encuentra el mejor hardware, laptops gaming y componentes de alto rendimiento al mejor precio en Sogamoso.</p>
+              <div class="hero-actions">
+                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">VER CATÁLOGO</a>
+                <a href="Pages/servicios.html" class="hero-btn hero-btn-secondary">SERVICIO TÉCNICO</a>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 2 -->
+          <div class="hero-slide" style="background-image: url('Assets/lenovolegion.webp');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content" data-animate="fade-up">
+              <span class="hero-badge">Portátiles Gaming</span>
+              <h1 class="hero-title">RENDIMIENTO<br/><span class="hero-title-accent">EXTREMO</span></h1>
+              <p class="hero-subtitle">Las mejores laptops gaming de marcas líderes. Potencia que se nota en cada partida.</p>
+              <div class="hero-actions">
+                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">EXPLORAR</a>
+              </div>
+            </div>
+          </div>
+          <!-- Slide 3 -->
+          <div class="hero-slide" style="background-image: url('Assets/MONITOR.png');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content" data-animate="fade-up">
+              <span class="hero-badge">Servicio Técnico</span>
+              <h1 class="hero-title">ARMA TU<br/><span class="hero-title-accent">PC IDEAL</span></h1>
+              <p class="hero-subtitle">Configuramos tu PC a medida con los mejores componentes. Garantía y soporte profesional.</p>
+              <div class="hero-actions">
+                <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary">ARMA TU PC</a>
+                <a href="Pages/servicios.html" class="hero-btn hero-btn-secondary">NUESTROS SERVICIOS</a>
+              </div>
+            </div>
           </div>
         </div>
+        <!-- Slider Controls -->
+        <div class="hero-dots">
+          <button class="hero-dot active" data-slide="0" aria-label="Slide 1"></button>
+          <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
+          <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
+        </div>
+        <button class="hero-arrow hero-arrow-left" aria-label="Anterior">
+          <i class="fi fi-rr-arrow-small-left"></i>
+        </button>
+        <button class="hero-arrow hero-arrow-right" aria-label="Siguiente">
+          <i class="fi fi-rr-arrow-small-right"></i>
+        </button>
+      </section>
 
-        <!-- Columna derecha: Imagen promocional / Logo / Arte -->
-        <div class="banner-imagen">
-          <img src="./Assets/lenovolegion.webp" alt="WiiU Games Banner" />
+      <!-- =====================================================
+           COMPRAR POR CATEGORÍA - Carrusel horizontal Corsair style
+           ===================================================== -->
+      <section class="seccion-categorias-corsair" data-animate="fade-up">
+        <div class="seccion-inner">
+          <h2 class="seccion-titulo-corsair">COMPRAR POR CATEGORÍA</h2>
+          <div class="categorias-carrusel" id="categoriasCarrusel">
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/TORRECUSTOM.png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// PC PERSONALIZADOS</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/lenovolegion.webp');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// PORTÁTILES</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/MONITOR.png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// MONITORES</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/ESCRITORIO.png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// ESCRITORIO</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/nvidia-geforce-rtx-logo.png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// TARJETAS GRÁFICAS</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/ddr.png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// MEMORIA RAM</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/placa.jpg');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// MOTHERBOARDS</span>
+            </a>
+            <a href="Pages/Catalog.html" class="categoria-card">
+              <div class="categoria-card-img" style="background-image: url('Assets/intel(2).png');"></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">// PROCESADORES</span>
+            </a>
+          </div>
         </div>
       </section>
 
-      <!-- Sección de productos nuevos y destacados del catálogo-->
-      <section class="seccion-productos">
-        <div class="encabezado-productos">
-          <h2>Productos Nuevos</h2>
-          <a href="/Frontend/Pages/Catalog.html" class="enlace-ver-todos"
-            >Mostrar todos los productos nuevos</a
-          >
-        </div>
-
-        <div class="carrusel-productos">
-          <button class="flecha-carrusel flecha-izq" aria-label="Anterior">
-            <i class="fi fi-rr-arrow-small-left"></i>
-          </button>
-
-          <div class="grid-productos">
-            <!-- Tarjeta Producto 1 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
-
-            <!-- Tarjeta Producto 2 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock consultar">Revisar Disponibilidad</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
-
-            <!-- Tarjeta Producto 3 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
-
-            <!-- Tarjeta Producto 4 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
-
-            <!-- Tarjeta Producto 5 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
-
-            <!-- Tarjeta Producto 6 -->
-            <a href="Pages/Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas (0)</span>
-                </div>
-                <h3 class="titulo-producto">PRODUCTO</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
+      <!-- =====================================================
+           PRODUCTOS NUEVOS - Carrusel Dark Cards
+           ===================================================== -->
+      <section class="seccion-productos-corsair" data-animate="fade-up">
+        <div class="seccion-inner">
+          <div class="seccion-header-corsair">
+            <h2 class="seccion-titulo-corsair">PRODUCTOS NUEVOS</h2>
+            <a href="Pages/Catalog.html" class="enlace-ver-todos-corsair">VER TODOS →</a>
           </div>
-
-          <button class="flecha-carrusel flecha-der" aria-label="Siguiente">
-            <i class="fi fi-rr-arrow-small-right"></i>
-          </button>
+          <div class="productos-carrusel-wrapper">
+            <button class="flecha-carrusel flecha-izq" aria-label="Anterior">
+              <i class="fi fi-rr-arrow-small-left"></i>
+            </button>
+            <div class="grid-productos" id="gridProductos">
+              <!-- Tarjeta Producto 1 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock disponible">Con Stock</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+              <!-- Tarjeta Producto 2 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock consultar">Revisar Disponibilidad</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+              <!-- Tarjeta Producto 3 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock disponible">Con Stock</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+              <!-- Tarjeta Producto 4 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock disponible">Con Stock</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+              <!-- Tarjeta Producto 5 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock disponible">Con Stock</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+              <!-- Tarjeta Producto 6 -->
+              <a href="Pages/Product.html" class="enlace-producto">
+                <article class="tarjeta-producto">
+                  <div class="estado-stock disponible">Con Stock</div>
+                  <img
+                    src="Assets/lenovolegion.webp"
+                    alt="Producto"
+                    class="imagen-producto"
+                  />
+                  <div class="calificacion">
+                    ★★★★★ <span class="resenas">Reseñas (0)</span>
+                  </div>
+                  <h3 class="titulo-producto">PRODUCTO</h3>
+                  <div class="precio-anterior">$000.000.000</div>
+                  <div class="precio-actual">$000.000.000</div>
+                </article>
+              </a>
+            </div>
+            <button class="flecha-carrusel flecha-der" aria-label="Siguiente">
+              <i class="fi fi-rr-arrow-small-right"></i>
+            </button>
+          </div>
         </div>
       </section>
-      <section class="banner-servicios">
-        <a href="Pages/servicios.html" class="tarjeta-servicios">
-          <h2>Nuestros servicios</h2>
-        </a>
 
-        <a href="Pages/ArmaTuPC.html" class="tarjeta-armatupc">
-          <h2>Arma tu PC</h2>
-        </a>
+      <!-- =====================================================
+           BANNER DESTACADO 1 - Computadores Personalizados (Imagen izq)
+           ===================================================== -->
+      <section class="banner-destacado" data-animate="fade-up">
+        <div class="banner-destacado-inner">
+          <div class="banner-destacado-imagen">
+            <img src="Assets/TORRECUSTOM.png" alt="Computadores Personalizados" />
+          </div>
+          <div class="banner-destacado-contenido">
+            <span class="banner-destacado-tag">// CUSTOM PC</span>
+            <h2 class="banner-destacado-titulo">COMPUTADORES<br/><span class="texto-acento">PERSONALIZADOS</span></h2>
+            <p class="banner-destacado-desc">Armamos tu PC ideal con los mejores componentes del mercado. Rendimiento extremo garantizado para gaming, diseño y trabajo profesional.</p>
+            <div class="banner-destacado-acciones">
+              <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary">ARMA TU PC</a>
+              <a href="Pages/Catalog.html" class="hero-btn hero-btn-secondary">VER PRODUCTOS</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           BANNER DESTACADO 2 - Portátiles Gaming (Imagen der, invertido)
+           ===================================================== -->
+      <section class="banner-destacado banner-invertido" data-animate="fade-up">
+        <div class="banner-destacado-inner">
+          <div class="banner-destacado-contenido">
+            <span class="banner-destacado-tag">// PORTÁTILES GAMING</span>
+            <h2 class="banner-destacado-titulo">RENDIMIENTO<br/><span class="texto-acento">PORTÁTIL</span></h2>
+            <p class="banner-destacado-desc">Las laptops gaming más potentes del mercado. Lleva tu experiencia de juego a donde quieras sin comprometer el rendimiento.</p>
+            <div class="banner-destacado-acciones">
+              <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">EXPLORAR</a>
+            </div>
+          </div>
+          <div class="banner-destacado-imagen">
+            <img src="Assets/lenovolegion.webp" alt="Portátiles Gaming" />
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           SERVICIOS - Cards estilo Corsair
+           ===================================================== -->
+      <section class="seccion-servicios-corsair" data-animate="fade-up">
+        <div class="seccion-inner">
+          <div class="servicios-grid">
+            <a href="Pages/servicios.html" class="servicio-card">
+              <div class="servicio-card-bg" style="background-image: url('Assets/Nuestroservicios.png');"></div>
+              <div class="servicio-card-overlay"></div>
+              <div class="servicio-card-contenido">
+                <span class="servicio-card-tag">// SOPORTE</span>
+                <h2>NUESTROS SERVICIOS</h2>
+                <p>Mantenimiento, reparación y soporte técnico profesional</p>
+                <span class="servicio-card-arrow">→</span>
+              </div>
+            </a>
+            <a href="Pages/ArmaTuPC.html" class="servicio-card">
+              <div class="servicio-card-bg" style="background-image: url('Assets/Armatupc.png');"></div>
+              <div class="servicio-card-overlay"></div>
+              <div class="servicio-card-contenido">
+                <span class="servicio-card-tag">// CUSTOM</span>
+                <h2>ARMA TU PC</h2>
+                <p>Configurador de PC personalizado paso a paso</p>
+                <span class="servicio-card-arrow">→</span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           BANNER DESTACADO 3 - Monitores Gaming Full-Width
+           ===================================================== -->
+      <section class="banner-fullwidth" data-animate="fade-up" style="background-image: url('Assets/MONITOR.png');">
+        <div class="banner-fullwidth-overlay"></div>
+        <div class="banner-fullwidth-contenido">
+          <span class="banner-destacado-tag">// MONITORES</span>
+          <h2 class="banner-destacado-titulo">MONITORES<br/><span class="texto-acento">GAMING</span></h2>
+          <p class="banner-destacado-desc">Pantallas de alta frecuencia para una experiencia visual sin precedentes. 144Hz, 240Hz y más.</p>
+          <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">VER MONITORES</a>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           ¿POR QUÉ WIIU-GAMES? - Sección de confianza
+           ===================================================== -->
+      <section class="seccion-porque" data-animate="fade-up">
+        <div class="seccion-inner">
+          <h2 class="seccion-titulo-corsair">¿POR QUÉ WIIU-GAMES?</h2>
+          <div class="porque-grid">
+            <div class="porque-card">
+              <div class="porque-icono">
+                <i class="fi fi-rr-shield-check"></i>
+              </div>
+              <h3>GARANTÍA TOTAL</h3>
+              <p>Todos nuestros productos cuentan con garantía directa. Tu inversión siempre protegida.</p>
+            </div>
+            <div class="porque-card">
+              <div class="porque-icono">
+                <i class="fi fi-rr-settings"></i>
+              </div>
+              <h3>SERVICIO TÉCNICO</h3>
+              <p>Soporte profesional para mantenimiento, reparación y ensamblaje de equipos.</p>
+            </div>
+            <div class="porque-card">
+              <div class="porque-icono">
+                <i class="fi fi-rr-heart"></i>
+              </div>
+              <h3>MEJOR PRECIO</h3>
+              <p>Los precios más competitivos de Sogamoso. Calidad premium sin romper tu presupuesto.</p>
+            </div>
+            <div class="porque-card">
+              <div class="porque-icono">
+                <i class="fi fi-rr-star"></i>
+              </div>
+              <h3>ASESORÍA EXPERTA</h3>
+              <p>Te ayudamos a elegir el equipo perfecto para tus necesidades. Atención personalizada.</p>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
-    <!-- Sección de categorias: computadores personalizados -->
-    <section class="seccion-categoria">
-      <div class="contenedor-grid">
-        <!-- Portada de categoría grande -->
-        <div
-          class="portada-categoria"
-          style="background-image: url(/Frontend/Assets/TORRECUSTOM.png)"
-        >
-          <h2>Computadores Personalizados</h2>
-          <a href="Pages/Catalog.html" class="enlace-ver-mas"
-            >Mostrar todos los productos</a
-          >
-        </div>
-
-        <!-- Bloque de 5 productos -->
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PC Gamer EAGLE V5" />
-            <div class="calificacion">
-              ★★★★★ <span class="resenas">(0)</span>
-            </div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PC Gamer RAZOR V5" />
-            <div class="calificacion">
-              ★★★★★ <span class="resenas">(0)</span>
-            </div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PC Gamer ALPHA V5" />
-            <div class="calificacion">
-              ★★★★★ <span class="resenas">(0)</span>
-            </div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PC Gamer STALE V5" />
-            <div class="calificacion">
-              ★★★★★ <span class="resenas">(0)</span>
-            </div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PC Gamer DELTA V5" />
-            <div class="calificacion">
-              ★★★★★ <span class="resenas">(0)</span>
-            </div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-      </div>
-    </section>
-    <section class="seccion-categoria">
-      <!-- Pestañas de subcategorías superiores -->
-      <div class="subcategorias-tabs">
-        <span class="tab activa">CAT1</span>
-        <span class="tab">CAT2</span>
-        <span class="tab">CAT3</span>
-        <span class="tab">CAT4</span>
-      </div>
-
-      <div class="contenedor-grid">
-        <div
-          class="portada-categoria"
-          style="background-image: url(Assets/lenovolegion.webp)"
-        >
-          <h2>Portátiles</h2>
-          <a href="Pages/Catalog.html" class="enlace-ver-mas"
-            >Mostrar todos los productos</a
-          >
-        </div>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="Laptop PRODUCTOq 1" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="Laptop PRODUCTOq 2" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="Laptop PRODUCTOq 3" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="Laptop PRODUCTOq 4" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="Laptop PRODUCTOq 5" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-      </div>
-    </section>
-    <section class="seccion-categoria">
-      <div class="contenedor-grid">
-        <div
-          class="portada-categoria"
-          style="background-image: url(/Frontend/Assets/MONITOR.png)"
-        >
-          <h2>Monitores Gaming</h2>
-          <a href="Pages/Catalog.html" class="enlace-ver-mas"
-            >Mostrar todos los productos</a
-          >
-        </div>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PRODUCTO 1" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PRODUCTO 2" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PRODUCTO 3" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PRODUCTO 4" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-
-        <a href="Pages/Product.html" class="enlace-producto">
-          <div class="tarjeta-producto">
-            <div class="estado-stock">Con Stock</div>
-            <img src="Assets/lenovolegion.webp" alt="PRODUCTO 5" />
-            <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-            <h3>PRODUCTO</h3>
-            <p class="descripcion">PRODUCTO DESC</p>
-            <p class="precio">$000.000.000</p>
-          </div>
-        </a>
-      </div>
-    </section>
-    <section class="seccion-categoria">
-      <div class="subcategorias-tabs">
-        <span class="tab activa">CAT1</span>
-        <span class="tab">CAT2</span>
-        <span class="tab">CAT3</span>
-        <span class="tab">CAT4</span>
-      </div>
-
-      <div class="contenedor-grid">
-        <div
-          class="portada-categoria"
-          style="background-image: url(/Frontend/Assets/ESCRITORIO.png)"
-        >
-          <h2>Escritorio</h2>
-          <a href="Pages/Catalog.html" class="enlace-ver-mas"
-            >Mostrar todos los productos</a
-          >
-        </div>
-
-        <div class="tarjeta-producto">
-          <div class="estado-stock">Con Stock</div>
-          <img src="Assets/lenovolegion.webp" alt="PC Escritorio 1" />
-          <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-          <h3>PRODUCTO</h3>
-          <p class="descripcion">PRODUCTO</p>
-          <p class="precio">$000.000.000</p>
-        </div>
-
-        <div class="tarjeta-producto">
-          <div class="estado-stock">Con Stock</div>
-          <img src="Assets/lenovolegion.webp" alt="PC Escritorio 2" />
-          <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-          <h3>PRODUCTO</h3>
-          <p class="descripcion">PRODUCTO</p>
-          <p class="precio">$000.000.000</p>
-        </div>
-
-        <div class="tarjeta-producto">
-          <div class="estado-stock">Con Stock</div>
-          <img src="Assets/lenovolegion.webp" alt="PC Escritorio 3" />
-          <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-          <h3>PRODUCTO</h3>
-          <p class="descripcion">PRODUCTO</p>
-          <p class="precio">$000.000.000</p>
-        </div>
-
-        <div class="tarjeta-producto">
-          <div class="estado-stock">Con Stock</div>
-          <img src="Assets/lenovolegion.webp" alt="PC Escritorio 4" />
-          <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-          <h3>PRODUCTO</h3>
-          <p class="descripcion">PRODUCTO</p>
-          <p class="precio">$000.000.000</p>
-        </div>
-
-        <div class="tarjeta-producto">
-          <div class="estado-stock">Con Stock</div>
-          <img src="Assets/lenovolegion.webp" alt="PC Escritorio 5" />
-          <div class="calificacion">★★★★★ <span class="resenas">0</span></div>
-          <h3>PRODUCTO</h3>
-          <p class="descripcion">PRODUCTO</p>
-          <p class="precio">$000.000.000</p>
-        </div>
-      </div>
-    </section>
 
     <!-- Pie de página con enlaces, contacto y redes sociales -->
     <footer class="sitio-footer">
@@ -642,5 +544,6 @@
     </footer>
     <script src="Scripts/accessibility.js" defer></script>
     <script src="Scripts/carrusel.js" defer></script>
+    <script src="Scripts/index_animations.js" defer></script>
   </body>
 </html>
