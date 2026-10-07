@@ -371,7 +371,6 @@ INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, estado) VAL
 (3, 3, 'Se instala SSD adicional durante el mantenimiento', 'PENDIENTE');
 
 -- ---------------- venta ----------------
--- comprobante es MEDIUMBLOB NOT NULL: se inserta un texto convertido a binario como ejemplo
 INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, nro_pago, comprobante, telefono, tipo_venta, ciudad, direccion_entrega, numero_guia, notas, estado) VALUES
 (1, 5, 1, '2026-09-10 10:30:00', 'TARJETA', 'PAGO-0001', CAST('comprobante_0001' AS BINARY), '3101234567', 'SUCURSAL', NULL, NULL, NULL, 'Compra en mostrador', 'PAGADA'),
 (2, 6, 3, '2026-09-12 15:45:00', 'TRANSFERENCIA', 'PAGO-0002', CAST('comprobante_0002' AS BINARY), '3209876543', 'DOMICILIO', 'Medellin', 'Calle 50 # 45-10 Apto 301', 'GUIA-123456', 'Entregar en horario de la tarde', 'PAGADA'),
