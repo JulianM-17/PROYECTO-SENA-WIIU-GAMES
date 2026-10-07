@@ -306,3 +306,8 @@ CREATE TABLE backup (
     estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL
 );
 
+
+
+
+
+
