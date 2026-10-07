@@ -154,7 +154,7 @@ CREATE TABLE venta (
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario)
         REFERENCES usuario (id_usuario),
-    id_empleado NULL,
+    id_empleado INT NULL,
     FOREIGN KEY (id_empleado)
         REFERENCES usuario (id_usuario),
     id_sucursal INT NOT NULL,
@@ -376,13 +376,12 @@ FOR EACH ROW
 BEGIN
     DECLARE v_suc INT;
     DECLARE v_existe INT;
-
-    --buscamos el id de la sucursal donde se esta haciendo la compra
+    -- buscamos el id de la sucursal donde se esta haciendo la compra
     SELECT id_sucursal INTO v_suc 
     FROM compra 
     WHERE id_compra = NEW.id_compra;
 
-    --verificamos si el producto ya existe en el inventario de esa sucursal especifica
+    --  verificamos si el producto ya existe en el inventario de esa sucursal especifica
     SELECT COUNT(*) INTO v_existe 
     FROM inventario 
     WHERE id_sucursal = v_suc AND id_producto = NEW.id_producto;
