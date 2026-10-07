@@ -29,7 +29,7 @@ CREATE TABLE usuario (
     ciudad VARCHAR(30) NULL,
     direccion VARCHAR(40) NULL,
     correo VARCHAR(120) NOT NULL UNIQUE,
-    contraseña_hash VARCHAR(255) NOT NULL,
+    contrasena_hash VARCHAR(255) NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
     fecha_ingreso DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -242,7 +242,7 @@ CREATE TABLE cotizacion (
         REFERENCES servicio (id_servicio),
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     validez INT NOT NULL DEFAULT 15,
-    total DECIMAL(14 , 5 ) NOT NULL,
+    total DECIMAL(14 , 6 ) NOT NULL,
     estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') NOT NULL
 );
 
@@ -256,7 +256,7 @@ CREATE TABLE detalle_cotizacion (
         REFERENCES producto (id_producto),
     cantidad INT NOT NULL,
     precio_unitario DECIMAL(14 , 6 ) NOT NULL,
-    subtotal DECIMAL(14 , 5 ) NOT NULL
+    subtotal DECIMAL(14 , 6 ) NOT NULL
 );
 
 -- -----------------------Promociones----------------------------
@@ -319,7 +319,7 @@ FOR EACH ROW
 BEGIN
     DECLARE v_suc INT;
     DECLARE stock_actual INT;
-    DECLARE v_precio DECIMAL(12,6);
+    DECLARE v_precio DECIMAL(14,6);
     DECLARE v_estado VARCHAR(10);
 
 SELECT 
@@ -346,8 +346,10 @@ WHERE
         SET MESSAGE_TEXT = 'El producto no está disponible para la venta.';
     END IF;
     
-    SET NEW.precio_unitario = v_precio;
-    SET NEW.subtotal = v_precio * NEW.cantidad;
+    IF NEW.precio_unitario IS NULL OR NEW.precio_unitario = 0 THEN
+        SET NEW.precio_unitario = V_precio;
+    END IF;
+    SET NEW.subtotal = NEW.precio_unitario * NEW.cantidad;
 
 SELECT 
     stock
