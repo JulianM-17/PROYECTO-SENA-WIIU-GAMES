@@ -423,4 +423,4 @@ INSERT INTO inventario (id_sucursal, id_producto, stock, estado) VALUES
 (1, 1, 5, 'ACTIVO'),
 (2, 2, 50, 'ACTIVO'),
 (3, 3, 20, 'ACTIVO');
->>>>>>> 90a13530877740c7511be0e8518ba47573d5e2eb
+
