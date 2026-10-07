@@ -100,13 +100,7 @@
 
         <div class="grupo-filtro">
           <h3>Categoria</h3>
-          <ul>
-            <li><span>CUSTOM PCS</span> <span class="contador">(0)</span></li>
-            <li>
-              <span>ALL-IN-ONE PCS</span> <span class="contador">(0)</span>
-            </li>
-            <li><span>Laptops</span> <span class="contador">(0)</span></li>
-          </ul>
+          <ul id="lista-categoria" s></ul>
         </div>
 
         <div class="grupo-filtro">
@@ -130,36 +124,16 @@
 
         <div class="grupo-filtro grupo-marcas">
           <h3>Marcas</h3>
-          <button class="btn-todas-marcas">Todas las Marcas</button>
-          <div class="cuadricula-marcas">
-            <span>Roccat</span>
-            <span>MSI</span>
-            <span>Thermaltake</span>
-            <span>Adata</span>
-            <span>Gigabyte</span>
-          </div>
+          <button class="btn-todas-marcas" id="btn-todas-marcas">
+            Todas las Marcas
+          </button>
+          <div class="cuadricula-marcas" id="contenedor-marcas"></div>
         </div>
       </aside>
       <section class="seccion-productos-cat">
         <div class="carrusel-productos">
-          <div class="grid-productos">
-            <!-- Tarjeta Producto 1 -->
-            <a href="Product.html" class="enlace-producto">
-              <article class="tarjeta-producto">
-                <div class="estado-stock disponible">Con Stock</div>
-                <img
-                  src="../Assets/lenovolegion.webp"
-                  alt="Producto"
-                  class="imagen-producto"
-                />
-                <div class="calificacion">
-                  ★★★★★ <span class="resenas">Reseñas 0</span>
-                </div>
-                <h3 class="titulo-producto">Producto</h3>
-                <div class="precio-anterior">$000.000.000</div>
-                <div class="precio-actual">$000.000.000</div>
-              </article>
-            </a>
+          <div class="grid-productos" id="grid-productos">
+            <!-- Aquí se renderizarán las tarjetas de productos -->
           </div>
         </div>
       </section>
