@@ -99,7 +99,10 @@ CREATE TABLE producto (
     FOREIGN KEY (id_categoria)
         REFERENCES categoria (id_categoria),
     nombre VARCHAR(100) NOT NULL,
-    imagen_url VARCHAR(255) NOT NULL,
+    imagen_prin VARCHAR(255) NOT NULL,
+    imagen_2 VARCHAR(255) NOT NULL,
+    imagen_3 VARCHAR(255) NOT NULL,
+    imagen_4 VARCHAR(255) NOT NULL,
     color VARCHAR(15) NULL,
     descripcion VARCHAR(100) NOT NULL,
     precio DECIMAL(14 , 6 ) NOT NULL,
