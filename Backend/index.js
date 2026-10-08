@@ -137,12 +137,10 @@ app.put("/api/profile", requireUserSession, async (req, res) => {
     return res.json({ ok: true, profile: rows[0] });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      return res
-        .status(409)
-        .json({
-          ok: false,
-          message: "El correo o documento ya está registrado.",
-        });
+      return res.status(409).json({
+        ok: false,
+        message: "El correo o documento ya está registrado.",
+      });
     }
     console.error("Error al actualizar perfil:", error.message);
     return res
@@ -226,12 +224,26 @@ app.get("/api/dashboard/admin", async (req, res) => {
        WHERE v.estado = 'PAGADA'`,
     );
     const [topProductsRows] = await pool.query(
-      `SELECT p.nombre, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
+      `SELECT p.nombre, p.imagen_url, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
        FROM detalle_venta dv
        INNER JOIN producto p ON p.id_producto = dv.id_producto
-       GROUP BY p.id_producto, p.nombre
+       GROUP BY p.id_producto, p.nombre, p.imagen_url
        ORDER BY cantidad DESC, total DESC
        LIMIT 3`,
+    );
+    const [salesTrendRows] = await pool.query(
+      `SELECT
+         DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a') AS day_name,
+         COALESCE(SUM(dv.subtotal), 0) AS total
+       FROM (
+         SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+       ) n
+       LEFT JOIN venta v
+         ON DATE(v.fecha) = DATE_SUB(CURDATE(), INTERVAL n.n DAY)
+        AND v.estado = 'PAGADA'
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       GROUP BY n.n, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a')
+       ORDER BY n.n`,
     );
     const [recentOrdersRows] = await pool.query(
       `SELECT v.id_venta, u.nombre, u.apellido, v.fecha, v.estado, COALESCE(SUM(dv.subtotal), 0) AS total
@@ -361,6 +373,10 @@ app.get("/api/dashboard/admin", async (req, res) => {
         salesTotal: Number(salesTotalRows[0]?.total || 0),
       },
       topProducts: topProductsRows || [],
+      salesTrend: (salesTrendRows || []).map((point) => ({
+        label: String(point.day_name || "").slice(0, 3),
+        value: Number(point.total || 0),
+      })),
       recentOrders: recentOrdersRows || [],
       inventory: inventoryRows || [],
       clients: clientsRows || [],
