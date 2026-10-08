@@ -100,20 +100,17 @@
 
         <div class="grupo-filtro">
           <h3>Categoria</h3>
-          <ul id="lista-categoria" s></ul>
+          <ul id="lista-categorias"></ul>
         </div>
 
-        <div class="grupo-filtro">
+        <div class="grupo-filtro" id="filtro-precio">
           <h3>Precio</h3>
           <ul>
-            <li>$0.00 - $1,000.00 <span class="contador">(0)</span></li>
-            <li>$1,000.00 - $2,000.00 <span class="contador">(0)</span></li>
-            <li>$2,000.00 - $3,000.00 <span class="contador">(0)</span></li>
-            <li>$3,000.00 - $4,000.00 <span class="contador">(0)</span></li>
-            <li>$4,000.00 - $5,000.00 <span class="contador">(0)</span></li>
-            <li>$5,000.00 - $6,000.00 <span class="contador">(0)</span></li>
-            <li>$6,000.00 - $7,000.00 <span class="contador">(0)</span></li>
-            <li>$7,000.00 y mas... <span class="contador">(0)</span></li>
+            <li data-min-price="0" data-max-price="99999">$0 - $99.999 COP</li>
+            <li data-min-price="100000" data-max-price="499999">$100.000 - $499.999 COP</li>
+            <li data-min-price="500000" data-max-price="999999">$500.000 - $999.999 COP</li>
+            <li data-min-price="1000000" data-max-price="1999999">$1.000.000 - $1.999.999 COP</li>
+            <li data-min-price="2000000" data-max-price="">$2.000.000 COP o más</li>
           </ul>
         </div>
 

@@ -168,6 +168,28 @@ body {
   color: var(--yellow);
 }
 
+.cuadricula-marcas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cuadricula-marcas span {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.cuadricula-marcas span:hover,
+.cuadricula-marcas span.activo {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--dark-blue);
+}
+
 .contador {
   background: var(--bg);
   padding: 2px 8px;

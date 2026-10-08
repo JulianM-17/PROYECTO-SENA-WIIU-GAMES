@@ -1,41 +1,13 @@
 const express = require('express');
 const cors = require('cors');
-const pool = require('./db.js'); // Ajusta la ruta al archivo donde creaste el pool
+const pool = require('./db.js');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
-// Permitir a Express entender JSON (útil para POST/PUT más adelante)
-app.use(express.json());
-
-// --- RUTA: Obtener todos los productos activos ---
-app.get('/api/productos', async (req, res) => {
-  try {
-    // pool.query devuelve un arreglo donde la posición 0 son los datos (rows)
-    const [rows] = await pool.query(`
-      SELECT id_producto, nombre, precio, stock 
-      FROM producto 
-      INNER JOIN inventario ON producto.id_producto = inventario.id_producto
-      WHERE producto.estado = 'ACTIVO'
-    `);
-    
-    // Respondemos al frontend con un estado 200 (OK) y los datos en JSON
-    res.status(200).json(rows);
-    
-  } catch (error) {
-    console.error('Error al obtener productos:', error.message);
-    res.status(500).json({ error: 'Error interno del servidor' });
-  }
-});
-
-// Iniciar el servidor
-app.listen(PORT, () => {
-  console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
-});
-
-// Endpoint para obtener todos los productos activos con stock
+// Obtener productos activos y su stock total en todas las sucursales.
 app.get('/api/productos', async (req, res) => {
   try {
     const [productos] = await pool.query(`
@@ -47,18 +19,23 @@ app.get('/api/productos', async (req, res) => {
         p.descripcion,
         m.nombre_marca,
         c.nombre_cat,
-        COALESCE(SUM(i.stock), 0) AS stock_total
+        COALESCE(i.stock_total, 0) AS stock_total
       FROM producto p
       INNER JOIN marca m ON p.id_marca = m.id_marca
       INNER JOIN categoria c ON p.id_categoria = c.id_categoria
-      LEFT JOIN inventario i ON p.id_producto = i.id_producto
+      LEFT JOIN (
+        SELECT id_producto, SUM(stock) AS stock_total
+        FROM inventario
+        WHERE estado = 'ACTIVO'
+        GROUP BY id_producto
+      ) i ON p.id_producto = i.id_producto
       WHERE p.estado = 'ACTIVO'
-      GROUP BY p.id_producto
+      ORDER BY p.nombre
     `);
     res.json(productos);
   } catch (error) {
-    console.error('Error al obtener productos:', error);
-    res.status(500).json({ error: 'Error en el servidor' });
+    console.error('Error al obtener productos:', error.message);
+    res.status(500).json({ error: 'Error al obtener productos' });
   }
 });
 
@@ -68,6 +45,7 @@ app.get('/api/categorias', async (req, res) => {
     const [categorias] = await pool.query('SELECT * FROM categoria WHERE estado = "ACTIVO"');
     res.json(categorias);
   } catch (error) {
+    console.error('Error al obtener categorías:', error.message);
     res.status(500).json({ error: 'Error al obtener categorías' });
   }
 });
@@ -78,6 +56,12 @@ app.get('/api/marcas', async (req, res) => {
     const [marcas] = await pool.query('SELECT * FROM marca WHERE estado = "ACTIVO"');
     res.json(marcas);
   } catch (error) {
+    console.error('Error al obtener marcas:', error.message);
     res.status(500).json({ error: 'Error al obtener marcas' });
   }
+});
+
+// Iniciar el servidor después de registrar todas las rutas.
+app.listen(PORT, () => {
+  console.log(`Servidor Express corriendo en http://localhost:${PORT}`);
 });
