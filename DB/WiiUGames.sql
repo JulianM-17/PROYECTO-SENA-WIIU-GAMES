@@ -319,7 +319,6 @@ CREATE TABLE backup (
     estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL
 );
 
-
 -- ---------------- rol ----------------
 INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 ('Cliente', 'Usuario que compra productos y solicita servicios', 'ACTIVO'),
@@ -329,12 +328,12 @@ INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 
 -- ---------------- usuario ----------------
 INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento, telefono, telefono_secundario, departamento, ciudad, direccion, correo, contrasena_hash, estado) VALUES
-(1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'cliente@correo.com', 'carlos123', 'ACTIVO'),
-(1, 'Laura', 'Gomez', 'CC', '1098765432', '1998-07-22', '3209876543', '3151112233', 'Antioquia', 'Medellin', 'Calle 50 # 45-10', 'laura.gomez@correo.com', 'laura123', 'ACTIVO'),
-(2, 'Andres', 'Torres', 'CC', '80123456', '1988-11-05', '3001112233', NULL, 'Cundinamarca', 'Bogota', 'Av 68 # 22-15', 'admin@correo.com', 'andres123', 'ACTIVO'),
-(3, 'Distribuciones Tech', 'SAS', 'NIT', '900123456', NULL, '6012223344', NULL, 'Cundinamarca', 'Bogota', 'Zona Industrial', 'proveedor@tech.com', 'proveedor123', 'ACTIVO'),
-(4, 'Sofia', 'MartineZ', 'CC', '1023456789', '1992-05-10', '3112223344', NULL, 'Cundinamarca', 'Bogota', 'Calle 100 # 15-20', 'sofia.martinez@correo.com', 'sofia123', 'ACTIVO');
-
+(1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'cliente@gmail.com', 'Cliente123', 'ACTIVO'),
+(1, 'Laura', 'Gomez', 'CC', '1098765432', '1998-07-22', '3209876543', '3151112233', 'Antioquia', 'Medellin', 'Calle 50 # 45-10', 'cliente2@gmail.com', 'Cliente123', 'ACTIVO'),
+(2, 'Andres', 'Torres', 'CC', '80123456', '1988-11-05', '3001112233', NULL, 'Cundinamarca', 'Bogota', 'Av 68 # 22-15', 'Admin123@gmail.com', 'Admin123', 'ACTIVO'),
+(3, 'Distribuciones Tech', 'SAS', 'NIT', '900123456', NULL, '6012223344', NULL, 'Cundinamarca', 'Bogota', 'Zona Industrial', 'proveedor@gmail.com', 'Proveedor123', 'ACTIVO'),
+(4, 'Sofia', 'MartineZ', 'CC', '1023456789', '1992-05-10', '3112223344', NULL, 'Cundinamarca', 'Bogota', 'Calle 100 # 15-20', 'Trabajador@gmail.com', 'Trabajador123', 'ACTIVO'),
+(4, 'Mateo', 'Rios', 'CC', '1034567890', '1990-09-15', '3223334455', NULL, 'Antioquia', 'Medellin', 'Cra 80 # 30-10', 'Trabajador2@gmail.com', 'Trabajador123', 'ACTIVO');
 
 
 -- ---------------- sucursal ----------------
