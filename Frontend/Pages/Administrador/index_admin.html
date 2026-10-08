@@ -295,22 +295,6 @@
             <div class="header-greeting">
               <h1 class="greeting-title">
                 <span>¡Hola!</span>
-                <svg
-                  class="greeting-icon"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#FFB800"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
-                  <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"></path>
-                  <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
-                  <path
-                    d="M18 8a2 2 0 0 1 2 2v4a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
-                  ></path>
-                </svg>
               </h1>
               <p class="greeting-subtitle">
                 Resumen general del estado de tu tienda WiiU-Games.
@@ -337,29 +321,18 @@
                 </button>
               </div>
 
-              <div class="date-selector">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                <span>Esta semana</span>
-                <svg
-                  class="chevron-down"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
-              </div>
+              <label class="sr-only" for="dashboardRangeSelect"
+                >Rango de análisis</label
+              >
+              <select
+                class="date-selector"
+                id="dashboardRangeSelect"
+                aria-label="Rango de análisis"
+              >
+                <option value="7">Últimos 7 días</option>
+                <option value="30">Últimos 30 días</option>
+                <option value="all">Todo el periodo</option>
+              </select>
 
               <div class="notification-wrapper">
                 <button
@@ -450,21 +423,6 @@
                   </div>
                 </div>
               </div>
-
-              <div class="kpi-card">
-                <div class="kpi-content">
-                  <div class="kpi-header">
-                    <span class="kpi-title">Tasa de conversión</span>
-                    <div class="kpi-icon-wrapper blue-icon">
-                      <span class="percent-symbol">%</span>
-                    </div>
-                  </div>
-                  <div class="kpi-value" id="kpiTasaConversion">0%</div>
-                  <div class="kpi-trend positive">
-                    0% <span class="trend-sub">vs semana pasada</span>
-                  </div>
-                </div>
-              </div>
             </div>
 
             <div class="dashboard-grid-mid">
@@ -491,51 +449,7 @@
                       viewBox="0 0 650 260"
                       class="grafico-ventas-interactivo"
                       preserveAspectRatio="none"
-                    >
-                      <defs>
-                        <linearGradient
-                          id="chartAreaGrad"
-                          x1="0"
-                          y1="0"
-                          x2="0"
-                          y2="1"
-                        >
-                          <stop
-                            offset="0%"
-                            stop-color="#0066FF"
-                            stop-opacity="0.3"
-                          />
-                          <stop
-                            offset="100%"
-                            stop-color="#0066FF"
-                            stop-opacity="0"
-                          />
-                        </linearGradient>
-                      </defs>
-                      <line
-                        x1="0"
-                        y1="250"
-                        x2="650"
-                        y2="250"
-                        stroke="#162447"
-                        stroke-width="1"
-                      />
-                      <path
-                        d="M 25 245 L 625 245"
-                        fill="none"
-                        stroke="#0077FF"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                      />
-                      <circle
-                        cx="625"
-                        cy="245"
-                        r="4.5"
-                        fill="#0077FF"
-                        stroke="#FFFFFF"
-                        stroke-width="2"
-                      />
-                    </svg>
+                    ></svg>
 
                     <div
                       class="insignia-tooltip-grafico"
@@ -1091,6 +1005,28 @@
             </div>
 
             <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar cupón o promoción..."
+                    id="searchDiscountInput"
+                    oninput="window.filterDiscounts(this.value)"
+                  />
+                </div>
+                <div class="grupo-filtro">
+                  <select
+                    class="custom-select"
+                    id="filterDiscountStatus"
+                    onchange="window.filterDiscountsByStatus(this.value)"
+                  >
+                    <option value="todos">Todos los estados</option>
+                    <option value="Activo">Activos</option>
+                    <option value="Inactivo">Inactivos</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="tabla-responsiva">
                 <table class="tabla-pedidos">
                   <thead>
@@ -1122,6 +1058,31 @@
             </div>
 
             <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar reseña por cliente o producto..."
+                    id="searchReviewInput"
+                    oninput="window.filterReviews(this.value)"
+                  />
+                </div>
+                <div class="grupo-filtro">
+                  <select
+                    class="custom-select"
+                    id="filterReviewRating"
+                    onchange="window.filterReviewsByRating(this.value)"
+                  >
+                    <option value="todos">Todas las valoraciones</option>
+                    <option value="5">5 estrellas</option>
+                    <option value="4">4 estrellas</option>
+                    <option value="3">3 estrellas</option>
+                    <option value="2">2 estrellas</option>
+                    <option value="1">1 estrella</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="cuadricula-resenas" id="reviewsGrid"></div>
             </div>
           </section>
@@ -1154,6 +1115,29 @@
             </div>
 
             <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar cliente por nombre, correo o teléfono..."
+                    id="searchClientInput"
+                    oninput="window.filterClients(this.value)"
+                  />
+                </div>
+                <div class="grupo-filtro">
+                  <select
+                    class="custom-select"
+                    id="filterClientLevel"
+                    onchange="window.filterClientsByLevel(this.value)"
+                  >
+                    <option value="todos">Todos los niveles</option>
+                    <option value="VIP">VIP</option>
+                    <option value="Frecuente">Frecuente</option>
+                    <option value="Nuevo">Nuevo</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="tabla-responsiva">
                 <table class="tabla-pedidos">
                   <thead>

@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   initNavigation();
   initUserProfileMenu();
   initAdminSessionData();
+  initDashboardFilters();
   initNonNegativeStockInput();
   await loadAdminDashboardData();
   renderAllModules();
@@ -266,6 +267,27 @@ function initNavigation() {
   });
 }
 
+function initDashboardFilters() {
+  const rangeSelect = document.getElementById("dashboardRangeSelect");
+  const rangeText = document.querySelector(".panel-filter-pill span");
+  if (!rangeSelect) return;
+
+  const updateFilterLabel = () => {
+    const map = {
+      7: "Esta semana",
+      30: "Este mes",
+      all: "Todo el periodo",
+    };
+    if (rangeText) {
+      rangeText.textContent = map[rangeSelect.value] || "Esta semana";
+    }
+    renderDashboardMetrics();
+  };
+
+  rangeSelect.addEventListener("change", updateFilterLabel);
+  updateFilterLabel();
+}
+
 window.switchView = function (viewKey) {
   document.querySelectorAll(".elemento-nav").forEach((btn) => {
     btn.classList.toggle("activo", btn.getAttribute("data-view") === viewKey);
@@ -306,11 +328,15 @@ function renderAllModules() {
   renderClientsTable();
 }
 
+function getDashboardRangeValue() {
+  const select = document.getElementById("dashboardRangeSelect");
+  return select ? select.value || "7" : "7";
+}
+
 function renderDashboardMetrics() {
   const kpiVentas = document.getElementById("kpiVentasTotales");
   const kpiPedidos = document.getElementById("kpiTotalPedidos");
   const kpiClientes = document.getElementById("kpiClientesNuevos");
-  const kpiConversion = document.getElementById("kpiTasaConversion");
 
   const bestSellers = document.getElementById("bestSellersList");
   const recentOrders = document.getElementById("recentOrdersBody");
@@ -330,13 +356,17 @@ function renderDashboardMetrics() {
   const recentOrdersList = Array.isArray(adminDashboardData?.recentOrders)
     ? adminDashboardData.recentOrders
     : [];
+  const salesTrend = Array.isArray(adminDashboardData?.salesTrend)
+    ? adminDashboardData.salesTrend
+    : [];
+  const rangeValue = getDashboardRangeValue();
 
   if (kpiVentas)
     kpiVentas.textContent = `$ ${Number(summary.salesTotal || 0).toLocaleString("es-CO")}`;
   if (kpiPedidos) kpiPedidos.textContent = String(summary.ordersCount || 0);
   if (kpiClientes) kpiClientes.textContent = String(summary.clientsCount || 0);
-  if (kpiConversion)
-    kpiConversion.textContent = `${Math.min(100, Math.max(0, Math.round(((summary.ordersCount || 0) / Math.max(summary.productsCount || 1, 1)) * 100)))}%`;
+
+  renderSalesChart(salesTrend, rangeValue);
 
   if (bestSellers) {
     if (!topProducts.length) {
@@ -345,10 +375,17 @@ function renderDashboardMetrics() {
       bestSellers.innerHTML = topProducts
         .map(
           (item, index) => `
-            <div class="best-seller-item">
+            <div class="best-seller-card">
               <div class="best-seller-rank">#${index + 1}</div>
+              <div class="best-seller-thumb">
+                <img
+                  src="${item.imagen_url || item.imageUrl || "https://via.placeholder.com/200x120/edf4ff/1273eb?text=WiiU"}"
+                  alt="${item.nombre || item.name || "Producto"}"
+                  onerror="this.src='https://via.placeholder.com/200x120/edf4ff/1273eb?text=WiiU'"
+                />
+              </div>
               <div class="best-seller-info">
-                <div class="best-seller-name">${item.nombre}</div>
+                <div class="best-seller-name">${item.nombre || item.name || "Producto"}</div>
                 <div class="best-seller-meta">${Number(item.cantidad || 0)} unidades</div>
               </div>
               <div class="best-seller-value">$ ${Number(item.total || 0).toLocaleString("es-CO")}</div>
@@ -364,17 +401,35 @@ function renderDashboardMetrics() {
       recentOrders.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay pedidos registrados</td></tr>`;
     } else {
       recentOrders.innerHTML = recentOrdersList
-        .map(
-          (pedido) => `
+        .map((pedido) => {
+          const estado = String(pedido.estado || "PAGADA").toUpperCase();
+          const estadoTexto =
+            estado === "PAGADA"
+              ? "Pagada"
+              : estado === "PENDIENTE"
+                ? "Pendiente"
+                : estado === "RECHAZADA"
+                  ? "Rechazada"
+                  : "Procesando";
+          const estadoClass =
+            estado === "PAGADA"
+              ? "entregado"
+              : estado === "PENDIENTE"
+                ? "processing"
+                : "warning";
+
+          return `
             <tr>
-              <td>#${pedido.id_venta}</td>
-              <td>${pedido.nombre} ${pedido.apellido}</td>
-              <td>${new Date(pedido.fecha).toLocaleDateString("es-CO")}</td>
-              <td>${pedido.estado}</td>
-              <td>$ ${Number(pedido.total || 0).toLocaleString("es-CO")}</td>
+              <td><span class="order-code">#${pedido.id_venta}</span></td>
+              <td>${pedido.nombre || "Cliente"} ${pedido.apellido || ""}</td>
+              <td><span class="insignia-estado ${estadoClass}">${estadoTexto}</span></td>
+              <td class="order-total-price">$ ${Number(pedido.total || 0).toLocaleString("es-CO")}</td>
+              <td>
+                <button class="row-more-btn" type="button" onclick="window.showToast('Detalle del pedido #${pedido.id_venta}')">Ver</button>
+              </td>
             </tr>
-          `,
-        )
+          `;
+        })
         .join("");
     }
   }
@@ -384,6 +439,120 @@ function renderDashboardMetrics() {
   if (finGastos) finGastos.textContent = "$ 0";
   if (finUtilidad)
     finUtilidad.textContent = `$ ${(Number(summary.salesTotal || 0) - 0).toLocaleString("es-CO")}`;
+}
+
+function renderSalesChart(salesTrend = [], rangeValue = "7") {
+  const svg = document.querySelector(".grafico-ventas-interactivo");
+  const tooltipAmount = document.querySelector(".tooltip-amount");
+  const tooltipLabel = document.querySelector(".tooltip-label");
+  if (!svg) return;
+
+  const dayMap = {
+    Sun: "Dom",
+    Mon: "Lun",
+    Tue: "Mar",
+    Wed: "Mié",
+    Thu: "Jue",
+    Fri: "Vie",
+    Sat: "Sáb",
+  };
+
+  const defaultSeries = [
+    { label: "Lun", value: 0 },
+    { label: "Mar", value: 0 },
+    { label: "Mié", value: 0 },
+    { label: "Jue", value: 0 },
+    { label: "Vie", value: 0 },
+    { label: "Sáb", value: 0 },
+    { label: "Dom", value: 0 },
+  ];
+
+  const normalizedTrend = (
+    Array.isArray(salesTrend) && salesTrend.length ? salesTrend : defaultSeries
+  ).map((point) => ({
+    ...point,
+    label:
+      dayMap[String(point.label || "").slice(0, 3)] ||
+      String(point.label || "").slice(0, 3) ||
+      "-",
+    value: Number(point.value || 0),
+  }));
+
+  const limitMap = { 7: 7, 30: 30, all: normalizedTrend.length };
+  const sliceSize = limitMap[rangeValue] || 7;
+  const filteredTrend = normalizedTrend.slice(-Math.max(1, sliceSize));
+  const labels = filteredTrend.length ? filteredTrend : defaultSeries;
+  const sourceSeries = labels.map((point) => point.value);
+
+  const chartWidth = 650;
+  const chartHeight = 260;
+  const paddingLeft = 24;
+  const paddingRight = 8;
+  const paddingTop = 10;
+  const paddingBottom = 18;
+  const maxValue = Math.max(...sourceSeries, 1000);
+  const xStep =
+    (chartWidth - paddingLeft - paddingRight) /
+    Math.max(sourceSeries.length - 1, 1);
+
+  const points = sourceSeries.map((value, index) => {
+    const x = paddingLeft + index * xStep;
+    const y =
+      chartHeight -
+      paddingBottom -
+      (value / maxValue) * (chartHeight - paddingTop - paddingBottom);
+    return { x, y, value };
+  });
+
+  const linePath = points
+    .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`)
+    .join(" ");
+  const areaPath = `${linePath} L ${points[points.length - 1].x} ${chartHeight - paddingBottom} L ${points[0].x} ${chartHeight - paddingBottom} Z`;
+
+  const markers = points
+    .map(
+      (point, index) => `
+        <circle cx="${point.x}" cy="${point.y}" r="${index === points.length - 1 ? 5 : 3.5}" fill="#0077FF" stroke="#ffffff" stroke-width="2" />
+      `,
+    )
+    .join("");
+
+  const chartLabels = document.querySelector(".chart-x-axis");
+  if (chartLabels) {
+    chartLabels.innerHTML = labels
+      .map(
+        (point, index) =>
+          `<span class="${index === labels.length - 1 ? "dia-activo" : ""}">${point.label || "-"}</span>`,
+      )
+      .join("");
+  }
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="chartAreaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0077FF" stop-opacity="0.3"></stop>
+        <stop offset="100%" stop-color="#0077FF" stop-opacity="0"></stop>
+      </linearGradient>
+    </defs>
+    <g>
+      ${Array.from({ length: 5 }, (_, idx) => {
+        const y =
+          paddingTop + (idx * (chartHeight - paddingTop - paddingBottom)) / 4;
+        return `<line x1="${paddingLeft}" y1="${y}" x2="${chartWidth - paddingRight}" y2="${y}" stroke="#E2E8F0" stroke-width="1" />`;
+      }).join("")}
+      <path d="${areaPath}" fill="url(#chartAreaGrad)"></path>
+      <path d="${linePath}" fill="none" stroke="#0077FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
+      ${markers}
+    </g>
+  `;
+
+  const lastPoint = points[points.length - 1];
+  if (tooltipAmount) {
+    tooltipAmount.textContent = `$ ${Number(lastPoint.value || 0).toLocaleString("es-CO")}`;
+  }
+  if (tooltipLabel) {
+    tooltipLabel.textContent = `${labels[labels.length - 1]?.label || "Hoy"}`;
+  }
 }
 
 function renderInventoryTable(itemsToRender = null) {
@@ -484,8 +653,9 @@ function renderWarrantiesTable(items = null) {
     .join("");
 }
 
-function renderMaintenanceTable() {
-  const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
+function renderMaintenanceTable(items = null) {
+  const list =
+    items ?? (JSON.parse(localStorage.getItem("wiiu_maintenance")) || []);
   const tbody = document.getElementById("mantenimientosTableBody");
   if (!tbody) return;
 
@@ -517,8 +687,9 @@ function renderMaintenanceTable() {
     .join("");
 }
 
-function renderRepairsTable() {
-  const list = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
+function renderRepairsTable(items = null) {
+  const list =
+    items ?? (JSON.parse(localStorage.getItem("wiiu_repairs")) || []);
   const tbody = document.getElementById("reparacionesTableBody");
   if (!tbody) return;
 
@@ -550,8 +721,9 @@ function renderRepairsTable() {
     .join("");
 }
 
-function renderDiscountsTable() {
-  const list = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
+function renderDiscountsTable(items = null) {
+  const list =
+    items ?? (JSON.parse(localStorage.getItem("wiiu_discounts")) || []);
   const tbody = document.getElementById("descuentosTableBody");
   if (!tbody) return;
 
@@ -581,11 +753,12 @@ function renderDiscountsTable() {
     .join("");
 }
 
-function renderReviewsGrid() {
+function renderReviewsGrid(items = null) {
   const grid = document.getElementById("reviewsGrid");
   if (!grid) return;
 
-  const reviews = JSON.parse(localStorage.getItem("wiiu_reviews")) || [];
+  const reviews =
+    items ?? (JSON.parse(localStorage.getItem("wiiu_reviews")) || []);
   if (reviews.length === 0) {
     grid.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.9rem; grid-column:1/-1;">No hay opiniones ni reseñas registradas aún</div>`;
     return;
@@ -600,7 +773,7 @@ function renderReviewsGrid() {
     <div class="tarjeta-resena">
       <div class="encabezado-resena">
         <span class="nombre-resenador">${rev.name}</span>
-        <div class="estrellas-resena">${starIcon.repeat(rev.rating || 5)}</div>
+        <div class="estrellas-resena">${starIcon.repeat(Number(rev.rating || 5))}</div>
       </div>
       <p class="comentario-resena">"${rev.comment}"</p>
       <div class="etiqueta-producto-resena">${gamepadTagIcon} <span>${rev.product}</span></div>
@@ -610,11 +783,43 @@ function renderReviewsGrid() {
     .join("");
 }
 
-function renderClientsTable() {
+window.filterReviews = function (searchTerm) {
+  const list = JSON.parse(localStorage.getItem("wiiu_reviews")) || [];
+  const cleanTerm = String(searchTerm || "")
+    .toLowerCase()
+    .trim();
+
+  const filtered = cleanTerm
+    ? list.filter((item) =>
+        [item.name, item.product, item.comment, item.rating]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(cleanTerm),
+      )
+    : list;
+
+  renderReviewsGrid(filtered);
+};
+
+window.filterReviewsByRating = function (rating) {
+  const list = JSON.parse(localStorage.getItem("wiiu_reviews")) || [];
+  const normalized = String(rating || "todos").trim();
+
+  const filtered =
+    normalized === "todos"
+      ? list
+      : list.filter((item) => Number(item.rating || 0) === Number(normalized));
+
+  renderReviewsGrid(filtered);
+};
+
+function renderClientsTable(items = null) {
   const tbody = document.getElementById("clientesTableBody");
   if (!tbody) return;
 
-  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  const clients =
+    items || JSON.parse(localStorage.getItem("wiiu_clients")) || [];
   if (clients.length === 0) {
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-muted); padding:30px;">No hay clientes registrados en el directorio</td></tr>`;
     return;
@@ -627,7 +832,7 @@ function renderClientsTable() {
       <td style="font-weight:700; color:#FFFFFF;">${c.name}</td>
       <td>${c.phone}</td>
       <td style="color:var(--text-secondary);">${c.email}</td>
-      <td style="font-weight:700; color:var(--accent-gold);">${c.totalSpent}</td>
+      <td style="font-weight:700; color:var(--accent-gold);">$ ${Number(c.totalSpent || 0).toLocaleString("es-CO")}</td>
       <td>${c.lastVisit || "Reciente"}</td>
       <td><span class="insignia-estado entregado">${c.level}</span></td>
       <td>
@@ -1172,23 +1377,79 @@ function initGlobalSearch() {
 
   input.addEventListener("input", (e) => {
     const term = e.target.value.toLowerCase().trim();
-    if (term === "") return;
+    if (!term) {
+      renderAllModules();
+      return;
+    }
 
-    const filtered = getProducts().filter(
-      (p) =>
-        p.name.toLowerCase().includes(term) ||
-        p.sku.toLowerCase().includes(term) ||
-        p.category.toLowerCase().includes(term),
+    const matches = [
+      ...(getProducts() || []),
+      ...(JSON.parse(localStorage.getItem("wiiu_clients")) || []),
+      ...(JSON.parse(localStorage.getItem("wiiu_warranties")) || []),
+      ...(JSON.parse(localStorage.getItem("wiiu_maintenance")) || []),
+      ...(JSON.parse(localStorage.getItem("wiiu_repairs")) || []),
+    ].filter((entry) => {
+      const haystack = [
+        entry.name,
+        entry.sku,
+        entry.category,
+        entry.client,
+        entry.product,
+        entry.device,
+        entry.ticket,
+        entry.order,
+        entry.email,
+        entry.phone,
+        entry.code,
+        entry.desc,
+        entry.equipment,
+        entry.tech,
+        entry.defect,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(term);
+    });
+
+    const productMatches = matches.filter(
+      (entry) => entry.name || entry.sku || entry.category,
+    );
+    const clientMatches = matches.filter(
+      (entry) => entry.email || entry.phone || entry.name,
     );
 
-    if (
-      filtered.length > 0 &&
-      !document
-        .getElementById("view-inventario")
-        .classList.contains("vista-activa")
-    ) {
+    if (productMatches.length > 0) {
       switchView("inventario");
-      renderInventoryTable(filtered);
+      renderInventoryTable(
+        productMatches.map((item) => ({
+          ...item,
+          name: item.name || item.product || "Producto",
+          sku: item.sku || "SKU-000",
+          category: item.category || "General",
+          price: Number(item.price || 0),
+          stock: Number(item.stock || 0),
+          minStock: Number(item.minStock || 3),
+        })),
+      );
+    }
+
+    if (clientMatches.length && !productMatches.length) {
+      switchView("clientes");
+      renderClientsTable(
+        clientMatches.map((item) => ({
+          name: item.name || item.client || "Cliente",
+          phone: item.phone || "Sin teléfono",
+          email: item.email || "Sin correo",
+          totalSpent: Number(item.totalSpent || 0),
+          lastVisit: item.lastVisit || "Reciente",
+          level: item.level || "Nuevo",
+        })),
+      );
+    }
+
+    if (!productMatches.length && !clientMatches.length) {
+      showToast("No se encontraron coincidencias en el panel administrativo.");
     }
   });
 }
@@ -1211,6 +1472,106 @@ window.filterProductsByCategory = function (category) {
       ? products
       : products.filter((p) => p.category === category),
   );
+};
+
+window.filterClientsByLevel = function (level) {
+  const list = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  const normalized = String(level || "todos").trim();
+
+  const filtered =
+    normalized === "todos"
+      ? list
+      : list.filter((item) => (item.level || "Nuevo") === normalized);
+
+  renderClientsTable(filtered);
+};
+
+window.filterMaintenance = function (searchTerm) {
+  const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
+  const cleanTerm = String(searchTerm || "")
+    .toLowerCase()
+    .trim();
+
+  const filtered = cleanTerm
+    ? list.filter((item) =>
+        [item.order, item.equipment, item.client, item.tech, item.status]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(cleanTerm),
+      )
+    : list;
+
+  renderMaintenanceTable(filtered);
+};
+
+window.filterRepairs = function (searchTerm) {
+  const list = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
+  const cleanTerm = String(searchTerm || "")
+    .toLowerCase()
+    .trim();
+
+  const filtered = cleanTerm
+    ? list.filter((item) =>
+        [item.ticket, item.device, item.defect, item.client, item.status]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(cleanTerm),
+      )
+    : list;
+
+  renderRepairsTable(filtered);
+};
+
+window.filterClients = function (searchTerm) {
+  const list = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+  const cleanTerm = String(searchTerm || "")
+    .toLowerCase()
+    .trim();
+
+  const filtered = cleanTerm
+    ? list.filter((item) =>
+        [item.name, item.phone, item.email, item.level]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(cleanTerm),
+      )
+    : list;
+
+  renderClientsTable(filtered);
+};
+
+window.filterDiscounts = function (searchTerm) {
+  const list = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
+  const cleanTerm = String(searchTerm || "")
+    .toLowerCase()
+    .trim();
+
+  const filtered = cleanTerm
+    ? list.filter((item) =>
+        [item.code, item.desc, item.discountDescription, item.status]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase()
+          .includes(cleanTerm),
+      )
+    : list;
+
+  renderDiscountsTable(filtered);
+};
+
+window.filterDiscountsByStatus = function (status) {
+  const list = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
+  const normalized = String(status || "todos").trim();
+
+  const filtered =
+    normalized === "todos"
+      ? list
+      : list.filter((item) => (item.status || "Activo") === normalized);
+
+  renderDiscountsTable(filtered);
 };
 
 window.filterWarranties = function (term) {
