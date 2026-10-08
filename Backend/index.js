@@ -1,12 +1,209 @@
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const pool = require("./db.js");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
+const SESSION_TTL = 8 * 60 * 60 * 1000;
+const sessions = new Map();
+
+function requireUserSession(req, res, next) {
+  const token = req.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const session = token ? sessions.get(token) : null;
+
+  if (!session || session.expiresAt <= Date.now()) {
+    if (token) sessions.delete(token);
+    return res
+      .status(401)
+      .json({ ok: false, message: "Sesión no válida o vencida." });
+  }
+
+  req.userId = session.userId;
+  req.sessionToken = token;
+  return next();
+}
+
+function crearTokenSesion(userId) {
+  const now = Date.now();
+  sessions.forEach((session, token) => {
+    if (session.expiresAt <= now) sessions.delete(token);
+  });
+
+  const token = crypto.randomBytes(32).toString("hex");
+  sessions.set(token, { userId, expiresAt: now + SESSION_TTL });
+  return token;
+}
+
+function obtenerPerfil(userId) {
+  return pool.query(
+    `SELECT
+       id_usuario AS id,
+       nombre,
+       apellido,
+       tipo_doc AS tipoDocumento,
+       num_doc AS documento,
+       DATE_FORMAT(fecha_nacimiento, '%Y-%m-%d') AS nacimiento,
+       telefono,
+       telefono_secundario AS telefonoSecundario,
+       departamento,
+       ciudad,
+       direccion,
+       correo
+     FROM usuario
+     WHERE id_usuario = ? AND estado = 'ACTIVO'`,
+    [userId],
+  );
+}
+
+app.get("/api/profile", requireUserSession, async (req, res) => {
+  try {
+    const [rows] = await obtenerPerfil(req.userId);
+    if (!rows.length) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Usuario no encontrado." });
+    }
+    return res.json({ ok: true, profile: rows[0] });
+  } catch (error) {
+    console.error("Error al consultar perfil:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudo cargar el perfil." });
+  }
+});
+
+app.put("/api/profile", requireUserSession, async (req, res) => {
+  const profile = {
+    nombre: String(req.body?.nombre || "").trim(),
+    apellido: String(req.body?.apellido || "").trim(),
+    correo: String(req.body?.correo || "")
+      .trim()
+      .toLowerCase(),
+    telefono: String(req.body?.telefono || "").trim(),
+    documento: String(req.body?.documento || "").trim(),
+    nacimiento: String(req.body?.nacimiento || "").trim(),
+  };
+  const nombreValido = /^[\p{L}][\p{L}\s'-]*$/u;
+  const fechaNacimiento = new Date(`${profile.nacimiento}T00:00:00Z`);
+  const fechaValida =
+    !profile.nacimiento ||
+    (/^\d{4}-\d{2}-\d{2}$/.test(profile.nacimiento) &&
+      !Number.isNaN(fechaNacimiento.getTime()) &&
+      fechaNacimiento.toISOString().slice(0, 10) === profile.nacimiento &&
+      profile.nacimiento <= new Date().toISOString().slice(0, 10));
+
+  if (
+    !nombreValido.test(profile.nombre) ||
+    !nombreValido.test(profile.apellido) ||
+    profile.nombre.length > 30 ||
+    profile.apellido.length > 30 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.correo) ||
+    profile.correo.length > 120 ||
+    !/^[+\d()\s-]{7,20}$/.test(profile.telefono) ||
+    !/^[\p{L}\p{N}.-]{4,20}$/u.test(profile.documento) ||
+    !fechaValida
+  ) {
+    return res
+      .status(400)
+      .json({ ok: false, message: "Revisa los datos del perfil." });
+  }
+
+  try {
+    await pool.query(
+      `UPDATE usuario
+       SET nombre = ?, apellido = ?, correo = ?, telefono = ?,
+           num_doc = ?, fecha_nacimiento = ?
+       WHERE id_usuario = ? AND estado = 'ACTIVO'`,
+      [
+        profile.nombre,
+        profile.apellido,
+        profile.correo,
+        profile.telefono,
+        profile.documento,
+        profile.nacimiento || null,
+        req.userId,
+      ],
+    );
+    const [rows] = await obtenerPerfil(req.userId);
+    if (!rows.length) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Usuario no encontrado." });
+    }
+    return res.json({ ok: true, profile: rows[0] });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res
+        .status(409)
+        .json({
+          ok: false,
+          message: "El correo o documento ya está registrado.",
+        });
+    }
+    console.error("Error al actualizar perfil:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudo guardar el perfil." });
+  }
+});
+
+app.put("/api/profile/password", requireUserSession, async (req, res) => {
+  const currentPassword = String(req.body?.currentPassword || "");
+  const newPassword = String(req.body?.newPassword || "");
+  if (
+    !currentPassword ||
+    newPassword.length < 8 ||
+    Buffer.byteLength(newPassword, "utf8") > 72
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "La nueva contraseña debe tener entre 8 y 72 bytes.",
+    });
+  }
+
+  try {
+    const [rows] = await pool.query(
+      "SELECT contrasena_hash FROM usuario WHERE id_usuario = ? AND estado = 'ACTIVO'",
+      [req.userId],
+    );
+    if (!rows.length) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "Usuario no encontrado." });
+    }
+
+    const storedPassword = rows[0].contrasena_hash || "";
+    const currentPasswordMatches = storedPassword.startsWith("$2")
+      ? await bcrypt.compare(currentPassword, storedPassword)
+      : currentPassword === storedPassword;
+    if (!currentPasswordMatches) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "La contraseña actual no es correcta." });
+    }
+
+    const passwordHash = await bcrypt.hash(newPassword, 12);
+    await pool.query(
+      "UPDATE usuario SET contrasena_hash = ? WHERE id_usuario = ?",
+      [passwordHash, req.userId],
+    );
+    return res.json({ ok: true, message: "Contraseña actualizada." });
+  } catch (error) {
+    console.error("Error al actualizar contraseña:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudo actualizar la contraseña." });
+  }
+});
+
+app.delete("/api/session", requireUserSession, (req, res) => {
+  sessions.delete(req.sessionToken);
+  return res.json({ ok: true });
+});
 
 app.get("/api/dashboard/admin", async (req, res) => {
   try {
@@ -238,6 +435,7 @@ app.post("/api/login", async (req, res) => {
     const nombreCompleto = `${usuario.nombre} ${usuario.apellido}`.trim();
     return res.json({
       ok: true,
+      sessionToken: crearTokenSesion(usuario.id_usuario),
       user: {
         id: usuario.id_usuario,
         email: usuario.correo,

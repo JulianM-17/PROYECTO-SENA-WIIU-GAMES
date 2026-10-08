@@ -1,5 +1,3 @@
-
-
 :root {
   --yellow: #f5c842;
   --yellow-hover: #e8b830;
@@ -35,7 +33,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-style: normal;
 }
 
@@ -79,7 +77,9 @@
   margin-left: 8px;
   display: inline-block;
   border-bottom: 1px solid rgba(245, 200, 66, 0.4);
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .link-contacto:hover {
@@ -104,7 +104,9 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  transition: color 0.25s ease, transform 0.15s ease;
+  transition:
+    color 0.25s ease,
+    transform 0.15s ease;
 }
 
 .red-social:hover {
@@ -134,7 +136,9 @@
   height: 72px;
   width: auto;
   filter: drop-shadow(0 0 10px rgba(245, 200, 66, 0.2));
-  transition: filter 0.3s ease, transform 0.3s ease;
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
 }
 
 .seccion-logo img:hover {
@@ -153,7 +157,9 @@
   height: 58px;
   width: auto;
   filter: drop-shadow(0 0 10px rgba(245, 200, 66, 0.2));
-  transition: filter 0.3s ease, transform 0.3s ease;
+  transition:
+    filter 0.3s ease,
+    transform 0.3s ease;
 }
 
 .texto-logo img:hover {
@@ -181,13 +187,15 @@
   font-size: 14px;
   padding: 8px 14px;
   border-radius: 10px;
-  transition: color 0.25s ease, background 0.25s ease;
+  transition:
+    color 0.25s ease,
+    background 0.25s ease;
   letter-spacing: 0.01em;
   position: relative;
 }
 
 .enlaces-nav a::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 5px;
   left: 14px;
@@ -282,7 +290,9 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: color 0.25s ease, transform 0.15s ease;
+  transition:
+    color 0.25s ease,
+    transform 0.15s ease;
   padding: 6px;
   border-radius: 8px;
 }
@@ -326,12 +336,58 @@
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 2px 10px rgba(245, 200, 66, 0.3);
-  transition: box-shadow 0.3s ease, transform 0.15s ease;
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.15s ease;
 }
 
 .foto-perfil:hover {
   box-shadow: 0 4px 20px rgba(245, 200, 66, 0.5);
   transform: scale(1.05);
+}
+
+.usuario-autenticado .botones-ingreso {
+  display: none !important;
+}
+
+.avatar-sesion {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5c842 0%, #e8b830 100%);
+  color: #080f20;
+  font-size: 12px;
+  font-weight: 800;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(245, 200, 66, 0.3);
+  transition:
+    box-shadow 0.3s ease,
+    transform 0.15s ease;
+}
+
+.avatar-sesion:hover {
+  color: #080f20;
+  box-shadow: 0 4px 20px rgba(245, 200, 66, 0.5);
+  transform: scale(1.05);
+}
+
+.avatar-sesion:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
+a.foto-perfil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #080f20;
+  font-size: 11px;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 /* =====================================================
@@ -341,14 +397,14 @@
   background: linear-gradient(180deg, #0c1a35 0%, #080e1d 60%, #050b18 100%);
   color: var(--white);
   padding: 60px 60px 28px 60px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   border-top: 1px solid rgba(245, 200, 66, 0.12);
   position: relative;
   overflow: hidden;
 }
 
 .sitio-footer::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -396,7 +452,9 @@
   color: rgba(255, 255, 255, 0.48);
   text-decoration: none;
   font-size: 13px;
-  transition: color 0.25s ease, padding-left 0.2s ease;
+  transition:
+    color 0.25s ease,
+    padding-left 0.2s ease;
   display: inline-block;
 }
 
@@ -476,7 +534,10 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.55);
   letter-spacing: 0.02em;
-  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
 }
 
 .tarjeta-icono:hover {
@@ -531,4 +592,3 @@
   color: var(--yellow, #f5c842);
   font-weight: 600;
 }
-

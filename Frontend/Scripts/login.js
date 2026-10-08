@@ -226,6 +226,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .then((data) => {
           const usuario = data.user || {};
+          if (!data.sessionToken) {
+            throw new Error("Reinicia el backend para actualizar la sesión.");
+          }
 
           if (checkRecordar && checkRecordar.checked) {
             localStorage.setItem("wiiu_remember_email", correo);
@@ -234,9 +237,11 @@ document.addEventListener("DOMContentLoaded", () => {
           }
 
           const sesionUsuario = {
+            id: usuario.id,
             correo: usuario.email,
             nombre: usuario.nombre,
             rol: usuario.rol,
+            token: data.sessionToken,
             fechaIngreso: new Date().toISOString(),
           };
           sessionStorage.setItem(
@@ -251,13 +256,21 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           mostrarToast(`¡Bienvenido, ${usuario.nombre}!`, "exito");
 
+          const destinoSolicitado = new URLSearchParams(
+            window.location.search,
+          ).get("returnTo");
           const rutaDestino =
-            {
-              Administrador: "Administrador/index_admin.html",
-              Cliente: "panel_usuario.html",
-              Trabajador: "Empleado/index.html",
-              Proveedor: "panel_usuario.html",
-            }[usuario.rol] || "panel_usuario.html";
+            usuario.rol === "Cliente" &&
+            destinoSolicitado === "panel_usuario.html?view=garantias"
+              ? destinoSolicitado
+              : data.redirectTo ||
+                {
+                  Administrador: "Administrador/index_admin.html",
+                  Cliente: "panel_usuario.html",
+                  Trabajador: "Empleado/index.html",
+                  Proveedor: "panel_usuario.html",
+                }[usuario.rol] ||
+                "panel_usuario.html";
 
           setTimeout(() => {
             window.location.href = rutaDestino;

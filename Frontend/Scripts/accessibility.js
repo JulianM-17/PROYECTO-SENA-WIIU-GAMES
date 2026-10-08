@@ -146,6 +146,7 @@
   function initialize() {
     createUI();
     applyPreferences();
+    setupSessionHeader();
 
     // Ocultar burbuja del carrito si no tiene productos
     document.querySelectorAll(".burbuja-carrito").forEach((burbuja) => {
@@ -159,12 +160,63 @@
     setupNotificationWatcher();
   }
 
+  function setupSessionHeader() {
+    let user;
+    try {
+      user = JSON.parse(
+        sessionStorage.getItem("wiiu_usuario_activo") || "null",
+      );
+    } catch (error) {
+      return;
+    }
+    if (!user?.token) return;
+
+    document.body.classList.add("usuario-autenticado");
+    const homeLink = document.querySelector(".seccion-logo a");
+    const baseUrl = homeLink?.href || document.baseURI;
+    const destinations = {
+      Administrador: "Pages/Administrador/index_admin.html",
+      Trabajador: "Pages/Empleado/index.html",
+      Cliente: "Pages/panel_usuario.html",
+      Proveedor: "Pages/panel_usuario.html",
+    };
+    const destination = new URL(
+      destinations[user.rol] || destinations.Cliente,
+      baseUrl,
+    ).href;
+    const initials = String(user.nombre || "Usuario")
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join("");
+    const existingAvatar = document.querySelector(".foto-perfil");
+    const avatar = document.createElement("a");
+    avatar.className = existingAvatar
+      ? `avatar-sesion ${existingAvatar.className}`
+      : "avatar-sesion";
+    avatar.href = destination;
+    avatar.title = user.nombre || "Mi cuenta";
+    avatar.setAttribute(
+      "aria-label",
+      `Abrir cuenta de ${user.nombre || "usuario"}`,
+    );
+    avatar.textContent = initials || "U";
+
+    if (existingAvatar) {
+      existingAvatar.replaceWith(avatar);
+    } else {
+      const userIcons = document.querySelector(".iconos-usuario");
+      if (userIcons) userIcons.appendChild(avatar);
+    }
+  }
+
   function setupNotificationWatcher() {
     let updateTimer = null;
 
     function adjustPosition() {
       const activeToasts = document.querySelectorAll(
-        ".toast, .notificacion-alerta, .toast-notification, .contenedor-notificacion .toast, .contenedor-toast .toast, #toastContainer .toast"
+        ".toast, .notificacion-alerta, .toast-notification, .contenedor-notificacion .toast, .contenedor-toast .toast, #toastContainer .toast",
       );
 
       if (!activeToasts || activeToasts.length === 0) {
@@ -173,7 +225,7 @@
       }
 
       const toastContainers = document.querySelectorAll(
-        "#toastContainer, .contenedor-notificacion, .contenedor-toast, #contenedor-toast, #contenedor-notificacion"
+        "#toastContainer, .contenedor-notificacion, .contenedor-toast, #contenedor-toast, #contenedor-notificacion",
       );
 
       let maxOffset = 0;
@@ -191,7 +243,10 @@
       }
 
       const shiftPx = Math.round(maxOffset + 16);
-      document.documentElement.style.setProperty("--a11y-shift-y", `-${shiftPx}px`);
+      document.documentElement.style.setProperty(
+        "--a11y-shift-y",
+        `-${shiftPx}px`,
+      );
     }
 
     const observer = new MutationObserver(() => {

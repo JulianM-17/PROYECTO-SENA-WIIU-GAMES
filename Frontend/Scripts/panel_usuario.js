@@ -3,14 +3,23 @@
 //   WiiU-Games
 // =====================================================
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   // ===================================================
   // 1. ESTADO DE LA APLICACIÓN Y LOCALSTORAGE
   // ===================================================
   const STORAGE_KEY = "wiiu_user_panel_data";
-  const sessionUser = JSON.parse(
-    sessionStorage.getItem("wiiu_usuario_activo") || "null",
-  );
+  let sessionUser;
+  try {
+    sessionUser = JSON.parse(
+      sessionStorage.getItem("wiiu_usuario_activo") || "null",
+    );
+  } catch (error) {
+    sessionUser = null;
+  }
+  if (!sessionUser?.token) {
+    window.location.href = "Login.html";
+    return;
+  }
   const nombreCompleto = sessionUser?.nombre || "Usuario";
   const partesNombre = nombreCompleto.trim().split(/\s+/);
 
@@ -37,13 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        if (Object.hasOwn(parsed, "profile")) {
+          delete parsed.profile;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        }
         return {
           ...defaultState,
           ...parsed,
-          profile: {
-            ...defaultState.profile,
-            ...(parsed.profile || {}),
-          },
+          profile: defaultState.profile,
         };
       }
     } catch (e) {
@@ -54,10 +64,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function saveState() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      const { profile, ...panelData } = state;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(panelData));
     } catch (e) {
       console.warn("Error al guardar estado:", e);
     }
+  }
+
+  async function loadProfileFromDatabase() {
+    const response = await fetch("http://localhost:3000/api/profile", {
+      headers: { Authorization: `Bearer ${sessionUser.token}` },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.ok) {
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        window.location.href = "Login.html";
+      }
+      throw new Error(data.message || "No se pudo cargar el perfil.");
+    }
+
+    const profile = data.profile;
+    state.profile = {
+      nombre: profile.nombre || "",
+      apellidos: profile.apellido || "",
+      email: profile.correo || "",
+      telefono: profile.telefono || "",
+      nacimiento: profile.nacimiento || "",
+      documento: profile.documento || "",
+    };
+    sessionUser.nombre =
+      `${state.profile.nombre} ${state.profile.apellidos}`.trim();
+    sessionUser.correo = state.profile.email;
+    sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
   }
 
   // ===================================================
@@ -130,6 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "vista-favoritos": "Mi Lista de Favoritos",
     "vista-seguimiento": "Sigue tu Pedido",
     "vista-factura": "Descarga tu Factura",
+    "vista-garantias": "Garantías",
   };
 
   function activarVista(vistaId, navId) {
@@ -286,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   if (formPerfilDatos) {
-    formPerfilDatos.addEventListener("submit", (e) => {
+    formPerfilDatos.addEventListener("submit", async (e) => {
       e.preventDefault();
       const inputNombre = document.getElementById("perfil-nombres");
       const inputApellidos = document.getElementById("perfil-apellidos");
@@ -323,16 +363,52 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      state.profile.nombre = nuevoNombre;
-      state.profile.apellidos = nuevosApellidos;
-      state.profile.email = nuevoEmail;
-      state.profile.telefono = nuevoTel;
-      state.profile.nacimiento = nuevoNac;
-      state.profile.documento = nuevoDoc;
+      const saveButton = formPerfilDatos.querySelector('[type="submit"]');
+      if (saveButton) saveButton.disabled = true;
+      try {
+        const response = await fetch("http://localhost:3000/api/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionUser.token}`,
+          },
+          body: JSON.stringify({
+            nombre: nuevoNombre,
+            apellido: nuevosApellidos,
+            correo: nuevoEmail,
+            telefono: nuevoTel,
+            nacimiento: nuevoNac,
+            documento: nuevoDoc,
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || "No se pudieron guardar los datos.");
+        }
 
-      saveState();
-      updateUI();
-      showToast("¡Datos personales actualizados con éxito!", "success");
+        const profile = data.profile;
+        state.profile = {
+          nombre: profile.nombre || "",
+          apellidos: profile.apellido || "",
+          email: profile.correo || "",
+          telefono: profile.telefono || "",
+          nacimiento: profile.nacimiento || "",
+          documento: profile.documento || "",
+        };
+        sessionUser.nombre =
+          `${state.profile.nombre} ${state.profile.apellidos}`.trim();
+        sessionUser.correo = state.profile.email;
+        sessionStorage.setItem(
+          "wiiu_usuario_activo",
+          JSON.stringify(sessionUser),
+        );
+        updateUI();
+        showToast("¡Datos personales actualizados con éxito!", "success");
+      } catch (error) {
+        showToast(error.message, "error");
+      } finally {
+        if (saveButton) saveButton.disabled = false;
+      }
     });
   }
 
@@ -348,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (formPerfilSeguridad) {
-    formPerfilSeguridad.addEventListener("submit", (e) => {
+    formPerfilSeguridad.addEventListener("submit", async (e) => {
       e.preventDefault();
       const inputActual = document.getElementById("perfil-pass-actual");
       const inputNueva = document.getElementById("perfil-pass-nueva");
@@ -365,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
         inputActual.classList.remove("input-error");
       }
 
-      if (!nueva || nueva.length < 6) {
+      if (!nueva || nueva.length < 8) {
         if (inputNueva) inputNueva.classList.add("input-error");
         valido = false;
       } else if (inputNueva) {
@@ -382,9 +458,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!valido) {
         if (!actual) {
           showToast("Ingresa tu contraseña actual.", "error");
-        } else if (!nueva || nueva.length < 6) {
+        } else if (!nueva || nueva.length < 8) {
           showToast(
-            "La nueva contraseña debe tener al menos 6 caracteres.",
+            "La nueva contraseña debe tener al menos 8 caracteres.",
             "error",
           );
         } else {
@@ -395,11 +471,38 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      if (inputActual) inputActual.value = "";
-      if (inputNueva) inputNueva.value = "";
-      if (inputConfirm) inputConfirm.value = "";
-
-      showToast("¡Contraseña actualizada con éxito!", "success");
+      const saveButton = formPerfilSeguridad.querySelector('[type="submit"]');
+      if (saveButton) saveButton.disabled = true;
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/profile/password",
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${sessionUser.token}`,
+            },
+            body: JSON.stringify({
+              currentPassword: actual,
+              newPassword: nueva,
+            }),
+          },
+        );
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.message || "No se pudo actualizar la contraseña.",
+          );
+        }
+        if (inputActual) inputActual.value = "";
+        if (inputNueva) inputNueva.value = "";
+        if (inputConfirm) inputConfirm.value = "";
+        showToast("¡Contraseña actualizada con éxito!", "success");
+      } catch (error) {
+        showToast(error.message, "error");
+      } finally {
+        if (saveButton) saveButton.disabled = false;
+      }
     });
   }
 
@@ -1079,17 +1182,31 @@ document.addEventListener("DOMContentLoaded", () => {
   // ===================================================
   const btnLogout = document.querySelector(".elemento-nav.logout");
   if (btnLogout) {
-    btnLogout.addEventListener("click", (e) => {
+    btnLogout.addEventListener("click", async (e) => {
       e.preventDefault();
       if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
         showToast("Cerrando sesión...", "info");
-        setTimeout(() => {
-          window.location.href = "Registro.html";
-        }, 1000);
+        try {
+          await fetch("http://localhost:3000/api/session", {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${sessionUser.token}` },
+          });
+        } catch (error) {}
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        window.location.href = "Login.html";
       }
     });
   }
 
+  try {
+    await loadProfileFromDatabase();
+  } catch (error) {
+    showToast(error.message, "error");
+  }
+
   // Inicializar interfaz completa
   updateUI();
+  if (new URLSearchParams(window.location.search).get("view") === "garantias") {
+    activarVista("vista-garantias", "nav-garantias");
+  }
 });

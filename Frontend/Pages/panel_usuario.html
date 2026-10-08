@@ -201,6 +201,15 @@
               <i class="fi fi-rr-file-invoice"></i>
               Descarga tu factura
             </a>
+            <a
+              href="#"
+              class="elemento-nav"
+              id="nav-garantias"
+              data-vista="vista-garantias"
+            >
+              <i class="fi fi-rr-shield-check"></i>
+              Garantías
+            </a>
 
             <div class="nav-divider"></div>
             <a href="Registro.html" class="elemento-nav logout">
@@ -356,7 +365,7 @@
                 <div>
                   <p class="perfil-avatar-nombre">Tu nombre</p>
                   <p class="perfil-avatar-email">usuario@wiiu.com</p>
-                  <span class="insignia-perfil">Cliente Premium</span>
+                  <span class="insignia-perfil">Cuenta activa</span>
                 </div>
               </div>
               <div class="estadisticas-perfil">
@@ -387,6 +396,7 @@
                     value=""
                     class="entrada-formulario"
                     required
+                    maxlength="30"
                   />
                 </div>
                 <div class="campo-formulario">
@@ -397,6 +407,7 @@
                     value=""
                     class="entrada-formulario"
                     required
+                    maxlength="30"
                   />
                 </div>
                 <div class="campo-formulario">
@@ -407,6 +418,7 @@
                     value=""
                     class="entrada-formulario"
                     required
+                    maxlength="120"
                   />
                 </div>
                 <div class="campo-formulario">
@@ -416,6 +428,8 @@
                     id="perfil-telefono"
                     value=""
                     class="entrada-formulario"
+                    required
+                    maxlength="20"
                   />
                 </div>
                 <div class="campo-formulario">
@@ -436,6 +450,8 @@
                     id="perfil-documento"
                     value=""
                     class="entrada-formulario"
+                    required
+                    maxlength="20"
                   />
                 </div>
               </div>
@@ -474,6 +490,8 @@
                     id="perfil-pass-nueva"
                     placeholder="••••••••"
                     class="entrada-formulario"
+                    minlength="8"
+                    required
                   />
                 </div>
                 <div class="campo-formulario">
@@ -485,6 +503,8 @@
                     id="perfil-pass-confirm"
                     placeholder="••••••••"
                     class="entrada-formulario"
+                    minlength="8"
+                    required
                   />
                 </div>
               </div>
@@ -494,6 +514,110 @@
                 </button>
               </div>
             </form>
+          </div>
+
+          <div class="vista-panel" id="vista-garantias">
+            <div class="banner-bienvenida">
+              <div class="banner-encabezado">
+                <i class="fi fi-rr-shield-check"></i>
+                <h1>Gestión de Garantías</h1>
+              </div>
+              <p class="banner-subtitulo">
+                Registra una solicitud y describe el problema de tu producto.
+              </p>
+            </div>
+            <div class="garantias-panel">
+              <form
+                action="#"
+                method="post"
+                class="garantia-form"
+                id="form-garantia"
+                novalidate
+              >
+                <div class="campo">
+                  <label for="id-pedido">Número de pedido / Factura*</label>
+                  <input
+                    type="text"
+                    inputmode="numeric"
+                    id="id-pedido"
+                    name="id-pedido"
+                    placeholder="Ej: 104582 (solo números)"
+                    maxlength="12"
+                    required
+                  />
+                  <span class="error-mensaje" id="error-id-pedido"></span>
+                </div>
+                <div class="campo">
+                  <label for="id-producto">Número de serie del producto*</label>
+                  <input
+                    type="text"
+                    id="id-producto"
+                    name="id-producto"
+                    placeholder="Ej: SN-9842104"
+                    maxlength="25"
+                    required
+                  />
+                  <span class="error-mensaje" id="error-id-producto"></span>
+                </div>
+                <div class="campo garantia-categoria">
+                  <label for="categoria-producto"
+                    >Categoría del producto*</label
+                  >
+                  <select
+                    id="categoria-producto"
+                    name="categoria-producto"
+                    required
+                  >
+                    <option value="" disabled selected>
+                      Selecciona una categoría...
+                    </option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Consola">Consola</option>
+                    <option value="Periferico">Periférico</option>
+                    <option value="Computador de Escritorio">
+                      Computador de Escritorio
+                    </option>
+                  </select>
+                  <span
+                    class="error-mensaje"
+                    id="error-categoria-producto"
+                  ></span>
+                </div>
+                <div class="consulta">
+                  <label for="consulta"
+                    >Descripción detallada del problema*</label
+                  >
+                  <textarea
+                    id="consulta"
+                    name="consulta"
+                    placeholder="Describe la falla (mínimo 15 caracteres)..."
+                    rows="4"
+                    required
+                  ></textarea>
+                  <span class="error-mensaje" id="error-consulta"></span>
+                </div>
+                <button type="submit" class="btn-agendar">
+                  Agregar nueva garantía
+                </button>
+              </form>
+              <aside class="garantia-contacto">
+                <h2>¿Necesitas ayuda?</h2>
+                <p>
+                  Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+                  Sogamoso, Boyacá
+                </p>
+                <p><strong>Teléfono:</strong> 3046616081</p>
+                <p>
+                  <strong>Horario:</strong> Lunes a sábado, 8:00 a.m. a 12:30
+                  p.m. y 2:00 p.m. a 6:30 p.m.
+                </p>
+                <p><strong>Correo:</strong> wiiugames2026@gmail.com</p>
+              </aside>
+              <p class="garantia-aviso">
+                La solicitud se valida en esta página; el sistema actual no
+                cuenta con una tabla para guardar solicitudes de garantía.
+              </p>
+            </div>
           </div>
 
           <!--Vista sobre las direcciones-->
@@ -1379,6 +1503,7 @@
     </footer>
 
     <!-- JavaScript -->
+    <script src="../Scripts/garantias.js"></script>
     <script src="../Scripts/panel_usuario.js"></script>
     <script src="../Scripts/accessibility.js" defer></script>
   </body>
