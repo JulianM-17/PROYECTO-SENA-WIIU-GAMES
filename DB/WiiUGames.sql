@@ -316,11 +316,11 @@ INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 
 -- ---------------- usuario ----------------
 INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento, telefono, telefono_secundario, departamento, ciudad, direccion, correo, contrasena_hash, estado) VALUES
-(1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'carlos.ramirez@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo1111111111111111', 'ACTIVO'),
+(1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'carlos.ramirez@correo.com', '$2b$10$eGuOp2lFJTl3BSmx2fXSb.2UhKpZmJfFd2sO6YEQsqdxRcFS22MI2', 'ACTIVO'),
 (1, 'Laura', 'Gomez', 'CC', '1098765432', '1998-07-22', '3209876543', '3151112233', 'Antioquia', 'Medellin', 'Calle 50 # 45-10', 'laura.gomez@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo2222222222222222', 'ACTIVO'),
-(2, 'Andres', 'Torres', 'CC', '80123456', '1988-11-05', '3001112233', NULL, 'Cundinamarca', 'Bogota', 'Av 68 # 22-15', 'andres.torres@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo3333333333333333', 'ACTIVO'),
+(2, 'Andres', 'Torres', 'CC', '80123456', '1988-11-05', '3001112233', NULL, 'Cundinamarca', 'Bogota', 'Av 68 # 22-15', 'andres.torres@correo.com', '$2b$10$YcpJD17WX8OdJOZ7DwoTYO978wpjJc/vczk9C9gU9ieAt6VXLSKXa', 'ACTIVO'),
 (3, 'Distribuciones Tech', 'SAS', 'NIT', '900123456', NULL, '6012223344', NULL, 'Cundinamarca', 'Bogota', 'Zona Industrial', 'proveedor@tech.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo4444444444444444', 'ACTIVO'),
-(4, 'Sofia', 'MartineZ', 'CC', '1023456789', '1992-05-10', '3112223344', NULL, 'Cundinamarca', 'Bogota', 'Calle 100 # 15-20', 'sofia.martinez@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo5555555555555555', 'ACTIVO'),
+(4, 'Sofia', 'MartineZ', 'CC', '1023456789', '1992-05-10', '3112223344', NULL, 'Cundinamarca', 'Bogota', 'Calle 100 # 15-20', 'sofia.martinez@correo.com', '$2b$10$03ahL1hHdVSvGv.o6FBNDux72OZ8d5PUQmKpEHjNiOtkaIs0x0Dpe', 'ACTIVO'),
 (4, 'Mateo', 'Rios', 'CC', '1034567890', '1990-09-15', '3223334455', NULL, 'Antioquia', 'Medellin', 'Cra 80 # 30-10', 'mateo.rios@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo6666666666666666', 'ACTIVO');
 
 

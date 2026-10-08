@@ -1,14 +1,261 @@
-const express = require('express');
-const cors = require('cors');
-const pool = require('./db.js');
+const express = require("express");
+const cors = require("cors");
+const bcrypt = require("bcryptjs");
+const pool = require("./db.js");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 
+app.get("/api/dashboard/admin", async (req, res) => {
+  try {
+    const [productsCountRows] = await pool.query(
+      "SELECT COUNT(*) AS total FROM producto WHERE estado = 'ACTIVO'",
+    );
+    const [clientsCountRows] = await pool.query(
+      `SELECT COUNT(*) AS total
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE r.nombre_rol = 'Cliente' AND u.estado = 'ACTIVO'`,
+    );
+    const [ordersCountRows] = await pool.query(
+      "SELECT COUNT(*) AS total FROM venta WHERE estado = 'PAGADA'",
+    );
+    const [salesTotalRows] = await pool.query(
+      `SELECT COALESCE(SUM(dv.subtotal), 0) AS total
+       FROM detalle_venta dv
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       WHERE v.estado = 'PAGADA'`,
+    );
+    const [topProductsRows] = await pool.query(
+      `SELECT p.nombre, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
+       FROM detalle_venta dv
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       GROUP BY p.id_producto, p.nombre
+       ORDER BY cantidad DESC, total DESC
+       LIMIT 3`,
+    );
+    const [recentOrdersRows] = await pool.query(
+      `SELECT v.id_venta, u.nombre, u.apellido, v.fecha, v.estado, COALESCE(SUM(dv.subtotal), 0) AS total
+       FROM venta v
+       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       GROUP BY v.id_venta, u.nombre, u.apellido, v.fecha, v.estado
+       ORDER BY v.fecha DESC
+       LIMIT 5`,
+    );
+    const [inventoryRows] = await pool.query(
+      `SELECT
+         p.id_producto AS id,
+         p.nombre AS name,
+         CONCAT('PRD-', p.id_producto) AS sku,
+         c.nombre_cat AS category,
+         p.precio AS price,
+         COALESCE(SUM(i.stock), 0) AS stock,
+         3 AS minStock,
+         'Nuevo Sellado' AS productCondition,
+         '12 Meses' AS warranty,
+         p.imagen_url AS imageUrl,
+         p.descripcion AS description,
+         'Original' AS platform,
+         m.nombre_marca AS publisher
+       FROM producto p
+       INNER JOIN categoria c ON c.id_categoria = p.id_categoria
+       INNER JOIN marca m ON m.id_marca = p.id_marca
+       LEFT JOIN inventario i ON i.id_producto = p.id_producto AND i.estado = 'ACTIVO'
+       WHERE p.estado = 'ACTIVO'
+       GROUP BY p.id_producto, p.nombre, c.nombre_cat, m.nombre_marca, p.precio, p.imagen_url, p.descripcion
+       ORDER BY p.nombre`,
+    );
+    const [clientsRows] = await pool.query(
+      `SELECT
+         u.id_usuario AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS name,
+         u.telefono AS phone,
+         u.correo AS email,
+         COALESCE(SUM(dv.subtotal), 0) AS totalSpent,
+         MAX(v.fecha) AS lastVisit,
+         CASE
+           WHEN COALESCE(SUM(dv.subtotal), 0) >= 500000 THEN 'VIP'
+           WHEN COALESCE(SUM(dv.subtotal), 0) >= 150000 THEN 'Frecuente'
+           ELSE 'Nuevo'
+         END AS level
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       LEFT JOIN venta v ON v.id_usuario = u.id_usuario AND v.estado = 'PAGADA'
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       WHERE r.nombre_rol = 'Cliente' AND u.estado = 'ACTIVO'
+       GROUP BY u.id_usuario, u.nombre, u.apellido, u.telefono, u.correo
+       ORDER BY totalSpent DESC, u.nombre`,
+    );
+    const [warrantyRows] = await pool.query(
+      `SELECT
+         CONCAT('GAR-', g.id_garantia) AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         p.nombre AS product,
+         DATE(v.fecha) AS buyDate,
+         DATE(g.fecha_fin) AS expDate,
+         CASE WHEN g.estado = 'VIGENTE' THEN 'Activa' ELSE 'En Revisión' END AS status
+       FROM garantia g
+       INNER JOIN detalle_venta dv ON dv.id_detalle_venta = g.id_detalle_venta
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+       ORDER BY g.fecha_fin DESC
+       LIMIT 10`,
+    );
+    const [maintenanceRows] = await pool.query(
+      `SELECT
+         CONCAT('MNT-', s.id_servicio) AS maintenanceOrder,
+         COALESCE(e.descripcion, e.tipo) AS equipment,
+         CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
+         CONCAT(uEncargado.nombre, ' ', uEncargado.apellido) AS tech,
+         CONCAT('$ ', FORMAT(CASE
+           WHEN s.id_servicio = 1 THEN 180000
+           WHEN s.id_servicio = 2 THEN 240000
+           ELSE 120000
+         END, 0)) AS cost,
+         CASE WHEN s.estado = 'ACTIVO' THEN 'En Taller' ELSE 'Listo para Entrega' END AS status
+       FROM servicio s
+       INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
+       INNER JOIN equipo e ON e.id_equipo = s.id_equipo
+       INNER JOIN usuario uCliente ON uCliente.id_usuario = s.id_usuario
+       INNER JOIN usuario uEncargado ON uEncargado.id_usuario = s.id_encargado
+       WHERE ts.estado = 'ACTIVO'
+       ORDER BY s.fecha_creacion DESC
+       LIMIT 10`,
+    );
+    const [repairRows] = await pool.query(
+      `SELECT
+         CONCAT('REP-', s.id_servicio) AS ticket,
+         COALESCE(e.descripcion, e.tipo) AS device,
+         s.descripcion AS defect,
+         CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
+         CONCAT('$ ', FORMAT(CASE WHEN s.id_servicio % 2 = 0 THEN 75000 ELSE 60000 END, 0)) AS price,
+         CASE WHEN s.estado = 'ACTIVO' THEN 'En Reparación' ELSE 'Completada' END AS status
+       FROM servicio s
+       INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
+       INNER JOIN equipo e ON e.id_equipo = s.id_equipo
+       INNER JOIN usuario uCliente ON uCliente.id_usuario = s.id_usuario
+       WHERE ts.nombre = 'Reparacion'
+       ORDER BY s.fecha_creacion DESC
+       LIMIT 10`,
+    );
+    const [discountRows] = await pool.query(
+      `SELECT
+         CONCAT('PROM-', pr.id_promocion) AS code,
+         pr.descripcion AS discountDescription,
+         CONCAT(ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100), '%') AS percent,
+         DATE_FORMAT(pr.fecha_fin, '%d/%m/%Y') AS expires,
+         CASE WHEN pr.estado = 'ACTIVO' THEN 'Activo' ELSE 'Inactivo' END AS status
+       FROM promocion pr
+       INNER JOIN producto p ON p.id_producto = pr.id_producto
+       WHERE pr.estado = 'ACTIVO'
+       ORDER BY pr.fecha_fin DESC`,
+    );
+
+    res.json({
+      ok: true,
+      summary: {
+        productsCount: Number(productsCountRows[0]?.total || 0),
+        clientsCount: Number(clientsCountRows[0]?.total || 0),
+        ordersCount: Number(ordersCountRows[0]?.total || 0),
+        salesTotal: Number(salesTotalRows[0]?.total || 0),
+      },
+      topProducts: topProductsRows || [],
+      recentOrders: recentOrdersRows || [],
+      inventory: inventoryRows || [],
+      clients: clientsRows || [],
+      warranties: warrantyRows || [],
+      maintenance: maintenanceRows || [],
+      repairs: repairRows || [],
+      discounts: discountRows || [],
+      reviews: [],
+    });
+  } catch (error) {
+    console.error("Error cargando dashboard del administrador:", error.message);
+    res.status(500).json({
+      ok: false,
+      message: "No se pudo cargar el dashboard del administrador.",
+    });
+  }
+});
+
+function obtenerRutasPorRol(rol) {
+  const rutas = {
+    Administrador: "Administrador/index_admin.html",
+    Cliente: "panel_usuario.html",
+    Trabajador: "Empleado/index.html",
+    Proveedor: "panel_usuario.html",
+  };
+
+  return rutas[rol] || "panel_usuario.html";
+}
+
+app.post("/api/login", async (req, res) => {
+  try {
+    const email = (req.body?.email || "").trim().toLowerCase();
+    const password = String(req.body?.password || "").trim();
+
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ ok: false, message: "Correo y contraseña son obligatorios." });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT u.id_usuario, u.nombre, u.apellido, u.correo, u.contrasena_hash, r.nombre_rol
+       FROM usuario u
+       INNER JOIN rol r ON u.id_rol = r.id_rol
+       WHERE u.correo = ? AND u.estado = 'ACTIVO'`,
+      [email],
+    );
+
+    if (!rows.length) {
+      return res.status(401).json({
+        ok: false,
+        message: "No existe ninguna cuenta registrada con este correo.",
+      });
+    }
+
+    const usuario = rows[0];
+    const hashGuardado = usuario.contrasena_hash || "";
+    let passwordMatches = false;
+
+    if (hashGuardado && hashGuardado.startsWith("$2")) {
+      passwordMatches = await bcrypt.compare(password, hashGuardado);
+    } else {
+      passwordMatches = hashGuardado === password;
+    }
+
+    if (!passwordMatches) {
+      return res
+        .status(401)
+        .json({ ok: false, message: "La contraseña ingresada es incorrecta." });
+    }
+
+    const nombreCompleto = `${usuario.nombre} ${usuario.apellido}`.trim();
+    return res.json({
+      ok: true,
+      user: {
+        id: usuario.id_usuario,
+        email: usuario.correo,
+        nombre: nombreCompleto,
+        rol: usuario.nombre_rol,
+      },
+      redirectTo: obtenerRutasPorRol(usuario.nombre_rol),
+    });
+  } catch (error) {
+    console.error("Error en login:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "Ocurrió un error al iniciar sesión." });
+  }
+});
+
 // Obtener productos activos y su stock total en todas las sucursales.
-app.get('/api/productos', async (req, res) => {
+app.get("/api/productos", async (req, res) => {
   try {
     const [productos] = await pool.query(`
       SELECT 
@@ -34,30 +281,34 @@ app.get('/api/productos', async (req, res) => {
     `);
     res.json(productos);
   } catch (error) {
-    console.error('Error al obtener productos:', error.message);
-    res.status(500).json({ error: 'Error al obtener productos' });
+    console.error("Error al obtener productos:", error.message);
+    res.status(500).json({ error: "Error al obtener productos" });
   }
 });
 
 // Endpoint para listar categorías
-app.get('/api/categorias', async (req, res) => {
+app.get("/api/categorias", async (req, res) => {
   try {
-    const [categorias] = await pool.query('SELECT * FROM categoria WHERE estado = "ACTIVO"');
+    const [categorias] = await pool.query(
+      'SELECT * FROM categoria WHERE estado = "ACTIVO"',
+    );
     res.json(categorias);
   } catch (error) {
-    console.error('Error al obtener categorías:', error.message);
-    res.status(500).json({ error: 'Error al obtener categorías' });
+    console.error("Error al obtener categorías:", error.message);
+    res.status(500).json({ error: "Error al obtener categorías" });
   }
 });
 
 // Endpoint para listar marcas
-app.get('/api/marcas', async (req, res) => {
+app.get("/api/marcas", async (req, res) => {
   try {
-    const [marcas] = await pool.query('SELECT * FROM marca WHERE estado = "ACTIVO"');
+    const [marcas] = await pool.query(
+      'SELECT * FROM marca WHERE estado = "ACTIVO"',
+    );
     res.json(marcas);
   } catch (error) {
-    console.error('Error al obtener marcas:', error.message);
-    res.status(500).json({ error: 'Error al obtener marcas' });
+    console.error("Error al obtener marcas:", error.message);
+    res.status(500).json({ error: "Error al obtener marcas" });
   }
 });
 

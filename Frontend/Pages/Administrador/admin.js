@@ -1,11 +1,110 @@
-document.addEventListener("DOMContentLoaded", () => {
+let adminDashboardData = null;
+
+document.addEventListener("DOMContentLoaded", async () => {
   initPresetData();
   initNavigation();
   initUserProfileMenu();
+  initAdminSessionData();
   initNonNegativeStockInput();
+  await loadAdminDashboardData();
   renderAllModules();
   initGlobalSearch();
 });
+
+async function loadAdminDashboardData() {
+  try {
+    const response = await fetch("http://localhost:3000/api/dashboard/admin");
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const data = await response.json();
+    if (!data.ok)
+      throw new Error(data.message || "Error al cargar el dashboard");
+
+    adminDashboardData = data;
+
+    const inventory = (Array.isArray(data.inventory) ? data.inventory : []).map(
+      (item) => ({
+        ...item,
+        condition: item.productCondition || item.condition || "Nuevo Sellado",
+        name: item.name || item.nombre,
+        price: Number(item.price || 0),
+        stock: Number(item.stock || 0),
+        minStock: Number(item.minStock || 3),
+      }),
+    );
+
+    const maintenance = (
+      Array.isArray(data.maintenance) ? data.maintenance : []
+    ).map((item) => ({
+      ...item,
+      order: item.maintenanceOrder || item.order || "MNT-0",
+    }));
+
+    const discounts = (Array.isArray(data.discounts) ? data.discounts : []).map(
+      (item) => ({
+        ...item,
+        desc: item.discountDescription || item.desc || "Descuento",
+        percent: item.percent || "0%",
+      }),
+    );
+
+    const dashboardPayload = {
+      wiiu_products: inventory,
+      wiiu_clients: Array.isArray(data.clients) ? data.clients : [],
+      wiiu_warranties: Array.isArray(data.warranties) ? data.warranties : [],
+      wiiu_maintenance: maintenance,
+      wiiu_repairs: Array.isArray(data.repairs) ? data.repairs : [],
+      wiiu_discounts: discounts,
+      wiiu_reviews: Array.isArray(data.reviews) ? data.reviews : [],
+    };
+
+    Object.entries(dashboardPayload).forEach(([key, value]) => {
+      localStorage.setItem(key, JSON.stringify(value));
+    });
+  } catch (error) {
+    adminDashboardData = null;
+    [
+      "wiiu_products",
+      "wiiu_clients",
+      "wiiu_warranties",
+      "wiiu_maintenance",
+      "wiiu_repairs",
+      "wiiu_discounts",
+      "wiiu_reviews",
+    ].forEach((key) => localStorage.setItem(key, "[]"));
+    console.warn(
+      "No se pudo cargar el dashboard real desde la API:",
+      error.message,
+    );
+  }
+}
+
+function initAdminSessionData() {
+  const usuario = JSON.parse(
+    sessionStorage.getItem("wiiu_usuario_activo") || "null",
+  );
+
+  if (!usuario) {
+    window.location.href = "../Login.html";
+    return;
+  }
+
+  const nombre = String(usuario.nombre || "Administrador").trim();
+  const primerNombre = nombre.split(" ")[0] || "Administrador";
+
+  const nombrePerfil = document.querySelector(".nombre-usuario");
+  const rolPerfil = document.querySelector(".rol-usuario");
+  const greetingTitle = document.querySelector(".greeting-title span");
+  const avatarImg = document.querySelector("#perfilUsuario img");
+
+  if (nombrePerfil) nombrePerfil.textContent = nombre;
+  if (rolPerfil) rolPerfil.textContent = usuario.rol || "Administrador";
+  if (greetingTitle) greetingTitle.textContent = `¡Hola, ${primerNombre}!`;
+  if (avatarImg) {
+    avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombre)}&background=FBBF24&color=091024&bold=true`;
+    avatarImg.alt = nombre;
+  }
+}
 
 function initUserProfileMenu() {
   const btnMenu = document.getElementById("btnMenuUsuario");
@@ -25,13 +124,19 @@ function initUserProfileMenu() {
 
   btnMenu.addEventListener("click", toggleMenu);
   perfilUsuario?.addEventListener("click", (e) => {
-    if (!e.target.closest("#menuUsuario") && !e.target.closest("#btnMenuUsuario")) {
+    if (
+      !e.target.closest("#menuUsuario") &&
+      !e.target.closest("#btnMenuUsuario")
+    ) {
       toggleMenu(e);
     }
   });
 
   document.addEventListener("click", (e) => {
-    if (!e.target.closest("#perfilUsuario") && !e.target.closest("#menuUsuario")) {
+    if (
+      !e.target.closest("#perfilUsuario") &&
+      !e.target.closest("#menuUsuario")
+    ) {
       menuUsuario.classList.remove("mostrar");
       btnMenu.classList.remove("activo");
       perfilUsuario?.classList.remove("activo");
@@ -202,36 +307,83 @@ function renderAllModules() {
 }
 
 function renderDashboardMetrics() {
-  const products = getProducts();
-  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
-
   const kpiVentas = document.getElementById("kpiVentasTotales");
   const kpiPedidos = document.getElementById("kpiTotalPedidos");
   const kpiClientes = document.getElementById("kpiClientesNuevos");
   const kpiConversion = document.getElementById("kpiTasaConversion");
 
-  if (kpiVentas) kpiVentas.textContent = "$ 0";
-  if (kpiPedidos) kpiPedidos.textContent = "0";
-  if (kpiClientes) kpiClientes.textContent = `${clients.length}`;
-  if (kpiConversion) kpiConversion.textContent = "0%";
-
   const bestSellers = document.getElementById("bestSellersList");
-  if (bestSellers) {
-    bestSellers.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem;">No hay productos vendidos registrados</div>`;
-  }
-
   const recentOrders = document.getElementById("recentOrdersBody");
-  if (recentOrders) {
-    recentOrders.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay pedidos registrados</td></tr>`;
-  }
-
   const finIngresos = document.getElementById("finIngresos");
   const finGastos = document.getElementById("finGastos");
   const finUtilidad = document.getElementById("finUtilidad");
 
-  if (finIngresos) finIngresos.textContent = "$ 0";
+  const summary = adminDashboardData?.summary || {
+    productsCount: 0,
+    clientsCount: 0,
+    ordersCount: 0,
+    salesTotal: 0,
+  };
+  const topProducts = Array.isArray(adminDashboardData?.topProducts)
+    ? adminDashboardData.topProducts
+    : [];
+  const recentOrdersList = Array.isArray(adminDashboardData?.recentOrders)
+    ? adminDashboardData.recentOrders
+    : [];
+
+  if (kpiVentas)
+    kpiVentas.textContent = `$ ${Number(summary.salesTotal || 0).toLocaleString("es-CO")}`;
+  if (kpiPedidos) kpiPedidos.textContent = String(summary.ordersCount || 0);
+  if (kpiClientes) kpiClientes.textContent = String(summary.clientsCount || 0);
+  if (kpiConversion)
+    kpiConversion.textContent = `${Math.min(100, Math.max(0, Math.round(((summary.ordersCount || 0) / Math.max(summary.productsCount || 1, 1)) * 100)))}%`;
+
+  if (bestSellers) {
+    if (!topProducts.length) {
+      bestSellers.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:30px; font-size:0.85rem;">No hay productos vendidos registrados</div>`;
+    } else {
+      bestSellers.innerHTML = topProducts
+        .map(
+          (item, index) => `
+            <div class="best-seller-item">
+              <div class="best-seller-rank">#${index + 1}</div>
+              <div class="best-seller-info">
+                <div class="best-seller-name">${item.nombre}</div>
+                <div class="best-seller-meta">${Number(item.cantidad || 0)} unidades</div>
+              </div>
+              <div class="best-seller-value">$ ${Number(item.total || 0).toLocaleString("es-CO")}</div>
+            </div>
+          `,
+        )
+        .join("");
+    }
+  }
+
+  if (recentOrders) {
+    if (!recentOrdersList.length) {
+      recentOrders.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:30px;">No hay pedidos registrados</td></tr>`;
+    } else {
+      recentOrders.innerHTML = recentOrdersList
+        .map(
+          (pedido) => `
+            <tr>
+              <td>#${pedido.id_venta}</td>
+              <td>${pedido.nombre} ${pedido.apellido}</td>
+              <td>${new Date(pedido.fecha).toLocaleDateString("es-CO")}</td>
+              <td>${pedido.estado}</td>
+              <td>$ ${Number(pedido.total || 0).toLocaleString("es-CO")}</td>
+            </tr>
+          `,
+        )
+        .join("");
+    }
+  }
+
+  if (finIngresos)
+    finIngresos.textContent = `$ ${Number(summary.salesTotal || 0).toLocaleString("es-CO")}`;
   if (finGastos) finGastos.textContent = "$ 0";
-  if (finUtilidad) finUtilidad.textContent = "$ 0";
+  if (finUtilidad)
+    finUtilidad.textContent = `$ ${(Number(summary.salesTotal || 0) - 0).toLocaleString("es-CO")}`;
 }
 
 function renderInventoryTable(itemsToRender = null) {
@@ -589,7 +741,10 @@ window.saveProduct = function (event) {
   const description = document.getElementById("prodDescription").value.trim();
 
   if (!name || name.length < 3) {
-    showToast("Por favor ingresa un nombre de producto válido (mínimo 3 caracteres).", "error");
+    showToast(
+      "Por favor ingresa un nombre de producto válido (mínimo 3 caracteres).",
+      "error",
+    );
     nameInput.focus();
     return;
   }
@@ -607,7 +762,10 @@ window.saveProduct = function (event) {
   }
 
   if (!Number.isInteger(stockValue) || stock < 0) {
-    showToast("La cantidad en stock debe ser un número entero mayor o igual a 0.", "error");
+    showToast(
+      "La cantidad en stock debe ser un número entero mayor o igual a 0.",
+      "error",
+    );
     stockInput.focus();
     return;
   }
@@ -703,16 +861,25 @@ window.saveWarranty = function (e) {
 
   const client = clientInput ? clientInput.value.trim() : "";
   const product = productInput ? productInput.value.trim() : "";
-  const buyDate = buyDateInput && buyDateInput.value ? buyDateInput.value : new Date().toLocaleDateString("es-CO");
+  const buyDate =
+    buyDateInput && buyDateInput.value
+      ? buyDateInput.value
+      : new Date().toLocaleDateString("es-CO");
   const duration = durationInput ? durationInput.value : "3 Meses";
 
   if (!client || client.length < 3) {
-    showToast("Por favor ingresa un nombre de cliente válido (mínimo 3 caracteres).", "error");
+    showToast(
+      "Por favor ingresa un nombre de cliente válido (mínimo 3 caracteres).",
+      "error",
+    );
     if (clientInput) clientInput.focus();
     return;
   }
   if (!product || product.length < 3) {
-    showToast("Por favor ingresa el producto y serial correspondiente.", "error");
+    showToast(
+      "Por favor ingresa el producto y serial correspondiente.",
+      "error",
+    );
     if (productInput) productInput.focus();
     return;
   }
@@ -763,7 +930,10 @@ window.saveMaintenance = function (e) {
   const status = statusInput ? statusInput.value : "En Taller";
 
   if (!equipment || equipment.length < 3) {
-    showToast("Por favor ingresa el equipo o consola a mantenimiento.", "error");
+    showToast(
+      "Por favor ingresa el equipo o consola a mantenimiento.",
+      "error",
+    );
     if (eqInput) eqInput.focus();
     return;
   }
@@ -773,7 +943,10 @@ window.saveMaintenance = function (e) {
     return;
   }
   if (isNaN(costVal) || costVal < 0) {
-    showToast("El costo del mantenimiento debe ser un valor mayor o igual a 0.", "error");
+    showToast(
+      "El costo del mantenimiento debe ser un valor mayor o igual a 0.",
+      "error",
+    );
     if (costInput) costInput.focus();
     return;
   }
@@ -819,11 +992,18 @@ window.saveRepairOrder = function (e) {
 
   const device = devInput ? devInput.value.trim() : "";
   const defect = defInput ? defInput.value.trim() : "";
-  const client = (cliSelect && cliSelect.value) ? cliSelect.value : "Cliente Mostrador";
-  const priceVal = priceInput && priceInput.value !== "" ? parseFloat(priceInput.value) : 60000;
+  const client =
+    cliSelect && cliSelect.value ? cliSelect.value : "Cliente Mostrador";
+  const priceVal =
+    priceInput && priceInput.value !== ""
+      ? parseFloat(priceInput.value)
+      : 60000;
 
   if (!device || device.length < 3) {
-    showToast("Por favor ingresa el dispositivo o consola defectuosa.", "error");
+    showToast(
+      "Por favor ingresa el dispositivo o consola defectuosa.",
+      "error",
+    );
     if (devInput) devInput.focus();
     return;
   }
@@ -833,7 +1013,10 @@ window.saveRepairOrder = function (e) {
     return;
   }
   if (isNaN(priceVal) || priceVal < 0) {
-    showToast("El presupuesto debe ser un monto válido mayor o igual a 0.", "error");
+    showToast(
+      "El presupuesto debe ser un monto válido mayor o igual a 0.",
+      "error",
+    );
     if (priceInput) priceInput.focus();
     return;
   }
@@ -880,19 +1063,28 @@ window.saveClient = function (e) {
   const email = emailInput ? emailInput.value.trim() : "";
 
   if (!name || name.length < 3) {
-    showToast("Por favor ingresa el nombre completo del cliente (mínimo 3 caracteres).", "error");
+    showToast(
+      "Por favor ingresa el nombre completo del cliente (mínimo 3 caracteres).",
+      "error",
+    );
     if (nameInput) nameInput.focus();
     return;
   }
   const phoneRegex = /^[0-9\+\-\s\(\)]{7,15}$/;
   if (!phone || !phoneRegex.test(phone)) {
-    showToast("Ingresa un número de teléfono válido (ej: +57 300 123 4567).", "error");
+    showToast(
+      "Ingresa un número de teléfono válido (ej: +57 300 123 4567).",
+      "error",
+    );
     if (phoneInput) phoneInput.focus();
     return;
   }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email || !emailRegex.test(email)) {
-    showToast("Ingresa un correo electrónico válido (ej: cliente@gmail.com).", "error");
+    showToast(
+      "Ingresa un correo electrónico válido (ej: cliente@gmail.com).",
+      "error",
+    );
     if (emailInput) emailInput.focus();
     return;
   }
@@ -932,12 +1124,18 @@ window.saveDiscount = function (e) {
   const desc = descInput ? descInput.value.trim() : "";
 
   if (!code || code.length < 3) {
-    showToast("Por favor ingresa un código de cupón válido (mínimo 3 caracteres).", "error");
+    showToast(
+      "Por favor ingresa un código de cupón válido (mínimo 3 caracteres).",
+      "error",
+    );
     if (codeInput) codeInput.focus();
     return;
   }
   if (isNaN(percentVal) || percentVal < 1 || percentVal > 100) {
-    showToast("El porcentaje de descuento debe estar entre 1% y 100%.", "error");
+    showToast(
+      "El porcentaje de descuento debe estar entre 1% y 100%.",
+      "error",
+    );
     if (percentInput) percentInput.focus();
     return;
   }

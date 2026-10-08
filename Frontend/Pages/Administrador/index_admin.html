@@ -12,13 +12,20 @@
     />
     <link rel="stylesheet" href="styles_admin.css" />
     <link rel="stylesheet" href="../../Styles/accessibility.css" />
-    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css"
+    />
   </head>
   <body>
     <div class="diseno-app">
       <aside class="barra-lateral" id="barra-lateral">
         <div class="encabezado-marca">
-          <a href="../../Index.html" class="contenedor-logo-marca" title="Ir al Inicio de la tienda">
+          <a
+            href="../../Index.html"
+            class="contenedor-logo-marca"
+            title="Ir al Inicio de la tienda"
+          >
             <img
               src="../../Assets/LogoSinFondo.png"
               alt="WiiU-Games Logo"
@@ -206,15 +213,22 @@
           <div class="perfil-usuario" id="perfilUsuario">
             <div class="avatar-usuario">
               <img
-                src="https://ui-avatars.com/api/?name=Fabian+V&background=FBBF24&color=091024&bold=true"
-                alt="Fabian V."
+                src="https://ui-avatars.com/api/?name=Cargando&background=FBBF24&color=091024&bold=true"
+                alt="Usuario"
               />
             </div>
             <div class="info-usuario">
-              <div class="nombre-usuario">Fabian V.</div>
+              <div class="nombre-usuario">Cargando...</div>
               <div class="rol-usuario">Administrador</div>
             </div>
-            <button class="btn-accion-usuario" id="btnMenuUsuario" type="button" aria-expanded="false" aria-haspopup="true" title="Opciones de perfil">
+            <button
+              class="btn-accion-usuario"
+              id="btnMenuUsuario"
+              type="button"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Opciones de perfil"
+            >
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
@@ -229,16 +243,45 @@
           <!-- MENÚ DESPLEGABLE DE PERFIL -->
           <div class="menu-desplegable-usuario" id="menuUsuario">
             <a href="../panel_usuario.html" class="opcion-menu-usuario">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
               <span>Mi Cuenta</span>
             </a>
             <a href="../../Index.html" class="opcion-menu-usuario">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+              </svg>
               <span>Ir a la Tienda</span>
             </a>
             <div class="separador-menu-usuario"></div>
-            <button type="button" class="opcion-menu-usuario opcion-cerrar-sesion" id="btnCerrarSesion">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <button
+              type="button"
+              class="opcion-menu-usuario opcion-cerrar-sesion"
+              id="btnCerrarSesion"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
               <span>Cerrar sesión</span>
             </button>
           </div>
@@ -249,459 +292,83 @@
       <div class="columna-principal-panel">
         <main class="main-content">
           <header class="top-header">
-          <div class="header-greeting">
-            <h1 class="greeting-title">
-              <span>¡Hola, Fabian!</span>
-              <svg
-                class="greeting-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#FFB800"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              >
-                <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
-                <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"></path>
-                <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
-                <path
-                  d="M18 8a2 2 0 0 1 2 2v4a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
-                ></path>
-              </svg>
-            </h1>
-            <p class="greeting-subtitle">
-              Resumen general del estado de tu tienda WiiU-Games.
-            </p>
-          </div>
-
-          <div class="header-controls">
-            <div class="search-bar">
-              <input
-                type="text"
-                id="globalSearchInput"
-                placeholder="Buscar productos, pedidos, clientes..."
-              />
-              <button class="search-btn" title="Buscar">
+            <div class="header-greeting">
+              <h1 class="greeting-title">
+                <span>¡Hola!</span>
                 <svg
+                  class="greeting-icon"
                   viewBox="0 0 24 24"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="#FFB800"
                   stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"></path>
+                  <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6"></path>
+                  <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"></path>
+                  <path
+                    d="M18 8a2 2 0 0 1 2 2v4a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"
+                  ></path>
                 </svg>
-              </button>
+              </h1>
+              <p class="greeting-subtitle">
+                Resumen general del estado de tu tienda WiiU-Games.
+              </p>
             </div>
 
-            <div class="date-selector">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                <line x1="16" y1="2" x2="16" y2="6"></line>
-                <line x1="8" y1="2" x2="8" y2="6"></line>
-                <line x1="3" y1="10" x2="21" y2="10"></line>
-              </svg>
-              <span>Esta semana</span>
-              <svg
-                class="chevron-down"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </div>
-
-            <div class="notification-wrapper">
-              <button
-                class="notification-btn"
-                id="notificationBtn"
-                title="Notificaciones"
-                onclick="
-                  window.showToast('No tienes notificaciones pendientes')
-                "
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-                <span class="insignia-notificacion">0</span>
-              </button>
-            </div>
-          </div>
-        </header>
-
-        <section class="seccion-vista vista-activa" id="view-home">
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Ventas totales</span>
-                  <div class="kpi-icon-wrapper blue-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div class="kpi-value" id="kpiVentasTotales">$ 0</div>
-                <div class="kpi-trend positive">
-                  0% <span class="trend-sub">vs semana pasada</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Pedidos</span>
-                  <div class="kpi-icon-wrapper gold-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div class="kpi-value" id="kpiTotalPedidos">0</div>
-                <div class="kpi-trend warning">
-                  0% <span class="trend-sub">vs semana pasada</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="kpi-card light-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title text-dark">Clientes nuevos</span>
-                  <div class="kpi-icon-wrapper blue-solid-icon">
-                    <svg viewBox="0 0 24 24" fill="currentColor">
-                      <path
-                        d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div class="kpi-value text-dark" id="kpiClientesNuevos">0</div>
-                <div class="kpi-trend positive">
-                  0%
-                  <span class="trend-sub text-muted-dark"
-                    >vs semana pasada</span
-                  >
-                </div>
-              </div>
-            </div>
-
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Tasa de conversión</span>
-                  <div class="kpi-icon-wrapper blue-icon">
-                    <span class="percent-symbol">%</span>
-                  </div>
-                </div>
-                <div class="kpi-value" id="kpiTasaConversion">0%</div>
-                <div class="kpi-trend positive">
-                  0% <span class="trend-sub">vs semana pasada</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-grid-mid">
-            <div class="panel-card chart-panel">
-              <div class="panel-header">
-                <h2 class="panel-title">Ventas</h2>
-                <div class="panel-filter-pill">
-                  <span>Esta semana</span>
-                </div>
-              </div>
-
-              <div class="chart-container">
-                <div class="chart-y-axis">
-                  <span>10K</span>
-                  <span>8K</span>
-                  <span>6K</span>
-                  <span>4K</span>
-                  <span>2K</span>
-                  <span>0</span>
-                </div>
-
-                <div class="chart-canvas-area">
+            <div class="header-controls">
+              <div class="search-bar">
+                <input
+                  type="text"
+                  id="globalSearchInput"
+                  placeholder="Buscar productos, pedidos, clientes..."
+                />
+                <button class="search-btn" title="Buscar">
                   <svg
-                    viewBox="0 0 650 260"
-                    class="grafico-ventas-interactivo"
-                    preserveAspectRatio="none"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
                   >
-                    <defs>
-                      <linearGradient
-                        id="chartAreaGrad"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="0%"
-                          stop-color="#0066FF"
-                          stop-opacity="0.3"
-                        />
-                        <stop
-                          offset="100%"
-                          stop-color="#0066FF"
-                          stop-opacity="0"
-                        />
-                      </linearGradient>
-                    </defs>
-                    <line
-                      x1="0"
-                      y1="250"
-                      x2="650"
-                      y2="250"
-                      stroke="#162447"
-                      stroke-width="1"
-                    />
-                    <path
-                      d="M 25 245 L 625 245"
-                      fill="none"
-                      stroke="#0077FF"
-                      stroke-width="3"
-                      stroke-linecap="round"
-                    />
-                    <circle
-                      cx="625"
-                      cy="245"
-                      r="4.5"
-                      fill="#0077FF"
-                      stroke="#FFFFFF"
-                      stroke-width="2"
-                    />
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                   </svg>
-
-                  <div
-                    class="insignia-tooltip-grafico"
-                    style="position: absolute; right: 10px; bottom: 25px"
-                  >
-                    <div class="tooltip-amount">$ 0</div>
-                    <div class="tooltip-label">Sin ventas</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="chart-x-axis">
-                <span>Lun</span>
-                <span>Mar</span>
-                <span>Mié</span>
-                <span>Jue</span>
-                <span>Vie</span>
-                <span>Sáb</span>
-                <span class="dia-activo">Dom</span>
-              </div>
-            </div>
-
-            <div class="panel-card best-sellers-panel">
-              <div class="panel-header">
-                <h2 class="panel-title">Productos más vendidos</h2>
-                <button
-                  class="panel-btn-link"
-                  onclick="window.switchView('inventario')"
-                >
-                  Ver inventario
                 </button>
               </div>
 
-              <div class="best-sellers-list" id="bestSellersList">
-                <div
-                  style="
-                    text-align: center;
-                    color: var(--text-muted);
-                    padding: 30px;
-                    font-size: 0.85rem;
-                  "
-                >
-                  No hay productos vendidos registrados
-                </div>
-              </div>
-
-              <button
-                class="btn-ver-todos-productos"
-                onclick="window.switchView('inventario')"
-              >
+              <div class="date-selector">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   stroke-width="2"
-                  class="controller-icon"
                 >
-                  <rect x="2" y="6" width="20" height="12" rx="4"></rect>
-                  <path d="M6 12h4m-2-2v4"></path>
-                  <line
-                    x1="15"
-                    y1="11"
-                    x2="15.01"
-                    y2="11"
-                    stroke-width="3"
-                  ></line>
-                  <line
-                    x1="18"
-                    y1="13"
-                    x2="18.01"
-                    y2="13"
-                    stroke-width="3"
-                  ></line>
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                  <line x1="16" y1="2" x2="16" y2="6"></line>
+                  <line x1="8" y1="2" x2="8" y2="6"></line>
+                  <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
-                <span>Ver todos los productos</span>
-              </button>
-            </div>
-          </div>
-
-          <div class="dashboard-grid-bottom">
-            <div class="panel-card recent-orders-panel">
-              <div class="panel-header">
-                <h2 class="panel-title">Pedidos recientes</h2>
-                <button
-                  class="panel-btn-link"
-                  onclick="window.showToast('No hay pedidos registrados')"
+                <span>Esta semana</span>
+                <svg
+                  class="chevron-down"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
                 >
-                  Ver todos
-                </button>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
               </div>
 
-              <div class="tabla-responsiva">
-                <table class="tabla-pedidos">
-                  <thead>
-                    <tr>
-                      <th>Pedido</th>
-                      <th>Cliente</th>
-                      <th>Estado</th>
-                      <th>Total</th>
-                      <th>Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentOrdersBody">
-                    <tr>
-                      <td
-                        colspan="5"
-                        style="
-                          text-align: center;
-                          color: var(--text-muted);
-                          padding: 30px;
-                        "
-                      >
-                        No hay pedidos registrados
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="panel-card financial-panel">
-              <div class="panel-header">
-                <h2 class="panel-title">Resumen financiero</h2>
-              </div>
-
-              <div class="financial-body">
-                <div class="donut-chart-container">
-                  <svg viewBox="0 0 160 160" class="donut-svg">
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r="62"
-                      fill="none"
-                      stroke="#0E1B38"
-                      stroke-width="15"
-                    />
-                  </svg>
-                  <div class="donut-center-label">
-                    <div class="porcentaje-dona">0%</div>
-                    <div class="donut-sublabel">Meta mensual</div>
-                  </div>
-                </div>
-
-                <div class="lista-estadisticas-financieras">
-                  <div class="fin-stat-item">
-                    <div class="fin-stat-icon blue">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <polyline
-                          points="23 6 13.5 15.5 8.5 10.5 1 18"
-                        ></polyline>
-                        <polyline points="17 6 23 6 23 12"></polyline>
-                      </svg>
-                    </div>
-                    <div class="fin-stat-info">
-                      <div class="fin-stat-label">Ingresos</div>
-                      <div class="fin-stat-value" id="finIngresos">$ 0</div>
-                    </div>
-                  </div>
-
-                  <div class="fin-stat-item">
-                    <div class="fin-stat-icon gold">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <path
-                          d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                        ></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                      </svg>
-                    </div>
-                    <div class="fin-stat-info">
-                      <div class="fin-stat-label">Gastos</div>
-                      <div class="fin-stat-value" id="finGastos">$ 0</div>
-                    </div>
-                  </div>
-
-                  <div class="fin-stat-item">
-                    <div class="fin-stat-icon cyan">
-                      <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                      >
-                        <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                        <line x1="12" y1="8" x2="12" y2="16"></line>
-                        <line x1="8" y1="12" x2="16" y2="12"></line>
-                      </svg>
-                    </div>
-                    <div class="fin-stat-info">
-                      <div class="fin-stat-label">Utilidad</div>
-                      <div class="fin-stat-value highlight" id="finUtilidad">
-                        $ 0
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="financial-footer">
-                <a
-                  href="javascript:void(0)"
-                  class="detalles-financieros-vista"
-                  onclick="window.showToast('Balance: $0')"
+              <div class="notification-wrapper">
+                <button
+                  class="notification-btn"
+                  id="notificationBtn"
+                  title="Notificaciones"
+                  onclick="
+                    window.showToast('No tienes notificaciones pendientes')
+                  "
                 >
                   <svg
                     viewBox="0 0 24 24"
@@ -710,493 +377,906 @@
                     stroke-width="2"
                   >
                     <path
-                      d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                      d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"
                     ></path>
-                    <polyline points="15 3 21 3 21 9"></polyline>
-                    <line x1="10" y1="14" x2="21" y2="3"></line>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                   </svg>
-                  <span>Ver detalles financieros</span>
-                </a>
+                  <span class="insignia-notificacion">0</span>
+                </button>
               </div>
             </div>
-          </div>
-        </section>
+          </header>
 
-        <section class="seccion-vista" id="view-garantias">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Gestión de Garantías</h2>
-              <p class="section-subtitle">
-                Supervisa reclamaciones, estados de cobertura y términos de
-                garantías para clientes.
-              </p>
-            </div>
-            <button
-              class="btn-primario"
-              onclick="window.openAddWarrantyModal()"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Registrar Garantía</span>
-            </button>
-          </div>
-
-          <div class="panel-card full-panel">
-            <div class="barra-herramientas-tabla">
-              <div class="search-mini">
-                <input
-                  type="text"
-                  placeholder="Buscar por cliente, serial o producto..."
-                  id="searchWarrantyInput"
-                  oninput="window.filterWarranties(this.value)"
-                />
+          <section class="seccion-vista vista-activa" id="view-home">
+            <div class="kpi-grid">
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Ventas totales</span>
+                    <div class="kpi-icon-wrapper blue-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M19 6h-2c0-2.76-2.24-5-5-5S7 3.24 7 6H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7-3c1.66 0 3 1.34 3 3H9c0-1.66 1.34-3 3-3zm7 17H5V8h14v12zm-7-8c-1.66 0-3-1.34-3-3H7c0 2.76 2.24 5 5 5s5-2.24 5-5h-2c0 1.66-1.34 3-3 3z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="kpiVentasTotales">$ 0</div>
+                  <div class="kpi-trend positive">
+                    0% <span class="trend-sub">vs semana pasada</span>
+                  </div>
+                </div>
               </div>
-              <div class="grupo-filtro">
-                <select
-                  class="custom-select"
-                  id="filterWarrantyStatus"
-                  onchange="window.filterWarrantiesByStatus(this.value)"
+
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Pedidos</span>
+                    <div class="kpi-icon-wrapper gold-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="kpiTotalPedidos">0</div>
+                  <div class="kpi-trend warning">
+                    0% <span class="trend-sub">vs semana pasada</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="kpi-card light-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title text-dark">Clientes nuevos</span>
+                    <div class="kpi-icon-wrapper blue-solid-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="kpi-value text-dark" id="kpiClientesNuevos">
+                    0
+                  </div>
+                  <div class="kpi-trend positive">
+                    0%
+                    <span class="trend-sub text-muted-dark"
+                      >vs semana pasada</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Tasa de conversión</span>
+                    <div class="kpi-icon-wrapper blue-icon">
+                      <span class="percent-symbol">%</span>
+                    </div>
+                  </div>
+                  <div class="kpi-value" id="kpiTasaConversion">0%</div>
+                  <div class="kpi-trend positive">
+                    0% <span class="trend-sub">vs semana pasada</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dashboard-grid-mid">
+              <div class="panel-card chart-panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Ventas</h2>
+                  <div class="panel-filter-pill">
+                    <span>Esta semana</span>
+                  </div>
+                </div>
+
+                <div class="chart-container">
+                  <div class="chart-y-axis">
+                    <span>10K</span>
+                    <span>8K</span>
+                    <span>6K</span>
+                    <span>4K</span>
+                    <span>2K</span>
+                    <span>0</span>
+                  </div>
+
+                  <div class="chart-canvas-area">
+                    <svg
+                      viewBox="0 0 650 260"
+                      class="grafico-ventas-interactivo"
+                      preserveAspectRatio="none"
+                    >
+                      <defs>
+                        <linearGradient
+                          id="chartAreaGrad"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stop-color="#0066FF"
+                            stop-opacity="0.3"
+                          />
+                          <stop
+                            offset="100%"
+                            stop-color="#0066FF"
+                            stop-opacity="0"
+                          />
+                        </linearGradient>
+                      </defs>
+                      <line
+                        x1="0"
+                        y1="250"
+                        x2="650"
+                        y2="250"
+                        stroke="#162447"
+                        stroke-width="1"
+                      />
+                      <path
+                        d="M 25 245 L 625 245"
+                        fill="none"
+                        stroke="#0077FF"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                      />
+                      <circle
+                        cx="625"
+                        cy="245"
+                        r="4.5"
+                        fill="#0077FF"
+                        stroke="#FFFFFF"
+                        stroke-width="2"
+                      />
+                    </svg>
+
+                    <div
+                      class="insignia-tooltip-grafico"
+                      style="position: absolute; right: 10px; bottom: 25px"
+                    >
+                      <div class="tooltip-amount">$ 0</div>
+                      <div class="tooltip-label">Sin ventas</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="chart-x-axis">
+                  <span>Lun</span>
+                  <span>Mar</span>
+                  <span>Mié</span>
+                  <span>Jue</span>
+                  <span>Vie</span>
+                  <span>Sáb</span>
+                  <span class="dia-activo">Dom</span>
+                </div>
+              </div>
+
+              <div class="panel-card best-sellers-panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Productos más vendidos</h2>
+                  <button
+                    class="panel-btn-link"
+                    onclick="window.switchView('inventario')"
+                  >
+                    Ver inventario
+                  </button>
+                </div>
+
+                <div class="best-sellers-list" id="bestSellersList">
+                  <div
+                    style="
+                      text-align: center;
+                      color: var(--text-muted);
+                      padding: 30px;
+                      font-size: 0.85rem;
+                    "
+                  >
+                    No hay productos vendidos registrados
+                  </div>
+                </div>
+
+                <button
+                  class="btn-ver-todos-productos"
+                  onclick="window.switchView('inventario')"
                 >
-                  <option value="todos">Todos los estados</option>
-                  <option value="Activa">Activa</option>
-                  <option value="En Revisión">En Revisión</option>
-                  <option value="Aprobada">Aprobada</option>
-                  <option value="Expirada">Expirada</option>
-                </select>
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    class="controller-icon"
+                  >
+                    <rect x="2" y="6" width="20" height="12" rx="4"></rect>
+                    <path d="M6 12h4m-2-2v4"></path>
+                    <line
+                      x1="15"
+                      y1="11"
+                      x2="15.01"
+                      y2="11"
+                      stroke-width="3"
+                    ></line>
+                    <line
+                      x1="18"
+                      y1="13"
+                      x2="18.01"
+                      y2="13"
+                      stroke-width="3"
+                    ></line>
+                  </svg>
+                  <span>Ver todos los productos</span>
+                </button>
               </div>
             </div>
 
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos" id="tableGarantias">
-                <thead>
-                  <tr>
-                    <th>ID Garantía</th>
-                    <th>Cliente</th>
-                    <th>Producto / Serial</th>
-                    <th>Fecha Compra</th>
-                    <th>Vencimiento</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="garantiasTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+            <div class="dashboard-grid-bottom">
+              <div class="panel-card recent-orders-panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Pedidos recientes</h2>
+                  <button
+                    class="panel-btn-link"
+                    onclick="window.showToast('No hay pedidos registrados')"
+                  >
+                    Ver todos
+                  </button>
+                </div>
 
-        <section class="seccion-vista" id="view-mantenimientos">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Servicio Técnico y Mantenimientos</h2>
-              <p class="section-subtitle">
-                Control de consolas y periféricos en mantenimiento preventivo y
-                correctivo.
-              </p>
+                <div class="tabla-responsiva">
+                  <table class="tabla-pedidos">
+                    <thead>
+                      <tr>
+                        <th>Pedido</th>
+                        <th>Cliente</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentOrdersBody">
+                      <tr>
+                        <td
+                          colspan="5"
+                          style="
+                            text-align: center;
+                            color: var(--text-muted);
+                            padding: 30px;
+                          "
+                        >
+                          No hay pedidos registrados
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="panel-card financial-panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Resumen financiero</h2>
+                </div>
+
+                <div class="financial-body">
+                  <div class="donut-chart-container">
+                    <svg viewBox="0 0 160 160" class="donut-svg">
+                      <circle
+                        cx="80"
+                        cy="80"
+                        r="62"
+                        fill="none"
+                        stroke="#0E1B38"
+                        stroke-width="15"
+                      />
+                    </svg>
+                    <div class="donut-center-label">
+                      <div class="porcentaje-dona">0%</div>
+                      <div class="donut-sublabel">Meta mensual</div>
+                    </div>
+                  </div>
+
+                  <div class="lista-estadisticas-financieras">
+                    <div class="fin-stat-item">
+                      <div class="fin-stat-icon blue">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <polyline
+                            points="23 6 13.5 15.5 8.5 10.5 1 18"
+                          ></polyline>
+                          <polyline points="17 6 23 6 23 12"></polyline>
+                        </svg>
+                      </div>
+                      <div class="fin-stat-info">
+                        <div class="fin-stat-label">Ingresos</div>
+                        <div class="fin-stat-value" id="finIngresos">$ 0</div>
+                      </div>
+                    </div>
+
+                    <div class="fin-stat-item">
+                      <div class="fin-stat-icon gold">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <path
+                            d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                          ></path>
+                          <polyline points="7 10 12 15 17 10"></polyline>
+                          <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                      </div>
+                      <div class="fin-stat-info">
+                        <div class="fin-stat-label">Gastos</div>
+                        <div class="fin-stat-value" id="finGastos">$ 0</div>
+                      </div>
+                    </div>
+
+                    <div class="fin-stat-item">
+                      <div class="fin-stat-icon cyan">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <rect
+                            x="2"
+                            y="4"
+                            width="20"
+                            height="16"
+                            rx="2"
+                          ></rect>
+                          <line x1="12" y1="8" x2="12" y2="16"></line>
+                          <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                      </div>
+                      <div class="fin-stat-info">
+                        <div class="fin-stat-label">Utilidad</div>
+                        <div class="fin-stat-value highlight" id="finUtilidad">
+                          $ 0
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="financial-footer">
+                  <a
+                    href="javascript:void(0)"
+                    class="detalles-financieros-vista"
+                    onclick="window.showToast('Balance: $0')"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+                      ></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Ver detalles financieros</span>
+                  </a>
+                </div>
+              </div>
             </div>
-            <button
-              class="btn-primario"
-              onclick="window.openAddMaintenanceModal()"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
+          </section>
+
+          <section class="seccion-vista" id="view-garantias">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Gestión de Garantías</h2>
+                <p class="section-subtitle">
+                  Supervisa reclamaciones, estados de cobertura y términos de
+                  garantías para clientes.
+                </p>
+              </div>
+              <button
+                class="btn-primario"
+                onclick="window.openAddWarrantyModal()"
               >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Nuevo Mantenimiento</span>
-            </button>
-          </div>
-
-          <div class="panel-card full-panel">
-            <div class="barra-herramientas-tabla">
-              <div class="search-mini">
-                <input
-                  type="text"
-                  placeholder="Buscar orden de mantenimiento..."
-                  id="searchMaintenanceInput"
-                  oninput="window.filterMaintenance(this.value)"
-                />
-              </div>
-            </div>
-
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos">
-                <thead>
-                  <tr>
-                    <th>Orden</th>
-                    <th>Equipo</th>
-                    <th>Cliente</th>
-                    <th>Técnico</th>
-                    <th>Costo</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="mantenimientosTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        <section class="seccion-vista" id="view-inventario">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Inventario de Productos</h2>
-              <p class="section-subtitle">
-                Administra los videojuegos, consolas, repuestos y accesorios
-                disponibles en tienda.
-              </p>
-            </div>
-            <button class="btn-primario" onclick="window.openAddProductModal()">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Agregar Producto</span>
-            </button>
-          </div>
-
-          <div class="kpi-grid inventory-summary-grid">
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Total de Productos</span>
-                </div>
-                <div class="kpi-value" id="invTotalCount">0 items</div>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Valor en Stock</span>
-                </div>
-                <div class="kpi-value" id="invTotalValue">$ 0</div>
-              </div>
-            </div>
-            <div class="kpi-card">
-              <div class="kpi-content">
-                <div class="kpi-header">
-                  <span class="kpi-title">Stock Bajo</span>
-                </div>
-                <div class="kpi-value" id="invLowStock">0 alertas</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel-card full-panel">
-            <div class="barra-herramientas-tabla">
-              <div class="search-mini">
-                <input
-                  type="text"
-                  placeholder="Buscar por título, SKU o categoría..."
-                  id="searchProductInput"
-                  oninput="window.filterProducts(this.value)"
-                />
-              </div>
-              <div class="grupo-filtro">
-                <select
-                  class="custom-select"
-                  id="filterCategory"
-                  onchange="window.filterProductsByCategory(this.value)"
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
                 >
-                  <option value="todos">Todas las categorías</option>
-                  <option value="Juegos Wii U">Juegos Wii U</option>
-                  <option value="Consolas">Consolas</option>
-                  <option value="Accesorios">Accesorios & Mandos</option>
-                  <option value="Repuestos">Repuestos</option>
-                  <option value="Coleccionables">
-                    Coleccionables & Amiibo
-                  </option>
-                </select>
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Registrar Garantía</span>
+              </button>
+            </div>
+
+            <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar por cliente, serial o producto..."
+                    id="searchWarrantyInput"
+                    oninput="window.filterWarranties(this.value)"
+                  />
+                </div>
+                <div class="grupo-filtro">
+                  <select
+                    class="custom-select"
+                    id="filterWarrantyStatus"
+                    onchange="window.filterWarrantiesByStatus(this.value)"
+                  >
+                    <option value="todos">Todos los estados</option>
+                    <option value="Activa">Activa</option>
+                    <option value="En Revisión">En Revisión</option>
+                    <option value="Aprobada">Aprobada</option>
+                    <option value="Expirada">Expirada</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos" id="tableGarantias">
+                  <thead>
+                    <tr>
+                      <th>ID Garantía</th>
+                      <th>Cliente</th>
+                      <th>Producto / Serial</th>
+                      <th>Fecha Compra</th>
+                      <th>Vencimiento</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="garantiasTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="seccion-vista" id="view-mantenimientos">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Servicio Técnico y Mantenimientos</h2>
+                <p class="section-subtitle">
+                  Control de consolas y periféricos en mantenimiento preventivo
+                  y correctivo.
+                </p>
+              </div>
+              <button
+                class="btn-primario"
+                onclick="window.openAddMaintenanceModal()"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Nuevo Mantenimiento</span>
+              </button>
+            </div>
+
+            <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar orden de mantenimiento..."
+                    id="searchMaintenanceInput"
+                    oninput="window.filterMaintenance(this.value)"
+                  />
+                </div>
+              </div>
+
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos">
+                  <thead>
+                    <tr>
+                      <th>Orden</th>
+                      <th>Equipo</th>
+                      <th>Cliente</th>
+                      <th>Técnico</th>
+                      <th>Costo</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="mantenimientosTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="seccion-vista" id="view-inventario">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Inventario de Productos</h2>
+                <p class="section-subtitle">
+                  Administra los videojuegos, consolas, repuestos y accesorios
+                  disponibles en tienda.
+                </p>
+              </div>
+              <button
+                class="btn-primario"
+                onclick="window.openAddProductModal()"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Agregar Producto</span>
+              </button>
+            </div>
+
+            <div class="kpi-grid inventory-summary-grid">
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Total de Productos</span>
+                  </div>
+                  <div class="kpi-value" id="invTotalCount">0 items</div>
+                </div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Valor en Stock</span>
+                  </div>
+                  <div class="kpi-value" id="invTotalValue">$ 0</div>
+                </div>
+              </div>
+              <div class="kpi-card">
+                <div class="kpi-content">
+                  <div class="kpi-header">
+                    <span class="kpi-title">Stock Bajo</span>
+                  </div>
+                  <div class="kpi-value" id="invLowStock">0 alertas</div>
+                </div>
               </div>
             </div>
 
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos" id="productsTable">
-                <thead>
-                  <tr>
-                    <th>Producto</th>
-                    <th>SKU</th>
-                    <th>Categoría</th>
-                    <th>Precio Venta</th>
-                    <th>Stock</th>
-                    <th>Garantía</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="inventoryTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+            <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar por título, SKU o categoría..."
+                    id="searchProductInput"
+                    oninput="window.filterProducts(this.value)"
+                  />
+                </div>
+                <div class="grupo-filtro">
+                  <select
+                    class="custom-select"
+                    id="filterCategory"
+                    onchange="window.filterProductsByCategory(this.value)"
+                  >
+                    <option value="todos">Todas las categorías</option>
+                    <option value="Juegos Wii U">Juegos Wii U</option>
+                    <option value="Consolas">Consolas</option>
+                    <option value="Accesorios">Accesorios & Mandos</option>
+                    <option value="Repuestos">Repuestos</option>
+                    <option value="Coleccionables">
+                      Coleccionables & Amiibo
+                    </option>
+                  </select>
+                </div>
+              </div>
 
-        <section class="seccion-vista" id="view-reparacion">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">
-                Taller de Reparaciones Especializadas
-              </h2>
-              <p class="section-subtitle">
-                Diagnósticos y reparación de Wii U GamePads, placas base,
-                pantallas y puertos HDMI.
-              </p>
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos" id="productsTable">
+                  <thead>
+                    <tr>
+                      <th>Producto</th>
+                      <th>SKU</th>
+                      <th>Categoría</th>
+                      <th>Precio Venta</th>
+                      <th>Stock</th>
+                      <th>Garantía</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="inventoryTableBody"></tbody>
+                </table>
+              </div>
             </div>
-            <button
-              class="btn-primario"
-              onclick="window.openAddRepairModal()"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
+          </section>
+
+          <section class="seccion-vista" id="view-reparacion">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">
+                  Taller de Reparaciones Especializadas
+                </h2>
+                <p class="section-subtitle">
+                  Diagnósticos y reparación de Wii U GamePads, placas base,
+                  pantallas y puertos HDMI.
+                </p>
+              </div>
+              <button
+                class="btn-primario"
+                onclick="window.openAddRepairModal()"
               >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Nueva Reparación</span>
-            </button>
-          </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Nueva Reparación</span>
+              </button>
+            </div>
 
-          <div class="panel-card full-panel">
-            <div class="barra-herramientas-tabla">
-              <div class="search-mini">
-                <input
-                  type="text"
-                  placeholder="Buscar por falla, cliente o ticket..."
-                  id="searchRepairInput"
-                  oninput="window.filterRepairs(this.value)"
-                />
+            <div class="panel-card full-panel">
+              <div class="barra-herramientas-tabla">
+                <div class="search-mini">
+                  <input
+                    type="text"
+                    placeholder="Buscar por falla, cliente o ticket..."
+                    id="searchRepairInput"
+                    oninput="window.filterRepairs(this.value)"
+                  />
+                </div>
+              </div>
+
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos">
+                  <thead>
+                    <tr>
+                      <th>Ticket</th>
+                      <th>Dispositivo</th>
+                      <th>Falla Reportada</th>
+                      <th>Cliente</th>
+                      <th>Presupuesto</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="reparacionesTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="seccion-vista" id="view-descuentos">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Promociones y Descuentos</h2>
+                <p class="section-subtitle">
+                  Gestiona cupones de descuento, campañas de fin de semana y
+                  rebajas por temporada.
+                </p>
+              </div>
+              <button class="btn-primario" onclick="window.openDiscountModal()">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Crear Descuento</span>
+              </button>
+            </div>
+
+            <div class="panel-card full-panel">
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos">
+                  <thead>
+                    <tr>
+                      <th>Código Cupón</th>
+                      <th>Descripción</th>
+                      <th>Porcentaje</th>
+                      <th>Válido Hasta</th>
+                      <th>Usos</th>
+                      <th>Estado</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="descuentosTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="seccion-vista" id="view-reseñas">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Reseñas y Opiniones</h2>
+                <p class="section-subtitle">
+                  Calificaciones dejadas por clientes satisfechos en compras y
+                  reparaciones.
+                </p>
               </div>
             </div>
 
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos">
-                <thead>
-                  <tr>
-                    <th>Ticket</th>
-                    <th>Dispositivo</th>
-                    <th>Falla Reportada</th>
-                    <th>Cliente</th>
-                    <th>Presupuesto</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="reparacionesTableBody"></tbody>
-              </table>
+            <div class="panel-card full-panel">
+              <div class="cuadricula-resenas" id="reviewsGrid"></div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section class="seccion-vista" id="view-descuentos">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Promociones y Descuentos</h2>
-              <p class="section-subtitle">
-                Gestiona cupones de descuento, campañas de fin de semana y
-                rebajas por temporada.
-              </p>
-            </div>
-            <button class="btn-primario" onclick="window.openDiscountModal()">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
+          <section class="seccion-vista" id="view-clientes">
+            <div class="barra-encabezado-vista">
+              <div>
+                <h2 class="section-title">Directorio de Clientes</h2>
+                <p class="section-subtitle">
+                  Base de datos de compradores, historial de compras y
+                  fidelización.
+                </p>
+              </div>
+              <button
+                class="btn-primario"
+                onclick="window.openAddClientModal()"
               >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Crear Descuento</span>
-            </button>
-          </div>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  class="btn-svg-icon"
+                >
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Nuevo Cliente</span>
+              </button>
+            </div>
 
-          <div class="panel-card full-panel">
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos">
-                <thead>
-                  <tr>
-                    <th>Código Cupón</th>
-                    <th>Descripción</th>
-                    <th>Porcentaje</th>
-                    <th>Válido Hasta</th>
-                    <th>Usos</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="descuentosTableBody"></tbody>
-              </table>
+            <div class="panel-card full-panel">
+              <div class="tabla-responsiva">
+                <table class="tabla-pedidos">
+                  <thead>
+                    <tr>
+                      <th>Cliente</th>
+                      <th>Teléfono</th>
+                      <th>Correo Electrónico</th>
+                      <th>Total Compras</th>
+                      <th>Última Visita</th>
+                      <th>Nivel</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="clientesTableBody"></tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </main>
 
-        <section class="seccion-vista" id="view-reseñas">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Reseñas y Opiniones</h2>
-              <p class="section-subtitle">
-                Calificaciones dejadas por clientes satisfechos en compras y
-                reparaciones.
-              </p>
+        <!-- ==================== FOOTER ==================== -->
+        <footer class="sitio-footer">
+          <div class="contenedor-interno-footer">
+            <div class="cuadricula-footer">
+              <div class="columna-footer">
+                <h3>Información</h3>
+                <ul>
+                  <li><a href="../Catalog.html">Acerca de nosotros</a></li>
+                  <li><a href="../Catalog.html">Política de Privacidad</a></li>
+                  <li><a href="../Catalog.html">Buscar</a></li>
+                  <li><a href="../Catalog.html">Términos y Condiciones</a></li>
+                  <li><a href="../Catalog.html">Pedidos y devoluciones</a></li>
+                  <li><a href="../contactanos.html">Contáctanos</a></li>
+                </ul>
+              </div>
+              <div class="columna-footer">
+                <h3>Componentes de PC</h3>
+                <ul>
+                  <li><a href="../Catalog.html">CPUS</a></li>
+                  <li><a href="../Catalog.html">Discos Duros</a></li>
+                  <li><a href="../Catalog.html">Tarjetas Gráficas</a></li>
+                  <li><a href="../Catalog.html">Teclados / Mouse</a></li>
+                  <li>
+                    <a href="../Catalog.html"
+                      >Gabinetes / Fuentes / Refrigeración</a
+                    >
+                  </li>
+                  <li><a href="../Catalog.html">RAM (Memoria)</a></li>
+                  <li><a href="../Catalog.html">Software</a></li>
+                </ul>
+              </div>
+              <div class="columna-footer">
+                <h3>Computadores de escritorio</h3>
+                <ul>
+                  <li><a href="../Catalog.html">PC personalizados</a></li>
+                  <li><a href="../Catalog.html">Servidores</a></li>
+                  <li><a href="../Catalog.html">PCs todo en uno</a></li>
+                  <li><a href="../Catalog.html">HP/Compaq PCs</a></li>
+                  <li><a href="../Catalog.html">ASUS PCs</a></li>
+                </ul>
+              </div>
+              <div class="columna-footer">
+                <h3>Portátiles</h3>
+                <ul>
+                  <li>
+                    <a href="../Catalog.html">Portátiles para todos los días</a>
+                  </li>
+                  <li><a href="../Catalog.html">Portátiles gaming</a></li>
+                </ul>
+              </div>
+              <div class="columna-footer columna-contacto">
+                <h3>Dirección</h3>
+                <p>
+                  Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+                  Sogamoso, Boyacá
+                </p>
+                <p>
+                  Teléfonos:
+                  <a href="tel:0012345578" class="enlace-resaltado"
+                    >(00) 1234 5578</a
+                  >
+                </p>
+                <p>Lunes-Sábado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
+                <p>
+                  Correo electrónico:
+                  <a
+                    href="mailto:wiiugames2026@gmail.com"
+                    class="enlace-resaltado"
+                    >wiiugames2026@gmail.com</a
+                  >
+                </p>
+              </div>
+            </div>
+            <div class="barra-inferior-footer">
+              <div class="redes-footer">
+                <a
+                  href="https://facebook.com/wiiugames"
+                  target="_blank"
+                  aria-label="Facebook"
+                  ><i class="fi fi-brands-facebook"></i
+                ></a>
+                <a
+                  href="https://instagram.com/wiiugames"
+                  target="_blank"
+                  aria-label="Instagram"
+                  ><i class="fi fi-brands-instagram"></i
+                ></a>
+              </div>
+              <div class="metodos-pago">
+                <span class="tarjeta-icono">PayPal</span>
+                <span class="tarjeta-icono">Visa</span>
+                <span class="tarjeta-icono">MasterCard</span>
+              </div>
+              <div class="copyright">
+                <p>
+                  Copyright © 2026 WiiU-Games. Todos los derechos reservados.
+                </p>
+              </div>
             </div>
           </div>
-
-          <div class="panel-card full-panel">
-            <div class="cuadricula-resenas" id="reviewsGrid"></div>
-          </div>
-        </section>
-
-        <section class="seccion-vista" id="view-clientes">
-          <div class="barra-encabezado-vista">
-            <div>
-              <h2 class="section-title">Directorio de Clientes</h2>
-              <p class="section-subtitle">
-                Base de datos de compradores, historial de compras y
-                fidelización.
-              </p>
-            </div>
-            <button
-              class="btn-primario"
-              onclick="window.openAddClientModal()"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                class="btn-svg-icon"
-              >
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              <span>Nuevo Cliente</span>
-            </button>
-          </div>
-
-          <div class="panel-card full-panel">
-            <div class="tabla-responsiva">
-              <table class="tabla-pedidos">
-                <thead>
-                  <tr>
-                    <th>Cliente</th>
-                    <th>Teléfono</th>
-                    <th>Correo Electrónico</th>
-                    <th>Total Compras</th>
-                    <th>Última Visita</th>
-                    <th>Nivel</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody id="clientesTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-      </main>
-
-      <!-- ==================== FOOTER ==================== -->
-      <footer class="sitio-footer">
-        <div class="contenedor-interno-footer">
-          <div class="cuadricula-footer">
-            <div class="columna-footer">
-              <h3>Información</h3>
-              <ul>
-                <li><a href="../Catalog.html">Acerca de nosotros</a></li>
-                <li><a href="../Catalog.html">Política de Privacidad</a></li>
-                <li><a href="../Catalog.html">Buscar</a></li>
-                <li><a href="../Catalog.html">Términos y Condiciones</a></li>
-                <li><a href="../Catalog.html">Pedidos y devoluciones</a></li>
-                <li><a href="../contactanos.html">Contáctanos</a></li>
-              </ul>
-            </div>
-            <div class="columna-footer">
-              <h3>Componentes de PC</h3>
-              <ul>
-                <li><a href="../Catalog.html">CPUS</a></li>
-                <li><a href="../Catalog.html">Discos Duros</a></li>
-                <li><a href="../Catalog.html">Tarjetas Gráficas</a></li>
-                <li><a href="../Catalog.html">Teclados / Mouse</a></li>
-                <li><a href="../Catalog.html">Gabinetes / Fuentes / Refrigeración</a></li>
-                <li><a href="../Catalog.html">RAM (Memoria)</a></li>
-                <li><a href="../Catalog.html">Software</a></li>
-              </ul>
-            </div>
-            <div class="columna-footer">
-              <h3>Computadores de escritorio</h3>
-              <ul>
-                <li><a href="../Catalog.html">PC personalizados</a></li>
-                <li><a href="../Catalog.html">Servidores</a></li>
-                <li><a href="../Catalog.html">PCs todo en uno</a></li>
-                <li><a href="../Catalog.html">HP/Compaq PCs</a></li>
-                <li><a href="../Catalog.html">ASUS PCs</a></li>
-              </ul>
-            </div>
-            <div class="columna-footer">
-              <h3>Portátiles</h3>
-              <ul>
-                <li><a href="../Catalog.html">Portátiles para todos los días</a></li>
-                <li><a href="../Catalog.html">Portátiles gaming</a></li>
-              </ul>
-            </div>
-            <div class="columna-footer columna-contacto">
-              <h3>Dirección</h3>
-              <p>
-                Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
-                Sogamoso, Boyacá
-              </p>
-              <p>
-                Teléfonos:
-                <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a>
-              </p>
-              <p>Lunes-Sábado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.</p>
-              <p>
-                Correo electrónico:
-                <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado">wiiugames2026@gmail.com</a>
-              </p>
-            </div>
-          </div>
-          <div class="barra-inferior-footer">
-            <div class="redes-footer">
-              <a href="https://facebook.com/wiiugames" target="_blank" aria-label="Facebook"><i class="fi fi-brands-facebook"></i></a>
-              <a href="https://instagram.com/wiiugames" target="_blank" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
-            </div>
-            <div class="metodos-pago">
-              <span class="tarjeta-icono">PayPal</span>
-              <span class="tarjeta-icono">Visa</span>
-              <span class="tarjeta-icono">MasterCard</span>
-            </div>
-            <div class="copyright">
-              <p>Copyright © 2026 WiiU-Games. Todos los derechos reservados.</p>
-            </div>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
-  </div>
 
     <div class="fondo-modal" id="modalAddProduct">
       <div class="ventana-modal modal-grande">
@@ -1218,7 +1298,8 @@
             <div>
               <h3 class="titulo-modal">Agregar Nuevo Producto</h3>
               <p class="subtitulo-modal">
-                Ingresa la información detallada para publicar el artículo en el inventario.
+                Ingresa la información detallada para publicar el artículo en el
+                inventario.
               </p>
             </div>
           </div>
@@ -1235,7 +1316,8 @@
             <!-- Bloque 1: Datos Principales -->
             <div class="bloque-formulario-card">
               <h4 class="titulo-seccion-formulario">
-                <span class="section-step">1</span> Datos Principales del Producto
+                <span class="section-step">1</span> Datos Principales del
+                Producto
               </h4>
               <div class="grupo-formulario">
                 <label for="prodName"
@@ -1509,7 +1591,9 @@
                       src="https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa"
                       alt="Vista previa de portada"
                     />
-                    <span class="insignia-vista-previa" id="previewCategoryBadge"
+                    <span
+                      class="insignia-vista-previa"
+                      id="previewCategoryBadge"
                       >Juegos Wii U</span
                     >
                   </div>
@@ -1562,35 +1646,69 @@
         <div class="encabezado-modal">
           <div class="caja-titulo-modal">
             <div class="icono-insignia-modal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#00D2FF" stroke-width="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#00D2FF"
+                stroke-width="2"
+              >
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <polyline points="9 12 11 14 15 10"></polyline>
               </svg>
             </div>
             <div>
               <h3 class="titulo-modal">Registrar Nueva Garantía</h3>
-              <p class="subtitulo-modal">Emisión de certificado de garantía para productos y reparaciones.</p>
+              <p class="subtitulo-modal">
+                Emisión de certificado de garantía para productos y
+                reparaciones.
+              </p>
             </div>
           </div>
-          <button class="btn-cerrar-modal" onclick="window.closeAddWarrantyModal()">&times;</button>
+          <button
+            class="btn-cerrar-modal"
+            onclick="window.closeAddWarrantyModal()"
+          >
+            &times;
+          </button>
         </div>
         <form id="formAddWarranty" onsubmit="window.saveWarranty(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="warClient">Nombre del Cliente <span class="required">*</span></label>
-              <input type="text" id="warClient" required minlength="3" placeholder="Ej. Juan Camilo Rodríguez">
+              <label for="warClient"
+                >Nombre del Cliente <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="warClient"
+                required
+                minlength="3"
+                placeholder="Ej. Juan Camilo Rodríguez"
+              />
             </div>
             <div class="grupo-formulario">
-              <label for="warProduct">Producto / Consola y Serial <span class="required">*</span></label>
-              <input type="text" id="warProduct" required minlength="3" placeholder="Ej. Consola Wii U Deluxe 32GB (SN: FW709182)">
+              <label for="warProduct"
+                >Producto / Consola y Serial
+                <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="warProduct"
+                required
+                minlength="3"
+                placeholder="Ej. Consola Wii U Deluxe 32GB (SN: FW709182)"
+              />
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="warBuyDate">Fecha de Compra <span class="required">*</span></label>
-                <input type="date" id="warBuyDate" required>
+                <label for="warBuyDate"
+                  >Fecha de Compra <span class="required">*</span></label
+                >
+                <input type="date" id="warBuyDate" required />
               </div>
               <div class="grupo-formulario">
-                <label for="warDuration">Periodo Cobertura <span class="required">*</span></label>
+                <label for="warDuration"
+                  >Periodo Cobertura <span class="required">*</span></label
+                >
                 <select id="warDuration" required>
                   <option value="1 Mes">1 Mes</option>
                   <option value="3 Meses" selected>3 Meses</option>
@@ -1601,8 +1719,16 @@
             </div>
           </div>
           <div class="pie-modal">
-            <button type="button" class="btn-secundario" onclick="window.closeAddWarrantyModal()">Cancelar</button>
-            <button type="submit" class="btn-primario-brillo">Guardar Certificado</button>
+            <button
+              type="button"
+              class="btn-secundario"
+              onclick="window.closeAddWarrantyModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primario-brillo">
+              Guardar Certificado
+            </button>
           </div>
         </form>
       </div>
@@ -1614,30 +1740,62 @@
         <div class="encabezado-modal">
           <div class="caja-titulo-modal">
             <div class="icono-insignia-modal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
-                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#FFB800"
+                stroke-width="2"
+              >
+                <path
+                  d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"
+                ></path>
               </svg>
             </div>
             <div>
               <h3 class="titulo-modal">Registrar Mantenimiento Técnico</h3>
-              <p class="subtitulo-modal">Orden de servicio preventivo y limpieza de hardware.</p>
+              <p class="subtitulo-modal">
+                Orden de servicio preventivo y limpieza de hardware.
+              </p>
             </div>
           </div>
-          <button class="btn-cerrar-modal" onclick="window.closeAddMaintenanceModal()">&times;</button>
+          <button
+            class="btn-cerrar-modal"
+            onclick="window.closeAddMaintenanceModal()"
+          >
+            &times;
+          </button>
         </div>
         <form id="formAddMaintenance" onsubmit="window.saveMaintenance(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="mntEquipment">Equipo / Consola <span class="required">*</span></label>
-              <input type="text" id="mntEquipment" required minlength="3" placeholder="Ej. Wii U GamePad Black / Consola Basic 8GB">
+              <label for="mntEquipment"
+                >Equipo / Consola <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="mntEquipment"
+                required
+                minlength="3"
+                placeholder="Ej. Wii U GamePad Black / Consola Basic 8GB"
+              />
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="mntClient">Cliente <span class="required">*</span></label>
-                <input type="text" id="mntClient" required minlength="3" placeholder="Ej. Andrés Felipe Ruiz">
+                <label for="mntClient"
+                  >Cliente <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  id="mntClient"
+                  required
+                  minlength="3"
+                  placeholder="Ej. Andrés Felipe Ruiz"
+                />
               </div>
               <div class="grupo-formulario">
-                <label for="mntTech">Técnico Asignado <span class="required">*</span></label>
+                <label for="mntTech"
+                  >Técnico Asignado <span class="required">*</span></label
+                >
                 <select id="mntTech" required>
                   <option value="Ing. Mateo">Ing. Mateo</option>
                   <option value="Técnico Alex">Técnico Alex</option>
@@ -1647,11 +1805,22 @@
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="mntCost">Costo Servicio ($ COP) <span class="required">*</span></label>
-                <input type="number" id="mntCost" required min="0" step="1000" placeholder="45000">
+                <label for="mntCost"
+                  >Costo Servicio ($ COP) <span class="required">*</span></label
+                >
+                <input
+                  type="number"
+                  id="mntCost"
+                  required
+                  min="0"
+                  step="1000"
+                  placeholder="45000"
+                />
               </div>
               <div class="grupo-formulario">
-                <label for="mntStatus">Estado <span class="required">*</span></label>
+                <label for="mntStatus"
+                  >Estado <span class="required">*</span></label
+                >
                 <select id="mntStatus" required>
                   <option value="En Taller">En Taller</option>
                   <option value="En Diagnóstico">En Diagnóstico</option>
@@ -1662,8 +1831,16 @@
             </div>
           </div>
           <div class="pie-modal">
-            <button type="button" class="btn-secundario" onclick="window.closeAddMaintenanceModal()">Cancelar</button>
-            <button type="submit" class="btn-primario-brillo">Registrar Mantenimiento</button>
+            <button
+              type="button"
+              class="btn-secundario"
+              onclick="window.closeAddMaintenanceModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primario-brillo">
+              Registrar Mantenimiento
+            </button>
           </div>
         </form>
       </div>
@@ -1675,26 +1852,58 @@
         <div class="encabezado-modal">
           <div class="caja-titulo-modal">
             <div class="icono-insignia-modal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#FF5555" stroke-width="2">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#FF5555"
+                stroke-width="2"
+              >
+                <polygon
+                  points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+                ></polygon>
               </svg>
             </div>
             <div>
-              <h3 class="titulo-modal">Nueva Orden de Reparación (Recepción Taller)</h3>
-              <p class="subtitulo-modal">Registro de recepción de equipos con fallas en laboratorio.</p>
+              <h3 class="titulo-modal">
+                Nueva Orden de Reparación (Recepción Taller)
+              </h3>
+              <p class="subtitulo-modal">
+                Registro de recepción de equipos con fallas en laboratorio.
+              </p>
             </div>
           </div>
-          <button class="btn-cerrar-modal" onclick="window.closeAddRepairModal()">&times;</button>
+          <button
+            class="btn-cerrar-modal"
+            onclick="window.closeAddRepairModal()"
+          >
+            &times;
+          </button>
         </div>
         <form id="formAddRepair" onsubmit="window.saveRepairOrder(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="repDevice">Dispositivo / Consola <span class="required">*</span></label>
-              <input type="text" id="repDevice" required minlength="3" placeholder="Ej. Wii U GamePad (Pantalla rota) / Placa Madre">
+              <label for="repDevice"
+                >Dispositivo / Consola <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="repDevice"
+                required
+                minlength="3"
+                placeholder="Ej. Wii U GamePad (Pantalla rota) / Placa Madre"
+              />
             </div>
             <div class="grupo-formulario">
-              <label for="repDefect">Falla Reportada <span class="required">*</span></label>
-              <input type="text" id="repDefect" required minlength="3" placeholder="Ej. Sin señal HDMI / Táctil no responde">
+              <label for="repDefect"
+                >Falla Reportada <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="repDefect"
+                required
+                minlength="3"
+                placeholder="Ej. Sin señal HDMI / Táctil no responde"
+              />
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
@@ -1705,13 +1914,27 @@
               </div>
               <div class="grupo-formulario">
                 <label for="repPrice">Presupuesto Estimado ($ COP)</label>
-                <input type="number" id="repPrice" min="0" step="1000" placeholder="85000">
+                <input
+                  type="number"
+                  id="repPrice"
+                  min="0"
+                  step="1000"
+                  placeholder="85000"
+                />
               </div>
             </div>
           </div>
           <div class="pie-modal">
-            <button type="button" class="btn-secundario" onclick="window.closeAddRepairModal()">Cancelar</button>
-            <button type="submit" class="btn-primario-brillo">Generar Orden Taller</button>
+            <button
+              type="button"
+              class="btn-secundario"
+              onclick="window.closeAddRepairModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primario-brillo">
+              Generar Orden Taller
+            </button>
           </div>
         </form>
       </div>
@@ -1723,7 +1946,12 @@
         <div class="encabezado-modal">
           <div class="caja-titulo-modal">
             <div class="icono-insignia-modal">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#10B981"
+                stroke-width="2"
+              >
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -1731,31 +1959,69 @@
             </div>
             <div>
               <h3 class="titulo-modal">Registrar Nuevo Cliente</h3>
-              <p class="subtitulo-modal">Alta de cliente para directorio y programa de fidelización.</p>
+              <p class="subtitulo-modal">
+                Alta de cliente para directorio y programa de fidelización.
+              </p>
             </div>
           </div>
-          <button class="btn-cerrar-modal" onclick="window.closeAddClientModal()">&times;</button>
+          <button
+            class="btn-cerrar-modal"
+            onclick="window.closeAddClientModal()"
+          >
+            &times;
+          </button>
         </div>
         <form id="formAddClient" onsubmit="window.saveClient(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="cliName">Nombre Completo <span class="required">*</span></label>
-              <input type="text" id="cliName" required minlength="3" placeholder="Ej. Mario Alejandro Pérez">
+              <label for="cliName"
+                >Nombre Completo <span class="required">*</span></label
+              >
+              <input
+                type="text"
+                id="cliName"
+                required
+                minlength="3"
+                placeholder="Ej. Mario Alejandro Pérez"
+              />
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="cliPhone">Teléfono Contacto <span class="required">*</span></label>
-                <input type="tel" id="cliPhone" required pattern="[0-9\+\-\s\(\)]{7,15}" placeholder="+57 300 123 4567">
+                <label for="cliPhone"
+                  >Teléfono Contacto <span class="required">*</span></label
+                >
+                <input
+                  type="tel"
+                  id="cliPhone"
+                  required
+                  pattern="[0-9\+\-\s\(\)]{7,15}"
+                  placeholder="+57 300 123 4567"
+                />
               </div>
               <div class="grupo-formulario">
-                <label for="cliEmail">Correo Electrónico <span class="required">*</span></label>
-                <input type="email" id="cliEmail" required placeholder="cliente@gmail.com">
+                <label for="cliEmail"
+                  >Correo Electrónico <span class="required">*</span></label
+                >
+                <input
+                  type="email"
+                  id="cliEmail"
+                  required
+                  placeholder="cliente@gmail.com"
+                />
               </div>
             </div>
           </div>
           <div class="pie-modal">
-            <button type="button" class="btn-secundario" onclick="window.closeAddClientModal()">Cancelar</button>
-            <button type="submit" class="btn-primario-brillo">Guardar Cliente</button>
+            <button
+              type="button"
+              class="btn-secundario"
+              onclick="window.closeAddClientModal()"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-primario-brillo">
+              Guardar Cliente
+            </button>
           </div>
         </form>
       </div>
@@ -1797,7 +2063,9 @@
         <form id="formDiscount" onsubmit="window.saveDiscount(event)">
           <div class="individual-cuerpo-modal">
             <div class="grupo-formulario">
-              <label for="discCode">Código del Cupón <span class="required">*</span></label>
+              <label for="discCode"
+                >Código del Cupón <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="discCode"
@@ -1809,7 +2077,9 @@
             </div>
             <div class="fila-formulario-2">
               <div class="grupo-formulario">
-                <label for="discPercent">Porcentaje (%) <span class="required">*</span></label>
+                <label for="discPercent"
+                  >Porcentaje (%) <span class="required">*</span></label
+                >
                 <input
                   type="number"
                   id="discPercent"
@@ -1820,7 +2090,9 @@
                 />
               </div>
               <div class="grupo-formulario">
-                <label for="discLimit">Límite de Usos <span class="required">*</span></label>
+                <label for="discLimit"
+                  >Límite de Usos <span class="required">*</span></label
+                >
                 <input
                   type="number"
                   id="discLimit"
@@ -1832,7 +2104,9 @@
               </div>
             </div>
             <div class="grupo-formulario">
-              <label for="discDesc">Descripción <span class="required">*</span></label>
+              <label for="discDesc"
+                >Descripción <span class="required">*</span></label
+              >
               <input
                 type="text"
                 id="discDesc"
