@@ -2,46 +2,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const listaProductos = document.getElementById('lista-productos');
   if (!listaProductos) return;
 
-  function id(str) {
-    return document.getElementById(str);
-  }
-
   function formatCOP(amount) {
     return '$' + Math.round(amount).toLocaleString('es-CO') + ' COP';
   }
 
-  function recalculateTotals() {
-    const filas = listaProductos.querySelectorAll('.fila-producto');
-    let subtotal = 0;
-    let totalItems = 0;
+  function renderCart() {
+    const cart = window.WiiUGamesCart.read();
+    const subtotal = cart.reduce(
+      (sum, item) => sum + Number(item.price) * Number(item.quantity),
+      0,
+    );
 
-    filas.forEach(fila => {
-      const precioUnitario = parseFloat(fila.dataset.precio) || 0;
-      const cantSpan = fila.querySelector('.cant-val');
-      const cant = parseInt(cantSpan ? cantSpan.textContent : '1', 10) || 1;
-      
-      const subtotalFila = precioUnitario * cant;
-      subtotal += subtotalFila;
-      totalItems += cant;
-
-      const subtotalEl = fila.querySelector('.val-subtotal');
-      if (subtotalEl) {
-        subtotalEl.textContent = formatCOP(subtotalFila);
-      }
-    });
-
-    const resumenSubtotal = id('resumen-subtotal');
-    const resumenEnvio = id('resumen-envio');
-    const resumenImpuestos = id('resumen-impuestos');
-    const resumenTasa = id('resumen-tasa');
-    const resumenTotal = id('resumen-total');
-    const cartCount = id('cart-count');
-
-    if (cartCount) {
-      cartCount.textContent = totalItems > 0 ? totalItems : '';
-    }
-
-    if (filas.length === 0) {
+    if (cart.length === 0) {
       listaProductos.innerHTML = `
         <div class="carrito-vacio">
           <i class="fi fi-rr-shopping-cart"></i>
@@ -50,66 +22,83 @@ document.addEventListener('DOMContentLoaded', () => {
           <a href="Catalog.html" class="btn-linea">Explorar Catálogo</a>
         </div>
       `;
-      if (resumenSubtotal) resumenSubtotal.textContent = '$0 COP';
-      if (resumenEnvio) resumenEnvio.textContent = '$0 COP';
-      if (resumenImpuestos) resumenImpuestos.textContent = '$0 COP';
-      if (resumenTasa) resumenTasa.textContent = '$0 COP';
-      if (resumenTotal) resumenTotal.textContent = '$0 COP';
-      return;
+    } else {
+      listaProductos.innerHTML = cart.map((item) => {
+        const quantity = Number(item.quantity);
+        const hasStockLimit =
+          item.stock !== null &&
+          item.stock !== undefined &&
+          Number.isFinite(Number(item.stock));
+        const plusDisabled = hasStockLimit && quantity >= Number(item.stock);
+        return `
+          <div class="fila-producto" data-product-id="${escapeHtml(item.productId)}">
+            <div class="celda-item">
+              <img class="img-producto" src="${escapeHtml(item.imageUrl)}" alt="${escapeHtml(item.name)}" onerror="this.src='../Assets/lenovolegion.webp'">
+              <span class="texto-producto">${escapeHtml(item.name)}</span>
+            </div>
+            <div class="celda-precio">${formatCOP(Number(item.price))}</div>
+            <div class="celda-cantidad-wrapper">
+              <div class="celda-cantidad">
+                <span class="cant-val">${quantity}</span>
+                <span class="flechitas">
+                  <button class="btn-sumar" type="button" aria-label="Aumentar cantidad" ${plusDisabled ? 'disabled' : ''}>▲</button>
+                  <button class="btn-restar" type="button" aria-label="Disminuir cantidad" ${quantity <= 1 ? 'disabled' : ''}>▼</button>
+                </span>
+              </div>
+            </div>
+            <div class="celda-subtotal val-subtotal">${formatCOP(Number(item.price) * quantity)}</div>
+            <div class="celda-acciones">
+              <button class="icono-accion eliminar" type="button" aria-label="Eliminar ${escapeHtml(item.name)}">×</button>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
-    const costoEnvio = 25000;
-    const impuestos = subtotal * 0.19;
-    const tasaServicio = subtotal * 0.10;
-    const totalFinal = subtotal + costoEnvio + impuestos + tasaServicio;
-
-    if (resumenSubtotal) resumenSubtotal.textContent = formatCOP(subtotal);
-    if (resumenEnvio) resumenEnvio.textContent = formatCOP(costoEnvio);
-    if (resumenImpuestos) resumenImpuestos.textContent = formatCOP(impuestos);
-    if (resumenTasa) resumenTasa.textContent = formatCOP(tasaServicio);
-    if (resumenTotal) resumenTotal.textContent = formatCOP(totalFinal);
+    const shipping = cart.length ? 25000 : 0;
+    const taxes = subtotal * 0.19;
+    const serviceFee = subtotal * 0.10;
+    document.getElementById('resumen-subtotal').textContent = formatCOP(subtotal);
+    document.getElementById('resumen-envio').textContent = formatCOP(shipping);
+    document.getElementById('resumen-impuestos').textContent = formatCOP(taxes);
+    document.getElementById('resumen-tasa').textContent = formatCOP(serviceFee);
+    document.getElementById('resumen-total').textContent = formatCOP(
+      subtotal + shipping + taxes + serviceFee,
+    );
+    window.WiiUGamesCart.updateCount(cart);
   }
 
-  // Delegación de eventos en la lista de productos
-  listaProductos.addEventListener('click', (e) => {
-    const fila = e.target.closest('.fila-producto');
-    if (!fila) return;
+  listaProductos.addEventListener('click', (event) => {
+    const row = event.target.closest('.fila-producto');
+    if (!row) return;
 
-    if (e.target.closest('.btn-sumar')) {
-      const cantSpan = fila.querySelector('.cant-val');
-      let val = parseInt(cantSpan.textContent, 10) || 1;
-      cantSpan.textContent = val + 1;
-      recalculateTotals();
-    } else if (e.target.closest('.btn-restar')) {
-      const cantSpan = fila.querySelector('.cant-val');
-      let val = parseInt(cantSpan.textContent, 10) || 1;
-      if (val > 1) {
-        cantSpan.textContent = val - 1;
-        recalculateTotals();
-      }
-    } else if (e.target.closest('.eliminar')) {
-      fila.remove();
-      recalculateTotals();
+    const id = row.dataset.productId;
+    const cart = window.WiiUGamesCart.read();
+    const item = cart.find((entry) => String(entry.productId) === id);
+    if (!item) return;
+
+    if (event.target.closest('.btn-sumar')) {
+      window.WiiUGamesCart.setQuantity(id, Number(item.quantity) + 1);
+    } else if (event.target.closest('.btn-restar') && item.quantity > 1) {
+      window.WiiUGamesCart.setQuantity(id, Number(item.quantity) - 1);
+    } else if (event.target.closest('.eliminar')) {
+      window.WiiUGamesCart.remove(id);
     }
   });
 
-  // Botón vaciar carrito
-  const btnVaciar = id('btn-vaciar');
-  if (btnVaciar) {
-    btnVaciar.addEventListener('click', () => {
-      listaProductos.innerHTML = '';
-      recalculateTotals();
-    });
-  }
-
-  // Botón actualizar
-  const btnActualizar = id('btn-actualizar');
-  if (btnActualizar) {
-    btnActualizar.addEventListener('click', () => {
-      recalculateTotals();
-    });
-  }
-
-  // Inicializar al cargar
-  recalculateTotals();
+  document.getElementById('btn-vaciar')?.addEventListener('click', () => {
+    window.WiiUGamesCart.clear();
+  });
+  document.getElementById('btn-actualizar')?.addEventListener('click', renderCart);
+  window.addEventListener('wiiu-cart-change', renderCart);
+  renderCart();
 });
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}

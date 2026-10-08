@@ -1852,6 +1852,11 @@ body.a11y-mode-dark-mode .kpi-card {
   border-color: #172652 !important;
 }
 
+body.a11y-mode-dark-mode .text-dark,
+body.a11y-mode-dark-mode .text-muted-dark {
+  color: #f8fafc !important;
+}
+
 body.a11y-mode-dark-mode .search-bar {
   background-color: #0e1834 !important;
   border-color: #172652 !important;
@@ -1925,6 +1930,43 @@ body.a11y-mode-dark-mode .tooltip-amount {
 
 body.a11y-mode-dark-mode .tooltip-label {
   color: var(--accent-cyan) !important;
+}
+
+/* Mantener legibles los paneles del administrador en alto contraste. */
+body.a11y-mode-high-contrast .diseno-app .kpi-card,
+body.a11y-mode-high-contrast .diseno-app .panel-card,
+body.a11y-mode-high-contrast .diseno-app .tarjeta-resena,
+body.a11y-mode-high-contrast .diseno-app .ventana-modal,
+body.a11y-mode-high-contrast .diseno-app .bloque-formulario-card,
+body.a11y-mode-high-contrast .diseno-app .search-bar,
+body.a11y-mode-high-contrast .diseno-app .search-mini,
+body.a11y-mode-high-contrast .diseno-app .custom-select,
+body.a11y-mode-high-contrast .diseno-app .date-selector,
+body.a11y-mode-high-contrast .diseno-app .notification-btn {
+  background-color: #101010 !important;
+  border-color: #f5c842 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .diseno-app .text-dark,
+body.a11y-mode-high-contrast .diseno-app .text-muted-dark,
+body.a11y-mode-high-contrast .diseno-app .search-bar input,
+body.a11y-mode-high-contrast .diseno-app .search-mini input,
+body.a11y-mode-high-contrast .diseno-app .tabla-pedidos th,
+body.a11y-mode-high-contrast .diseno-app .tabla-pedidos td {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .diseno-app .tabla-pedidos th {
+  background-color: #101010 !important;
+}
+
+body.a11y-mode-high-contrast .diseno-app .tabla-pedidos td {
+  background-color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast .diseno-app input::placeholder {
+  color: #cbd5e1 !important;
 }
 
 /* =====================================================

@@ -9,6 +9,7 @@ let productosCatalogo = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   configurarFiltros();
+  configurarAgregarAlCarrito();
   cargarProductos();
   cargarCategorias();
   cargarMarcas();
@@ -124,6 +125,7 @@ function renderizarProductos() {
   const contenedor = document.getElementById('grid-productos');
   if (!contenedor) return;
 
+  const botonAplicar = document.querySelector('.btn-aplicar');
   const productosFiltrados = productosCatalogo.filter(producto => {
     const coincideCategoria =
       !filtrosCatalogo.categoria ||
@@ -144,7 +146,6 @@ function renderizarProductos() {
     contenedor.innerHTML = productosFiltrados.map(crearTarjetaProducto).join('');
   }
 
-  const botonAplicar = document.querySelector('.btn-aplicar');
   if (botonAplicar) {
     botonAplicar.textContent = `Aplicar Filtros (${productosFiltrados.length})`;
   }
@@ -159,11 +160,11 @@ function crearTarjetaProducto(prod) {
   }).format(Number(prod.precio) || 0);
 
   return `
-    <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
-      <article class="tarjeta-producto">
-        <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
-          ${tieneStock ? 'Con Stock' : 'Agotado'}
-        </div>
+    <article class="tarjeta-producto">
+      <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
+        ${tieneStock ? 'Con Stock' : 'Agotado'}
+      </div>
+      <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
         <img
           src="${escapeHtml(prod.imagen_url || '../Assets/lenovolegion.webp')}"
           alt="${escapeHtml(prod.nombre)}"
@@ -174,10 +175,59 @@ function crearTarjetaProducto(prod) {
           ★★★★★ <span class="resenas">${escapeHtml(prod.nombre_marca || '')}</span>
         </div>
         <h3 class="titulo-producto">${escapeHtml(prod.nombre)}</h3>
-        <div class="precio-actual">${precioFormateado}</div>
-      </article>
-    </a>
+      </a>
+      <div class="precio-actual">${precioFormateado}</div>
+      <button
+        class="btn-agregar-carrito"
+        type="button"
+        data-product-id="${escapeHtml(prod.id_producto)}"
+        ${tieneStock ? '' : 'disabled'}
+      >${tieneStock ? 'Agregar al carrito' : 'Agotado'}</button>
+      <span class="mensaje-carrito" aria-live="polite"></span>
+    </article>
   `;
+}
+
+function configurarAgregarAlCarrito() {
+  const grid = document.getElementById('grid-productos');
+  if (!grid) return;
+
+  grid.addEventListener('click', event => {
+    const button = event.target.closest('.btn-agregar-carrito');
+    if (!button || !grid.contains(button)) return;
+
+    const product = productosCatalogo.find(
+      item => String(item.id_producto) === button.dataset.productId
+    );
+    const feedback = button.nextElementSibling;
+    const cart = window.WiiUGamesCart;
+    if (!product || !cart) {
+      console.error('No se pudo agregar el producto: falta el producto o el carrito.');
+      if (feedback) feedback.textContent = 'No se pudo agregar al carrito.';
+      return;
+    }
+
+    const result = cart.add(product, 1);
+    if (!result.ok) {
+      if (feedback) {
+        feedback.textContent =
+          result.reason === 'stock'
+            ? `Solo hay ${result.stock} unidades disponibles.`
+            : result.reason === 'unavailable'
+              ? 'Este producto está agotado.'
+              : 'No se pudo agregar al carrito.';
+      }
+      return;
+    }
+
+    if (feedback) feedback.textContent = 'Producto agregado al carrito.';
+    button.textContent = 'Agregado';
+    window.setTimeout(() => {
+      if (!button.isConnected) return;
+      button.textContent = 'Agregar al carrito';
+      if (feedback) feedback.textContent = '';
+    }, 1800);
+  });
 }
 
 //Cargar categorías en el menú lateral

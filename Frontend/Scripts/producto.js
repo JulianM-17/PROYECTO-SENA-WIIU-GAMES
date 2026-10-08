@@ -1,23 +1,61 @@
 document.addEventListener("DOMContentLoaded", () => {
+  initializeProduct();
+});
+
+async function initializeProduct() {
   const products = readProducts();
-  const productId = Number(
-    new URLSearchParams(window.location.search).get("id"),
-  );
-  const product =
+  const productId = new URLSearchParams(window.location.search).get("id");
+  let product =
     products.find((item) => item.id === productId) ||
-    products[0] ||
-    getFallbackProduct();
+    products.find((item) => String(item.id) === String(productId));
+
+  if (!product && productId) {
+    product = await loadProductFromApi(productId);
+  }
+  product ||= products[0] || getFallbackProduct();
 
   updateProductHeader(product);
   replaceFixedSections(product);
   configureCartButton(product);
-});
+}
 
 function readProducts() {
   try {
     return JSON.parse(localStorage.getItem("wiiu_products") || "[]");
   } catch {
     return [];
+  }
+}
+
+async function loadProductFromApi(productId) {
+  try {
+    const response = await fetch("http://localhost:3000/api/productos");
+    if (!response.ok) {
+      throw new Error(`La API respondió con estado ${response.status}`);
+    }
+
+    const products = await response.json();
+    const product = Array.isArray(products)
+      ? products.find((item) => String(item.id_producto) === String(productId))
+      : null;
+    if (!product || !product.id_producto) {
+      throw new Error("La API no encontró el producto solicitado.");
+    }
+    return {
+      id: product.id_producto,
+      name: product.nombre,
+      price: Number(product.precio),
+      imageUrl: product.imagen_url,
+      description: product.descripcion,
+      category: product.nombre_cat,
+      condition: "Nuevo Sellado",
+      warranty: "12 Meses",
+      platform: product.nombre_marca,
+      stock: Number(product.stock_total) || 0,
+    };
+  } catch (error) {
+    console.error("No se pudo cargar el producto desde la API:", error);
+    return null;
   }
 }
 
@@ -119,39 +157,46 @@ function configureCartButton(product) {
   const quantityInput = document.querySelector(".input-cantidad");
   if (!button) return;
 
+  const stock = Number(product.stock ?? product.stock_total);
+  if (Number.isFinite(stock)) {
+    quantityInput?.setAttribute("max", String(stock));
+    button.disabled = stock <= 0;
+    if (stock <= 0) button.textContent = "Agotado";
+  }
+
+  let feedback = button.parentElement.querySelector(".cart-feedback");
+  if (!feedback) {
+    feedback = document.createElement("span");
+    feedback.className = "cart-feedback";
+    feedback.setAttribute("aria-live", "polite");
+    button.insertAdjacentElement("afterend", feedback);
+  }
+
   button.addEventListener("click", () => {
-    const quantity = Math.max(1, Number(quantityInput?.value) || 1);
-    const cart = readCart();
-    const existing = cart.find((item) => item.productId === product.id);
-
-    if (existing) {
-      existing.quantity += quantity;
-    } else {
-      cart.push({
-        productId: product.id,
-        name: product.name,
-        price: Number(product.price) || 0,
-        imageUrl: product.imageUrl || "../Assets/MSI.png",
-        quantity,
-      });
+    const quantity = Math.floor(Number(quantityInput?.value));
+    if (!Number.isInteger(quantity) || quantity < 1) {
+      feedback.textContent = "Ingresa una cantidad válida.";
+      return;
     }
-
-    localStorage.setItem("wiiu_cart", JSON.stringify(cart));
+    const result = window.WiiUGamesCart?.add(product, quantity);
+    if (!result?.ok) {
+      feedback.textContent =
+        result?.reason === "stock"
+          ? `Solo hay ${result.stock} unidades disponibles.`
+          : result?.reason === "unavailable"
+            ? "Este producto está agotado."
+            : "No se pudo agregar el producto al carrito.";
+      return;
+    }
+    feedback.textContent = "Producto agregado al carrito.";
     button.textContent = "Agregado al carrito";
     button.disabled = true;
     window.setTimeout(() => {
+      if (!button.isConnected) return;
       button.textContent = "Añadir al carrito";
-      button.disabled = false;
+      button.disabled = Number.isFinite(stock) && stock <= 0;
     }, 1400);
   });
-}
-
-function readCart() {
-  try {
-    return JSON.parse(localStorage.getItem("wiiu_cart") || "[]");
-  } catch {
-    return [];
-  }
 }
 
 function setText(selector, value) {
