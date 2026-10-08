@@ -307,10 +307,6 @@ CREATE TABLE backup (
 );
 
 
--- =========================================================
--- INSERTS CORREGIDOS (Se agregan los usuarios 4, 5 y 6 primero)
--- =========================================================
-
 -- ---------------- rol ----------------
 INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 ('Cliente', 'Usuario que compra productos y solicita servicios', 'ACTIVO'),
@@ -319,7 +315,6 @@ INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 ('Trabajador', 'Empleado de sucursal: ventas y servicios tecnicos', 'ACTIVO');
 
 -- ---------------- usuario ----------------
--- IDs 1 y 2: Clientes | ID 3: Admin | ID 4: Proveedor | IDs 5 y 6: Trabajadores
 INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento, telefono, telefono_secundario, departamento, ciudad, direccion, correo, contrasena_hash, estado) VALUES
 (1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'carlos.ramirez@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo1111111111111111', 'ACTIVO'),
 (1, 'Laura', 'Gomez', 'CC', '1098765432', '1998-07-22', '3209876543', '3151112233', 'Antioquia', 'Medellin', 'Calle 50 # 45-10', 'laura.gomez@correo.com', '$2b$10$abcdefghijklmnopqrstuuMDHashEjemplo2222222222222222', 'ACTIVO'),
@@ -330,7 +325,6 @@ INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimien
 
 
 -- ---------------- sucursal ----------------
--- Ahora los IDs de encargados (3, 5 y 6) sí existen en la tabla usuario
 INSERT INTO sucursal (encargado, nombre_suc, departamento, ciudad, direccion, telefono, correo, estado) VALUES
 (3, 'Sucursal Chapinero', 'Cundinamarca', 'Bogota', 'Cra 13 # 60-25', '6015551001', 'chapinero@tienda.com', 'ACTIVO'),
 (5, 'Sucursal Centro', 'Cundinamarca', 'Bogota', 'Calle 19 # 7-30', '6015551002', 'centro@tienda.com', 'ACTIVO'),
@@ -397,7 +391,6 @@ INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado) VALUES
 (3, '2026-09-15 09:15:00', '2027-09-15 09:15:00', 'VIGENTE');
 
 -- ---------------- compra ----------------
--- Aquí id_proveedor usa el ID 4 (que ahora sí existe como proveedor)
 INSERT INTO compra (id_admin, id_proveedor, id_sucursal, fecha, metodo_pago, notas, estado) VALUES
 (3, 4, 1, '2026-08-20 11:00:00', 'TRANSFERENCIA', 'Reposicion de portatiles', 'PAGADA'),
 (3, 4, 2, '2026-08-22 14:20:00', 'TRANSFERENCIA', 'Reposicion de perifericos', 'PAGADA'),
