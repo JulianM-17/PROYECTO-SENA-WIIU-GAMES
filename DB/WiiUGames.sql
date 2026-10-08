@@ -291,6 +291,19 @@ CREATE TABLE inventario (
     UNIQUE KEY sucursal_producto (id_sucursal , id_producto)
 );
 
+-- ----------------------- contactanos --------------------------
+
+CREATE TABLE contactanos (
+    id_contactanos INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    correo VARCHAR(100) NOT NULL,
+    mensaje VARCHAR(500) NOT NULL,
+    fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+);
+
 -- ---------------------------backups-----------------------------
 
 CREATE TABLE backup (
