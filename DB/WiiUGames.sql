@@ -301,7 +301,7 @@ CREATE TABLE contactanos (
     nombre VARCHAR(100) NOT NULL,
     correo VARCHAR(100) NOT NULL,
     mensaje VARCHAR(500) NOT NULL,
-    fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario)
         REFERENCES usuario (id_usuario),
@@ -320,6 +320,21 @@ CREATE TABLE backup (
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tipo ENUM ('COMPLETO', 'INCREMENTAL', 'DIFERENCIAL'),
     estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL
+);
+
+-- ---------------------------Reseñas------------------------------
+CREATE TABLE backup (
+    id_resenas INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    id_usuario INT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    id_producto INT NOT NULL,
+    FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto),
+    resena TINYINT NOT NULL,
+    comentario VARCHAR(500) NOT NULL,
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    estado ENUM('ACTIVA', 'INACTIVA') NOT NULL
 );
 
 -- ---------------- rol ----------------
