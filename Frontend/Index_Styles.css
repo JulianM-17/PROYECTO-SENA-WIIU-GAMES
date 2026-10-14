@@ -1,7 +1,3 @@
-/* =====================================================
-   WIIU-GAMES - INDEX STYLES (Corsair-Inspired Dark Theme)
-   Colores: Amarillo #f5c842, Dark Blue #080f20, Negro #000
-   ===================================================== */
 
 * {
   margin: 0;
@@ -31,9 +27,6 @@
   --border-hover: rgba(245, 200, 66, 0.25);
 }
 
-/* =====================================================
-   BODY & MAIN CONTAINER
-   ===================================================== */
 body {
   background-color: var(--black);
   color: var(--white);
@@ -51,9 +44,6 @@ main {
   padding: 0 40px;
 }
 
-/* =====================================================
-   HERO SLIDER
-   ===================================================== */
 .hero-slider {
   position: relative;
   width: 100%;
@@ -316,9 +306,7 @@ main {
   animation: heroFadeUp 0.6s 0.65s forwards;
 }
 
-/* =====================================================
-   SECCIÓN TÍTULOS CORSAIR
-   ===================================================== */
+
 .seccion-titulo-corsair {
   font-size: clamp(1.1rem, 2vw, 1.4rem);
   font-weight: 800;
@@ -362,13 +350,17 @@ main {
   color: var(--yellow);
 }
 
-/* =====================================================
-   CATEGORÍAS CARRUSEL (COMPRAR POR CATEGORÍA)
-   ===================================================== */
 .seccion-categorias-corsair {
   padding: 80px 0 60px 0;
   background: var(--black);
 }
+
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: minmax(200px, auto);
+  gap: 16px;
+  width: 100%;}
 
 .categorias-carrusel {
   display: flex;
@@ -393,12 +385,17 @@ main {
   position: relative;
   min-width: 220px;
   height: 280px;
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
   text-decoration: none;
   flex-shrink: 0;
   border: 1px solid var(--border-dark);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-grande {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 .categoria-card-img {
@@ -413,9 +410,9 @@ main {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0.2) 0%,
-    rgba(0, 0, 0, 0.75) 100%
+    to bottom,
+    rgba(0, 0, 0, 0) 40%,
+    rgba(0, 0, 0, 0.85) 100%
   );
   transition: background 0.4s ease;
   z-index: 1;
@@ -428,8 +425,8 @@ main {
   right: 20px;
   z-index: 2;
   color: var(--white);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   line-height: 1.3;
@@ -443,7 +440,7 @@ main {
 }
 
 .categoria-card:hover .categoria-card-img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
 .categoria-card:hover .categoria-card-nombre {
@@ -458,9 +455,6 @@ main {
   );
 }
 
-/* =====================================================
-   PRODUCTOS NUEVOS - CARRUSEL DARK CARDS
-   ===================================================== */
 .seccion-productos-corsair {
   padding: 60px 0 80px 0;
   background: var(--black);
@@ -782,117 +776,6 @@ main {
   direction: ltr;
 }
 
-/* =====================================================
-   SERVICIOS CARDS
-   ===================================================== */
-.seccion-servicios-corsair {
-  padding: 80px 0;
-  background: var(--black);
-}
-
-.servicios-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.servicio-card {
-  position: relative;
-  height: 300px;
-  border-radius: 6px;
-  overflow: hidden;
-  text-decoration: none;
-  border: 1px solid var(--border-dark);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.servicio-card-bg {
-  position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.servicio-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(8, 15, 32, 0.85) 0%,
-    rgba(8, 15, 32, 0.6) 100%
-  );
-  transition: background 0.4s ease;
-  z-index: 1;
-}
-
-.servicio-card-contenido {
-  position: relative;
-  z-index: 2;
-  padding: 40px;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.servicio-card-tag {
-  color: var(--yellow);
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-.servicio-card-contenido h2 {
-  color: var(--white);
-  font-size: 1.6rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: color 0.3s ease;
-}
-
-.servicio-card-contenido p {
-  color: var(--gray-400);
-  font-size: 0.85rem;
-  line-height: 1.6;
-}
-
-.servicio-card-arrow {
-  color: var(--yellow);
-  font-size: 1.5rem;
-  font-weight: 700;
-  transition: transform 0.3s ease;
-  align-self: flex-start;
-}
-
-.servicio-card:hover {
-  border-color: var(--yellow);
-  box-shadow: 0 12px 50px rgba(245, 200, 66, 0.1);
-  transform: translateY(-4px);
-}
-
-.servicio-card:hover .servicio-card-bg {
-  transform: scale(1.06);
-}
-
-.servicio-card:hover .servicio-card-contenido h2 {
-  color: var(--yellow);
-}
-
-.servicio-card:hover .servicio-card-arrow {
-  transform: translateX(8px);
-}
-
-.servicio-card:hover .servicio-card-overlay {
-  background: linear-gradient(
-    135deg,
-    rgba(8, 15, 32, 0.75) 0%,
-    rgba(8, 15, 32, 0.5) 100%
-  );
-}
 
 /* =====================================================
    BANNER FULL-WIDTH (Monitores)
@@ -1039,9 +922,7 @@ main {
   transform: translateY(0);
 }
 
-/* =====================================================
-   RESPONSIVE DESIGN
-   ===================================================== */
+/*RESPONSIVE DESIGN*/
 @media (max-width: 1200px) {
   .porque-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1075,9 +956,7 @@ main {
     direction: ltr;
   }
 
-  .servicios-grid {
-    grid-template-columns: 1fr;
-  }
+
 
   .seccion-inner {
     padding: 0 24px;
@@ -1094,6 +973,13 @@ main {
 
   .hero-arrow-right {
     right: 15px;
+  } 
+  categorias-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card-grande {
+    grid-column: span 2;
+    grid-row: span 1;
   }
 }
 
@@ -1184,5 +1070,13 @@ main {
 
   .servicio-card-contenido h2 {
     font-size: 1.2rem;
+  }
+  .categorias-grid {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 200px;
+  }
+  .card-grande {
+    grid-column: span 1;
+    grid-row: span 1;
   }
 }
