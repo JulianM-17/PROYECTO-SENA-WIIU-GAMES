@@ -147,7 +147,26 @@ CREATE TABLE detalle_servicio (
     FOREIGN KEY (id_producto)
         REFERENCES producto (id_producto),
     descripcion VARCHAR(100) NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    precio_unitario DECIMAL(14 , 6 ) NOT NULL,
+    subtotal DECIMAL(14 , 6 ) NOT NULL,
     estado ENUM('CANCELADO', 'PENDIENTE', 'EN PROCESO', 'COMPLETO') NOT NULL
+);
+
+-- ---------------------------- Cotizacion -------------------------------
+
+CREATE TABLE cotizacion (
+    id_cotizacion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    id_servicio INT NULL,
+    FOREIGN KEY (id_servicio)
+        REFERENCES servicio (id_servicio),
+    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    validez INT NOT NULL DEFAULT 15,
+    total DECIMAL(14 , 6 ) NOT NULL,
+    estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') NOT NULL
 );
 
 -- ----------------------------------Venta-------------------------------
@@ -163,10 +182,13 @@ CREATE TABLE venta (
     id_sucursal INT NOT NULL,
     FOREIGN KEY (id_sucursal)
         REFERENCES sucursal (id_sucursal),
+	id_cotizacion INT NULL,
+    FOREIGN KEY (id_cotizacion)
+        REFERENCES cotizacion (id_cotizacion),
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA') NOT NULL,
     nro_pago VARCHAR(255) NOT NULL,
-    comprobante MEDIUMBLOB NOT NULL,
+    comprobante VARCHAR(255) NOT NULL,
     telefono VARCHAR(20) NULL,
     tipo_venta ENUM('DOMICILIO', 'SUCURSAL') NOT NULL DEFAULT 'SUCURSAL',
     ciudad VARCHAR(100) NULL,
@@ -233,22 +255,6 @@ CREATE TABLE detalle_compra (
     subtotal DECIMAL(14 , 6 ) NOT NULL
 );
 
--- ---------------------------- Cotizacion -------------------------------
-
-CREATE TABLE cotizacion (
-    id_cotizacion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
-    id_servicio INT NULL,
-    FOREIGN KEY (id_servicio)
-        REFERENCES servicio (id_servicio),
-    fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    validez INT NOT NULL DEFAULT 15,
-    total DECIMAL(14 , 6 ) NOT NULL,
-    estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') NOT NULL
-);
-
 CREATE TABLE detalle_cotizacion (
     id_detalle_cotizacion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_cotizacion INT NOT NULL,
@@ -304,7 +310,7 @@ CREATE TABLE contactanos (
     fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
+        REFERENCES usuario (id_usuario)
 );
 
 -- ---------------------------backups-----------------------------
@@ -320,21 +326,6 @@ CREATE TABLE backup (
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tipo ENUM ('COMPLETO', 'INCREMENTAL', 'DIFERENCIAL'),
     estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL
-);
-
--- ---------------------------Reseñas------------------------------
-CREATE TABLE backup (
-    id_resenas INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    id_usuario INT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
-    id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
-    resena TINYINT NOT NULL,
-    comentario VARCHAR(500) NOT NULL,
-    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    estado ENUM('ACTIVA', 'INACTIVA') NOT NULL
 );
 
 -- ---------------- rol ----------------
@@ -379,10 +370,10 @@ INSERT INTO marca (nombre_marca, descripcion_marca, estado) VALUES
 ('Kingston', 'Memorias y unidades de almacenamiento', 'ACTIVO');
 
 -- ---------------- producto ----------------
-INSERT INTO producto (id_marca, id_categoria, nombre, imagen_url, color, descripcion, precio, estado) VALUES
-(1, 1, 'Portatil Lenovo IdeaPad 3', 'img/productos/ideapad3.jpg', 'Gris', 'Ryzen 5, 16GB RAM, 512GB SSD, 15.6 pulgadas', 2200000.000000, 'ACTIVO'),
-(2, 2, 'Mouse Logitech M185', 'img/productos/m185.jpg', 'Negro', 'Mouse inalambrico con receptor USB', 45000.000000, 'ACTIVO'),
-(3, 3, 'SSD Kingston A400 480GB', 'img/productos/a400.jpg', NULL, 'Unidad de estado solido SATA 2.5 pulgadas', 180000.000000, 'ACTIVO');
+INSERT INTO producto (id_marca, id_categoria, nombre, imagen_prin, imagen_2, imagen_3, imagen_4, color, descripcion, precio, estado) VALUES
+(1, 1, 'Portatil Lenovo IdeaPad 3', 'img/productos/ideapad3_1.jpg', 'img/productos/ideapad3_2.jpg', 'img/productos/ideapad3_3.jpg', 'img/productos/ideapad3_4.jpg', 'Gris', 'Ryzen 5, 16GB RAM, 512GB SSD, 15.6 pulgadas', 2200000.000000, 'ACTIVO'),
+(2, 2, 'Mouse Logitech M185', 'img/productos/m185_1.jpg', 'img/productos/m185_2.jpg', 'img/productos/m185_3.jpg', 'img/productos/m185_4.jpg', 'Negro', 'Mouse inalambrico con receptor USB', 45000.000000, 'ACTIVO'),
+(3, 3, 'SSD Kingston A400 480GB', 'img/productos/a400_1.jpg', 'img/productos/a400_2.jpg', 'img/productos/a400_3.jpg', 'img/productos/a400_4.jpg', NULL, 'Unidad de estado solido SATA 2.5 pulgadas', 180000.000000, 'ACTIVO');
 
 -- ---------------- tipo_servicio ----------------
 INSERT INTO tipo_servicio (nombre, descripcion, estado) VALUES
@@ -397,16 +388,17 @@ INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_ser
 ('Mantenimiento torre gamer', 'Limpieza y cambio de pasta termica', 1, 5, 1, 3, 'ACTIVO');
 
 -- ---------------- detalle_servicio ----------------
-INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, estado) VALUES
-(1, NULL, 'Diagnostico inicial de la bateria', 'COMPLETO'),
-(2, NULL, 'Revision de fuente de poder y puerto HDMI', 'EN PROCESO'),
-(3, 3, 'Se instala SSD adicional durante el mantenimiento', 'PENDIENTE');
 
--- ---------------- venta ----------------
+INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, cantidad, precio_unitario, subtotal, estado) VALUES
+(1, NULL, 'Diagnostico inicial de la bateria', 1, 50000.000000, 50000.000000, 'COMPLETO'),
+(2, NULL, 'Revision de fuente de poder y puerto HDMI', 1, 80000.000000, 80000.000000, 'EN PROCESO'),
+(3, 3, 'Se instala SSD adicional durante el mantenimiento', 1, 180000.000000, 180000.000000, 'PENDIENTE');
+
+-- ---------------- venta ----------------------
 INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, nro_pago, comprobante, telefono, tipo_venta, ciudad, direccion_entrega, numero_guia, notas, estado) VALUES
-(1, 5, 1, '2026-09-10 10:30:00', 'TARJETA', 'PAGO-0001', CAST('comprobante_0001' AS BINARY), '3101234567', 'SUCURSAL', NULL, NULL, NULL, 'Compra en mostrador', 'PAGADA'),
-(2, 6, 3, '2026-09-12 15:45:00', 'TRANSFERENCIA', 'PAGO-0002', CAST('comprobante_0002' AS BINARY), '3209876543', 'DOMICILIO', 'Medellin', 'Calle 50 # 45-10 Apto 301', 'GUIA-123456', 'Entregar en horario de la tarde', 'PAGADA'),
-(1, 5, 2, '2026-09-15 09:15:00', 'EFECTIVO', 'PAGO-0003', CAST('comprobante_0003' AS BINARY), '3101234567', 'SUCURSAL', NULL, NULL, NULL, NULL, 'PAGADA');
+(1, 5, 1, '2026-09-10 10:30:00', 'TARJETA', 'PAGO-0001', 'comprobante_0001.pdf', '3101234567', 'SUCURSAL', NULL, NULL, NULL, 'Compra en mostrador', 'PAGADA'),
+(2, 6, 3, '2026-09-12 15:45:00', 'TRANSFERENCIA', 'PAGO-0002', 'comprobante_0002.pdf', '3209876543', 'DOMICILIO', 'Medellin', 'Calle 50 # 45-10 Apto 301', 'GUIA-123456', 'Entregar en horario de la tarde', 'PAGADA'),
+(1, 5, 2, '2026-09-15 09:15:00', 'EFECTIVO', 'PAGO-0003', 'comprobante_0003.pdf', '3101234567', 'SUCURSAL', NULL, NULL, NULL, NULL, 'PAGADA');
 
 -- ---------------- detalle_venta ----------------
 INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas) VALUES
