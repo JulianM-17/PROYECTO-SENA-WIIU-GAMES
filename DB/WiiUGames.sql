@@ -357,7 +357,7 @@ INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimien
 -- ---------------- sucursal ----------------
 INSERT INTO sucursal (encargado, nombre_suc, departamento, ciudad, direccion, telefono, correo, estado) VALUES
 (3, 'Sucursal Chapinero', 'Cundinamarca', 'Bogota', 'Cra 13 # 60-25', '6015551001', 'chapinero@tienda.com', 'ACTIVO'),
-(5, 'Sucursal Centro', 'Cundinamarca', 'Bogota', 'Calle 19 # 7-30', '6015551002', 'centro@tienda.com', 'ACTIVO'),
+(5, 'Sucursal Centro', 'Cundinamarca', 'Bogota', 'Calle 19 # 7-30', '6015551002', 'centro@tienda.com', 'ACTIVO'), 
 (6, 'Sucursal Poblado', 'Antioquia', 'Medellin', 'Cra 43A # 10-50', '6045551003', 'poblado@tienda.com', 'ACTIVO');
 
 -- ---------------- equipo ----------------
