@@ -3,7 +3,6 @@ CREATE DATABASE wiiu_gamesdb;
 USE wiiu_gamesdb;
 
 -- --------------Rol-----------------
-
 CREATE TABLE rol (
     id_rol INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     nombre_rol VARCHAR(20) NOT NULL,
@@ -12,15 +11,13 @@ CREATE TABLE rol (
 );
 
 -- --------------Usuario-----------------
-
 CREATE TABLE usuario (
     id_usuario INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     id_rol INT,
-    FOREIGN KEY (id_rol)
-        REFERENCES rol (id_rol),
+    FOREIGN KEY (id_rol) REFERENCES rol (id_rol),
     nombre VARCHAR(30) NOT NULL,
     apellido VARCHAR(30) NOT NULL,
-    tipo_doc ENUM('CC', 'TI', 'PAS', 'NIT') NOT NULL,
+    tipo_doc ENUM('CC', 'TI', 'PAS', 'NIT', 'CE') NOT NULL,
     num_doc VARCHAR(20) NOT NULL UNIQUE,
     fecha_nacimiento DATE NULL,
     telefono VARCHAR(20) NOT NULL,
@@ -35,12 +32,10 @@ CREATE TABLE usuario (
 );
 
 -- --------------Sucursal-----------------
-
 CREATE TABLE sucursal (
     id_sucursal INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     encargado INT,
-    FOREIGN KEY (encargado)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (encargado) REFERENCES usuario (id_usuario),
     nombre_suc VARCHAR(30) NOT NULL,
     departamento VARCHAR(30) NOT NULL,
     ciudad VARCHAR(30) NOT NULL,
@@ -51,26 +46,21 @@ CREATE TABLE sucursal (
 );
 
 -- -------------- Equipo ------------------
-
 CREATE TABLE equipo (
     id_equipo INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     id_sucursal INT NOT NULL,
-    FOREIGN KEY (id_sucursal)
-        REFERENCES sucursal (id_sucursal),
+    FOREIGN KEY (id_sucursal) REFERENCES sucursal (id_sucursal),
     tipo ENUM('Portatil', 'Torre', 'Consola', 'Control', 'All in one') NOT NULL,
     marca VARCHAR(20) NOT NULL,
-    numero_serial VARCHAR(40) NOT NULL,
+    numero_serial VARCHAR(40) NOT NULL UNIQUE,
     descripcion VARCHAR(100) NOT NULL,
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO'
 );
 
-
--- --------------Categoria-----------------
-
+-- ---------------------------Categoria----------------------------
 CREATE TABLE categoria (
     id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nombre_cat VARCHAR(40) NOT NULL,
@@ -79,7 +69,6 @@ CREATE TABLE categoria (
 );
 
 -- -----------------------------Marca------------------------------
-
 CREATE TABLE marca (
     id_marca INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     nombre_marca VARCHAR(20) NOT NULL,
@@ -89,25 +78,23 @@ CREATE TABLE marca (
 );
 
 -- ----------------------------Producto-----------------------------
-
 CREATE TABLE producto (
     id_producto INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_marca INT NOT NULL,
-    FOREIGN KEY (id_marca)
-        REFERENCES marca (id_marca),
+    FOREIGN KEY (id_marca) REFERENCES marca (id_marca),
     id_categoria INT NOT NULL,
-    FOREIGN KEY (id_categoria)
-        REFERENCES categoria (id_categoria),
+    FOREIGN KEY (id_categoria) REFERENCES categoria (id_categoria),
     nombre VARCHAR(100) NOT NULL,
     imagen_prin VARCHAR(255) NOT NULL,
-    imagen_2 VARCHAR(255) NOT NULL,
-    imagen_3 VARCHAR(255) NOT NULL,
-    imagen_4 VARCHAR(255) NOT NULL,
+    imagen_2 VARCHAR(255) NULL,
+    imagen_3 VARCHAR(255) NULL,
+    imagen_4 VARCHAR(255) NULL,
     color VARCHAR(15) NULL,
     descripcion VARCHAR(100) NOT NULL,
-    precio DECIMAL(14 , 6 ) NOT NULL,
+    precio DECIMAL(14 , 6) NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
-    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT chk_precio_producto CHECK (precio >= 0)
 );
 
 -- -------------- Servicio -----------------
@@ -123,72 +110,62 @@ CREATE TABLE servicio (
     nombre VARCHAR(100) NOT NULL,
     descripcion VARCHAR(100) NOT NULL,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     id_encargado INT NOT NULL,
-    FOREIGN KEY (id_encargado)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_encargado) REFERENCES usuario (id_usuario),
     id_tipo_servicio INT NOT NULL,
-    FOREIGN KEY (id_tipo_servicio)
-        REFERENCES tipo_servicio (id_tipo_servicio),
+    FOREIGN KEY (id_tipo_servicio) REFERENCES tipo_servicio (id_tipo_servicio),
     id_equipo INT NOT NULL,
-    FOREIGN KEY (id_equipo)
-        REFERENCES equipo (id_equipo),
-    estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+    FOREIGN KEY (id_equipo) REFERENCES equipo (id_equipo),
+    estado ENUM('PENDIENTE', 'EN PROCESO', 'CANCELADO', 'COMPLETO') NOT NULL DEFAULT 'PENDIENTE',
     fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE detalle_servicio (
     id_detalle_servicio INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_servicio INT NOT NULL,
-    FOREIGN KEY (id_servicio)
-        REFERENCES servicio (id_servicio),
+    FOREIGN KEY (id_servicio) REFERENCES servicio (id_servicio),
     id_producto INT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     descripcion VARCHAR(100) NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
-    precio_unitario DECIMAL(14 , 6 ) NOT NULL,
-    subtotal DECIMAL(14 , 6 ) NOT NULL,
-    estado ENUM('CANCELADO', 'PENDIENTE', 'EN PROCESO', 'COMPLETO') NOT NULL
+    precio_unitario DECIMAL(14 , 6) NOT NULL,
+    subtotal DECIMAL(14 , 6) GENERATED ALWAYS AS (cantidad * precio_unitario) STORED,
+    estado ENUM('CANCELADO', 'PENDIENTE', 'EN PROCESO', 'COMPLETO') NOT NULL,
+    CONSTRAINT chk_cantidad_det_serv CHECK (cantidad >= 0),
+    CONSTRAINT chk_precio_det_serv CHECK (precio_unitario >= 0)
 );
 
 -- ---------------------------- Cotizacion -------------------------------
-
 CREATE TABLE cotizacion (
     id_cotizacion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     id_servicio INT NULL,
-    FOREIGN KEY (id_servicio)
-        REFERENCES servicio (id_servicio),
+    FOREIGN KEY (id_servicio) REFERENCES servicio (id_servicio),
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     validez INT NOT NULL DEFAULT 15,
-    total DECIMAL(14 , 6 ) NOT NULL,
-    estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') NOT NULL
+    total DECIMAL(14 , 6) NOT NULL,
+    estado ENUM('PENDIENTE', 'ACEPTADA', 'RECHAZADA') NOT NULL,
+    CONSTRAINT chk_validez CHECK (validez >= 0),
+    CONSTRAINT chk_total_cotizacion CHECK (total >= 0)
 );
 
 -- ----------------------------------Venta-------------------------------
-
 CREATE TABLE venta (
     id_venta INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
     id_empleado INT NULL,
-    FOREIGN KEY (id_empleado)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_empleado) REFERENCES usuario (id_usuario),
     id_sucursal INT NOT NULL,
-    FOREIGN KEY (id_sucursal)
-        REFERENCES sucursal (id_sucursal),
-	id_cotizacion INT NULL,
-    FOREIGN KEY (id_cotizacion)
-        REFERENCES cotizacion (id_cotizacion),
+    FOREIGN KEY (id_sucursal) REFERENCES sucursal (id_sucursal),
+    id_cotizacion INT NULL,
+    FOREIGN KEY (id_cotizacion) REFERENCES cotizacion (id_cotizacion),
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA') NOT NULL,
-    nro_pago VARCHAR(255) NOT NULL,
-    comprobante VARCHAR(255) NOT NULL,
+    nro_pago VARCHAR(255) NULL,
+    comprobante VARCHAR(255) NULL,
     telefono VARCHAR(20) NULL,
     tipo_venta ENUM('DOMICILIO', 'SUCURSAL') NOT NULL DEFAULT 'SUCURSAL',
     ciudad VARCHAR(100) NULL,
@@ -201,41 +178,37 @@ CREATE TABLE venta (
 CREATE TABLE detalle_venta (
     id_detalle_venta INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_venta INT NOT NULL,
-    FOREIGN KEY (id_venta)
-        REFERENCES venta (id_venta),
+    FOREIGN KEY (id_venta) REFERENCES venta (id_venta),
     id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(14 , 6 ) NOT NULL,
-    subtotal DECIMAL(14 , 6 ) NOT NULL,
-    notas VARCHAR(200) NULL
+    precio_unitario DECIMAL(14 , 6) NOT NULL,
+    subtotal DECIMAL(14 , 6) NOT NULL,
+    notas VARCHAR(200) NULL,
+    CONSTRAINT chk_cantidad_det_venta CHECK (cantidad > 0),
+    CONSTRAINT chk_precio_det_venta CHECK (precio_unitario >= 0)
 );
--- ----------------------------- Garantia ----------------------------------------
 
+-- ----------------------------- Garantia ----------------------------------------
 CREATE TABLE garantia (
     id_garantia INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_detalle_venta INT NOT NULL,
-    FOREIGN KEY (id_detalle_venta)
-        REFERENCES detalle_venta (id_detalle_venta),
+    FOREIGN KEY (id_detalle_venta) REFERENCES detalle_venta (id_detalle_venta),
     fecha_inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_fin DATETIME NOT NULL,
-    estado ENUM('VIGENTE','VENCIDA', 'ANULADA') NOT NULL DEFAULT 'VIGENTE'
+    estado ENUM('VIGENTE','VENCIDA', 'ANULADA') NOT NULL DEFAULT 'VIGENTE',
+    CONSTRAINT chk_fechas_garantia CHECK (fecha_fin > fecha_inicio)
 );
 
 -- --------------- Compra -------------------------
-
 CREATE TABLE compra (
     id_compra INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_admin INT NOT NULL,
-    FOREIGN KEY (id_admin)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_admin) REFERENCES usuario (id_usuario),
     id_proveedor INT NOT NULL,
-    FOREIGN KEY (id_proveedor)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_proveedor) REFERENCES usuario (id_usuario),
     id_sucursal INT NOT NULL,
-    FOREIGN KEY (id_sucursal)
-        REFERENCES sucursal (id_sucursal),
+    FOREIGN KEY (id_sucursal) REFERENCES sucursal (id_sucursal),
     fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     metodo_pago ENUM('EFECTIVO', 'TARJETA', 'TRANSFERENCIA') NOT NULL,
     notas VARCHAR(200) NULL,
@@ -245,87 +218,79 @@ CREATE TABLE compra (
 CREATE TABLE detalle_compra (
     id_detalle_compra INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_compra INT NOT NULL,
-    FOREIGN KEY (id_compra)
-        REFERENCES compra (id_compra),
+    FOREIGN KEY (id_compra) REFERENCES compra (id_compra),
     id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(14 , 6 ) NOT NULL,
-    subtotal DECIMAL(14 , 6 ) NOT NULL
+    precio_unitario DECIMAL(14 , 6) NOT NULL,
+    subtotal DECIMAL(14 , 6) NOT NULL,
+    CONSTRAINT chk_cantidad_det_compra CHECK (cantidad > 0),
+    CONSTRAINT chk_precio_det_compra CHECK (precio_unitario >= 0)
 );
 
 CREATE TABLE detalle_cotizacion (
     id_detalle_cotizacion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_cotizacion INT NOT NULL,
-    FOREIGN KEY (id_cotizacion)
-        REFERENCES cotizacion (id_cotizacion),
+    FOREIGN KEY (id_cotizacion) REFERENCES cotizacion (id_cotizacion),
     id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     cantidad INT NOT NULL,
-    precio_unitario DECIMAL(14 , 6 ) NOT NULL,
-    subtotal DECIMAL(14 , 6 ) NOT NULL
+    precio_unitario DECIMAL(14 , 6) NOT NULL,
+    subtotal DECIMAL(14 , 6) NOT NULL,
+    CONSTRAINT chk_cantidad_det_cot CHECK (cantidad > 0),
+    CONSTRAINT chk_precio_det_cot CHECK (precio_unitario >= 0)
 );
 
 -- -----------------------Promociones----------------------------
-
 CREATE TABLE promocion (
     id_promocion INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     id_encargado INT NOT NULL,
-    FOREIGN KEY (id_encargado)
-        REFERENCES usuario (id_usuario),
-    precio DECIMAL(14 , 6 ) NOT NULL,
+    FOREIGN KEY (id_encargado) REFERENCES usuario (id_usuario),
+    precio DECIMAL(14 , 6) NOT NULL,
     descripcion VARCHAR(150) NOT NULL,
     fecha_inicio DATETIME NOT NULL,
     fecha_fin DATETIME NOT NULL,
-    estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO'
+    estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
+    CONSTRAINT chk_precio_promo CHECK (precio >= 0),
+    CONSTRAINT chk_fechas_promo CHECK (fecha_fin > fecha_inicio)
 );
 
 -- ----------------------- inventario --------------------------
-
 CREATE TABLE inventario (
     id_inventario INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     id_sucursal INT NOT NULL,
-    FOREIGN KEY (id_sucursal)
-        REFERENCES sucursal (id_sucursal),
+    FOREIGN KEY (id_sucursal) REFERENCES sucursal (id_sucursal),
     id_producto INT NOT NULL,
-    FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto),
+    FOREIGN KEY (id_producto) REFERENCES producto (id_producto),
     stock INT NOT NULL DEFAULT 0,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
-    UNIQUE KEY sucursal_producto (id_sucursal , id_producto)
+    UNIQUE KEY sucursal_producto (id_sucursal , id_producto),
+    CONSTRAINT chk_stock CHECK (stock >= 0)
 );
 
--- ----------------------- contactanos --------------------------
-
-CREATE TABLE contactanos (
-    id_contactanos INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    nombre VARCHAR(100) NOT NULL,
-    correo VARCHAR(100) NOT NULL,
+-- ----------------------- sugerencias --------------------------
+CREATE TABLE sugerencia (
+    id_sugerencia INT AUTO_INCREMENT NOT NULL PRIMARY KEY, 
     mensaje VARCHAR(500) NOT NULL,
     fecha_envio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario)
-        REFERENCES usuario (id_usuario)
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario)
 );
 
 -- ---------------------------backups-----------------------------
-
 CREATE TABLE backup (
     id_backup INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     id_encargado INT NULL,
-    FOREIGN KEY (id_encargado)
-        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_encargado) REFERENCES usuario (id_usuario),
     nombre_archivo VARCHAR(70) NOT NULL,
-    ruta_almacenamiento varchar(255) NOT NULL,
+    ruta_almacenamiento VARCHAR(255) NOT NULL,
     peso INT NOT NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     tipo ENUM ('COMPLETO', 'INCREMENTAL', 'DIFERENCIAL'),
-    estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL
+    estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL,
+    CONSTRAINT chk_peso CHECK (peso >= 0)
 );
 
 -- ---------------- rol ----------------
@@ -343,7 +308,6 @@ INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimien
 (3, 'Distribuciones Tech', 'SAS', 'NIT', '900123456', NULL, '6012223344', NULL, 'Cundinamarca', 'Bogota', 'Zona Industrial', 'proveedor@gmail.com', 'Proveedor123', 'ACTIVO'),
 (4, 'Sofia', 'MartineZ', 'CC', '1023456789', '1992-05-10', '3112223344', NULL, 'Cundinamarca', 'Bogota', 'Calle 100 # 15-20', 'Trabajador@gmail.com', 'Trabajador123', 'ACTIVO'),
 (4, 'Mateo', 'Rios', 'CC', '1034567890', '1990-09-15', '3223334455', NULL, 'Antioquia', 'Medellin', 'Cra 80 # 30-10', 'Trabajador2@gmail.com', 'Trabajador123', 'ACTIVO');
-
 
 -- ---------------- sucursal ----------------
 INSERT INTO sucursal (encargado, nombre_suc, departamento, ciudad, direccion, telefono, correo, estado) VALUES
@@ -383,16 +347,15 @@ INSERT INTO tipo_servicio (nombre, descripcion, estado) VALUES
 
 -- ---------------- servicio ----------------
 INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado) VALUES
-('Cambio de bateria portatil HP', 'Reemplazo de bateria defectuosa', 1, 5, 2, 1, 'ACTIVO'),
-('Revision consola PS5', 'Diagnostico de falla de encendido', 2, 6, 2, 2, 'ACTIVO'),
-('Mantenimiento torre gamer', 'Limpieza y cambio de pasta termica', 1, 5, 1, 3, 'ACTIVO');
+('Cambio de bateria portatil HP', 'Reemplazo de bateria defectuosa', 1, 5, 2, 1, 'PENDIENTE'),
+('Revision consola PS5', 'Diagnostico de falla de encendido', 2, 6, 2, 2, 'EN PROCESO'),
+('Mantenimiento torre gamer', 'Limpieza y cambio de pasta termica', 1, 5, 1, 3, 'PENDIENTE');
 
--- ---------------- detalle_servicio ----------------
-
-INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, cantidad, precio_unitario, subtotal, estado) VALUES
-(1, NULL, 'Diagnostico inicial de la bateria', 1, 50000.000000, 50000.000000, 'COMPLETO'),
-(2, NULL, 'Revision de fuente de poder y puerto HDMI', 1, 80000.000000, 80000.000000, 'EN PROCESO'),
-(3, 3, 'Se instala SSD adicional durante el mantenimiento', 1, 180000.000000, 180000.000000, 'PENDIENTE');
+-- ---------------- detalle_servicio (SIN incluir subtotal) ----------------
+INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, cantidad, precio_unitario, estado) VALUES
+(1, NULL, 'Diagnostico inicial de la bateria', 1, 50000.000000, 'COMPLETO'),
+(2, NULL, 'Revision de fuente de poder y puerto HDMI', 1, 80000.000000, 'EN PROCESO'),
+(3, 3, 'Se instala SSD adicional durante el mantenimiento', 1, 180000.000000, 'PENDIENTE');
 
 -- ---------------- venta ----------------------
 INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, nro_pago, comprobante, telefono, tipo_venta, ciudad, direccion_entrega, numero_guia, notas, estado) VALUES
@@ -436,13 +399,13 @@ INSERT INTO detalle_cotizacion (id_cotizacion, id_producto, cantidad, precio_uni
 (2, 2, 1, 45000.000000, 45000.000000),
 (3, 1, 1, 2200000.000000, 2200000.000000);
 
--- ---------------- promocion ----------------
+-- -----------------------Promociones----------------------------
 INSERT INTO promocion (id_producto, id_encargado, precio, descripcion, fecha_inicio, fecha_fin, estado) VALUES
 (1, 3, 2000000.000000, 'Descuento de temporada en portatil Lenovo', '2026-10-01 00:00:00', '2026-10-31 23:59:59', 'ACTIVO'),
 (2, 3, 38000.000000, 'Promo mouse inalambrico', '2026-10-01 00:00:00', '2026-10-15 23:59:59', 'ACTIVO'),
 (3, 3, 150000.000000, 'Oferta SSD 480GB', '2026-09-01 00:00:00', '2026-09-30 23:59:59', 'INACTIVO');
 
--- ---------------- inventario ----------------
+-- ----------------------- inventario --------------------------
 INSERT INTO inventario (id_sucursal, id_producto, stock, estado) VALUES
 (1, 1, 5, 'ACTIVO'),
 (2, 2, 50, 'ACTIVO'),
