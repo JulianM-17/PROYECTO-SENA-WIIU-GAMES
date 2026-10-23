@@ -476,7 +476,7 @@ app.get("/api/productos", async (req, res) => {
         p.id_producto, 
         p.nombre, 
         p.precio, 
-        p.imagen_url, 
+        p.imagen_prin AS imagen_url, -- Cambiado de p.imagen_url a p.imagen_prin
         p.descripcion,
         m.nombre_marca,
         c.nombre_cat,
