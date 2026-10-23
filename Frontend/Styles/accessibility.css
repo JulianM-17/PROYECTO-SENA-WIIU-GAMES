@@ -577,7 +577,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *),
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -590,7 +590,7 @@ body.a11y-mode-dark-mode .precio-anterior {
   color: #64748b !important;
 }
 
-body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar) {
+body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar):not(.hero-btn):not(.hero-btn-primary):not(.hero-btn-secondary):not(.redes-footer a):not(.redes-footer a *) {
   color: #f5c842;
 }
 
@@ -673,9 +673,17 @@ body.a11y-mode-dark-mode .lista-beneficios-porque li p {
   color: #94a3b8 !important;
 }
 
+body.a11y-mode-dark-mode span.check-porque,
 body.a11y-mode-dark-mode .check-porque {
   background: #f5c842 !important;
-  color: #070d1e !important;
+  background-color: #f5c842 !important;
+  color: #080f20 !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 body.a11y-mode-dark-mode .btn-agendar-porque {
@@ -686,6 +694,65 @@ body.a11y-mode-dark-mode .btn-agendar-porque {
 body.a11y-mode-dark-mode .btn-agendar-porque:hover {
   background: #ffcf4d !important;
   color: #000000 !important;
+}
+
+/* Inicio: Botones del Carrusel Hero en Modo Oscuro */
+body.a11y-mode-dark-mode .hero-btn-primary,
+body.a11y-mode-dark-mode a.hero-btn-primary {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+  box-shadow: 0 4px 20px rgba(245, 200, 66, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .hero-btn-primary:hover,
+body.a11y-mode-dark-mode a.hero-btn-primary:hover {
+  background: #e8b830 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .hero-btn-secondary,
+body.a11y-mode-dark-mode a.hero-btn-secondary {
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 2px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+body.a11y-mode-dark-mode .hero-btn-secondary:hover,
+body.a11y-mode-dark-mode a.hero-btn-secondary:hover {
+  border-color: #f5c842 !important;
+  color: #f5c842 !important;
+}
+
+/* Inicio: Sección ¿Por qué WiiU-Games? en Modo Oscuro */
+body.a11y-mode-dark-mode .seccion-porque {
+  background: linear-gradient(180deg, #050b18 0%, #080f20 100%) !important;
+}
+
+body.a11y-mode-dark-mode .seccion-porque .seccion-titulo-corsair {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-dark-mode .porque-card {
+  background: rgba(14, 24, 52, 0.7) !important;
+  border: 1px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .porque-card h3 {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-dark-mode .porque-card p {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .porque-icono {
+  background: rgba(245, 200, 66, 0.12) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .porque-card:hover .porque-icono {
+  background: #f5c842 !important;
+  color: #080f20 !important;
 }
 
 body.a11y-mode-dark-mode .razon1 {
@@ -976,8 +1043,23 @@ body.a11y-mode-dark-mode .entrada-texto.input-error {
 }
 
 body.a11y-mode-dark-mode .input-valido,
-body.a11y-mode-dark-mode .columna-derecha .input-valido {
+body.a11y-mode-dark-mode input.input-valido,
+body.a11y-mode-dark-mode select.input-valido,
+body.a11y-mode-dark-mode textarea.input-valido,
+body.a11y-mode-dark-mode .entrada-texto.input-valido,
+body.a11y-mode-dark-mode .entrada-seleccion.input-valido,
+body.a11y-mode-dark-mode .columna-derecha .input-valido,
+body.a11y-mode-dark-mode .columna-izquierda .input-valido {
+  border: 1.5px solid #10b981 !important;
   border-color: #10b981 !important;
+  background-color: rgba(16, 185, 129, 0.12) !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .entrada-texto.input-valido:focus,
+body.a11y-mode-dark-mode .entrada-seleccion.input-valido:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.35) !important;
 }
 
 /* Indicador de Seguridad de Contraseña en Registro */
@@ -1298,9 +1380,16 @@ body.a11y-mode-dark-mode .btn-reservar:hover {
   color: #080f20 !important;
 }
 
+body.a11y-mode-dark-mode span.check-porque,
 body.a11y-mode-dark-mode .check-porque {
   background: #f5c842 !important;
+  background-color: #f5c842 !important;
   color: #080f20 !important;
+  font-weight: 900 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  opacity: 1 !important;
 }
 
 /* Panel Usuario: insignias doradas */

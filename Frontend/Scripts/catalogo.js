@@ -7,7 +7,26 @@ const filtrosCatalogo = {
 };
 let productosCatalogo = [];
 
+const CATEGORIAS_DEFAULT = [
+  { nombre_cat: 'Portátiles' },
+  { nombre_cat: 'PC Escritorio' },
+  { nombre_cat: 'Tarjetas Gráficas' },
+  { nombre_cat: 'Monitores' },
+  { nombre_cat: 'Periféricos' },
+  { nombre_cat: 'Almacenamiento' },
+  { nombre_cat: 'Memorias RAM' },
+  { nombre_cat: 'Motherboards' },
+  { nombre_cat: 'Procesadores' },
+  { nombre_cat: 'Consolas y Videojuegos' }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const catUrl = urlParams.get('categoria');
+  if (catUrl) {
+    filtrosCatalogo.categoria = normalizar(catUrl);
+  }
+
   configurarFiltros();
   configurarAgregarAlCarrito();
   cargarProductos();
@@ -175,6 +194,7 @@ function crearTarjetaProducto(prod) {
           ★★★★★ <span class="resenas">${escapeHtml(prod.nombre_marca || '')}</span>
         </div>
         <h3 class="titulo-producto">${escapeHtml(prod.nombre)}</h3>
+        <p class="descripcion-producto">${escapeHtml(prod.descripcion || '')}</p>
       </a>
       <div class="precio-actual">${precioFormateado}</div>
       <button
@@ -238,28 +258,41 @@ async function cargarCategorias() {
     return;
   }
 
+  let categorias = [];
   try {
     const res = await fetch(`${API_URL}/categorias`);
-    if (!res.ok) {
-      throw new Error(`La API respondió con estado ${res.status}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        categorias = data;
+      }
     }
-
-    const categorias = await res.json();
-    if (!Array.isArray(categorias)) {
-      throw new Error('La respuesta de la API no es una lista de categorías.');
-    }
-
-    listaCategorias.innerHTML = '';
-    categorias.forEach(cat => {
-      listaCategorias.innerHTML += `
-        <li data-categoria="${escapeHtml(normalizar(cat.nombre_cat))}">
-          <span>${escapeHtml(cat.nombre_cat)}</span>
-        </li>
-      `;
-    });
   } catch (error) {
-    console.error('Error al cargar categorías:', error);
+    console.warn('API no disponible para categorías, cargando catálogo ampliado:', error);
   }
+
+  if (categorias.length === 0) {
+    categorias = CATEGORIAS_DEFAULT;
+  } else {
+    // Si la BD tiene pocas categorías, combinamos con las categorías estándar
+    const nombresExistentes = new Set(categorias.map(c => normalizar(c.nombre_cat)));
+    CATEGORIAS_DEFAULT.forEach(cDefault => {
+      if (!nombresExistentes.has(normalizar(cDefault.nombre_cat))) {
+        categorias.push(cDefault);
+      }
+    });
+  }
+
+  listaCategorias.innerHTML = '';
+  categorias.forEach(cat => {
+    const catNorm = normalizar(cat.nombre_cat);
+    const estaActiva = filtrosCatalogo.categoria && filtrosCatalogo.categoria === catNorm;
+    listaCategorias.innerHTML += `
+      <li data-categoria="${escapeHtml(catNorm)}" class="${estaActiva ? 'activo' : ''}">
+        <span>${escapeHtml(cat.nombre_cat)}</span>
+      </li>
+    `;
+  });
 }
 
 //Cargar marcas en el menú lateral

@@ -62,6 +62,9 @@ async function loadAdminDashboardData() {
     Object.entries(dashboardPayload).forEach(([key, value]) => {
       localStorage.setItem(key, JSON.stringify(value));
     });
+
+    populateCategoryDropdowns(data.categories || []);
+    populateBrandSuggestions(data.brands || []);
   } catch (error) {
     adminDashboardData = null;
     [
@@ -183,46 +186,7 @@ function initPresetData() {
     "wiiu_reviews",
     "wiiu_clients",
   ];
-  keys.forEach((k) => {
-    const val = localStorage.getItem(k);
-    if (
-      !val ||
-      val.includes("WIIU-GME") ||
-      val.includes("GAR-801") ||
-      val.includes("MNT-401") ||
-      val.includes("REP-101") ||
-      val.includes("WIIU-VERANO20") ||
-      val.includes("Juan Camilo") ||
-      val.includes("camilo.r@gmail.com") ||
-      val.includes("VIP Gamer") ||
-      val.includes("María Fernanda") ||
-      val.includes("Andrés Felipe") ||
-      val.includes("Laura Sofía")
-    ) {
-      localStorage.setItem(k, JSON.stringify([]));
-    }
-  });
-
-  // Limpieza directa garantizada para clientes de prueba predeterminados
-  try {
-    const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
-    const cleanClients = clients.filter(
-      (c) =>
-        c.name !== "Juan Camilo R." &&
-        c.name !== "María Fernanda T." &&
-        c.name !== "Andrés Felipe G." &&
-        c.name !== "Laura Sofía M." &&
-        !c.email?.includes("camilo.r") &&
-        !c.email?.includes("mafe.t") &&
-        !c.email?.includes("andres.fg") &&
-        !c.email?.includes("laura.m"),
-    );
-    if (cleanClients.length !== clients.length) {
-      localStorage.setItem("wiiu_clients", JSON.stringify(cleanClients));
-    }
-  } catch (e) {
-    localStorage.setItem("wiiu_clients", JSON.stringify([]));
-  }
+  keys.forEach((k) => localStorage.removeItem(k));
 }
 
 function getProducts() {
@@ -866,7 +830,8 @@ window.openAddProductModal = function () {
   document.getElementById("formAddProduct").reset();
   document.getElementById("imagePreview").src =
     "https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa";
-  document.getElementById("previewCategoryBadge").textContent = "Juegos Wii U";
+  const firstCat = adminDashboardData?.categories?.[0]?.nombre_cat || "General";
+  document.getElementById("previewCategoryBadge").textContent = firstCat;
   window.generateRandomSKU();
   modal.classList.add("activo");
 };
@@ -877,37 +842,41 @@ window.closeAddProductModal = function () {
 };
 
 window.generateRandomSKU = function () {
-  const cat = document.getElementById("prodCategory")?.value || "Juegos";
-  let prefix = "WIIU-GME";
-  if (cat.includes("Consola")) prefix = "WIIU-CNS";
-  else if (cat.includes("Accesorio")) prefix = "WIIU-ACC";
-  else if (cat.includes("Repuesto")) prefix = "WIIU-RPT";
-  else if (cat.includes("Coleccionable")) prefix = "WIIU-AMB";
-
   const randomNum = Math.floor(100 + Math.random() * 900);
   const skuInput = document.getElementById("prodSKU");
-  if (skuInput) skuInput.value = `${prefix}-${randomNum}`;
+  if (skuInput) skuInput.value = `PRD-${randomNum}`;
 };
 
-const PRESET_COVERS = {
-  zelda:
-    "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300&h=300&fit=crop",
-  mario:
-    "https://images.unsplash.com/photo-1612287233214-9988424269e8?w=300&h=300&fit=crop",
-  mariokart:
-    "https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=300&h=300&fit=crop",
-  splatoon:
-    "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300&h=300&fit=crop",
-  smash:
-    "https://images.unsplash.com/photo-1589241062272-c0a000072dfa?w=300&h=300&fit=crop",
-};
+function populateCategoryDropdowns(categories = []) {
+  const filterCat = document.getElementById("filterCategory");
+  const prodCat = document.getElementById("prodCategory");
 
-window.setPresetCover = function (key) {
-  const url = PRESET_COVERS[key] || PRESET_COVERS.zelda;
-  const urlInput = document.getElementById("prodImageUrl");
-  if (urlInput) urlInput.value = url;
-  previewProductImage(url);
-};
+  if (filterCat) {
+    let html = '<option value="todos">Todas las categorías</option>';
+    categories.forEach((c) => {
+      const name = c.nombre_cat || c;
+      html += `<option value="${name}">${name}</option>`;
+    });
+    filterCat.innerHTML = html;
+  }
+
+  if (prodCat) {
+    let html = '<option value="">Seleccione una categoría</option>';
+    categories.forEach((c) => {
+      const name = c.nombre_cat || c;
+      html += `<option value="${name}">${name}</option>`;
+    });
+    prodCat.innerHTML = html;
+  }
+}
+
+function populateBrandSuggestions(brands = []) {
+  const datalist = document.getElementById("brandListSuggestions");
+  if (!datalist) return;
+  datalist.innerHTML = brands
+    .map((b) => `<option value="${b.nombre_marca || b}">`)
+    .join("");
+}
 
 window.previewProductImage = function (url) {
   const img = document.getElementById("imagePreview");
@@ -918,7 +887,7 @@ window.previewProductImage = function (url) {
       : "https://via.placeholder.com/300x300/0E214D/00D2FF?text=Vista+Previa";
 };
 
-window.saveProduct = function (event) {
+window.saveProduct = async function (event) {
   event.preventDefault();
 
   const nameInput = document.getElementById("prodName");
@@ -975,42 +944,60 @@ window.saveProduct = function (event) {
     return;
   }
 
-  const products = getProducts();
-  const newProduct = {
-    id: Date.now(),
-    name,
-    category,
-    sku,
-    publisher,
-    platform,
-    price,
-    costPrice,
-    stock,
-    minStock,
-    condition,
-    warranty,
-    imageUrl,
-    description,
-  };
+  // Enviar a la API para persistir en la BD
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/productos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, category, publisher, price, stock, imageUrl, description }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
 
-  products.unshift(newProduct);
-  saveProductsList(products);
-
-  closeAddProductModal();
-  renderInventoryTable();
-  showToast(`¡Producto "${name}" guardado exitosamente en el inventario!`);
+    // Recargar datos del dashboard para sincronizar con la BD
+    await loadAdminDashboardData();
+    closeAddProductModal();
+    renderAllModules();
+    showToast(`¡Producto "${name}" guardado exitosamente en la base de datos!`);
+  } catch (error) {
+    // Fallback: guardar en localStorage si la API falla
+    console.warn("API no disponible, guardando en localStorage:", error.message);
+    const products = getProducts();
+    const newProduct = {
+      id: Date.now(), name, category, sku, publisher, platform,
+      price, costPrice, stock, minStock, condition, warranty, imageUrl, description,
+    };
+    products.unshift(newProduct);
+    saveProductsList(products);
+    closeAddProductModal();
+    renderInventoryTable();
+    showToast(`¡Producto "${name}" guardado localmente (sin conexión a BD).`);
+  }
 };
 
-window.deleteProduct = function (id) {
+window.deleteProduct = async function (id) {
   if (
-    confirm(
+    !confirm(
       "¿Estás seguro de que deseas eliminar este producto del inventario?",
     )
-  ) {
+  ) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/admin/productos/${id}`, {
+      method: "DELETE",
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
+
+    await loadAdminDashboardData();
+    renderAllModules();
+    showToast("Producto eliminado de la base de datos.");
+  } catch (error) {
+    console.warn("API no disponible, eliminando localmente:", error.message);
     const products = getProducts().filter((p) => p.id !== id);
     saveProductsList(products);
     renderInventoryTable();
-    showToast("Producto eliminado del inventario.");
+    showToast("Producto eliminado del inventario (local).");
   }
 };
 
@@ -1057,7 +1044,7 @@ window.closeAddWarrantyModal = function () {
   if (modal) modal.classList.remove("activo");
 };
 
-window.saveWarranty = function (e) {
+window.saveWarranty = async function (e) {
   e.preventDefault();
   const clientInput = document.getElementById("warClient");
   const productInput = document.getElementById("warProduct");
@@ -1069,7 +1056,7 @@ window.saveWarranty = function (e) {
   const buyDate =
     buyDateInput && buyDateInput.value
       ? buyDateInput.value
-      : new Date().toLocaleDateString("es-CO");
+      : new Date().toISOString().split("T")[0];
   const duration = durationInput ? durationInput.value : "3 Meses";
 
   if (!client || client.length < 3) {
@@ -1089,21 +1076,34 @@ window.saveWarranty = function (e) {
     return;
   }
 
-  const warranties = JSON.parse(localStorage.getItem("wiiu_warranties")) || [];
-  const newWar = {
-    id: `GAR-${Math.floor(850 + Math.random() * 100)}`,
-    client,
-    product,
-    buyDate,
-    expDate: duration,
-    status: "Activa",
-  };
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/garantias", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client, product, buyDate, duration }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
 
-  warranties.unshift(newWar);
-  localStorage.setItem("wiiu_warranties", JSON.stringify(warranties));
-  closeAddWarrantyModal();
-  renderWarrantiesTable();
-  showToast(`¡Certificado de garantía ${newWar.id} emitido para ${client}!`);
+    const warranties = JSON.parse(localStorage.getItem("wiiu_warranties")) || [];
+    warranties.unshift(data.warranty);
+    localStorage.setItem("wiiu_warranties", JSON.stringify(warranties));
+    closeAddWarrantyModal();
+    renderWarrantiesTable();
+    showToast(`¡Certificado de garantía ${data.warranty.id} registrado en la BD para ${client}!`);
+  } catch (error) {
+    console.warn("API no disponible, guardando garantía localmente:", error.message);
+    const warranties = JSON.parse(localStorage.getItem("wiiu_warranties")) || [];
+    const newWar = {
+      id: `GAR-${Math.floor(850 + Math.random() * 100)}`,
+      client, product, buyDate, expDate: duration, status: "Activa",
+    };
+    warranties.unshift(newWar);
+    localStorage.setItem("wiiu_warranties", JSON.stringify(warranties));
+    closeAddWarrantyModal();
+    renderWarrantiesTable();
+    showToast(`Garantía ${newWar.id} guardada localmente (sin conexión a BD).`);
+  }
 };
 
 // Modal Mantenimientos
@@ -1120,7 +1120,7 @@ window.closeAddMaintenanceModal = function () {
   if (modal) modal.classList.remove("activo");
 };
 
-window.saveMaintenance = function (e) {
+window.saveMaintenance = async function (e) {
   e.preventDefault();
   const eqInput = document.getElementById("mntEquipment");
   const cliInput = document.getElementById("mntClient");
@@ -1156,21 +1156,34 @@ window.saveMaintenance = function (e) {
     return;
   }
 
-  const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
-  const newMnt = {
-    order: `MNT-${Math.floor(400 + Math.random() * 100)}`,
-    equipment,
-    client,
-    tech,
-    cost: `$ ${costVal.toLocaleString("es-CO")}`,
-    status,
-  };
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/mantenimientos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ equipment, client, tech, cost: costVal, status }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
 
-  list.unshift(newMnt);
-  localStorage.setItem("wiiu_maintenance", JSON.stringify(list));
-  closeAddMaintenanceModal();
-  renderMaintenanceTable();
-  showToast(`¡Orden de mantenimiento ${newMnt.order} creada con éxito!`);
+    const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
+    list.unshift(data.maintenance);
+    localStorage.setItem("wiiu_maintenance", JSON.stringify(list));
+    closeAddMaintenanceModal();
+    renderMaintenanceTable();
+    showToast(`¡Orden ${data.maintenance.order} registrada en la BD!`);
+  } catch (error) {
+    console.warn("API no disponible, guardando mantenimiento localmente:", error.message);
+    const list = JSON.parse(localStorage.getItem("wiiu_maintenance")) || [];
+    const newMnt = {
+      order: `MNT-${Math.floor(400 + Math.random() * 100)}`,
+      equipment, client, tech, cost: `$ ${costVal.toLocaleString("es-CO")}`, status,
+    };
+    list.unshift(newMnt);
+    localStorage.setItem("wiiu_maintenance", JSON.stringify(list));
+    closeAddMaintenanceModal();
+    renderMaintenanceTable();
+    showToast(`Orden ${newMnt.order} guardada localmente (sin conexión a BD).`);
+  }
 };
 
 // Modal Recepción Taller / Reparaciones
@@ -1188,7 +1201,7 @@ window.closeAddRepairModal = function () {
   if (modal) modal.classList.remove("activo");
 };
 
-window.saveRepairOrder = function (e) {
+window.saveRepairOrder = async function (e) {
   e.preventDefault();
   const devInput = document.getElementById("repDevice");
   const defInput = document.getElementById("repDefect");
@@ -1226,21 +1239,34 @@ window.saveRepairOrder = function (e) {
     return;
   }
 
-  const repairs = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
-  const newRepair = {
-    ticket: `REP-${Math.floor(105 + Math.random() * 90)}`,
-    device,
-    defect,
-    client,
-    price: `$ ${priceVal.toLocaleString("es-CO")}`,
-    status: "Ingresado en Taller",
-  };
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/reparaciones", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ device, defect, client, price: priceVal }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
 
-  repairs.unshift(newRepair);
-  localStorage.setItem("wiiu_repairs", JSON.stringify(repairs));
-  closeAddRepairModal();
-  renderRepairsTable();
-  showToast(`¡Orden de recepción taller ${newRepair.ticket} registrada!`);
+    const repairs = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
+    repairs.unshift(data.repair);
+    localStorage.setItem("wiiu_repairs", JSON.stringify(repairs));
+    closeAddRepairModal();
+    renderRepairsTable();
+    showToast(`¡Orden ${data.repair.ticket} registrada en la BD!`);
+  } catch (error) {
+    console.warn("API no disponible, guardando reparación localmente:", error.message);
+    const repairs = JSON.parse(localStorage.getItem("wiiu_repairs")) || [];
+    const newRepair = {
+      ticket: `REP-${Math.floor(105 + Math.random() * 90)}`,
+      device, defect, client, price: `$ ${priceVal.toLocaleString("es-CO")}`, status: "Ingresado en Taller",
+    };
+    repairs.unshift(newRepair);
+    localStorage.setItem("wiiu_repairs", JSON.stringify(repairs));
+    closeAddRepairModal();
+    renderRepairsTable();
+    showToast(`Orden ${newRepair.ticket} guardada localmente (sin conexión a BD).`);
+  }
 };
 
 // Modal Nuevos Clientes
@@ -1257,7 +1283,7 @@ window.closeAddClientModal = function () {
   if (modal) modal.classList.remove("activo");
 };
 
-window.saveClient = function (e) {
+window.saveClient = async function (e) {
   e.preventDefault();
   const nameInput = document.getElementById("cliName");
   const phoneInput = document.getElementById("cliPhone");
@@ -1294,12 +1320,29 @@ window.saveClient = function (e) {
     return;
   }
 
-  const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
-  clients.unshift({ name, phone, email, totalSpent: "$ 0", level: "Nuevo" });
-  localStorage.setItem("wiiu_clients", JSON.stringify(clients));
-  closeAddClientModal();
-  renderClientsTable();
-  showToast(`¡Cliente "${name}" registrado exitosamente en el directorio!`);
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/clientes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, email }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
+
+    // Recargar clientes desde la BD
+    await loadAdminDashboardData();
+    closeAddClientModal();
+    renderAllModules();
+    showToast(`¡Cliente "${name}" registrado en la base de datos!`);
+  } catch (error) {
+    console.warn("API no disponible, guardando cliente localmente:", error.message);
+    const clients = JSON.parse(localStorage.getItem("wiiu_clients")) || [];
+    clients.unshift({ name, phone, email, totalSpent: 0, level: "Nuevo" });
+    localStorage.setItem("wiiu_clients", JSON.stringify(clients));
+    closeAddClientModal();
+    renderClientsTable();
+    showToast(`Cliente "${name}" guardado localmente (sin conexión a BD).`);
+  }
 };
 
 // Modal Descuentos
@@ -1316,7 +1359,7 @@ window.closeDiscountModal = function () {
   if (modal) modal.classList.remove("activo");
 };
 
-window.saveDiscount = function (e) {
+window.saveDiscount = async function (e) {
   e.preventDefault();
   const codeInput = document.getElementById("discCode");
   const percentInput = document.getElementById("discPercent");
@@ -1355,20 +1398,33 @@ window.saveDiscount = function (e) {
     return;
   }
 
-  const discounts = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
-  discounts.unshift({
-    code,
-    desc,
-    percent: `${percentVal}%`,
-    expires: "31/12/2026",
-    uses: `0 / ${limitVal}`,
-    status: "Activo",
-  });
+  try {
+    const response = await fetch("http://localhost:3000/api/admin/descuentos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, percent: percentVal, limit: limitVal, desc }),
+    });
+    const data = await response.json();
+    if (!data.ok) throw new Error(data.message);
 
-  localStorage.setItem("wiiu_discounts", JSON.stringify(discounts));
-  closeDiscountModal();
-  renderDiscountsTable();
-  showToast(`¡Cupón promocional "${code}" activado!`);
+    const discounts = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
+    discounts.unshift(data.discount);
+    localStorage.setItem("wiiu_discounts", JSON.stringify(discounts));
+    closeDiscountModal();
+    renderDiscountsTable();
+    showToast(`¡Cupón "${code}" creado en la base de datos!`);
+  } catch (error) {
+    console.warn("API no disponible, guardando descuento localmente:", error.message);
+    const discounts = JSON.parse(localStorage.getItem("wiiu_discounts")) || [];
+    discounts.unshift({
+      code, desc, percent: `${percentVal}%`, expires: "31/12/2026",
+      uses: `0 / ${limitVal}`, status: "Activo",
+    });
+    localStorage.setItem("wiiu_discounts", JSON.stringify(discounts));
+    closeDiscountModal();
+    renderDiscountsTable();
+    showToast(`Cupón "${code}" guardado localmente (sin conexión a BD).`);
+  }
 };
 
 function initGlobalSearch() {

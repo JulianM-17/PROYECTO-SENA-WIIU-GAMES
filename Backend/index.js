@@ -224,10 +224,10 @@ app.get("/api/dashboard/admin", async (req, res) => {
        WHERE v.estado = 'PAGADA'`,
     );
     const [topProductsRows] = await pool.query(
-      `SELECT p.nombre, p.imagen_url, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
+      `SELECT p.nombre, p.imagen_prin AS imagen_url, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
        FROM detalle_venta dv
        INNER JOIN producto p ON p.id_producto = dv.id_producto
-       GROUP BY p.id_producto, p.nombre, p.imagen_url
+       GROUP BY p.id_producto, p.nombre, p.imagen_prin
        ORDER BY cantidad DESC, total DESC
        LIMIT 3`,
     );
@@ -265,7 +265,7 @@ app.get("/api/dashboard/admin", async (req, res) => {
          3 AS minStock,
          'Nuevo Sellado' AS productCondition,
          '12 Meses' AS warranty,
-         p.imagen_url AS imageUrl,
+         p.imagen_prin AS imageUrl,
          p.descripcion AS description,
          'Original' AS platform,
          m.nombre_marca AS publisher
@@ -274,7 +274,7 @@ app.get("/api/dashboard/admin", async (req, res) => {
        INNER JOIN marca m ON m.id_marca = p.id_marca
        LEFT JOIN inventario i ON i.id_producto = p.id_producto AND i.estado = 'ACTIVO'
        WHERE p.estado = 'ACTIVO'
-       GROUP BY p.id_producto, p.nombre, c.nombre_cat, m.nombre_marca, p.precio, p.imagen_url, p.descripcion
+       GROUP BY p.id_producto, p.nombre, c.nombre_cat, m.nombre_marca, p.precio, p.imagen_prin, p.descripcion
        ORDER BY p.nombre`,
     );
     const [clientsRows] = await pool.query(
@@ -325,7 +325,12 @@ app.get("/api/dashboard/admin", async (req, res) => {
            WHEN s.id_servicio = 2 THEN 240000
            ELSE 120000
          END, 0)) AS cost,
-         CASE WHEN s.estado = 'ACTIVO' THEN 'En Taller' ELSE 'Listo para Entrega' END AS status
+         CASE
+           WHEN s.estado = 'PENDIENTE' THEN 'En Taller'
+           WHEN s.estado = 'EN PROCESO' THEN 'En Diagnóstico'
+           WHEN s.estado = 'COMPLETO' THEN 'Listo para Entrega'
+           ELSE 'Cancelado'
+         END AS status
        FROM servicio s
        INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
        INNER JOIN equipo e ON e.id_equipo = s.id_equipo
@@ -342,7 +347,11 @@ app.get("/api/dashboard/admin", async (req, res) => {
          s.descripcion AS defect,
          CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
          CONCAT('$ ', FORMAT(CASE WHEN s.id_servicio % 2 = 0 THEN 75000 ELSE 60000 END, 0)) AS price,
-         CASE WHEN s.estado = 'ACTIVO' THEN 'En Reparación' ELSE 'Completada' END AS status
+         CASE
+           WHEN s.estado IN ('PENDIENTE', 'EN PROCESO') THEN 'En Reparación'
+           WHEN s.estado = 'COMPLETO' THEN 'Completada'
+           ELSE 'Cancelada'
+         END AS status
        FROM servicio s
        INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
        INNER JOIN equipo e ON e.id_equipo = s.id_equipo
@@ -362,6 +371,13 @@ app.get("/api/dashboard/admin", async (req, res) => {
        INNER JOIN producto p ON p.id_producto = pr.id_producto
        WHERE pr.estado = 'ACTIVO'
        ORDER BY pr.fecha_fin DESC`,
+    );
+
+    const [categoryRows] = await pool.query(
+      "SELECT id_categoria, nombre_cat, descripcion_cat FROM categoria WHERE estado = 'ACTIVO' ORDER BY nombre_cat",
+    );
+    const [brandRows] = await pool.query(
+      "SELECT id_marca, nombre_marca, descripcion_marca FROM marca WHERE estado = 'ACTIVO' ORDER BY nombre_marca",
     );
 
     res.json({
@@ -384,13 +400,16 @@ app.get("/api/dashboard/admin", async (req, res) => {
       maintenance: maintenanceRows || [],
       repairs: repairRows || [],
       discounts: discountRows || [],
+      categories: categoryRows || [],
+      brands: brandRows || [],
       reviews: [],
     });
   } catch (error) {
-    console.error("Error cargando dashboard del administrador:", error.message);
+    console.error("Error cargando dashboard del administrador:", error.message, error.stack);
     res.status(500).json({
       ok: false,
       message: "No se pudo cargar el dashboard del administrador.",
+      error: error.message,
     });
   }
 });
@@ -523,6 +542,494 @@ app.get("/api/marcas", async (req, res) => {
   } catch (error) {
     console.error("Error al obtener marcas:", error.message);
     res.status(500).json({ error: "Error al obtener marcas" });
+  }
+});
+
+// ==================== ENDPOINTS CRUD PARA EL PANEL ADMIN ====================
+
+// ---------- PRODUCTOS ----------
+
+// Crear producto
+app.post("/api/admin/productos", async (req, res) => {
+  try {
+    const { name, category, publisher, price, stock, imageUrl, description } = req.body;
+
+    if (!name || String(name).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
+    }
+    if (isNaN(price) || Number(price) <= 0) {
+      return res.status(400).json({ ok: false, message: "Precio inválido." });
+    }
+
+    // Buscar o crear marca
+    const publisherName = String(publisher || "General").trim();
+    let [marcaRows] = await pool.query(
+      "SELECT id_marca FROM marca WHERE nombre_marca = ? AND estado = 'ACTIVO'",
+      [publisherName],
+    );
+    let marcaId;
+    if (marcaRows.length > 0) {
+      marcaId = marcaRows[0].id_marca;
+    } else {
+      const [insertMarca] = await pool.query(
+        "INSERT INTO marca (nombre_marca, descripcion_marca, estado) VALUES (?, ?, 'ACTIVO')",
+        [publisherName.substring(0, 20), `Marca ${publisherName}`],
+      );
+      marcaId = insertMarca.insertId;
+    }
+
+    // Buscar o crear categoría
+    const categoryName = String(category || "General").trim();
+    let [catRows] = await pool.query(
+      "SELECT id_categoria FROM categoria WHERE nombre_cat = ? AND estado = 'ACTIVO'",
+      [categoryName],
+    );
+    let catId;
+    if (catRows.length > 0) {
+      catId = catRows[0].id_categoria;
+    } else {
+      const [insertCat] = await pool.query(
+        "INSERT INTO categoria (nombre_cat, descripcion_cat, estado) VALUES (?, ?, 'ACTIVO')",
+        [categoryName.substring(0, 40), `Categoría ${categoryName}`],
+      );
+      catId = insertCat.insertId;
+    }
+
+    const [insertProduct] = await pool.query(
+      `INSERT INTO producto (id_marca, id_categoria, nombre, imagen_prin, descripcion, precio, estado)
+       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        marcaId,
+        catId,
+        String(name).trim().substring(0, 100),
+        String(imageUrl || "img/productos/default.jpg").trim().substring(0, 255),
+        String(description || "").trim().substring(0, 100),
+        Number(price),
+      ],
+    );
+
+    const productId = insertProduct.insertId;
+
+    // Agregar stock al inventario (sucursal 1 por defecto)
+    const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
+    if (stockVal > 0) {
+      await pool.query(
+        `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
+         VALUES (1, ?, ?, 'ACTIVO')
+         ON DUPLICATE KEY UPDATE stock = stock + VALUES(stock)`,
+        [productId, stockVal],
+      );
+    }
+
+    return res.status(201).json({
+      ok: true,
+      message: "Producto creado exitosamente.",
+      productId,
+    });
+  } catch (error) {
+    console.error("Error al crear producto:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo crear el producto." });
+  }
+});
+
+// Actualizar producto
+app.put("/api/admin/productos/:id", async (req, res) => {
+  try {
+    const productId = Number(req.params.id);
+    const { name, price, stock, imageUrl, description } = req.body;
+
+    if (!name || String(name).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
+    }
+
+    await pool.query(
+      `UPDATE producto
+       SET nombre = ?, precio = ?, imagen_prin = ?, descripcion = ?
+       WHERE id_producto = ? AND estado = 'ACTIVO'`,
+      [
+        String(name).trim().substring(0, 100),
+        Number(price) || 0,
+        String(imageUrl || "").trim().substring(0, 255),
+        String(description || "").trim().substring(0, 100),
+        productId,
+      ],
+    );
+
+    // Actualizar stock en inventario
+    const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
+    await pool.query(
+      `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
+       VALUES (1, ?, ?, 'ACTIVO')
+       ON DUPLICATE KEY UPDATE stock = ?`,
+      [productId, stockVal, stockVal],
+    );
+
+    return res.json({ ok: true, message: "Producto actualizado." });
+  } catch (error) {
+    console.error("Error al actualizar producto:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar el producto." });
+  }
+});
+
+// Eliminar producto (soft delete)
+app.delete("/api/admin/productos/:id", async (req, res) => {
+  try {
+    const productId = Number(req.params.id);
+    await pool.query(
+      "UPDATE producto SET estado = 'INACTIVO' WHERE id_producto = ?",
+      [productId],
+    );
+    await pool.query(
+      "UPDATE inventario SET estado = 'INACTIVO' WHERE id_producto = ?",
+      [productId],
+    );
+    return res.json({ ok: true, message: "Producto eliminado." });
+  } catch (error) {
+    console.error("Error al eliminar producto:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo eliminar el producto." });
+  }
+});
+
+// ---------- CLIENTES ----------
+
+app.post("/api/admin/clientes", async (req, res) => {
+  try {
+    const { name, phone, email } = req.body;
+    const fullName = String(name || "").trim();
+    const parts = fullName.split(/\s+/);
+    const nombre = parts[0] || "Cliente";
+    const apellido = parts.slice(1).join(" ") || "Nuevo";
+    const correo = String(email || "").trim().toLowerCase();
+    const telefono = String(phone || "").trim();
+
+    if (fullName.length < 3) {
+      return res.status(400).json({ ok: false, message: "Nombre inválido." });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      return res.status(400).json({ ok: false, message: "Correo inválido." });
+    }
+    if (!/^[0-9\+\-\s\(\)]{7,20}$/.test(telefono)) {
+      return res.status(400).json({ ok: false, message: "Teléfono inválido." });
+    }
+
+    // Rol 1 = Cliente
+    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
+    const defaultPassword = "Cliente123";
+
+    const [result] = await pool.query(
+      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento, correo, contrasena_hash, estado)
+       VALUES (1, ?, ?, 'CC', ?, ?, 'Cundinamarca', ?, ?, 'ACTIVO')`,
+      [nombre.substring(0, 30), apellido.substring(0, 30), numDoc, telefono.substring(0, 20), correo.substring(0, 120), defaultPassword],
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Cliente registrado exitosamente.",
+      clientId: result.insertId,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ ok: false, message: "El correo o documento ya está registrado." });
+    }
+    console.error("Error al crear cliente:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar el cliente." });
+  }
+});
+
+// ---------- GARANTÍAS ----------
+
+app.post("/api/admin/garantias", async (req, res) => {
+  try {
+    const { client, product, buyDate, duration } = req.body;
+
+    if (!client || String(client).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Cliente inválido." });
+    }
+    if (!product || String(product).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Producto inválido." });
+    }
+
+    // Calcular fecha fin según duración
+    const fechaInicio = buyDate ? new Date(buyDate) : new Date();
+    const fechaFin = new Date(fechaInicio);
+    const dur = String(duration || "3 Meses");
+    if (dur.includes("1 Mes")) fechaFin.setMonth(fechaFin.getMonth() + 1);
+    else if (dur.includes("6 Meses")) fechaFin.setMonth(fechaFin.getMonth() + 6);
+    else if (dur.includes("1 Año") || dur.includes("12")) fechaFin.setFullYear(fechaFin.getFullYear() + 1);
+    else fechaFin.setMonth(fechaFin.getMonth() + 3);
+
+    // Buscar detalle_venta más reciente del producto para asociar la garantía
+    const [dvRows] = await pool.query(
+      `SELECT dv.id_detalle_venta
+       FROM detalle_venta dv
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE p.nombre LIKE CONCAT('%', ?, '%')
+       ORDER BY dv.id_detalle_venta DESC
+       LIMIT 1`,
+      [String(product).trim().substring(0, 50)],
+    );
+
+    let garantiaId;
+    if (dvRows.length > 0) {
+      const [result] = await pool.query(
+        `INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado)
+         VALUES (?, ?, ?, 'VIGENTE')`,
+        [dvRows[0].id_detalle_venta, fechaInicio, fechaFin],
+      );
+      garantiaId = result.insertId;
+    } else {
+      // Sin detalle_venta asociable – retornar garantía "virtual" solo en frontend
+      garantiaId = null;
+    }
+
+    return res.status(201).json({
+      ok: true,
+      message: garantiaId
+        ? "Garantía registrada en la base de datos."
+        : "Garantía registrada (sin venta asociada en BD).",
+      garantiaId,
+      warranty: {
+        id: garantiaId ? `GAR-${garantiaId}` : `GAR-${Date.now().toString().slice(-4)}`,
+        client: String(client).trim(),
+        product: String(product).trim(),
+        buyDate: fechaInicio.toISOString().split("T")[0],
+        expDate: fechaFin.toISOString().split("T")[0],
+        status: "Activa",
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear garantía:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la garantía." });
+  }
+});
+
+// ---------- MANTENIMIENTOS ----------
+
+app.post("/api/admin/mantenimientos", async (req, res) => {
+  try {
+    const { equipment, client, tech, cost, status } = req.body;
+
+    if (!equipment || String(equipment).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Equipo inválido." });
+    }
+    if (!client || String(client).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Cliente inválido." });
+    }
+
+    // Buscar cliente por nombre
+    const clientName = String(client).trim();
+    const [userRows] = await pool.query(
+      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
+      [clientName],
+    );
+    const clientUserId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+
+    // Buscar técnico (encargado) - usar trabajador por defecto
+    const [techRows] = await pool.query(
+      `SELECT u.id_usuario FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE r.nombre_rol = 'Trabajador' AND u.estado = 'ACTIVO' LIMIT 1`,
+    );
+    const techId = techRows.length > 0 ? techRows[0].id_usuario : 5;
+
+    // Tipo servicio 1 = Mantenimiento preventivo
+    // Necesitamos un equipo asociado
+    const [equipoRows] = await pool.query(
+      `SELECT id_equipo FROM equipo WHERE id_usuario = ? AND estado = 'ACTIVO' LIMIT 1`,
+      [clientUserId],
+    );
+
+    let equipoId;
+    if (equipoRows.length > 0) {
+      equipoId = equipoRows[0].id_equipo;
+    } else {
+      // Crear equipo temporal
+      const [insertEquipo] = await pool.query(
+        `INSERT INTO equipo (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
+         VALUES (?, 1, 'Consola', 'WiiU', ?, ?, 'ACTIVO')`,
+        [clientUserId, `SN-MNT-${Date.now()}`, String(equipment).trim().substring(0, 100)],
+      );
+      equipoId = insertEquipo.insertId;
+    }
+
+    // Mapear status del frontend a ENUM de BD
+    const statusMap = {
+      "En Taller": "PENDIENTE",
+      "En Diagnóstico": "EN PROCESO",
+      "Listo para Entrega": "COMPLETO",
+      "Completado": "COMPLETO",
+    };
+    const dbStatus = statusMap[status] || "PENDIENTE";
+
+    const [result] = await pool.query(
+      `INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
+       VALUES (?, ?, ?, ?, 1, ?, ?)`,
+      [
+        `Mantenimiento ${String(equipment).trim().substring(0, 60)}`,
+        `Mantenimiento técnico - ${String(equipment).trim().substring(0, 60)}`,
+        clientUserId,
+        techId,
+        equipoId,
+        dbStatus,
+      ],
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Mantenimiento registrado.",
+      maintenance: {
+        order: `MNT-${result.insertId}`,
+        equipment: String(equipment).trim(),
+        client: clientName,
+        tech: tech || "Técnico Asignado",
+        cost: `$ ${Number(cost || 0).toLocaleString("es-CO")}`,
+        status: status || "En Taller",
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear mantenimiento:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar el mantenimiento." });
+  }
+});
+
+// ---------- REPARACIONES ----------
+
+app.post("/api/admin/reparaciones", async (req, res) => {
+  try {
+    const { device, defect, client, price } = req.body;
+
+    if (!device || String(device).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Dispositivo inválido." });
+    }
+    if (!defect || String(defect).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Falla inválida." });
+    }
+
+    const clientName = String(client || "Cliente Mostrador").trim();
+    const [userRows] = await pool.query(
+      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
+      [clientName],
+    );
+    const clientUserId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+
+    const [techRows] = await pool.query(
+      `SELECT u.id_usuario FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE r.nombre_rol = 'Trabajador' AND u.estado = 'ACTIVO' LIMIT 1`,
+    );
+    const techId = techRows.length > 0 ? techRows[0].id_usuario : 5;
+
+    const [equipoRows] = await pool.query(
+      `SELECT id_equipo FROM equipo WHERE id_usuario = ? AND estado = 'ACTIVO' LIMIT 1`,
+      [clientUserId],
+    );
+
+    let equipoId;
+    if (equipoRows.length > 0) {
+      equipoId = equipoRows[0].id_equipo;
+    } else {
+      const [insertEquipo] = await pool.query(
+        `INSERT INTO equipo (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
+         VALUES (?, 1, 'Consola', 'WiiU', ?, ?, 'ACTIVO')`,
+        [clientUserId, `SN-REP-${Date.now()}`, String(device).trim().substring(0, 100)],
+      );
+      equipoId = insertEquipo.insertId;
+    }
+
+    // Tipo servicio 2 = Reparacion
+    const [result] = await pool.query(
+      `INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
+       VALUES (?, ?, ?, ?, 2, ?, 'PENDIENTE')`,
+      [
+        `Reparación ${String(device).trim().substring(0, 60)}`,
+        String(defect).trim().substring(0, 100),
+        clientUserId,
+        techId,
+        equipoId,
+      ],
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Reparación registrada.",
+      repair: {
+        ticket: `REP-${result.insertId}`,
+        device: String(device).trim(),
+        defect: String(defect).trim(),
+        client: clientName,
+        price: `$ ${Number(price || 60000).toLocaleString("es-CO")}`,
+        status: "Ingresado en Taller",
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear reparación:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la reparación." });
+  }
+});
+
+// ---------- DESCUENTOS / PROMOCIONES ----------
+
+app.post("/api/admin/descuentos", async (req, res) => {
+  try {
+    const { code, percent, limit: useLimit, desc } = req.body;
+
+    if (!code || String(code).trim().length < 3) {
+      return res.status(400).json({ ok: false, message: "Código de cupón inválido." });
+    }
+    const percentVal = parseInt(percent);
+    if (isNaN(percentVal) || percentVal < 1 || percentVal > 100) {
+      return res.status(400).json({ ok: false, message: "Porcentaje inválido." });
+    }
+
+    // Obtener primer producto activo para asociar la promoción
+    const [prodRows] = await pool.query(
+      "SELECT id_producto, precio FROM producto WHERE estado = 'ACTIVO' ORDER BY id_producto LIMIT 1",
+    );
+    if (!prodRows.length) {
+      return res.status(400).json({ ok: false, message: "No hay productos activos para asociar." });
+    }
+
+    const productId = prodRows[0].id_producto;
+    const originalPrice = Number(prodRows[0].precio);
+    const discountedPrice = originalPrice * (1 - percentVal / 100);
+
+    // Obtener admin (encargado)
+    const [adminRows] = await pool.query(
+      `SELECT u.id_usuario FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE r.nombre_rol = 'Administrador' AND u.estado = 'ACTIVO' LIMIT 1`,
+    );
+    const adminId = adminRows.length > 0 ? adminRows[0].id_usuario : 3;
+
+    const now = new Date();
+    const fechaFin = new Date(now);
+    fechaFin.setMonth(fechaFin.getMonth() + 3);
+
+    const [result] = await pool.query(
+      `INSERT INTO promocion (id_producto, id_encargado, precio, descripcion, fecha_inicio, fecha_fin, estado)
+       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        productId,
+        adminId,
+        discountedPrice,
+        String(desc || `Cupón ${code}`).trim().substring(0, 150),
+        now,
+        fechaFin,
+      ],
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Cupón de descuento creado.",
+      discount: {
+        code: String(code).toUpperCase().trim(),
+        desc: String(desc || `Cupón ${code}`).trim(),
+        percent: `${percentVal}%`,
+        expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
+        uses: `0 / ${useLimit || 100}`,
+        status: "Activo",
+      },
+    });
+  } catch (error) {
+    console.error("Error al crear descuento:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
   }
 });
 

@@ -889,13 +889,6 @@
                     onchange="window.filterProductsByCategory(this.value)"
                   >
                     <option value="todos">Todas las categorías</option>
-                    <option value="Juegos Wii U">Juegos Wii U</option>
-                    <option value="Consolas">Consolas</option>
-                    <option value="Accesorios">Accesorios & Mandos</option>
-                    <option value="Repuestos">Repuestos</option>
-                    <option value="Coleccionables">
-                      Coleccionables & Amiibo
-                    </option>
                   </select>
                 </div>
               </div>
@@ -1312,7 +1305,7 @@
                   id="prodName"
                   required
                   minlength="3"
-                  placeholder="Ej. The Legend of Zelda: Breath of the Wild (Wii U)"
+                  placeholder="Ej. Portátil Lenovo IdeaPad 3, Mouse Logitech M185..."
                 />
               </div>
 
@@ -1330,13 +1323,7 @@
                       ).textContent = this.value
                     "
                   >
-                    <option value="Juegos Wii U">Juegos Wii U</option>
-                    <option value="Consolas">Consolas Wii U / Nintendo</option>
-                    <option value="Accesorios">Accesorios & GamePads</option>
-                    <option value="Repuestos">Repuestos & Pantallas</option>
-                    <option value="Coleccionables">
-                      Amiibos & Ediciones Especiales
-                    </option>
+                    <option value="">Cargando categorías...</option>
                   </select>
                 </div>
 
@@ -1377,30 +1364,23 @@
 
               <div class="fila-formulario-2">
                 <div class="grupo-formulario">
-                  <label for="prodPublisher">Distribuidor / Fabricante</label>
+                  <label for="prodPublisher">Distribuidor / Marca</label>
                   <input
                     type="text"
                     id="prodPublisher"
-                    placeholder="Nintendo, Ubisoft, Capcom..."
+                    list="brandListSuggestions"
+                    placeholder="Lenovo, Logitech, Kingston..."
                   />
+                  <datalist id="brandListSuggestions"></datalist>
                 </div>
 
                 <div class="grupo-formulario">
-                  <label for="prodPlatform">Plataforma / Formato</label>
+                  <label for="prodPlatform">Condición / Formato</label>
                   <select id="prodPlatform">
-                    <option value="Disco Físico Original">
-                      Disco Físico con Caja
-                    </option>
-                    <option value="Disco Suelto">
-                      Disco Suelto (Sin Caja)
-                    </option>
-                    <option value="Consola Completa">
-                      Consola en Caja Completa
-                    </option>
-                    <option value="Digital Key">Código Digital / eShop</option>
-                    <option value="Accesorio OEM">
-                      Accesorio Original OEM
-                    </option>
+                    <option value="Nuevo Sellado">Nuevo Sellado</option>
+                    <option value="Original">Original</option>
+                    <option value="Reacondicionado">Reacondicionado</option>
+                    <option value="Usado">Usado en Buen Estado</option>
                   </select>
                 </div>
               </div>
@@ -1522,49 +1502,6 @@
                   placeholder="https://ejemplo.com/portada.jpg"
                   oninput="window.previewProductImage(this.value)"
                 />
-              </div>
-
-              <div class="quick-cover-picker">
-                <span class="cover-picker-label"
-                  >Portadas rápidas sugeridas:</span
-                >
-                <div class="cover-chips">
-                  <button
-                    type="button"
-                    class="cover-chip"
-                    onclick="window.setPresetCover('zelda')"
-                  >
-                    Zelda BOTW
-                  </button>
-                  <button
-                    type="button"
-                    class="cover-chip"
-                    onclick="window.setPresetCover('mario')"
-                  >
-                    Mario 3D
-                  </button>
-                  <button
-                    type="button"
-                    class="cover-chip"
-                    onclick="window.setPresetCover('mariokart')"
-                  >
-                    Mario Kart 8
-                  </button>
-                  <button
-                    type="button"
-                    class="cover-chip"
-                    onclick="window.setPresetCover('splatoon')"
-                  >
-                    Splatoon
-                  </button>
-                  <button
-                    type="button"
-                    class="cover-chip"
-                    onclick="window.setPresetCover('smash')"
-                  >
-                    Smash Bros
-                  </button>
-                </div>
               </div>
 
               <div class="preview-description-grid">

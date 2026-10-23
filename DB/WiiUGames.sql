@@ -325,7 +325,14 @@ INSERT INTO equipo (id_usuario, id_sucursal, tipo, marca, numero_serial, descrip
 INSERT INTO categoria (nombre_cat, descripcion_cat, estado) VALUES
 ('Portatiles', 'Computadores portatiles de todas las gamas', 'ACTIVO'),
 ('Perifericos', 'Mouse, teclados, audifonos y similares', 'ACTIVO'),
-('Almacenamiento', 'Discos duros, SSD y memorias', 'ACTIVO');
+('Almacenamiento', 'Discos duros, SSD y memorias', 'ACTIVO'),
+('PC Escritorio', 'Torres gamer, empresariales y Todo en Uno', 'ACTIVO'),
+('Tarjetas Graficas', 'GPUs NVIDIA GeForce y AMD Radeon de alto rendimiento', 'ACTIVO'),
+('Monitores', 'Pantallas gaming y profesionales de alta tasa de refresco', 'ACTIVO'),
+('Memorias RAM', 'Modulos DDR4 y DDR5 para portatiles y escritorios', 'ACTIVO'),
+('Motherboards', 'Placas base para procesadores Intel y AMD', 'ACTIVO'),
+('Procesadores', 'CPUs Intel Core y AMD Ryzen para gaming y creacion de contenido', 'ACTIVO'),
+('Consolas y Videojuegos', 'Consolas retro, modernas, accesorios y videojuegos', 'ACTIVO');
 
 -- ---------------- marca ----------------
 INSERT INTO marca (nombre_marca, descripcion_marca, estado) VALUES
