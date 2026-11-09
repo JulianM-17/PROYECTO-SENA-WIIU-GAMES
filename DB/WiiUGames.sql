@@ -338,13 +338,30 @@ INSERT INTO categoria (nombre_cat, descripcion_cat, estado) VALUES
 INSERT INTO marca (nombre_marca, descripcion_marca, estado) VALUES
 ('Lenovo', 'Computadores y accesorios Lenovo', 'ACTIVO'),
 ('Logitech', 'Perifericos Logitech', 'ACTIVO'),
-('Kingston', 'Memorias y unidades de almacenamiento', 'ACTIVO');
+('Kingston', 'Memorias y unidades de almacenamiento', 'ACTIVO'),
+('ASUS', 'Laptops, componentes y monitores ASUS', 'ACTIVO'),
+('NVIDIA', 'Tarjetas graficas GeForce RTX y tecnologias visuales', 'ACTIVO'),
+('Corsair', 'Memorias RAM, fuentes y perifericos de alto rendimiento', 'ACTIVO'),
+('Intel', 'Procesadores Intel Core y placas base', 'ACTIVO'),
+('AMD', 'Procesadores Ryzen y tarjetas graficas Radeon', 'ACTIVO'),
+('Nintendo', 'Consolas Nintendo Switch y videojuegos', 'ACTIVO'),
+('Sony', 'Consolas PlayStation y accesorios', 'ACTIVO'),
+('MSI', 'Placas base, tarjetas de video y perifericos gaming', 'ACTIVO');
 
 -- ---------------- producto ----------------
 INSERT INTO producto (id_marca, id_categoria, nombre, imagen_prin, imagen_2, imagen_3, imagen_4, color, descripcion, precio, estado) VALUES
 (1, 1, 'Portatil Lenovo IdeaPad 3', 'img/productos/ideapad3_1.jpg', 'img/productos/ideapad3_2.jpg', 'img/productos/ideapad3_3.jpg', 'img/productos/ideapad3_4.jpg', 'Gris', 'Ryzen 5, 16GB RAM, 512GB SSD, 15.6 pulgadas', 2200000.000000, 'ACTIVO'),
 (2, 2, 'Mouse Logitech M185', 'img/productos/m185_1.jpg', 'img/productos/m185_2.jpg', 'img/productos/m185_3.jpg', 'img/productos/m185_4.jpg', 'Negro', 'Mouse inalambrico con receptor USB', 45000.000000, 'ACTIVO'),
-(3, 3, 'SSD Kingston A400 480GB', 'img/productos/a400_1.jpg', 'img/productos/a400_2.jpg', 'img/productos/a400_3.jpg', 'img/productos/a400_4.jpg', NULL, 'Unidad de estado solido SATA 2.5 pulgadas', 180000.000000, 'ACTIVO');
+(3, 3, 'SSD Kingston A400 480GB', 'img/productos/a400_1.jpg', 'img/productos/a400_2.jpg', 'img/productos/a400_3.jpg', 'img/productos/a400_4.jpg', NULL, 'Unidad de estado solido SATA 2.5 pulgadas', 180000.000000, 'ACTIVO'),
+(4, 1, 'Portatil Gamer ASUS ROG Strix G16', 'img/productos/rog_1.jpg', NULL, NULL, NULL, 'Negro', 'Intel Core i7-13650HX, RTX 4060, 16GB RAM DDR5, 512GB SSD', 5800000.000000, 'ACTIVO'),
+(8, 4, 'PC Gamer Torre Custom Ryzen 7', 'img/productos/pc_custom_1.jpg', NULL, NULL, NULL, 'Negro', 'AMD Ryzen 7 5700X, RTX 4060 Ti, 32GB RAM, 1TB NVMe, Fuente 750W', 4500000.000000, 'ACTIVO'),
+(5, 5, 'Tarjeta Grafica NVIDIA GeForce RTX 4060 8GB', 'img/productos/rtx4060_1.jpg', NULL, NULL, NULL, 'Negro', 'Arquitectura Ada Lovelace, DLSS 3, Ray Tracing, 8GB GDDR6', 1650000.000000, 'ACTIVO'),
+(4, 6, 'Monitor Gaming ASUS TUF 27 165Hz', 'img/productos/monitor_tuf_1.jpg', NULL, NULL, NULL, 'Negro', 'Pantalla IPS 27 pulgadas, 165Hz, 1ms, FreeSync Premium, HDR10', 1150000.000000, 'ACTIVO'),
+(6, 7, 'Memoria RAM Corsair Vengeance RGB 16GB DDR4', 'img/productos/ram_corsair_1.jpg', NULL, NULL, NULL, 'Negro', 'Kit 16GB (2x8GB) 3200MHz CL16 con iluminacion dinamica RGB', 210000.000000, 'ACTIVO'),
+(11, 8, 'Motherboard MSI B550M PRO-VDH WiFi', 'img/productos/mb_msi_1.jpg', NULL, NULL, NULL, 'Negro', 'Socket AM4, PCIe 4.0, Dual M.2, WiFi integrado, soporte Ryzen 5000', 490000.000000, 'ACTIVO'),
+(7, 9, 'Procesador Intel Core i7-13700K 16 Nucleos', 'img/productos/i7_13700k_1.jpg', NULL, NULL, NULL, 'Azul', 'Hasta 5.4 GHz, 30MB Cache, Socket LGA1700, Graficos Intel UHD 770', 1890000.000000, 'ACTIVO'),
+(9, 10, 'Consola Nintendo Switch OLED 64GB', 'img/productos/switch_oled_1.jpg', NULL, NULL, NULL, 'Blanco', 'Pantalla OLED 7 pulgadas, soporte ajustable, 64GB almacenamiento interno', 1450000.000000, 'ACTIVO'),
+(10, 10, 'Consola PlayStation 5 Slim Digital 1TB', 'img/productos/ps5_slim_1.jpg', NULL, NULL, NULL, 'Blanco', 'SSD 1TB de ultra alta velocidad, Tempest 3D AudioTech, soporte 4K 120Hz', 2490000.000000, 'ACTIVO');
 
 -- ---------------- tipo_servicio ----------------
 INSERT INTO tipo_servicio (nombre, descripcion, estado) VALUES
@@ -416,4 +433,13 @@ INSERT INTO promocion (id_producto, id_encargado, precio, descripcion, fecha_ini
 INSERT INTO inventario (id_sucursal, id_producto, stock, estado) VALUES
 (1, 1, 5, 'ACTIVO'),
 (2, 2, 50, 'ACTIVO'),
-(3, 3, 20, 'ACTIVO');
+(3, 3, 20, 'ACTIVO'),
+(1, 4, 8, 'ACTIVO'),
+(2, 5, 6, 'ACTIVO'),
+(3, 6, 12, 'ACTIVO'),
+(1, 7, 15, 'ACTIVO'),
+(2, 8, 30, 'ACTIVO'),
+(3, 9, 10, 'ACTIVO'),
+(1, 10, 14, 'ACTIVO'),
+(2, 11, 22, 'ACTIVO'),
+(3, 12, 9, 'ACTIVO');

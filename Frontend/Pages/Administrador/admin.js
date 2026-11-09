@@ -1,6 +1,7 @@
 let adminDashboardData = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
+  populateCategoryDropdowns();
   initPresetData();
   initNavigation();
   initUserProfileMenu();
@@ -847,26 +848,56 @@ window.generateRandomSKU = function () {
   if (skuInput) skuInput.value = `PRD-${randomNum}`;
 };
 
+const DEFAULT_PRODUCT_CATEGORIES = [
+  "Portatiles",
+  "Perifericos",
+  "Almacenamiento",
+  "PC Escritorio",
+  "Tarjetas Graficas",
+  "Monitores",
+  "Memorias RAM",
+  "Motherboards",
+  "Procesadores",
+  "Consolas y Videojuegos",
+  "Sillas y Accesorios",
+  "Audio y Streaming",
+  "Fuentes de Poder y Gabinetes",
+  "Refrigeracion"
+];
+
 function populateCategoryDropdowns(categories = []) {
   const filterCat = document.getElementById("filterCategory");
   const prodCat = document.getElementById("prodCategory");
 
+  const categoryNames = new Set();
+  categories.forEach((c) => {
+    const name = (c.nombre_cat || c || "").trim();
+    if (name) categoryNames.add(name);
+  });
+  DEFAULT_PRODUCT_CATEGORIES.forEach((c) => categoryNames.add(c));
+
+  const sortedCategories = Array.from(categoryNames).sort((a, b) =>
+    a.localeCompare(b, "es")
+  );
+
   if (filterCat) {
+    const currentValue = filterCat.value || "todos";
     let html = '<option value="todos">Todas las categorías</option>';
-    categories.forEach((c) => {
-      const name = c.nombre_cat || c;
+    sortedCategories.forEach((name) => {
       html += `<option value="${name}">${name}</option>`;
     });
     filterCat.innerHTML = html;
+    filterCat.value = currentValue;
   }
 
   if (prodCat) {
+    const currentValue = prodCat.value || "";
     let html = '<option value="">Seleccione una categoría</option>';
-    categories.forEach((c) => {
-      const name = c.nombre_cat || c;
+    sortedCategories.forEach((name) => {
       html += `<option value="${name}">${name}</option>`;
     });
     prodCat.innerHTML = html;
+    if (currentValue) prodCat.value = currentValue;
   }
 }
 
