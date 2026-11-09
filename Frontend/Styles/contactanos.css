@@ -268,6 +268,22 @@ header {
   border-color: #10b981 !important;
 }
 
+body.a11y-mode-dark-mode .campo-valido input,
+body.a11y-mode-dark-mode .campo-valido select,
+body.a11y-mode-dark-mode .campo-valido textarea {
+  border: 2px solid #00e676 !important;
+  border-color: #00e676 !important;
+  background-color: rgba(0, 230, 118, 0.12) !important;
+  box-shadow: 0 0 0 3.5px rgba(0, 230, 118, 0.35), 0 0 12px rgba(0, 230, 118, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .campo-valido input:focus,
+body.a11y-mode-dark-mode .campo-valido select:focus,
+body.a11y-mode-dark-mode .campo-valido textarea:focus {
+  border-color: #00e676 !important;
+  box-shadow: 0 0 0 4px rgba(0, 230, 118, 0.45), 0 0 16px rgba(0, 230, 118, 0.35) !important;
+}
+
 .btn-agendar {
   padding: 14px 28px;
   background: linear-gradient(135deg, var(--yellow) 0%, var(--yellow-hover) 100%);
@@ -333,8 +349,12 @@ header {
 }
 
 .email-texto {
-  color: var(--yellow) !important;
+  color: #1e293b !important;
   font-weight: 600;
+}
+
+body.a11y-mode-dark-mode .email-texto {
+  color: var(--yellow) !important;
 }
 
 /* =====================================================

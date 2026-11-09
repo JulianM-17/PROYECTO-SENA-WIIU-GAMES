@@ -1795,12 +1795,28 @@ body.a11y-mode-dark-mode .campo-invalido textarea:focus {
   box-shadow: 0 0 0 3.5px rgba(239, 68, 68, 0.35) !important;
 }
 
-/* Campo válido — verde en modo oscuro */
+/* Campo válido — verde luminoso y llamativo en modo oscuro */
 body.a11y-mode-dark-mode .campo-valido input,
 body.a11y-mode-dark-mode .campo-valido select,
-body.a11y-mode-dark-mode .campo-valido textarea {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2) !important;
+body.a11y-mode-dark-mode .campo-valido textarea,
+body.a11y-mode-dark-mode .input-valido,
+body.a11y-mode-dark-mode input.input-valido,
+body.a11y-mode-dark-mode select.input-valido,
+body.a11y-mode-dark-mode textarea.input-valido,
+body.a11y-mode-dark-mode .entrada-texto.input-valido,
+body.a11y-mode-dark-mode .entrada-seleccion.input-valido {
+  border: 2px solid #00e676 !important;
+  border-color: #00e676 !important;
+  background-color: rgba(0, 230, 118, 0.12) !important;
+  box-shadow: 0 0 0 3.5px rgba(0, 230, 118, 0.35), 0 0 12px rgba(0, 230, 118, 0.25) !important;
+}
+
+body.a11y-mode-dark-mode .campo-valido input:focus,
+body.a11y-mode-dark-mode .campo-valido select:focus,
+body.a11y-mode-dark-mode .campo-valido textarea:focus,
+body.a11y-mode-dark-mode .input-valido:focus {
+  border-color: #00e676 !important;
+  box-shadow: 0 0 0 4px rgba(0, 230, 118, 0.45), 0 0 16px rgba(0, 230, 118, 0.35) !important;
 }
 
 /* Aside de información de contacto */
@@ -1897,9 +1913,11 @@ body.a11y-mode-dark-mode .btn-negro,
 body.a11y-mode-dark-mode .btn-negro-secundario,
 body.a11y-mode-dark-mode .btn-primary {
   color: #080f20 !important;
-  background-color: #f5c842 !important;
-  border-color: #f5c842 !important;
-  font-weight: bold !important;
+  background: #f5c842 !important;
+  background-image: none !important;
+  border: 1px solid #f5c842 !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 15px rgba(245, 200, 66, 0.3) !important;
 }
 
 body.a11y-mode-dark-mode #btn-vaciar:hover,
@@ -1907,7 +1925,9 @@ body.a11y-mode-dark-mode #btn-actualizar:hover,
 body.a11y-mode-dark-mode .btn-negro:hover,
 body.a11y-mode-dark-mode .btn-negro-secundario:hover,
 body.a11y-mode-dark-mode .btn-primary:hover {
-  background-color: #e0b435 !important;
-  border-color: #e0b435 !important;
-  color: #080f20 !important;
+  background: #ffd95a !important;
+  background-image: none !important;
+  border-color: #ffd95a !important;
+  color: #000000 !important;
+  box-shadow: 0 6px 20px rgba(245, 200, 66, 0.45) !important;
 }
