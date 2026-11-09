@@ -8,9 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initDragToScroll();
 });
 
-/* =====================================================
-   HERO SLIDER
-   ===================================================== */
+//HERO SLIDER
 function initHeroSlider() {
   const slider = document.getElementById("heroSlider");
   if (!slider) return;
@@ -27,13 +25,13 @@ function initHeroSlider() {
   const AUTOPLAY_DELAY = 6000;
 
   function goToSlide(index) {
-    // Remove active from all slides and dots
+    
     slides.forEach((slide) => {
       slide.classList.remove("active");
     });
     dots.forEach((dot) => dot.classList.remove("active"));
 
-    // Set new active
+    
     currentSlide = (index + slides.length) % slides.length;
     slides[currentSlide].classList.add("active");
     dots[currentSlide].classList.add("active");
@@ -59,7 +57,7 @@ function initHeroSlider() {
     }
   }
 
-  // Arrow event listeners
+ 
   if (arrowLeft) {
     arrowLeft.addEventListener("click", () => {
       prevSlide();
@@ -74,7 +72,6 @@ function initHeroSlider() {
     });
   }
 
-  // Dot event listeners
   dots.forEach((dot) => {
     dot.addEventListener("click", () => {
       const slideIndex = parseInt(dot.dataset.slide, 10);
@@ -83,11 +80,9 @@ function initHeroSlider() {
     });
   });
 
-  // Pause autoplay on hover
   slider.addEventListener("mouseenter", stopAutoplay);
   slider.addEventListener("mouseleave", startAutoplay);
 
-  // Touch swipe support
   let touchStartX = 0;
   let touchEndX = 0;
 
@@ -110,7 +105,6 @@ function initHeroSlider() {
     startAutoplay();
   }, { passive: true });
 
-  // Keyboard navigation
   slider.setAttribute("tabindex", "0");
   slider.addEventListener("keydown", (e) => {
     if (e.key === "ArrowLeft") {
@@ -122,13 +116,11 @@ function initHeroSlider() {
     }
   });
 
-  // Start autoplay
   startAutoplay();
 }
 
-/* =====================================================
-   SCROLL ANIMATIONS (Intersection Observer)
-   ===================================================== */
+//SCROLL ANIMATIONS
+
 function initScrollAnimations() {
   const animatedElements = document.querySelectorAll("[data-animate]");
 
@@ -152,9 +144,6 @@ function initScrollAnimations() {
   animatedElements.forEach((el) => observer.observe(el));
 }
 
-/* =====================================================
-   DRAG TO SCROLL (for category carousel)
-   ===================================================== */
 function initDragToScroll() {
   const scrollContainers = document.querySelectorAll(
     ".categorias-carrusel"
@@ -201,7 +190,6 @@ function initDragToScroll() {
       container.scrollLeft = scrollLeft - walk;
     });
 
-    // Prevent click after drag
     container.addEventListener("click", (e) => {
       if (Math.abs(velocity) > 5) {
         e.preventDefault();
