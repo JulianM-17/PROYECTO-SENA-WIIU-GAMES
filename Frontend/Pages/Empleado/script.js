@@ -39,7 +39,7 @@ document.addEventListener('click', function (evento) {
 });
 
 function mostrarNotificaciones() {
-  alert("🔔 Tienes 0 notificaciones pendientes en tu turno de atención.");
+  alert(" Tienes 0 notificaciones pendientes en tu turno de atención.");
 }
 
 function filtrarTablaGenerica(idTbody, texto) {
@@ -117,11 +117,11 @@ function actualizarTotalesPos() {
 
 function completarVenta() {
   if (subtotalVenta <= 0) {
-    alert("⚠️ Agrega al menos un producto a la orden antes de completar la venta.");
+    alert(" Agrega al menos un producto a la orden antes de completar la venta.");
     return;
   }
   var metodo = document.querySelector('input[name="pago"]:checked').value;
-  alert("✅ ¡Venta completada con éxito!\n\nTotal Cobrado: $ " + subtotalVenta.toLocaleString('es-CO') + "\nMétodo de Pago: " + metodo + "\n\nComprobante generado correctamente.");
+  alert(" ¡Venta completada con éxito!\n\nTotal Cobrado: $ " + subtotalVenta.toLocaleString('es-CO') + "\nMétodo de Pago: " + metodo + "\n\nComprobante generado correctamente.");
   vaciarOrden();
 }
 
@@ -248,7 +248,7 @@ function guardarRegistroEmpleado(evento) {
   }
 
   cerrarModalEmpleado();
-  alert("✅ Registro guardado exitosamente.");
+  alert(" Registro guardado exitosamente.");
 }
 
 function insertarFilaEmpleado(idTbody, html) {
