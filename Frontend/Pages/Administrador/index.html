@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Administrador - WiiU-Games</title>
+  
+  <!-- Fuente Google: Poppins / Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Iconos de Flaticon Uicons -->
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
+
+  <!-- Estilos del Sistema de Accesibilidad -->
+  <link rel="stylesheet" href="../../Styles/accessibility.css">
+
+  <!-- Estilos propios del Panel -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- CONTENEDOR PRINCIPAL DE TODA LA PÁGINA -->
+  <div class="panel-contenedor">
+
+    <!-- ======================================================== -->
+    <!-- 1. BARRA LATERAL (MENU IZQUIERDO)                        -->
+    <!-- ======================================================== -->
+    <aside class="menu-lateral">
+      
+      <!-- Logotipo de WiiU-Games -->
+      <div class="logo">
+        <a href="../../Index.html" title="Ir a la tienda">
+          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
+        </a>
+      </div>
+
+      <!-- Enlaces de Navegación del Panel -->
+      <nav class="navegacion">
+        <button class="boton-menu activo" onclick="cambiarPestana('seccion-home', this)">
+          <i class="fi fi-rr-home"></i>
+          <span>Home</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-garantias', this)">
+          <i class="fi fi-rr-shield-check"></i>
+          <span>Garantías</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-mantenimientos', this)">
+          <i class="fi fi-rr-wrench-simple"></i>
+          <span>Mantenimientos</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-inventario', this)">
+          <i class="fi fi-rr-box-alt"></i>
+          <span>Inventario</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-reparacion', this)">
+          <i class="fi fi-rr-bolt"></i>
+          <span>Reparación</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-descuentos', this)">
+          <i class="fi fi-rr-badge-percent"></i>
+          <span>Descuentos</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-resenas', this)">
+          <i class="fi fi-rr-star"></i>
+          <span>Reseñas</span>
+        </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-clientes', this)">
+          <i class="fi fi-rr-users-alt"></i>
+          <span>Clientes</span>
+        </button>
+      </nav>
+
+      <!-- Perfil del Administrador (Abajo a la izquierda) -->
+      <div class="perfil-usuario" onclick="toggleMenuPerfil()">
+        <div class="avatar">AT</div>
+        <div class="datos-usuario">
+          <p class="nombre">Andres Torres</p>
+          <p class="rol">Administrador</p>
+        </div>
+        <i class="fi fi-rr-angle-small-down flecha"></i>
+
+        <!-- Menú desplegable del perfil -->
+        <div class="menu-desplegable-perfil" id="menuPerfil">
+          <a href="../panel_usuario.html"><i class="fi fi-rr-user"></i> Mi Perfil</a>
+          <a href="../../Index.html"><i class="fi fi-rr-shop"></i> Ir a la Tienda</a>
+          <div class="separador-menu"></div>
+          <a href="../../Pages/Login.html" class="enlace-rojo"><i class="fi fi-rr-sign-out-alt"></i> Cerrar Sesión</a>
+        </div>
+      </div>
+
+    </aside>
+
+
+    <!-- ======================================================== -->
+    <!-- 2. CONTENIDO PRINCIPAL (DERECHA)                         -->
+    <!-- ======================================================== -->
+    <main class="contenido">
+
+      <!-- ENCABEZADO SUPERIOR -->
+      <header class="barra-superior">
+        <div class="texto-bienvenida">
+          <h1>¡Hola, Andres!</h1>
+          <p>Resumen general del estado de tu tienda WiiU-Games.</p>
+        </div>
+
+        <div class="herramientas-superior">
+          <!-- Buscador en tiempo real -->
+          <div class="caja-buscar">
+            <i class="fi fi-rr-search"></i>
+            <input type="text" id="buscadorGlobal" placeholder="Buscar productos, pedidos, clientes..." oninput="filtrarGlobal(this.value)">
+          </div>
+
+          <!-- Filtro de días -->
+          <button class="boton-dias" onclick="filtrarPeriodo()">
+            <span>Últimos 7 días</span>
+            <i class="fi fi-rr-angle-small-down"></i>
+          </button>
+
+          <!-- Campana de Notificaciones -->
+          <button class="campana-alerta" title="Notificaciones" onclick="mostrarNotificaciones()">
+            <i class="fi fi-rr-bell"></i>
+            <span class="punto-amarillo"></span>
+          </button>
+        </div>
+      </header>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 1: HOME (DATOS EN 0 / LISTO PARA BD)            -->
+      <!-- ******************************************************** -->
+      <section id="seccion-home" class="seccion visible">
+
+        <!-- 3 Tarjetas de Resumen en 0 -->
+        <div class="fila-tarjetas">
+          
+          <div class="tarjeta-resumen">
+            <div class="titulo-tarjeta">
+              <span>Ventas totales</span>
+              <div class="icono-cuadro azul"><i class="fi fi-rr-shopping-bag"></i></div>
+            </div>
+            <h2 id="homeVentasTotales">$ 0</h2>
+            <p class="verde">0% vs semana pasada</p>
+          </div>
+
+          <div class="tarjeta-resumen">
+            <div class="titulo-tarjeta">
+              <span>Pedidos</span>
+              <div class="icono-cuadro naranja"><i class="fi fi-rr-shopping-cart"></i></div>
+            </div>
+            <h2 id="homePedidosTotales">0</h2>
+            <p class="verde">0% vs semana pasada</p>
+          </div>
+
+          <div class="tarjeta-resumen">
+            <div class="titulo-tarjeta">
+              <span>Clientes nuevos</span>
+              <div class="icono-cuadro azul"><i class="fi fi-rr-users-alt"></i></div>
+            </div>
+            <h2 id="homeClientesNuevos">0</h2>
+            <p class="verde">0% vs semana pasada</p>
+          </div>
+
+        </div>
+
+        <!-- Fila de Gráfico y Productos más vendidos -->
+        <div class="fila-doble">
+
+          <!-- Gráfico de Ventas -->
+          <div class="caja-panel">
+            <div class="encabezado-caja">
+              <h3>Ventas</h3>
+              <span class="etiqueta-semana">Esta semana</span>
+            </div>
+
+            <div class="grafico-simple">
+              <div class="numeros-y">
+                <span>10K</span>
+                <span>8K</span>
+                <span>6K</span>
+                <span>4K</span>
+                <span>2K</span>
+                <span>0</span>
+              </div>
+              <div class="zona-grafico">
+                <div class="linea-guia"></div>
+                <div class="linea-guia"></div>
+                <div class="linea-guia"></div>
+                <div class="linea-guia"></div>
+                <div class="linea-guia"></div>
+                <div class="linea-grafica-azul">
+                  <span class="etiqueta-mar">$0<br><small>Mar</small></span>
+                </div>
+                <div class="dias-x">
+                  <span>Lun</span>
+                  <span>Dom</span>
+                  <span>Sáb</span>
+                  <span>Vie</span>
+                  <span>Jue</span>
+                  <span>Mié</span>
+                  <span>Mar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Productos más vendidos (En blanco / listo para BD) -->
+          <div class="caja-panel">
+            <div class="encabezado-caja">
+              <h3>Productos más vendidos</h3>
+              <a href="#" class="enlace-gris" onclick="cambiarPestana('seccion-inventario')">Ver inventario</a>
+            </div>
+
+            <div class="lista-productos-top" id="contenedorTopProductos">
+              <div class="item-producto-top">
+                <span class="puesto-numero">#1</span>
+                <div class="imagen-caja">WiiU</div>
+                <p class="nombre-producto">Sin productos</p>
+                <small>0 unidades</small>
+                <h4>$ 0</h4>
+              </div>
+
+              <div class="item-producto-top">
+                <span class="puesto-numero">#2</span>
+                <div class="imagen-caja">WiiU</div>
+                <p class="nombre-producto">Sin productos</p>
+                <small>0 unidades</small>
+                <h4>$ 0</h4>
+              </div>
+
+              <div class="item-producto-top">
+                <span class="puesto-numero">#3</span>
+                <div class="imagen-caja">WiiU</div>
+                <p class="nombre-producto">Sin productos</p>
+                <small>0 unidades</small>
+                <h4>$ 0</h4>
+              </div>
+            </div>
+
+            <div class="pie-enlace">
+              <a href="#" onclick="cambiarPestana('seccion-inventario')">
+                <i class="fi fi-rr-search"></i> Ver todos los productos
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Fila de Pedidos recientes y Resumen financiero -->
+        <div class="fila-doble">
+
+          <!-- Pedidos recientes -->
+          <div class="caja-panel">
+            <div class="encabezado-caja">
+              <h3>Pedidos recientes</h3>
+              <button class="btn-texto" onclick="abrirModal('pedidos')">+ Nuevo Pedido</button>
+            </div>
+
+            <table class="tabla-panel">
+              <thead>
+                <tr>
+                  <th>Pedido</th>
+                  <th>Cliente</th>
+                  <th>Estado</th>
+                  <th>Total</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaPedidosBody">
+                <tr>
+                  <td colspan="5" class="texto-vacio">No hay pedidos registrados en la base de datos</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Resumen financiero (En 0) -->
+          <div class="caja-panel">
+            <div class="encabezado-caja">
+              <h3>Resumen financiero</h3>
+            </div>
+
+            <div class="fila-financiera">
+              <div class="circulo-meta">
+                <span class="porcentaje">0%</span>
+                <small>Meta mensual</small>
+              </div>
+
+              <div class="detalles-dinero">
+                <div class="item-dinero">
+                  <div class="icono-cuadro azul"><i class="fi fi-rr-chart-line-up"></i></div>
+                  <div>
+                    <small>Ingresos</small>
+                    <p class="valor" id="finIngresos">$ 0</p>
+                  </div>
+                </div>
+
+                <div class="item-dinero">
+                  <div class="icono-cuadro naranja"><i class="fi fi-rr-chart-line-down"></i></div>
+                  <div>
+                    <small>Gastos</small>
+                    <p class="valor" id="finGastos">$ 0</p>
+                  </div>
+                </div>
+
+                <div class="item-dinero">
+                  <div class="icono-cuadro verde"><i class="fi fi-rr-wallet"></i></div>
+                  <div>
+                    <small>Utilidad</small>
+                    <p class="valor" id="finUtilidad">$ 0</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="pie-enlace">
+              <a href="#" onclick="alert('Detalles financieros listos para consultar base de datos')">
+                <i class="fi fi-rr-arrow-up-right-from-square"></i> Ver detalles financieros
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 2: GARANTÍAS                                    -->
+      <!-- ******************************************************** -->
+      <section id="seccion-garantias" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Gestión de Garantías</h2>
+            <p>Supervisa reclamaciones, estados de cobertura y términos de garantías para clientes.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('garantias')">+ Registrar Garantía</button>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por cliente, serial o producto..." oninput="filtrarTabla('tablaGarantiasBody', this.value)">
+            <select class="select-filtro" onchange="filtrarEstadoTabla('tablaGarantiasBody', this.value, 5)">
+              <option value="">Todos los estados</option>
+              <option value="Activa">Activa</option>
+              <option value="Vencida">Vencida</option>
+            </select>
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>ID Garantía</th>
+                <th>Cliente</th>
+                <th>Producto / Serial</th>
+                <th>Fecha Compra</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaGarantiasBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay garantías registradas en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 3: MANTENIMIENTOS                               -->
+      <!-- ******************************************************** -->
+      <section id="seccion-mantenimientos" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Servicio Técnico y Mantenimientos</h2>
+            <p>Control de consolas y periféricos en mantenimiento preventivo y correctivo.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('mantenimientos')">+ Nuevo Mantenimiento</button>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar orden de mantenimiento..." oninput="filtrarTabla('tablaMantenimientosBody', this.value)">
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>Orden</th>
+                <th>Equipo</th>
+                <th>Cliente</th>
+                <th>Técnico</th>
+                <th>Costo</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaMantenimientosBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay órdenes de mantenimiento registradas en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 4: INVENTARIO                                   -->
+      <!-- ******************************************************** -->
+      <section id="seccion-inventario" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Inventario de Productos</h2>
+            <p>Administra los videojuegos, consolas, repuestos y accesorios disponibles en tienda.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('inventario')">+ Agregar Producto</button>
+        </div>
+
+        <!-- 3 Tarjetas de Stock en 0 -->
+        <div class="fila-tarjetas">
+          <div class="tarjeta-resumen">
+            <span>Total de Productos</span>
+            <h2 id="invTotalProductos">0 items</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Valor en Stock</span>
+            <h2 id="invValorStock">$ 0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Stock Bajo</span>
+            <h2 id="invStockBajo">0 alertas</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por título, SKU o categoría..." oninput="filtrarTabla('tablaInventarioBody', this.value)">
+            <select class="select-filtro" onchange="filtrarEstadoTabla('tablaInventarioBody', this.value, 2)">
+              <option value="">Todas las categorías</option>
+              <option value="Periféricos">Periféricos</option>
+              <option value="Portátiles">Portátiles</option>
+              <option value="Almacenamiento">Almacenamiento</option>
+              <option value="Consolas">Consolas</option>
+            </select>
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>SKU</th>
+                <th>Categoría</th>
+                <th>Precio Venta</th>
+                <th>Stock</th>
+                <th>Garantía</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaInventarioBody">
+              <tr>
+                <td colspan="8" class="texto-vacio">No hay productos registrados en el inventario</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 5: REPARACIÓN                                   -->
+      <!-- ******************************************************** -->
+      <section id="seccion-reparacion" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Taller de Reparaciones Especializadas</h2>
+            <p>Diagnósticos y reparación de Wii U GamePads, placas base, pantallas y puertos HDMI.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('reparacion')">+ Nueva Reparación</button>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por falla, cliente o ticket..." oninput="filtrarTabla('tablaReparacionBody', this.value)">
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>Ticket</th>
+                <th>Dispositivo</th>
+                <th>Falla Reportada</th>
+                <th>Cliente</th>
+                <th>Presupuesto</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaReparacionBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay tickets de reparación registrados en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 6: DESCUENTOS (NUEVO Y HABILITADO)              -->
+      <!-- ******************************************************** -->
+      <section id="seccion-descuentos" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Gestión de Descuentos y Cupones</h2>
+            <p>Crea promociones, códigos de descuento y ofertas por temporada para la tienda.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('descuentos')">+ Crear Descuento</button>
+        </div>
+
+        <!-- 3 Tarjetas de Resumen en 0 -->
+        <div class="fila-tarjetas">
+          <div class="tarjeta-resumen">
+            <span>Descuentos Activos</span>
+            <h2 id="descActivos">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Usos Totales</span>
+            <h2 id="descUsos">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Total Ahorrado</span>
+            <h2 id="descAhorro">$ 0</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por código de cupón..." oninput="filtrarTabla('tablaDescuentosBody', this.value)">
+            <select class="select-filtro" onchange="filtrarEstadoTabla('tablaDescuentosBody', this.value, 5)">
+              <option value="">Todos los estados</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="Expirado">Expirado</option>
+            </select>
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Tipo</th>
+                <th>Valor</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaDescuentosBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay cupones ni descuentos registrados en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 7: RESEÑAS (NUEVO Y HABILITADO)                 -->
+      <!-- ******************************************************** -->
+      <section id="seccion-resenas" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Reseñas y Calificaciones de Clientes</h2>
+            <p>Supervisa las calificaciones y opiniones dejadas por los usuarios en la tienda.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('resenas')">+ Moderar Reseñas</button>
+        </div>
+
+        <!-- 3 Tarjetas de Reseñas en 0 -->
+        <div class="fila-tarjetas">
+          <div class="tarjeta-resumen">
+            <span>Total de Reseñas</span>
+            <h2 id="resTotal">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Calificación Promedio</span>
+            <h2 id="resPromedio">0.0 ★</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Pendientes por Moderar</span>
+            <h2 id="resPendientes">0</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar reseña por cliente o producto..." oninput="filtrarTabla('tablaResenasBody', this.value)">
+            <select class="select-filtro" onchange="filtrarEstadoTabla('tablaResenasBody', this.value, 3)">
+              <option value="">Todas las estrellas</option>
+              <option value="5 estrellas">5 Estrellas</option>
+              <option value="4 estrellas">4 Estrellas</option>
+              <option value="3 estrellas">3 Estrellas</option>
+            </select>
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Producto / Servicio</th>
+                <th>Estrellas</th>
+                <th>Comentario</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaResenasBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay reseñas registradas en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ******************************************************** -->
+      <!-- PANTALLA 8: CLIENTES (NUEVO Y HABILITADO)                -->
+      <!-- ******************************************************** -->
+      <section id="seccion-clientes" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Directorio de Clientes</h2>
+            <p>Administra los datos de contacto, historial y compras de los clientes registrados.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('clientes')">+ Nuevo Cliente</button>
+        </div>
+
+        <!-- 3 Tarjetas de Clientes en 0 -->
+        <div class="fila-tarjetas">
+          <div class="tarjeta-resumen">
+            <span>Total de Clientes</span>
+            <h2 id="cliTotal">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Clientes Activos</span>
+            <h2 id="cliActivos">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Nuevos este mes</span>
+            <h2 id="cliNuevos">0</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por nombre, teléfono o correo..." oninput="filtrarTabla('tablaClientesBody', this.value)">
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Teléfono</th>
+                <th>Correo Electrónico</th>
+                <th>Ciudad</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaClientesBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay clientes registrados en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
+
+
+      <!-- ======================================================== -->
+      <!-- 3. PIE DE PAGINA (FOOTER EXACTO A LA IMAGEN)             -->
+      <!-- ======================================================== -->
+      <footer class="pie-pagina">
+        
+        <div class="columnas-pie">
+          
+          <!-- Columna 1 -->
+          <div class="columna">
+            <h4>INFORMACIÓN</h4>
+            <a href="#">Acerca de nosotros</a>
+            <a href="#">Política de Privacidad</a>
+            <a href="#">Buscar</a>
+            <a href="#">Términos y Condiciones</a>
+            <a href="#">Pedidos y devoluciones</a>
+            <a href="#">Contáctanos</a>
+          </div>
+
+          <!-- Columna 2 -->
+          <div class="columna">
+            <h4>COMPONENTES DE PC</h4>
+            <a href="#">CPUs</a>
+            <a href="#">Discos Duros</a>
+            <a href="#">Tarjetas Gráficas</a>
+            <a href="#">Teclados / Mouse</a>
+            <a href="#">Gabinetes / Fuentes de Poder / Refrigeración</a>
+            <a href="#">RAM (Memoria)</a>
+            <a href="#">Software</a>
+            <a href="#">Altavoces / Audifonos</a>
+            <a href="#">Motherboards</a>
+          </div>
+
+          <!-- Columna 3 -->
+          <div class="columna">
+            <h4>COMPUTADORES DE ESCRITORIO</h4>
+            <a href="#">PC personalizados</a>
+            <a href="#">Servidores</a>
+            <a href="#">PCs todo en uno</a>
+            <a href="#">HP/Compaq PCs</a>
+            <a href="#">ASUS PCs</a>
+            <a href="#">Tecs PCs</a>
+          </div>
+
+          <!-- Columna 4 -->
+          <div class="columna">
+            <h4>PORTÁTILES</h4>
+            <a href="#">Portátiles para todos los días</a>
+            <a href="#">Portátiles gaming</a>
+          </div>
+
+          <!-- Columna 5 -->
+          <div class="columna direccion">
+            <h4>DIRECCIÓN</h4>
+            <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
+            <p>Teléfonos: <span class="texto-oro">(00) 1234 5678</span></p>
+            <p>Correo electrónico: <span class="texto-oro">wiiugames2026@gmail.com</span></p>
+            <p>Lunes - Sábado: 8:00 a.m. - 12:30 p.m. | 2:00 - 7:00 p.m.</p>
+          </div>
+
+        </div>
+
+        <!-- Barra inferior del Footer -->
+        <div class="barra-derechos">
+          <div class="redes">
+            <a href="https://facebook.com" target="_blank" class="icono-social" title="Facebook">
+              <i class="fi fi-brands-facebook"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="icono-social" title="Instagram">
+              <i class="fi fi-brands-instagram"></i>
+            </a>
+          </div>
+
+          <div class="pagos">
+            <span class="badge-pago">PayPal</span>
+            <span class="badge-pago">Visa</span>
+            <span class="badge-pago">MasterCard</span>
+          </div>
+
+          <p class="copyright-texto">Copyright © 2026 WiiU-Games. Todos los derechos reservados.</p>
+        </div>
+
+      </footer>
+
+    </main>
+
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- MODAL DINÁMICO PARA AGREGAR DATOS (FUNCIONALIDAD)       -->
+  <!-- ======================================================== -->
+  <div class="fondo-modal" id="modalFormulario">
+    <div class="caja-modal">
+      <div class="cabecera-modal">
+        <h3 id="modalTitulo">Registrar Nuevo</h3>
+        <button class="btn-cerrar-modal" onclick="cerrarModal()">&times;</button>
+      </div>
+
+      <form id="formularioDinamico" onsubmit="guardarDatos(event)">
+        <div class="cuerpo-modal" id="modalCampos">
+          <!-- Los campos se generan dinámicamente según el botón presionado -->
+        </div>
+
+        <div class="pie-modal">
+          <button type="button" class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+          <button type="submit" class="boton-amarillo">Guardar en Base de Datos</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- SCRIPTS FUNCIONALES -->
+  <script src="script.js"></script>
+  <!-- Script oficial de Accesibilidad de la tienda (Genera el menú y botón de la imagen) -->
+  <script src="../../Scripts/accessibility.js" defer></script>
+
+</body>
+</html>
