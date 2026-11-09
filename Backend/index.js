@@ -6,7 +6,7 @@ const pool = require("./db.js");
 
 const app = express();
 // Permitir CORS solo desde el origen del cliente (localhost)
-app.use(cors({ origin: 'http://localhost', credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const SESSION_TTL = 8 * 60 * 60 * 1000;
@@ -204,7 +204,7 @@ app.delete("/api/session", requireUserSession, (req, res) => {
   return res.json({ ok: true });
 });
 
-app.get("/api/dashboard/admin", async (req, res) => {
+app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
   try {
     const [productsCountRows] = await pool.query(
       "SELECT COUNT(*) AS total FROM producto WHERE estado = 'ACTIVO'",
@@ -417,7 +417,7 @@ app.get("/api/dashboard/admin", async (req, res) => {
 
 function obtenerRutasPorRol(rol) {
   const rutas = {
-    Administrador: "Administrador/index_admin.html",
+    Administrador: "Administrador/index.html",
     Cliente: "panel_usuario.html",
     Trabajador: "Empleado/index.html",
     Proveedor: "panel_usuario.html",
@@ -551,7 +551,7 @@ app.get("/api/marcas", async (req, res) => {
 // ---------- PRODUCTOS ----------
 
 // Crear producto
-app.post("/api/admin/productos", async (req, res) => {
+app.post("/api/admin/productos", requireAdmin, async (req, res) => {
   try {
     const { name, category, publisher, price, stock, imageUrl, description } = req.body;
 
@@ -634,7 +634,7 @@ app.post("/api/admin/productos", async (req, res) => {
 });
 
 // Actualizar producto
-app.put("/api/admin/productos/:id", async (req, res) => {
+app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const { name, category, price, stock, imageUrl, description } = req.body;
@@ -707,7 +707,7 @@ app.put("/api/admin/productos/:id", async (req, res) => {
 });
 
 // Eliminar producto (soft delete)
-app.delete("/api/admin/productos/:id", async (req, res) => {
+app.delete("/api/admin/productos/:id", requireAdmin, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     await pool.query(
@@ -779,7 +779,7 @@ app.post("/api/usuarios", async (req, res) => {
   }
 });
 
-app.post("/api/admin/clientes", async (req, res) => {
+app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
   try {
     const { name, phone, email } = req.body;
     const fullName = String(name || "").trim();
@@ -1119,6 +1119,39 @@ app.post("/api/admin/descuentos", async (req, res) => {
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
   }
 });
+
+// Helper to get user role
+function obtenerRol(userId) {
+  return pool.query(
+    `SELECT r.nombre_rol FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'`,
+    [userId]
+  );
+}
+
+// Middleware to ensure the user is an administrator
+async function requireAdmin(req, res, next) {
+  // First ensure the session is valid
+  const token = req.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const session = token ? sessions.get(token) : null;
+  if (!session) {
+    return res.status(401).json({ ok: false, message: "Sesión no válida o vencida." });
+  }
+  try {
+    const [rows] = await obtenerRol(session.userId);
+    const rol = rows[0]?.nombre_rol;
+    if (rol !== "Administrador") {
+      return res.status(403).json({ ok: false, message: "Acceso denegado: se requiere rol de Administrador." });
+    }
+    // Attach user info to request for downstream handlers
+    req.userId = session.userId;
+    req.sessionToken = token;
+    req.userRol = rol;
+    return next();
+  } catch (err) {
+    console.error("Error verificando rol de administrador:", err.message);
+    return res.status(500).json({ ok: false, message: "Error interno al verificar permisos." });
+  }
+}
 
 // Iniciar el servidor después de registrar todas las rutas.
 app.listen(PORT, () => {

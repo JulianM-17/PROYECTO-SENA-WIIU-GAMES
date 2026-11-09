@@ -300,6 +300,7 @@ INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 ('Proveedor', 'Empresa o persona que surte productos', 'ACTIVO'),
 ('Trabajador', 'Empleado de sucursal: ventas y servicios tecnicos', 'ACTIVO');
 
+
 -- ---------------- usuario ----------------
 INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento, telefono, telefono_secundario, departamento, ciudad, direccion, correo, contrasena_hash, estado) VALUES
 (1, 'Carlos', 'Ramirez', 'CC', '1012345678', '1995-03-14', '3101234567', NULL, 'Cundinamarca', 'Bogota', 'Cra 15 # 80-20', 'cliente@gmail.com', 'Cliente123', 'ACTIVO'),
