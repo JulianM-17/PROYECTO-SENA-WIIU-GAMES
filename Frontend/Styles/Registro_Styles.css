@@ -884,7 +884,7 @@ body.a11y-mode-dark-mode .entrada-seleccion:focus {
   box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.2) !important;
 }
 
-/* Campos Validados Correctos en Modo Oscuro (Verde Luminoso) */
+/* Campos Validados Correctos en Modo Oscuro (Verde Luminoso y Encendido) */
 body.a11y-mode-dark-mode .input-valido,
 body.a11y-mode-dark-mode input.input-valido,
 body.a11y-mode-dark-mode select.input-valido,
@@ -893,16 +893,16 @@ body.a11y-mode-dark-mode .entrada-texto.input-valido,
 body.a11y-mode-dark-mode .entrada-seleccion.input-valido,
 body.a11y-mode-dark-mode .columna-derecha .input-valido,
 body.a11y-mode-dark-mode .columna-izquierda .input-valido {
-  border: 1.5px solid #10b981 !important;
-  border-color: #10b981 !important;
-  background-color: rgba(16, 185, 129, 0.12) !important;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25) !important;
+  border: 2px solid #00e676 !important;
+  border-color: #00e676 !important;
+  background-color: rgba(0, 230, 118, 0.12) !important;
+  box-shadow: 0 0 0 3.5px rgba(0, 230, 118, 0.35), 0 0 12px rgba(0, 230, 118, 0.25) !important;
 }
 
 body.a11y-mode-dark-mode .entrada-texto.input-valido:focus,
 body.a11y-mode-dark-mode .entrada-seleccion.input-valido:focus {
-  border-color: #10b981 !important;
-  box-shadow: 0 0 0 3.5px rgba(16, 185, 129, 0.35) !important;
+  border-color: #00e676 !important;
+  box-shadow: 0 0 0 4px rgba(0, 230, 118, 0.45), 0 0 16px rgba(0, 230, 118, 0.35) !important;
 }
 
 body.a11y-mode-dark-mode .texto-ayuda {

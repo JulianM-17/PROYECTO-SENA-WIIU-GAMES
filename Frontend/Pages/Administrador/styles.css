@@ -1,9 +1,6 @@
-/* ==========================================================================
-   ESTILOS DEL PANEL DE ADMINISTRADOR - WIIU-GAMES
-   Diseñado para ser limpio, fácil de entender y con soporte de Flaticon
-   ========================================================================== */
 
-/* 1. RESET Y CONFIGURACIÓN GENERAL */
+
+
 * {
   margin: 0;
   padding: 0;
@@ -12,20 +9,18 @@
 }
 
 body {
-  background-color: #060b18; /* Fondo azul noche oscuro */
+  background-color: #060b18; 
   color: #ffffff;
   min-height: 100vh;
 }
 
-/* 2. ESTRUCTURA: Barra lateral fija a la izquierda y Contenido a la derecha */
+
 .panel-contenedor {
   display: flex;
   min-height: 100vh;
 }
 
-/* ==========================================================================
-   MENU LATERAL (IZQUIERDA)
-   ========================================================================== */
+
 .menu-lateral {
   width: 235px;
   background-color: #050814;
@@ -39,7 +34,7 @@ body {
   flex-shrink: 0;
 }
 
-/* Logo */
+
 .logo {
   text-align: center;
   margin-bottom: 24px;
@@ -50,7 +45,7 @@ body {
   height: auto;
 }
 
-/* Botones de navegación */
+
 .navegacion {
   display: flex;
   flex-direction: column;
@@ -85,7 +80,7 @@ body {
   color: #ffffff;
 }
 
-/* Estado activo del botón (píldora amarilla con texto negro) */
+
 .boton-menu.activo {
   background-color: #f5a623;
   color: #000000;
@@ -96,7 +91,7 @@ body {
   color: #000000;
 }
 
-/* Perfil de Usuario abajo a la izquierda */
+
 .perfil-usuario {
   display: flex;
   align-items: center;
@@ -140,7 +135,7 @@ body {
   color: #8a9bb5;
 }
 
-/* Menú desplegable del perfil */
+
 .menu-desplegable-perfil {
   position: absolute;
   bottom: 60px;
@@ -187,16 +182,14 @@ body {
   margin: 4px 0;
 }
 
-/* ==========================================================================
-   CONTENIDO PRINCIPAL (DERECHA)
-   ========================================================================== */
+
 .contenido {
   flex: 1;
   padding: 30px 40px;
   overflow-y: auto;
 }
 
-/* BARRA SUPERIOR (HEADER) */
+
 .barra-superior {
   display: flex;
   justify-content: space-between;
@@ -223,7 +216,7 @@ body {
   gap: 12px;
 }
 
-/* Buscador */
+
 .caja-buscar {
   display: flex;
   align-items: center;
@@ -253,7 +246,7 @@ body {
   color: #52637a;
 }
 
-/* Selector de Días */
+
 .boton-dias {
   display: flex;
   align-items: center;
@@ -267,7 +260,7 @@ body {
   cursor: pointer;
 }
 
-/* Campana */
+
 .campana-alerta {
   position: relative;
   width: 36px;
@@ -296,9 +289,7 @@ body {
   border-radius: 50%;
 }
 
-/* ==========================================================================
-   CONTROL DE PESTAÑAS (MOSTRAR / OCULTAR SECCIONES)
-   ========================================================================== */
+
 .seccion {
   display: none;
 }
@@ -307,9 +298,7 @@ body {
   display: block;
 }
 
-/* ==========================================================================
-   TARJETAS DE RESUMEN (FILAS DE 3)
-   ========================================================================== */
+
 .fila-tarjetas {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -368,9 +357,7 @@ body {
   font-size: 11px;
 }
 
-/* ==========================================================================
-   FILA DE DOS COLUMNAS (PANEL GRANDE Y PANEL MEDIANO)
-   ========================================================================== */
+
 .fila-doble {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -428,9 +415,7 @@ body {
   text-decoration: underline;
 }
 
-/* ==========================================================================
-   GRÁFICO BÁSICO DE VENTAS
-   ========================================================================== */
+
 .grafico-simple {
   display: flex;
   height: 180px;
@@ -502,9 +487,7 @@ body {
   color: #52637a;
 }
 
-/* ==========================================================================
-   PRODUCTOS MÁS VENDIDOS
-   ========================================================================== */
+
 .lista-productos-top {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -588,9 +571,7 @@ body {
   text-decoration: underline;
 }
 
-/* ==========================================================================
-   TABLAS Y ESTADOS VACÍOS
-   ========================================================================== */
+
 .tabla-panel {
   width: 100%;
   border-collapse: collapse;
@@ -630,7 +611,7 @@ body {
   text-decoration: underline;
 }
 
-/* Etiquetas de estado */
+
 .etiqueta-verde {
   background-color: rgba(16, 185, 129, 0.15);
   color: #10b981;
@@ -658,7 +639,7 @@ body {
   font-weight: 600;
 }
 
-/* Botones de acción en tabla */
+
 .boton-icono {
   background: transparent;
   border: none;
@@ -678,9 +659,7 @@ body {
   color: #ef4444;
 }
 
-/* ==========================================================================
-   RESUMEN FINANCIERO
-   ========================================================================== */
+
 .fila-financiera {
   display: flex;
   align-items: center;
@@ -733,9 +712,7 @@ body {
   font-weight: 700;
 }
 
-/* ==========================================================================
-   CABECERA DE MÓDULOS Y BOTÓN AMARILLO
-   ========================================================================== */
+
 .cabecera-modulo {
   display: flex;
   justify-content: space-between;
@@ -770,7 +747,7 @@ body {
   background-color: #d9911a;
 }
 
-/* Filtros en tablas */
+
 .barra-filtros {
   display: flex;
   gap: 12px;
@@ -800,9 +777,7 @@ body {
   cursor: pointer;
 }
 
-/* ==========================================================================
-   PIE DE PAGINA (FOOTER EXACTO A LA IMAGEN 1)
-   ========================================================================== */
+
 .pie-pagina {
   margin-top: 60px;
   border-top: 1px solid #16223d;
@@ -850,7 +825,7 @@ body {
   font-weight: 600;
 }
 
-/* Barra inferior del Footer */
+
 .barra-derechos {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 20px;
@@ -906,9 +881,7 @@ body {
   color: #8a9bb5;
 }
 
-/* ==========================================================================
-   VENTANA MODAL DINÁMICA
-   ========================================================================== */
+
 .fondo-modal {
   position: fixed;
   top: 0;
@@ -1016,9 +989,7 @@ body {
   color: #ffffff;
 }
 
-/* ==========================================================================
-   RESPONSIVE (ADAPTABILIDAD)
-   ========================================================================== */
+
 @media (max-width: 1024px) {
   .fila-doble {
     grid-template-columns: 1fr;
