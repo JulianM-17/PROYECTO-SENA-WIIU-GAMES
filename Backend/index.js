@@ -5,7 +5,8 @@ const crypto = require("crypto");
 const pool = require("./db.js");
 
 const app = express();
-app.use(cors());
+// Permitir CORS solo desde el origen del cliente (localhost)
+app.use(cors({ origin: 'http://localhost', credentials: true }));
 app.use(express.json());
 const PORT = process.env.PORT || 3000;
 const SESSION_TTL = 8 * 60 * 60 * 1000;
@@ -636,24 +637,58 @@ app.post("/api/admin/productos", async (req, res) => {
 app.put("/api/admin/productos/:id", async (req, res) => {
   try {
     const productId = Number(req.params.id);
-    const { name, price, stock, imageUrl, description } = req.body;
+    const { name, category, price, stock, imageUrl, description } = req.body;
 
     if (!name || String(name).trim().length < 3) {
       return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
     }
 
-    await pool.query(
-      `UPDATE producto
-       SET nombre = ?, precio = ?, imagen_prin = ?, descripcion = ?
-       WHERE id_producto = ? AND estado = 'ACTIVO'`,
-      [
-        String(name).trim().substring(0, 100),
-        Number(price) || 0,
-        String(imageUrl || "").trim().substring(0, 255),
-        String(description || "").trim().substring(0, 100),
-        productId,
-      ],
-    );
+    let catId = null;
+    if (category && String(category).trim().length > 0) {
+      const categoryName = String(category).trim();
+      const [catRows] = await pool.query(
+        "SELECT id_categoria FROM categoria WHERE nombre_cat = ? AND estado = 'ACTIVO'",
+        [categoryName],
+      );
+      if (catRows.length > 0) {
+        catId = catRows[0].id_categoria;
+      } else {
+        const [insertCat] = await pool.query(
+          "INSERT INTO categoria (nombre_cat, descripcion_cat, estado) VALUES (?, ?, 'ACTIVO')",
+          [categoryName.substring(0, 40), `Categoría ${categoryName}`],
+        );
+        catId = insertCat.insertId;
+      }
+    }
+
+    if (catId) {
+      await pool.query(
+        `UPDATE producto
+         SET nombre = ?, id_categoria = ?, precio = ?, imagen_prin = ?, descripcion = ?
+         WHERE id_producto = ? AND estado = 'ACTIVO'`,
+        [
+          String(name).trim().substring(0, 100),
+          catId,
+          Number(price) || 0,
+          String(imageUrl || "").trim().substring(0, 255),
+          String(description || "").trim().substring(0, 100),
+          productId,
+        ],
+      );
+    } else {
+      await pool.query(
+        `UPDATE producto
+         SET nombre = ?, precio = ?, imagen_prin = ?, descripcion = ?
+         WHERE id_producto = ? AND estado = 'ACTIVO'`,
+        [
+          String(name).trim().substring(0, 100),
+          Number(price) || 0,
+          String(imageUrl || "").trim().substring(0, 255),
+          String(description || "").trim().substring(0, 100),
+          productId,
+        ],
+      );
+    }
 
     // Actualizar stock en inventario
     const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
@@ -691,6 +726,58 @@ app.delete("/api/admin/productos/:id", async (req, res) => {
 });
 
 // ---------- CLIENTES ----------
+
+// Registro de usuarios (público)
+app.post("/api/usuarios", async (req, res) => {
+  try {
+    const {
+      nombre,
+      apellido,
+      email,
+      password,
+      telefono,
+      telefono_secundario,
+      direccion,
+      departamento,
+      ciudad,
+      nacimiento,
+    } = req.body;
+    if (!nombre || !apellido || !email || !password) {
+      return res.status(400).json({ ok: false, message: "Datos obligatorios faltantes." });
+    }
+    // Validar email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ ok: false, message: "Formato de correo inválido." });
+    }
+    // Generar documento (ID) único
+    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
+    const passwordHash = await bcrypt.hash(password, 12);
+    const [result] = await pool.query(
+      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario, departamento, ciudad, direccion, fecha_nacimiento, correo, contrasena_hash, estado)
+       VALUES (1, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        nombre.trim().substring(0, 30),
+        apellido.trim().substring(0, 30),
+        numDoc,
+        telefono?.trim().substring(0, 20) || null,
+        telefono_secundario?.trim().substring(0, 20) || null,
+        departamento?.trim() || null,
+        ciudad?.trim() || null,
+        direccion?.trim().substring(0, 255) || null,
+        nacimiento || null,
+        email.trim().toLowerCase().substring(0, 120),
+        passwordHash,
+      ],
+    );
+    return res.status(201).json({ ok: true, message: "Usuario registrado exitosamente.", userId: result.insertId });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ ok: false, message: "El correo ya está registrado." });
+    }
+    console.error("Error al registrar usuario:", error.message);
+    return res.status(500).json({ ok: false, message: "Error interno al registrar usuario." });
+  }
+});
 
 app.post("/api/admin/clientes", async (req, res) => {
   try {

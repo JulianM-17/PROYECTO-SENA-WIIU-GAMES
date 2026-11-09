@@ -644,9 +644,23 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
+        // Enviar datos al backend para crear el usuario
+        const response = await fetch('http://localhost:3000/api/usuarios', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(nuevoUsuario),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          mostrarToast(result.message || 'Error al registrar usuario.', 'error');
+          return;
+        }
+        // Guardar usuario en localStorage para sesión actual
         localStorage.setItem('wiiu_user', JSON.stringify(nuevoUsuario));
+        // Mantener lista de usuarios registrados en localStorage
         const usuariosGuardados = JSON.parse(localStorage.getItem('wiiu_registered_users') || '[]');
-        // Verificar si ya existe ese correo para actualizarlo o agregarlo
         const indexExistente = usuariosGuardados.findIndex(u => u.email === nuevoUsuario.email);
         if (indexExistente >= 0) {
           usuariosGuardados[indexExistente] = nuevoUsuario;
@@ -654,8 +668,10 @@ document.addEventListener('DOMContentLoaded', () => {
           usuariosGuardados.push(nuevoUsuario);
         }
         localStorage.setItem('wiiu_registered_users', JSON.stringify(usuariosGuardados));
+        mostrarToast('Registro exitoso. Ahora puedes iniciar sesión.', 'exito');
       } catch (err) {
-        console.warn('Error guardando en localStorage:', err);
+        console.error('Error al registrar usuario:', err);
+        mostrarToast('Error de red al registrar usuario.', 'error');
       }
 
       mostrarToast('¡Cuenta creada exitosamente! Redirigiendo a Iniciar Sesión...', 'exito');
