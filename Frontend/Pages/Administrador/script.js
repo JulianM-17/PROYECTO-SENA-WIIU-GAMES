@@ -1,28 +1,25 @@
-/* ==========================================================================
-   LÓGICA JAVASCRIPT DEL PANEL DE ADMINISTRADOR - WIIU-GAMES
-   Código limpio, funcional y fácil de entender para estudiantes
-   ========================================================================== */
 
-// Variable para saber qué formulario modal está abierto
+
+
 var tipoModalActual = "";
 
-// ==========================================================================
-// 1. CAMBIAR ENTRE PESTAÑAS DEL MENÚ LATERAL
-// ==========================================================================
+
+
+
 function cambiarPestana(idSeccion, botonClickeado) {
-  // 1. Ocultar todas las secciones
+
   var secciones = document.querySelectorAll('.seccion');
   for (var i = 0; i < secciones.length; i++) {
     secciones[i].classList.remove('visible');
   }
 
-  // 2. Mostrar la sección seleccionada
+
   var seccionDestino = document.getElementById(idSeccion);
   if (seccionDestino) {
     seccionDestino.classList.add('visible');
   }
 
-  // 3. Resaltar en amarillo el botón activo en el menú lateral
+
   if (botonClickeado) {
     var botones = document.querySelectorAll('.boton-menu');
     for (var j = 0; j < botones.length; j++) {
@@ -31,19 +28,19 @@ function cambiarPestana(idSeccion, botonClickeado) {
     botonClickeado.classList.add('activo');
   }
 
-  // 4. Subir la vista al inicio del contenido
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ==========================================================================
-// 2. BUSCADOR GLOBAL Y FILTROS EN TIEMPO REAL
-// ==========================================================================
+
+
+
 function filtrarGlobal(texto) {
   var filtro = texto.toLowerCase();
   var filas = document.querySelectorAll('.seccion.visible tbody tr');
   
   for (var i = 0; i < filas.length; i++) {
-    // Si es la fila de "No hay registros", la ignoramos
+
     if (filas[i].querySelector('.texto-vacio')) continue;
 
     var contenidoFila = filas[i].textContent.toLowerCase();
@@ -55,7 +52,7 @@ function filtrarGlobal(texto) {
   }
 }
 
-// Filtro específico para inputs de cada tabla
+
 function filtrarTabla(idTbody, texto) {
   var filtro = texto.toLowerCase();
   var tbody = document.getElementById(idTbody);
@@ -74,7 +71,7 @@ function filtrarTabla(idTbody, texto) {
   }
 }
 
-// Filtro para los selects desplegables de estados / categorías
+
 function filtrarEstadoTabla(idTbody, valor, indiceColumna) {
   var filtro = valor.toLowerCase();
   var tbody = document.getElementById(idTbody);
@@ -96,9 +93,9 @@ function filtrarEstadoTabla(idTbody, valor, indiceColumna) {
   }
 }
 
-// ==========================================================================
-// 3. MENÚ DE PERFIL Y NOTIFICACIONES
-// ==========================================================================
+
+
+
 function toggleMenuPerfil() {
   var menu = document.getElementById('menuPerfil');
   if (menu) {
@@ -106,7 +103,7 @@ function toggleMenuPerfil() {
   }
 }
 
-// Cerrar el menú desplegable si se hace clic fuera
+
 document.addEventListener('click', function (evento) {
   var perfil = document.querySelector('.perfil-usuario');
   var menu = document.getElementById('menuPerfil');
@@ -126,9 +123,9 @@ function filtrarPeriodo() {
   }
 }
 
-// ==========================================================================
-// 4. VENTANAS MODALES PARA REGISTRAR DATOS (SIMULACIÓN DE BD)
-// ==========================================================================
+
+
+
 function abrirModal(tipo) {
   tipoModalActual = tipo;
   var modal = document.getElementById('modalFormulario');
@@ -137,7 +134,7 @@ function abrirModal(tipo) {
 
   modal.classList.add('activo');
 
-  // Dependiendo del botón, mostramos campos adecuados
+
   if (tipo === 'garantias') {
     titulo.textContent = "Registrar Nueva Garantía";
     campos.innerHTML = `
@@ -305,9 +302,9 @@ function cerrarModal() {
   }
 }
 
-// ==========================================================================
-// 5. GUARDAR DATOS Y INSERTAR EN LAS TABLAS (PREPARADO PARA BD)
-// ==========================================================================
+
+
+
 function guardarDatos(evento) {
   evento.preventDefault();
 
@@ -352,7 +349,7 @@ function guardarDatos(evento) {
         <button class="boton-icono rojo" title="Eliminar" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button>
       </td>
     `);
-    // Actualizar contador de productos
+
     var totalActual = document.querySelectorAll('#tablaInventarioBody tr').length;
     document.getElementById('invTotalProductos').textContent = totalActual + " items";
   } else if (tipoModalActual === 'reparacion') {
@@ -418,12 +415,12 @@ function guardarDatos(evento) {
   alert("✅ ¡Registro agregado con éxito! (Listo para enviar al backend/base de datos).");
 }
 
-// Función auxiliar para insertar fila en un tbody
+
 function insertarFila(idTbody, contenidoHtml) {
   var tbody = document.getElementById(idTbody);
   if (!tbody) return;
 
-  // Si existe el mensaje de "No hay registros", lo eliminamos primero
+
   var vacio = tbody.querySelector('.texto-vacio');
   if (vacio) {
     tbody.innerHTML = "";
@@ -434,14 +431,14 @@ function insertarFila(idTbody, contenidoHtml) {
   tbody.appendChild(nuevaFila);
 }
 
-// Función para eliminar fila
+
 function eliminarFila(boton) {
   if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
     var fila = boton.closest('tr');
     var tbody = fila.parentElement;
     fila.remove();
 
-    // Si ya no quedan filas, volvemos a poner el aviso de vacío
+
     if (tbody.getElementsByTagName('tr').length === 0) {
       tbody.innerHTML = '<tr><td colspan="8" class="texto-vacio">No hay registros en la base de datos</td></tr>';
     }

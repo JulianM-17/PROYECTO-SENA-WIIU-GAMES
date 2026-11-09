@@ -1,358 +1,292 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Empleado - WiiU-Games</title>
+  <title>Módulo de Atención - Empleado | WiiU-Games</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="../../Styles/accessibility.css">
-</head>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
 
+  <link rel="stylesheet" href="../../Styles/accessibility.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
 <body>
 
-  <div class="diseno-app">
+  <div class="panel-empleado">
 
-    <aside class="barra-lateral" id="barra-lateral">
-      <div class="encabezado-marca">
-        <a href="../../Index.html" class="contenedor-logo-marca" title="Ir al Inicio de la tienda">
-          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games Logo" class="imagen-logo-marca">
+    <aside class="barra-lateral">
+
+      <div class="logo">
+        <a href="../../Index.html" title="Ir a la tienda">
+          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
         </a>
       </div>
 
-      <nav class="nav-barra-lateral">
-        <button class="elemento-nav activo" data-view="pos" id="nav-pos" onclick="window.switchView('pos')">
-          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <line x1="6" y1="12" x2="10" y2="12"></line>
-            <line x1="8" y1="10" x2="8" y2="14"></line>
-            <circle cx="15" cy="11" r="1.5" fill="currentColor"></circle>
-            <circle cx="18" cy="13" r="1.5" fill="currentColor"></circle>
-          </svg>
+      <nav class="navegacion">
+        <button class="boton-menu activo" onclick="cambiarPestana('vista-pos', this)">
+          <i class="fi fi-rr-calculator"></i>
           <span>Punto de Venta (POS)</span>
         </button>
 
-        <button class="elemento-nav" data-view="catalogo" id="nav-catalogo" onclick="window.switchView('catalogo')">
-          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="7" width="20" height="14" rx="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-          </svg>
+        <button class="boton-menu" onclick="cambiarPestana('vista-catalogo', this)">
+          <i class="fi fi-rr-box-alt"></i>
           <span>Consultar Catálogo</span>
         </button>
 
-        <button class="elemento-nav" data-view="garantias" id="nav-garantias" onclick="window.switchView('garantias')">
-          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-            <polyline points="9 12 11 14 15 10"></polyline>
-          </svg>
+        <button class="boton-menu" onclick="cambiarPestana('vista-garantias', this)">
+          <i class="fi fi-rr-shield-check"></i>
           <span>Registrar Garantía</span>
         </button>
 
-        <button class="elemento-nav" data-view="taller" id="nav-taller" onclick="window.switchView('taller')">
-          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path
-              d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
-            </path>
-          </svg>
+        <button class="boton-menu" onclick="cambiarPestana('vista-taller', this)">
+          <i class="fi fi-rr-wrench-simple"></i>
           <span>Recepción Taller</span>
         </button>
 
-        <button class="elemento-nav" data-view="clientes" id="nav-clientes" onclick="window.switchView('clientes')">
-          <svg class="icono-nav" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-            <circle cx="9" cy="7" r="4"></circle>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          </svg>
+        <button class="boton-menu" onclick="cambiarPestana('vista-clientes', this)">
+          <i class="fi fi-rr-users-alt"></i>
           <span>Directorio Clientes</span>
         </button>
       </nav>
 
-      <div class="pie-barra-lateral">
-        <div class="perfil-usuario" id="perfilUsuario">
-          <div class="avatar-usuario">
-            <img src="https://ui-avatars.com/api/?name=Carlos+M&background=FFB800&color=000000&bold=true"
-              alt="Carlos M.">
-          </div>
-          <div class="info-usuario">
-            <div class="nombre-usuario">Carlos M.</div>
-            <div class="rol-usuario">Asesor de Ventas</div>
-          </div>
-          <button class="btn-accion-usuario" id="btnMenuUsuario" type="button" aria-expanded="false" aria-haspopup="true" title="Opciones de perfil">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
+      <div class="perfil-empleado" onclick="toggleMenuPerfil()">
+        <div class="avatar-cm">CM</div>
+        <div class="info-empleado">
+          <p class="nombre">Carlos M.</p>
+          <p class="rol">Asesor de Ventas</p>
         </div>
+        <i class="fi fi-rr-angle-small-down flecha"></i>
 
-        <!-- MENÚ DESPLEGABLE DE PERFIL -->
-        <div class="menu-desplegable-usuario" id="menuUsuario">
-          <a href="../panel_usuario.html" class="opcion-menu-usuario">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>Mi Cuenta</span>
-          </a>
-          <a href="../../Index.html" class="opcion-menu-usuario">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Ir a la Tienda</span>
-          </a>
-          <div class="separador-menu-usuario"></div>
-          <button type="button" class="opcion-menu-usuario opcion-cerrar-sesion" id="btnCerrarSesion">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            <span>Cerrar sesión</span>
-          </button>
+        <div class="menu-desplegable-perfil" id="menuPerfil">
+          <a href="../panel_usuario.html"><i class="fi fi-rr-user"></i> Mi Perfil</a>
+          <a href="../../Index.html"><i class="fi fi-rr-shop"></i> Ir a la Tienda</a>
+          <div class="separador-menu"></div>
+          <a href="../../Pages/Login.html" class="enlace-rojo"><i class="fi fi-rr-sign-out-alt"></i> Cerrar Sesión</a>
         </div>
       </div>
+
     </aside>
 
-    <main class="main-content">
-      <header class="top-header">
-        <div class="header-greeting">
-          <h1 class="greeting-title">
-            <span>Módulo de Atención - Empleado</span>
-            <svg class="greeting-icon" viewBox="0 0 24 24" fill="none" stroke="#FFB800" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
+    <main class="contenido-empleado">
+
+      <header class="barra-superior">
+        <div class="saludo">
+          <h1>
+            Módulo de Atención – Empleado 
+            <i class="fi fi-rr-user icono-empleado"></i>
           </h1>
-          <p class="greeting-subtitle">Registra ventas en caja, atiende garantías y gestiona servicios de taller.</p>
+          <p>Registra ventas en caja, atiende garantías y gestiona servicios de taller.</p>
         </div>
 
-        <div class="header-controls">
+        <div class="estado-turno">
           <div class="insignia-turno">
-            <span class="shift-dot"></span> Turno Actual
+            <span class="punto-verde"></span>
+            <span>Turno Actual</span>
           </div>
 
-          <button class="notification-btn" title="Solicitudes de clientes"
-            onclick="window.showToast('No hay clientes en espera')">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <span class="insignia-notificacion">0</span>
-          </button>
+          <div class="campana-caja" title="Notificaciones" onclick="mostrarNotificaciones()">
+            <i class="fi fi-rr-bell"></i>
+            <span class="badge-notif">0</span>
+          </div>
         </div>
       </header>
 
-      <section class="seccion-vista vista-activa" id="view-pos">
-        <div class="pos-layout">
-          <div class="pos-products-area">
-            <div class="pos-search-bar">
-              <input type="text" id="posSearchInput" placeholder="Buscar por nombre de juego, consola o SKU..."
-                oninput="window.filterPosProducts(this.value)">
-              <select id="posCategoryFilter" class="custom-select"
-                onchange="window.filterPosProductsByCategory(this.value)">
-                <option value="todos">Todas las categorías</option>
-                <option value="Juegos Wii U">Juegos Wii U</option>
+      <section id="vista-pos" class="seccion-vista activa">
+        <div class="layout-pos">
+          
+          <div class="columna-pos-productos">
+            <div class="barra-buscar-pos">
+              <input type="text" id="buscadorPos" placeholder="Buscar por nombre de juego, consola o SKU..." oninput="filtrarProductosPos(this.value)">
+              <select id="filtroCategoriaPos" onchange="filtrarCategoriaPos(this.value)">
+                <option value="">Todas las categorías</option>
                 <option value="Consolas">Consolas</option>
+                <option value="Juegos">Juegos</option>
                 <option value="Accesorios">Accesorios</option>
-                <option value="Repuestos">Repuestos</option>
               </select>
             </div>
 
-            <div class="pos-products-grid" id="posProductsGrid"></div>
+            <div class="caja-vacia-pos" id="contenedorProductosPos">
+              <p>No hay productos disponibles en el inventario</p>
+            </div>
           </div>
 
-          <div class="pos-cart-panel">
-            <div class="cart-header">
-              <h3 class="cart-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
-                Orden de Venta en Caja
-              </h3>
-              <button class="cart-clear-btn" onclick="window.clearCart()">Vaciar</button>
+          <div class="tarjeta-orden-caja">
+            <div class="cabecera-orden">
+              <div class="titulo-orden">
+                <i class="fi fi-rr-shopping-cart"></i>
+                <strong>Orden de Venta en Caja</strong>
+              </div>
+              <button type="button" class="btn-vaciar" onclick="vaciarOrden()">Vaciar</button>
             </div>
 
-            <div class="cart-client-select">
-              <label for="posClientSelect">Cliente para Recibo:</label>
-              <select id="posClientSelect" class="custom-select">
-                <option value="Cliente Ocasional / Mostrador">Cliente Mostrador (Venta Rápida)</option>
+            <div class="cuerpo-orden">
+              <label class="etiqueta-cliente">Cliente para Recibo:</label>
+              <select class="select-cliente" id="posCliente">
+                <option>Cliente Mostrador (Venta Rápida)</option>
               </select>
-            </div>
 
-            <div class="cart-items-list" id="cartItemsList">
-              <div class="empty-cart-msg">Selecciona un producto del catálogo para agregar a la venta</div>
-            </div>
+              <div class="caja-aviso-seleccion" id="posItemsContainer">
+                Selecciona un producto del catálogo para agregar a la venta
+              </div>
 
-            <div class="cart-summary">
-              <div class="summary-row">
+              <div class="fila-calculo">
                 <span>Subtotal:</span>
-                <span id="cartSubtotal">$ 0</span>
-              </div>
-              <div class="summary-row">
-                <span>Descuento / Promo:</span>
-                <span id="cartDiscount">$ 0</span>
-              </div>
-              <div class="summary-row total-row">
-                <span>TOTAL A COBRAR:</span>
-                <span id="cartTotal" class="total-price">$ 0</span>
+                <span id="posSubtotal">$ 0</span>
               </div>
 
-              <div class="payment-method-group">
+              <div class="fila-calculo">
+                <span>Descuento / Promo:</span>
+                <span id="posDescuento">$ 0</span>
+              </div>
+
+              <div class="fila-total">
+                <strong>TOTAL A COBRAR:</strong>
+                <strong class="monto-total" id="posTotal">$ 0</strong>
+              </div>
+
+              <div class="metodo-pago">
                 <label>Método de Pago:</label>
-                <div class="payment-radios">
-                  <label class="pay-radio"><input type="radio" name="payMethod" value="Efectivo" checked>
-                    Efectivo</label>
-                  <label class="pay-radio"><input type="radio" name="payMethod" value="Nequi / Daviplata"> Nequi</label>
-                  <label class="pay-radio"><input type="radio" name="payMethod" value="Tarjeta Débito/Crédito">
-                    Tarjeta</label>
+                <div class="opciones-pago">
+                  <label><input type="radio" name="pago" value="Efectivo" checked> Efectivo</label>
+                  <label><input type="radio" name="pago" value="Nequi"> Nequi</label>
+                  <label><input type="radio" name="pago" value="Tarjeta"> Tarjeta</label>
                 </div>
               </div>
 
-              <button class="btn-primario-brillo btn-checkout" onclick="window.processCheckout()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-                <span>COMPLETAR VENTA Y RECIBO</span>
+              <button type="button" class="btn-completar-venta" onclick="completarVenta()">
+                ✔ COMPLETAR VENTA Y RECIBO
               </button>
             </div>
           </div>
+
         </div>
       </section>
 
-      <section class="seccion-vista" id="view-catalogo">
-        <div class="barra-encabezado-vista">
-          <div>
-            <h2 class="section-title">Catálogo y Stock en Tienda</h2>
-            <p class="section-subtitle">Verifica disponibilidad de productos, precios al público y referencias SKU en
-              vivo.</p>
-          </div>
+      <section id="vista-catalogo" class="seccion-vista">
+        <div class="cabecera-modulo">
+          <h2>Catálogo y Stock en Tienda</h2>
+          <p>Verifica disponibilidad de productos, precios al público y referencias SKU en vivo.</p>
         </div>
 
-        <div class="panel-card full-panel">
-          <div class="barra-herramientas-tabla">
-            <div class="search-mini">
-              <input type="text" placeholder="Buscar por juego, consola o SKU..." id="empSearchProductInput"
-                oninput="window.filterEmpProducts(this.value)">
-            </div>
+        <div class="caja-blanca">
+          <div class="buscador-modulo">
+            <input type="text" placeholder="Buscar por juego, consola o SKU..." oninput="filtrarTablaGenerica('tablaCatalogoBody', this.value)">
           </div>
 
-          <div class="tabla-responsiva">
-            <table class="tabla-pedidos">
-              <thead>
-                <tr>
-                  <th>Producto</th>
-                  <th>SKU</th>
-                  <th>Categoría</th>
-                  <th>Precio Venta</th>
-                  <th>Stock Disponible</th>
-                  <th>Estado Físico</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="empInventoryTableBody"></tbody>
-            </table>
-          </div>
+          <table class="tabla-empleado">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>SKU</th>
+                <th>Categoría</th>
+                <th>Precio Venta</th>
+                <th>Stock Disponible</th>
+                <th>Estado Físico</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaCatalogoBody">
+              <tr>
+                <td colspan="7" class="mensaje-vacio">No hay productos registrados en el catálogo</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section class="seccion-vista" id="view-garantias">
-        <div class="barra-encabezado-vista">
+      <section id="vista-garantias" class="seccion-vista">
+        <div class="cabecera-modulo-con-boton">
           <div>
-            <h2 class="section-title">Registro y Emisión de Garantías</h2>
-            <p class="section-subtitle">Genera comprobantes de garantía para clientes y consulta certificados
-              existentes.</p>
+            <h2>Registro y Emisión de Garantías</h2>
+            <p>Genera comprobantes de garantía para clientes y consulta certificados existentes.</p>
           </div>
-          <button class="btn-primario" onclick="window.openAddWarrantyModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>Registrar Nueva Garantía</span>
-          </button>
+          <button class="boton-amarillo" onclick="abrirModalEmpleado('garantia')">+ Registrar Nueva Garantía</button>
         </div>
 
-        <div class="panel-card full-panel">
-          <div class="tabla-responsiva">
-            <table class="tabla-pedidos">
-              <thead>
-                <tr>
-                  <th>ID Garantía</th>
-                  <th>Cliente</th>
-                  <th>Producto / Serial</th>
-                  <th>Fecha Compra</th>
-                  <th>Vencimiento</th>
-                  <th>Estado</th>
-                  <th>Comprobante</th>
-                </tr>
-              </thead>
-              <tbody id="empGarantiasTableBody"></tbody>
-            </table>
-          </div>
+        <div class="caja-blanca">
+          <table class="tabla-empleado">
+            <thead>
+              <tr>
+                <th>ID Garantía</th>
+                <th>Cliente</th>
+                <th>Producto / Serial</th>
+                <th>Fecha Compra</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Comprobante</th>
+              </tr>
+            </thead>
+            <tbody id="tablaGarantiasBody">
+              <tr>
+                <td colspan="7" class="mensaje-vacio">No hay garantías registradas</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section class="seccion-vista" id="view-taller">
-        <div class="barra-encabezado-vista">
+      <section id="vista-taller" class="seccion-vista">
+        <div class="cabecera-modulo-con-boton">
           <div>
-            <h2 class="section-title">Recepción de Equipos en Taller</h2>
-            <p class="section-subtitle">Recibe GamePads y consolas Wii U defectuosas e ingresa la orden para el técnico.
-            </p>
+            <h2>Recepción de Equipos en Taller</h2>
+            <p>Recibe GamePads y consolas Wii U defectuosas e ingresa la orden para el técnico.</p>
           </div>
-          <button class="btn-primario" onclick="window.openAddRepairModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>Ingresar Orden a Taller</span>
-          </button>
+          <button class="boton-amarillo" onclick="abrirModalEmpleado('taller')">+ Ingresar Orden a Taller</button>
         </div>
 
-        <div class="panel-card full-panel">
-          <div class="tabla-responsiva">
-            <table class="tabla-pedidos">
-              <thead>
-                <tr>
-                  <th>Orden Ticket</th>
-                  <th>Dispositivo / Consola</th>
-                  <th>Falla Reportada</th>
-                  <th>Cliente</th>
-                  <th>Presupuesto</th>
-                  <th>Estado Taller</th>
-                  <th>Acción</th>
-                </tr>
-              </thead>
-              <tbody id="empRepairsTableBody"></tbody>
-            </table>
-          </div>
+        <div class="caja-blanca">
+          <table class="tabla-empleado">
+            <thead>
+              <tr>
+                <th>Orden Ticket</th>
+                <th>Dispositivo / Consola</th>
+                <th>Falla Reportada</th>
+                <th>Cliente</th>
+                <th>Presupuesto</th>
+                <th>Estado Taller</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaTallerBody">
+              <tr>
+                <td colspan="7" class="mensaje-vacio">No hay órdenes de taller técnico registradas</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
-      <section class="seccion-vista" id="view-clientes">
-        <div class="barra-encabezado-vista">
+      <section id="vista-clientes" class="seccion-vista">
+        <div class="cabecera-modulo-con-boton">
           <div>
-            <h2 class="section-title">Directorio de Clientes de la Tienda</h2>
-            <p class="section-subtitle">Registra nuevos compradores para acumulación de puntos y beneficios.</p>
+            <h2>Directorio de Clientes de la Tienda</h2>
+            <p>Registra nuevos compradores para acumulación de puntos y beneficios.</p>
           </div>
-          <button class="btn-primario" onclick="window.openAddClientModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-svg-icon">
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>Registrar Nuevo Cliente</span>
-          </button>
+          <button class="boton-amarillo" onclick="abrirModalEmpleado('cliente')">+ Registrar Nuevo Cliente</button>
         </div>
 
-        <div class="panel-card full-panel">
-          <div class="tabla-responsiva">
-            <table class="tabla-pedidos">
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th>Teléfono Contacto</th>
-                  <th>Correo Electrónico</th>
-                  <th>Total Compras</th>
-                  <th>Nivel</th>
-                </tr>
-              </thead>
-              <tbody id="empClientsTableBody"></tbody>
-            </table>
-          </div>
+        <div class="caja-blanca">
+          <table class="tabla-empleado">
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Teléfono Contacto</th>
+                <th>Correo Electrónico</th>
+                <th>Total Compras</th>
+                <th>Nivel</th>
+              </tr>
+            </thead>
+            <tbody id="tablaClientesBody">
+              <tr>
+                <td colspan="5" class="mensaje-vacio">No hay clientes registrados</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </section>
 
@@ -360,121 +294,24 @@
 
   </div>
 
-  <div class="fondo-modal" id="modalAddWarranty">
-    <div class="ventana-modal">
-      <div class="encabezado-modal">
-        <h3 class="titulo-modal">Emitir Certificado de Garantía</h3>
-        <button class="btn-cerrar-modal" onclick="window.closeAddWarrantyModal()">&times;</button>
+  <div class="fondo-modal-empleado" id="modalEmpleado">
+    <div class="caja-modal-empleado">
+      <div class="cabecera-modal-empleado">
+        <h3 id="modalEmpleadoTitulo">Formulario</h3>
+        <button type="button" class="btn-cerrar-modal" onclick="cerrarModalEmpleado()">&times;</button>
       </div>
-      <form onsubmit="window.saveWarranty(event)">
-        <div class="individual-cuerpo-modal">
-          <div class="grupo-formulario">
-            <label for="warClient">Nombre del Cliente <span class="required">*</span></label>
-            <input type="text" id="warClient" required minlength="3" placeholder="Ej. Juan Camilo R.">
-          </div>
-          <div class="grupo-formulario">
-            <label for="warProduct">Producto y Serial <span class="required">*</span></label>
-            <input type="text" id="warProduct" required minlength="3"
-              placeholder="Ej. Wii U GamePad Black (SN: GP702911)">
-          </div>
-          <div class="fila-formulario-2">
-            <div class="grupo-formulario">
-              <label for="warBuyDate">Fecha de Compra <span class="required">*</span></label>
-              <input type="date" id="warBuyDate" required>
-            </div>
-            <div class="grupo-formulario">
-              <label for="warDuration">Periodo de Cobertura <span class="required">*</span></label>
-              <select id="warDuration" required>
-                <option value="1 Mes">1 Mes</option>
-                <option value="3 Meses">3 Meses</option>
-                <option value="6 Meses" selected>6 Meses</option>
-                <option value="1 Año">1 Año Completo</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div class="pie-modal">
-          <button type="button" class="btn-secundario" onclick="window.closeAddWarrantyModal()">Cancelar</button>
-          <button type="submit" class="btn-primario-brillo">Guardar Certificado</button>
+      <form id="formEmpleado" onsubmit="guardarRegistroEmpleado(event)">
+        <div class="cuerpo-modal-empleado" id="modalEmpleadoCampos"></div>
+        <div class="pie-modal-empleado">
+          <button type="button" class="btn-cancelar-modal" onclick="cerrarModalEmpleado()">Cancelar</button>
+          <button type="submit" class="boton-amarillo">Guardar</button>
         </div>
       </form>
     </div>
   </div>
-
-  <div class="fondo-modal" id="modalAddRepair">
-    <div class="ventana-modal">
-      <div class="encabezado-modal">
-        <h3 class="titulo-modal">Ingresar Orden de Reparación / Recepción Taller</h3>
-        <button class="btn-cerrar-modal" onclick="window.closeAddRepairModal()">&times;</button>
-      </div>
-      <form onsubmit="window.saveRepairOrder(event)">
-        <div class="individual-cuerpo-modal">
-          <div class="grupo-formulario">
-            <label for="repDevice">Dispositivo / Consola <span class="required">*</span></label>
-            <input type="text" id="repDevice" required minlength="3"
-              placeholder="Ej. Wii U GamePad / Consola Deluxe 32GB">
-          </div>
-          <div class="grupo-formulario">
-            <label for="repDefect">Falla Reportada por el Cliente <span class="required">*</span></label>
-            <input type="text" id="repDefect" required minlength="3"
-              placeholder="Ej. Pantalla táctil no responde / No enciende">
-          </div>
-          <div class="fila-formulario-2">
-            <div class="grupo-formulario">
-              <label for="repClient">Cliente Contacto</label>
-              <select id="repClient" class="custom-select">
-                <option value="">-- Seleccionar cliente contacto --</option>
-              </select>
-            </div>
-            <div class="grupo-formulario">
-              <label for="repPrice">Presupuesto Estimado ($ COP)</label>
-              <input type="number" id="repPrice" min="0" step="1000" placeholder="85000">
-            </div>
-          </div>
-        </div>
-        <div class="pie-modal">
-          <button type="button" class="btn-secundario" onclick="window.closeAddRepairModal()">Cancelar</button>
-          <button type="submit" class="btn-primario-brillo">Generar Orden Taller</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="fondo-modal" id="modalAddClient">
-    <div class="ventana-modal">
-      <div class="encabezado-modal">
-        <h3 class="titulo-modal">Registrar Nuevo Cliente</h3>
-        <button class="btn-cerrar-modal" onclick="window.closeAddClientModal()">&times;</button>
-      </div>
-      <form onsubmit="window.saveClient(event)">
-        <div class="individual-cuerpo-modal">
-          <div class="grupo-formulario">
-            <label for="cliName">Nombre Completo <span class="required">*</span></label>
-            <input type="text" id="cliName" required minlength="3" placeholder="Ej. Mario Alejandro Pérez">
-          </div>
-          <div class="fila-formulario-2">
-            <div class="grupo-formulario">
-              <label for="cliPhone">Teléfono Contacto <span class="required">*</span></label>
-              <input type="tel" id="cliPhone" required pattern="[0-9\+\-\s\(\)]{7,15}" placeholder="+57 300 123 4567">
-            </div>
-            <div class="grupo-formulario">
-              <label for="cliEmail">Correo Electrónico <span class="required">*</span></label>
-              <input type="email" id="cliEmail" required placeholder="cliente@gmail.com">
-            </div>
-          </div>
-        </div>
-        <div class="pie-modal">
-          <button type="button" class="btn-secundario" onclick="window.closeAddClientModal()">Cancelar</button>
-          <button type="submit" class="btn-primario-brillo">Guardar Cliente</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <div class="contenedor-notificacion" id="toastContainer"></div>
 
   <script src="script.js"></script>
   <script src="../../Scripts/accessibility.js" defer></script>
-</body>
 
+</body>
 </html>

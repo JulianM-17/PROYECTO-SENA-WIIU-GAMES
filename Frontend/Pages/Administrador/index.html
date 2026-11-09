@@ -5,40 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Panel de Administrador - WiiU-Games</title>
   
-  <!-- Fuente Google: Poppins / Plus Jakarta Sans -->
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
-  <!-- Iconos de Flaticon Uicons -->
+  
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
 
-  <!-- Estilos del Sistema de Accesibilidad -->
+  
   <link rel="stylesheet" href="../../Styles/accessibility.css">
 
-  <!-- Estilos propios del Panel -->
+  
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- CONTENEDOR PRINCIPAL DE TODA LA PÁGINA -->
+  
   <div class="panel-contenedor">
 
-    <!-- ======================================================== -->
-    <!-- 1. BARRA LATERAL (MENU IZQUIERDO)                        -->
-    <!-- ======================================================== -->
+    
+    
+    
     <aside class="menu-lateral">
       
-      <!-- Logotipo de WiiU-Games -->
+      
       <div class="logo">
         <a href="../../Index.html" title="Ir a la tienda">
           <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
         </a>
       </div>
 
-      <!-- Enlaces de Navegación del Panel -->
+      
       <nav class="navegacion">
         <button class="boton-menu activo" onclick="cambiarPestana('seccion-home', this)">
           <i class="fi fi-rr-home"></i>
@@ -81,7 +81,7 @@
         </button>
       </nav>
 
-      <!-- Perfil del Administrador (Abajo a la izquierda) -->
+      
       <div class="perfil-usuario" onclick="toggleMenuPerfil()">
         <div class="avatar">AT</div>
         <div class="datos-usuario">
@@ -90,7 +90,7 @@
         </div>
         <i class="fi fi-rr-angle-small-down flecha"></i>
 
-        <!-- Menú desplegable del perfil -->
+        
         <div class="menu-desplegable-perfil" id="menuPerfil">
           <a href="../panel_usuario.html"><i class="fi fi-rr-user"></i> Mi Perfil</a>
           <a href="../../Index.html"><i class="fi fi-rr-shop"></i> Ir a la Tienda</a>
@@ -102,12 +102,12 @@
     </aside>
 
 
-    <!-- ======================================================== -->
-    <!-- 2. CONTENIDO PRINCIPAL (DERECHA)                         -->
-    <!-- ======================================================== -->
+    
+    
+    
     <main class="contenido">
 
-      <!-- ENCABEZADO SUPERIOR -->
+      
       <header class="barra-superior">
         <div class="texto-bienvenida">
           <h1>¡Hola, Andres!</h1>
@@ -115,19 +115,19 @@
         </div>
 
         <div class="herramientas-superior">
-          <!-- Buscador en tiempo real -->
+          
           <div class="caja-buscar">
             <i class="fi fi-rr-search"></i>
             <input type="text" id="buscadorGlobal" placeholder="Buscar productos, pedidos, clientes..." oninput="filtrarGlobal(this.value)">
           </div>
 
-          <!-- Filtro de días -->
+          
           <button class="boton-dias" onclick="filtrarPeriodo()">
             <span>Últimos 7 días</span>
             <i class="fi fi-rr-angle-small-down"></i>
           </button>
 
-          <!-- Campana de Notificaciones -->
+          
           <button class="campana-alerta" title="Notificaciones" onclick="mostrarNotificaciones()">
             <i class="fi fi-rr-bell"></i>
             <span class="punto-amarillo"></span>
@@ -136,12 +136,12 @@
       </header>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 1: HOME (DATOS EN 0 / LISTO PARA BD)            -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-home" class="seccion visible">
 
-        <!-- 3 Tarjetas de Resumen en 0 -->
+        
         <div class="fila-tarjetas">
           
           <div class="tarjeta-resumen">
@@ -173,10 +173,10 @@
 
         </div>
 
-        <!-- Fila de Gráfico y Productos más vendidos -->
+        
         <div class="fila-doble">
 
-          <!-- Gráfico de Ventas -->
+          
           <div class="caja-panel">
             <div class="encabezado-caja">
               <h3>Ventas</h3>
@@ -214,7 +214,7 @@
             </div>
           </div>
 
-          <!-- Productos más vendidos (En blanco / listo para BD) -->
+          
           <div class="caja-panel">
             <div class="encabezado-caja">
               <h3>Productos más vendidos</h3>
@@ -256,10 +256,10 @@
 
         </div>
 
-        <!-- Fila de Pedidos recientes y Resumen financiero -->
+        
         <div class="fila-doble">
 
-          <!-- Pedidos recientes -->
+          
           <div class="caja-panel">
             <div class="encabezado-caja">
               <h3>Pedidos recientes</h3>
@@ -284,7 +284,7 @@
             </table>
           </div>
 
-          <!-- Resumen financiero (En 0) -->
+          
           <div class="caja-panel">
             <div class="encabezado-caja">
               <h3>Resumen financiero</h3>
@@ -335,9 +335,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 2: GARANTÍAS                                    -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-garantias" class="seccion">
         
         <div class="cabecera-modulo">
@@ -381,9 +381,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 3: MANTENIMIENTOS                               -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-mantenimientos" class="seccion">
         
         <div class="cabecera-modulo">
@@ -422,9 +422,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 4: INVENTARIO                                   -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-inventario" class="seccion">
         
         <div class="cabecera-modulo">
@@ -435,7 +435,7 @@
           <button class="boton-amarillo" onclick="abrirModal('inventario')">+ Agregar Producto</button>
         </div>
 
-        <!-- 3 Tarjetas de Stock en 0 -->
+        
         <div class="fila-tarjetas">
           <div class="tarjeta-resumen">
             <span>Total de Productos</span>
@@ -487,9 +487,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 5: REPARACIÓN                                   -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-reparacion" class="seccion">
         
         <div class="cabecera-modulo">
@@ -528,9 +528,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 6: DESCUENTOS (NUEVO Y HABILITADO)              -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-descuentos" class="seccion">
         
         <div class="cabecera-modulo">
@@ -541,7 +541,7 @@
           <button class="boton-amarillo" onclick="abrirModal('descuentos')">+ Crear Descuento</button>
         </div>
 
-        <!-- 3 Tarjetas de Resumen en 0 -->
+        
         <div class="fila-tarjetas">
           <div class="tarjeta-resumen">
             <span>Descuentos Activos</span>
@@ -591,9 +591,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 7: RESEÑAS (NUEVO Y HABILITADO)                 -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-resenas" class="seccion">
         
         <div class="cabecera-modulo">
@@ -604,7 +604,7 @@
           <button class="boton-amarillo" onclick="abrirModal('resenas')">+ Moderar Reseñas</button>
         </div>
 
-        <!-- 3 Tarjetas de Reseñas en 0 -->
+        
         <div class="fila-tarjetas">
           <div class="tarjeta-resumen">
             <span>Total de Reseñas</span>
@@ -654,9 +654,9 @@
       </section>
 
 
-      <!-- ******************************************************** -->
-      <!-- PANTALLA 8: CLIENTES (NUEVO Y HABILITADO)                -->
-      <!-- ******************************************************** -->
+      
+      
+      
       <section id="seccion-clientes" class="seccion">
         
         <div class="cabecera-modulo">
@@ -667,7 +667,7 @@
           <button class="boton-amarillo" onclick="abrirModal('clientes')">+ Nuevo Cliente</button>
         </div>
 
-        <!-- 3 Tarjetas de Clientes en 0 -->
+        
         <div class="fila-tarjetas">
           <div class="tarjeta-resumen">
             <span>Total de Clientes</span>
@@ -711,14 +711,14 @@
       </section>
 
 
-      <!-- ======================================================== -->
-      <!-- 3. PIE DE PAGINA (FOOTER EXACTO A LA IMAGEN)             -->
-      <!-- ======================================================== -->
+      
+      
+      
       <footer class="pie-pagina">
         
         <div class="columnas-pie">
           
-          <!-- Columna 1 -->
+          
           <div class="columna">
             <h4>INFORMACIÓN</h4>
             <a href="#">Acerca de nosotros</a>
@@ -729,7 +729,7 @@
             <a href="#">Contáctanos</a>
           </div>
 
-          <!-- Columna 2 -->
+          
           <div class="columna">
             <h4>COMPONENTES DE PC</h4>
             <a href="#">CPUs</a>
@@ -743,7 +743,7 @@
             <a href="#">Motherboards</a>
           </div>
 
-          <!-- Columna 3 -->
+          
           <div class="columna">
             <h4>COMPUTADORES DE ESCRITORIO</h4>
             <a href="#">PC personalizados</a>
@@ -754,14 +754,14 @@
             <a href="#">Tecs PCs</a>
           </div>
 
-          <!-- Columna 4 -->
+          
           <div class="columna">
             <h4>PORTÁTILES</h4>
             <a href="#">Portátiles para todos los días</a>
             <a href="#">Portátiles gaming</a>
           </div>
 
-          <!-- Columna 5 -->
+          
           <div class="columna direccion">
             <h4>DIRECCIÓN</h4>
             <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
@@ -772,7 +772,7 @@
 
         </div>
 
-        <!-- Barra inferior del Footer -->
+        
         <div class="barra-derechos">
           <div class="redes">
             <a href="https://facebook.com" target="_blank" class="icono-social" title="Facebook">
@@ -799,9 +799,9 @@
   </div>
 
 
-  <!-- ======================================================== -->
-  <!-- MODAL DINÁMICO PARA AGREGAR DATOS (FUNCIONALIDAD)       -->
-  <!-- ======================================================== -->
+  
+  
+  
   <div class="fondo-modal" id="modalFormulario">
     <div class="caja-modal">
       <div class="cabecera-modal">
@@ -811,7 +811,7 @@
 
       <form id="formularioDinamico" onsubmit="guardarDatos(event)">
         <div class="cuerpo-modal" id="modalCampos">
-          <!-- Los campos se generan dinámicamente según el botón presionado -->
+          
         </div>
 
         <div class="pie-modal">
@@ -823,9 +823,9 @@
   </div>
 
 
-  <!-- SCRIPTS FUNCIONALES -->
+  
   <script src="script.js"></script>
-  <!-- Script oficial de Accesibilidad de la tienda (Genera el menú y botón de la imagen) -->
+  
   <script src="../../Scripts/accessibility.js" defer></script>
 
 </body>
