@@ -396,6 +396,7 @@ main {
 .card-grande {
   grid-column: span 2;
   grid-row: span 2;
+  height: 100%
 }
 
 .categoria-card-img {
@@ -437,6 +438,13 @@ main {
   border-color: var(--yellow);
   box-shadow: 0 8px 40px rgba(245, 200, 66, 0.12);
   transform: translateY(-4px);
+}
+.categoria-card-overlay-otro {
+  position: absolute;
+  inset: 0;
+  background:rgba(0, 0, 0, 0.7);
+  transition: background 0.4s ease;
+  z-index: 1;
 }
 
 .categoria-card:hover .categoria-card-img {
@@ -683,9 +691,8 @@ main {
   margin-top: auto;
 }
 
-/* =====================================================
-   BANNERS DESTACADOS (Alternating Product Features)
-   ===================================================== */
+/*BANNERS DESTACADOS (Alternating Product Features)*/
+
 .banner-destacado {
   padding: 0;
   background: var(--dark-blue);
@@ -768,7 +775,7 @@ main {
   margin-top: 12px;
 }
 
-/* Banner invertido */
+
 .banner-invertido .banner-destacado-inner {
   direction: rtl;
 }
@@ -776,10 +783,6 @@ main {
   direction: ltr;
 }
 
-
-/* =====================================================
-   BANNER FULL-WIDTH (Monitores)
-   ===================================================== */
 .banner-fullwidth {
   position: relative;
   height: 500px;
@@ -824,9 +827,6 @@ main {
   max-width: 100%;
 }
 
-/* =====================================================
-   ¿POR QUÉ WIIU-GAMES? - Trust Section
-   ===================================================== */
 .seccion-porque {
   padding: 100px 0;
   background: linear-gradient(180deg, #000000 0%, #080f20 100%);
@@ -907,9 +907,6 @@ main {
   line-height: 1.65;
 }
 
-/* =====================================================
-   SCROLL ANIMATIONS
-   ===================================================== */
 [data-animate] {
   opacity: 0;
   transform: translateY(40px);
@@ -984,6 +981,7 @@ main {
 }
 
 @media (max-width: 768px) {
+  
   .hero-slider {
     height: 70vh;
     min-height: 450px;
@@ -1018,16 +1016,46 @@ main {
     background-attachment: scroll;
   }
 
-  .seccion-categorias-corsair,
   .seccion-productos-corsair,
   .seccion-servicios-corsair,
   .seccion-porque {
     padding: 50px 0;
   }
 
+  .categorias-grid {
+    display: flex !important;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    overflow-x: auto !important; /* Habilita el scroll horizontal */
+    gap: 15px; /* Espacio entre tarjetas */
+    padding-bottom: 20px; /* Espacio para que la sombra no se corte */
+    
+    /* Efecto imán al deslizar (opcional pero recomendado) */
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth;
+    
+    /* Ocultar la barra de scroll visualmente para un diseño más limpio */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .categorias-grid::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+
   .categoria-card {
-    min-width: 180px;
-    height: 230px;
+    /* En móviles, le damos un ancho fijo a las tarjetas */
+    width: 250px; 
+    min-width: 250px;
+    height: 280;
+    flex-shrink: 0; /* Evita que las tarjetas se aplasten */
+    scroll-snap-align: start; /* El "imán" se alinea al inicio de cada tarjeta */
+  }
+
+  /* Reiniciamos la tarjeta grande para que encaje bien en el carrusel móvil */
+  .card-grande {
+    grid-column: auto;
+    grid-row: auto;
+    height: 280px; /* Anula el 100% que le dimos antes para la versión de escritorio */
   }
 
   .enlace-producto {
