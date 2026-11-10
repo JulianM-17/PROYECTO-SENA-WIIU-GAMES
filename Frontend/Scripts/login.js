@@ -273,6 +273,9 @@ document.addEventListener("DOMContentLoaded", () => {
           return "Empleado/index.html";
         }
         if (r.includes("cliente")) {
+          if (returnTo && returnTo.includes("garantias")) {
+            return returnTo;
+          }
           return "panel_usuario.html";
         }
         if (r.includes("proveedor")) {

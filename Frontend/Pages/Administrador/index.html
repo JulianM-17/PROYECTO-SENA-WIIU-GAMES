@@ -35,6 +35,11 @@
           <span>Home</span>
         </button>
 
+        <button class="boton-menu" onclick="cambiarPestana('seccion-garantias', this)">
+          <i class="fi fi-rr-shield-check"></i>
+          <span>Garantías</span>
+        </button>
+
         <button class="boton-menu" onclick="cambiarPestana('seccion-mantenimientos', this)">
           <i class="fi fi-rr-wrench-simple"></i>
           <span>Mantenimientos</span>
@@ -299,6 +304,47 @@
 
       </section>
 
+<section id="seccion-garantias" class="seccion">
+        
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Gestión de Garantías</h2>
+            <p>Supervisa reclamaciones, estados de cobertura y términos de garantías para clientes.</p>
+          </div>
+          <button class="boton-amarillo" onclick="abrirModal('garantias')">+ Registrar Garantía</button>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input type="text" class="input-filtro" placeholder="Buscar por cliente, serial o producto..." oninput="filtrarTabla('tablaGarantiasBody', this.value)">
+            <select class="select-filtro" onchange="filtrarEstadoTabla('tablaGarantiasBody', this.value, 5)">
+              <option value="">Todos los estados</option>
+              <option value="Activa">Activa</option>
+              <option value="Vencida">Vencida</option>
+            </select>
+          </div>
+
+          <table class="tabla-panel">
+            <thead>
+              <tr>
+                <th>ID Garantía</th>
+                <th>Cliente</th>
+                <th>Producto / Serial</th>
+                <th>Fecha Compra</th>
+                <th>Vencimiento</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tablaGarantiasBody">
+              <tr>
+                <td colspan="7" class="texto-vacio">No hay garantías registradas en la base de datos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </section>
 
 <section id="seccion-mantenimientos" class="seccion">
         
@@ -382,13 +428,14 @@
                 <th>Categoría</th>
                 <th>Precio Venta</th>
                 <th>Stock</th>
+                <th>Garantía</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaInventarioBody">
               <tr>
-                <td colspan="7" class="texto-vacio">No hay productos registrados en el inventario</td>
+                <td colspan="8" class="texto-vacio">No hay productos registrados en el inventario</td>
               </tr>
             </tbody>
           </table>

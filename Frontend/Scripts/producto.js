@@ -107,6 +107,7 @@ function replaceFixedSections(product) {
   const fields = [
     ["Categoría", product.category],
     ["Estado", product.condition],
+    ["Garantía", product.warranty],
     ["Formato", product.platform],
     [
       "Disponibilidad",
