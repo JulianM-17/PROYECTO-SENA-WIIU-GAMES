@@ -137,7 +137,7 @@ function configurarFiltros() {
     renderizarProductos();
   });
 
-  botonAplicar?.addEventListener('click', renderizarProductos);
+  botonAplicar?.addEventListener('click', () => { console.log('Aplicar filtros clicked'); renderizarProductos(); });
 }
 
 function renderizarProductos() {
