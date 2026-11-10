@@ -124,13 +124,41 @@ function filtrarEstadoTabla(idTbody, valor, indiceColumna) {
 }
 
 // ==========================================================================
-// 3. MENÚ DE PERFIL Y NOTIFICACIONES
+// 3. MENÚ DE PERFIL, CERRAR SESIÓN Y NOTIFICACIONES
 // ==========================================================================
 function toggleMenuPerfil() {
   var menu = document.getElementById('menuPerfil');
   if (menu) {
     menu.classList.toggle('abierto');
   }
+}
+
+function cerrarSesion(evento) {
+  if (evento) evento.preventDefault();
+
+  if (!confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+    return;
+  }
+
+  mostrarToast('info', 'Cerrando sesión...');
+
+  // Notificar al backend para invalidar la sesión
+  if (sessionToken) {
+    fetch(API_BASE + '/api/session', {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + sessionToken }
+    }).catch(function() {});
+  }
+
+  // Limpiar tokens y datos guardados en el navegador
+  localStorage.removeItem('sessionToken');
+  sessionStorage.removeItem('sessionToken');
+  sessionStorage.removeItem('wiiu_usuario_activo');
+
+  // Redirigir al Login después de una breve pausa para feedback
+  setTimeout(function() {
+    window.location.href = '../Login.html';
+  }, 600);
 }
 
 document.addEventListener('click', function (evento) {

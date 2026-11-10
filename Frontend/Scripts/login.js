@@ -236,6 +236,9 @@ document.addEventListener("DOMContentLoaded", () => {
             localStorage.removeItem("wiiu_remember_email");
           }
 
+          localStorage.setItem("sessionToken", data.sessionToken);
+          sessionStorage.setItem("sessionToken", data.sessionToken);
+
           const sesionUsuario = {
             id: usuario.id,
             correo: usuario.email,
