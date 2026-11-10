@@ -1,7 +1,6 @@
 /**
  * =====================================================
  * INICIO DE SESIÓN (LOGIN) — WiiU Games
- * Lógica JavaScript Completa y Dinámica
  * =====================================================
  */
 

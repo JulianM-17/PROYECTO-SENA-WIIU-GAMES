@@ -86,10 +86,67 @@ function updateProductHeader(product) {
   setText(".info-producto h1", name);
   setText(".descripcion-corta", description);
 
+  // Formatear miga de pan con enlaces y estilo
+  const rutaEl = document.querySelector(".categoria-ruta");
+  if (rutaEl) {
+    rutaEl.innerHTML = `
+      <a href="../Index.html">Inicio</a>
+      <span class="miga-separador">›</span>
+      <a href="Catalog.html">${category}</a>
+      <span class="miga-separador">›</span>
+      <span class="miga-activa">${name}</span>
+    `;
+  }
+
+  // Mostrar precio formateado si existe el producto
+  let precioEl = document.querySelector(".precio-producto-hero");
+  if (!precioEl) {
+    const contenedorAcciones = document.querySelector(".sub-nav-acciones");
+    if (contenedorAcciones && product.price) {
+      precioEl = document.createElement("span");
+      precioEl.className = "precio-producto-hero";
+      precioEl.style.cssText = "font-weight: 800; font-size: 18px; color: var(--dark-blue); margin-right: 12px;";
+      contenedorAcciones.insertBefore(precioEl, contenedorAcciones.querySelector(".input-cantidad"));
+    }
+  }
+  if (precioEl && product.price) {
+    precioEl.textContent = `$ ${Number(product.price).toLocaleString("es-CO")}`;
+  }
+
   const image = document.querySelector(".imagen-hero");
-  if (image && product.imageUrl) {
-    image.src = product.imageUrl;
+  if (image) {
     image.alt = name;
+    image.onerror = function() {
+      // Si la imagen falla o no existe, asignar un fallback visual elegante
+      const cat = (product.category || "").toLowerCase();
+      if (cat.includes("consola")) {
+        image.src = "../Assets/Consolas_Juegos.png";
+      } else if (cat.includes("portatil")) {
+        image.src = "../Assets/Portatiles.png";
+      } else if (cat.includes("grafica")) {
+        image.src = "../Assets/Tarjetas_Graficas.png";
+      } else if (cat.includes("periferico") || name.toLowerCase().includes("mouse")) {
+        image.src = "../Assets/Perifericos.png";
+      } else if (cat.includes("almacenamiento") || name.toLowerCase().includes("ssd")) {
+        image.src = "../Assets/Almacenamiento.png";
+      } else if (cat.includes("monitor")) {
+        image.src = "../Assets/MONITOR.png";
+      } else if (cat.includes("ram")) {
+        image.src = "../Assets/ram.png";
+      } else if (cat.includes("procesador")) {
+        image.src = "../Assets/procesadores.png";
+      } else {
+        image.src = "../Assets/MSI.png";
+      }
+    };
+
+    if (product.imageUrl) {
+      image.src = product.imageUrl.startsWith("http") || product.imageUrl.startsWith("../") 
+        ? product.imageUrl 
+        : `../${product.imageUrl}`;
+    } else {
+      image.onerror();
+    }
   }
 }
 
@@ -103,49 +160,52 @@ function replaceFixedSections(product) {
   if (!main || !detailSection) return;
 
   const description =
-    product.description || "Este producto no tiene una descripción adicional.";
+    product.description || "Este producto cuenta con respaldo y garantía oficial de WiiU Games.";
   const fields = [
-    ["Categoría", product.category],
-    ["Estado", product.condition],
-    ["Garantía", product.warranty],
-    ["Formato", product.platform],
-    [
-      "Disponibilidad",
-      Number(product.stock) > 0
-        ? `${product.stock} unidades disponibles`
-        : "Consultar disponibilidad",
-    ],
-  ].filter(([, value]) => value);
+    { label: "Categoría", value: product.category, icon: "fi fi-rr-box-alt" },
+    { label: "Condición", value: product.condition || "Nuevo Sellado", icon: "fi fi-rr-shield-check" },
+    { label: "Garantía Oficial", value: product.warranty || "12 Meses", icon: "fi fi-rr-award" },
+    { label: "Marca / Fabricante", value: product.platform || "Original", icon: "fi fi-rr-tag" },
+    {
+      label: "Disponibilidad",
+      value: Number(product.stock) > 0 ? `${product.stock} unidades en stock` : "Consultar disponibilidad",
+      icon: "fi fi-rr-check-circle"
+    },
+    { label: "Envío Nacional", value: "Asegurado a todo Colombia", icon: "fi fi-rr-truck-side" }
+  ].filter((f) => f.value);
 
   const section = document.createElement("section");
   section.className = "seccion-caracteristicas informacion-dinamica";
   section.setAttribute("aria-labelledby", "titulo-informacion-producto");
 
-  const title = document.createElement("h2");
-  title.id = "titulo-informacion-producto";
-  title.textContent = "Información del producto";
+  section.innerHTML = `
+    <div class="contenedor-acerca-producto">
+      <span class="etiqueta-dorada">Especificaciones y Detalles</span>
+      <h2 id="titulo-informacion-producto">Acerca de este Producto</h2>
+      <p class="subtitulo-caracteristicas">${description}</p>
+      
+      <div class="grid-tarjetas-acerca">
+        ${fields.map(f => `
+          <div class="tarjeta-info-acerca">
+            <div class="icono-acerca"><i class="${f.icon}"></i></div>
+            <div class="texto-acerca">
+              <span class="label-acerca">${f.label}</span>
+              <strong class="valor-acerca">${f.value}</strong>
+            </div>
+          </div>
+        `).join('')}
+      </div>
 
-  const subtitle = document.createElement("p");
-  subtitle.className = "subtitulo-caracteristicas";
-  subtitle.textContent = description;
+      <div class="banner-garantia-acerca">
+        <div class="icono-garantia-grande"><i class="fi fi-rr-badge-check"></i></div>
+        <div class="texto-garantia">
+          <h4>Garantía y Soporte Técnico Directo</h4>
+          <p>Todos nuestros productos son 100% originales, cuentan con inspección técnica previa y soporte garantizado en nuestra tienda física en Sogamoso, Boyacá.</p>
+        </div>
+      </div>
+    </div>
+  `;
 
-  const grid = document.createElement("div");
-  grid.className = "grid-caracteristicas";
-  fields.forEach(([label, value]) => {
-    const item = document.createElement("article");
-    item.className = "item-caracteristica";
-
-    const heading = document.createElement("h3");
-    heading.textContent = label;
-
-    const text = document.createElement("p");
-    text.textContent = value;
-
-    item.append(heading, text);
-    grid.appendChild(item);
-  });
-
-  section.append(title, subtitle, grid);
   main.insertBefore(
     section,
     document.querySelector(".seccion-beneficios") || null,

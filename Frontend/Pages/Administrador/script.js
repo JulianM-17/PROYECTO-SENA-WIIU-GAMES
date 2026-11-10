@@ -195,6 +195,7 @@ function abrirModal(tipo) {
   var titulo = document.getElementById('modalTitulo');
   var campos = document.getElementById('modalCampos');
 
+  limpiarErroresModal();
   modal.classList.add('activo');
 
   if (tipo === 'garantias') {
@@ -217,7 +218,7 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Meses de Cobertura:</label>
-        <select id="campo3">
+        <select id="campo3" required>
           <option value="3">3 Meses</option>
           <option value="6">6 Meses</option>
           <option value="12" selected>12 Meses (1 Año)</option>
@@ -242,14 +243,14 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Técnico Responsable:</label>
-        <select id="campo3">
+        <select id="campo3" required>
           <option value="Sofia MartineZ">Sofia MartineZ</option>
           <option value="Mateo Rios">Mateo Rios</option>
         </select>
       </div>
       <div class="campo-grupo">
         <label>Costo del Servicio ($):</label>
-        <input type="number" id="campo4" required min="10000" step="5000" placeholder="Ej. 180000">
+        <input type="number" id="campo4" required min="10000" step="1000" placeholder="Ej. 180000">
       </div>
     `;
   } else if (tipo === 'inventario') {
@@ -277,11 +278,11 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Precio de Venta ($):</label>
-        <input type="number" id="campo3" required min="1000" step="1000" placeholder="Ej. 1450000">
+        <input type="number" id="campo3" required min="100" step="500" placeholder="Ej. 1450000">
       </div>
       <div class="campo-grupo">
         <label>Unidades en Stock Inicial:</label>
-        <input type="number" id="campo4" required min="1" placeholder="Ej. 10">
+        <input type="number" id="campo4" required min="1" step="1" placeholder="Ej. 10">
       </div>
     `;
   } else if (tipo === 'reparacion') {
@@ -293,7 +294,7 @@ function abrirModal(tipo) {
     campos.innerHTML = `
       <div class="campo-grupo">
         <label>Dispositivo a Reparar:</label>
-        <input type="text" id="campo1" required placeholder="Ej. GamePad Wii U / Pantalla rota">
+        <input type="text" id="campo1" required placeholder="Ej. GamePad Wii U">
       </div>
       <div class="campo-grupo">
         <label>Falla Reportada por el Cliente:</label>
@@ -305,7 +306,7 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Presupuesto Estimado ($):</label>
-        <input type="number" id="campo4" required min="10000" step="5000" placeholder="Ej. 65000">
+        <input type="number" id="campo4" required min="5000" step="1000" placeholder="Ej. 65000">
       </div>
     `;
   } else if (tipo === 'descuentos') {
@@ -317,11 +318,11 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Porcentaje de Descuento (%):</label>
-        <input type="number" id="campo2" required min="1" max="90" placeholder="Ej. 15">
+        <input type="number" id="campo2" required min="1" max="99" placeholder="Ej. 15">
       </div>
       <div class="campo-grupo">
         <label>Descripción / Nota del Cupón:</label>
-        <input type="text" id="campo3" placeholder="Ej. Descuento de temporada navideña">
+        <input type="text" id="campo3" required placeholder="Ej. Descuento de temporada navideña">
       </div>
     `;
   } else if (tipo === 'resenas') {
@@ -341,7 +342,7 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Calificación:</label>
-        <select id="campo3">
+        <select id="campo3" required>
           <option value="5 estrellas">⭐⭐⭐⭐⭐ (5 Estrellas)</option>
           <option value="4 estrellas">⭐⭐⭐⭐ (4 Estrellas)</option>
           <option value="3 estrellas">⭐⭐⭐ (3 Estrellas)</option>
@@ -349,7 +350,7 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Comentario u Opinión:</label>
-        <textarea id="campo4" rows="3" required placeholder="Excelente atención, rapidez y calidad..."></textarea>
+        <textarea id="campo4" rows="3" required placeholder="Escribe un comentario detallado (mínimo 5 caracteres)..."></textarea>
       </div>
     `;
   } else if (tipo === 'clientes') {
@@ -360,7 +361,7 @@ function abrirModal(tipo) {
         <input type="text" id="campo1" required placeholder="Ej. Mario Alejandro Pérez">
       </div>
       <div class="campo-grupo">
-        <label>Teléfono de Contacto:</label>
+        <label>Teléfono de Contacto (7 a 15 dígitos):</label>
         <input type="tel" id="campo2" required placeholder="Ej. 3124567890">
       </div>
       <div class="campo-grupo">
@@ -381,10 +382,33 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Total de la Venta ($):</label>
-        <input type="number" id="campo2" required min="5000" step="1000" placeholder="Ej. 180000">
+        <input type="number" id="campo2" required min="1000" step="500" placeholder="Ej. 180000">
       </div>
     `;
   }
+}
+
+// Funciones para marcar y limpiar errores visuales en los campos
+function marcarErrorCampo(input, mensaje) {
+  if (!input) return;
+  input.classList.add('campo-invalido');
+  var padre = input.parentElement;
+  if (padre) {
+    var errorSpan = padre.querySelector('.mensaje-error-campo');
+    if (!errorSpan) {
+      errorSpan = document.createElement('span');
+      errorSpan.className = 'mensaje-error-campo';
+      padre.appendChild(errorSpan);
+    }
+    errorSpan.textContent = mensaje;
+  }
+}
+
+function limpiarErroresModal() {
+  var invalidos = document.querySelectorAll('.campo-invalido');
+  invalidos.forEach(function(el) { el.classList.remove('campo-invalido'); });
+  var mensajes = document.querySelectorAll('.mensaje-error-campo');
+  mensajes.forEach(function(m) { m.remove(); });
 }
 
 function cerrarModal() {
@@ -570,33 +594,90 @@ function poblarTabla(idTbody, datos, generarFila) {
 }
 
 // ==========================================================================
-// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (PERSISTENCIA EN BD)
+// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (CON VALIDACIÓN COMPLETA)
 // ==========================================================================
 function guardarDatos(evento) {
   evento.preventDefault();
+  limpiarErroresModal();
 
-  var c1 = document.getElementById('campo1') ? document.getElementById('campo1').value : '';
-  var c2 = document.getElementById('campo2') ? document.getElementById('campo2').value : '';
-  var c3 = document.getElementById('campo3') ? document.getElementById('campo3').value : '';
-  var c4 = document.getElementById('campo4') ? document.getElementById('campo4').value : '';
+  var c1Input = document.getElementById('campo1');
+  var c2Input = document.getElementById('campo2');
+  var c3Input = document.getElementById('campo3');
+  var c4Input = document.getElementById('campo4');
+  var cMarcaInput = document.getElementById('campo_marca');
+
+  var c1 = c1Input ? c1Input.value.trim() : '';
+  var c2 = c2Input ? c2Input.value.trim() : '';
+  var c3 = c3Input ? c3Input.value.trim() : '';
+  var c4 = c4Input ? c4Input.value.trim() : '';
+  var cMarca = cMarcaInput ? cMarcaInput.value.trim() : 'General';
 
   var url = '';
   var payload = {};
+  var hayErrores = false;
 
+  // -------------------------------------------------------------
+  // VALIDACIONES ESPECÍFICAS SEGÚN EL MÓDULO ACTUAL
+  // -------------------------------------------------------------
   if (tipoModalActual === 'inventario') {
-    var campoMarca = document.getElementById('campo_marca');
-    var marcaSeleccionada = campoMarca ? campoMarca.value : 'General';
+    if (!c1 || c1.length < 3) {
+      marcarErrorCampo(c1Input, 'El nombre debe tener al menos 3 caracteres.');
+      hayErrores = true;
+    }
+    if (!c2) {
+      marcarErrorCampo(c2Input, 'Selecciona una categoría válida.');
+      hayErrores = true;
+    }
+    if (!cMarca) {
+      marcarErrorCampo(cMarcaInput, 'Selecciona una marca válida.');
+      hayErrores = true;
+    }
+    var precioProd = Number(c3);
+    if (!c3 || isNaN(precioProd) || precioProd <= 0) {
+      marcarErrorCampo(c3Input, 'Ingresa un precio de venta mayor a 0.');
+      hayErrores = true;
+    }
+    var stockProd = Number(c4);
+    if (c4 === '' || isNaN(stockProd) || stockProd < 0 || !Number.isInteger(stockProd)) {
+      marcarErrorCampo(c4Input, 'Ingresa una cantidad de stock válida (entero >= 0).');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor corrige los campos señalados en rojo');
+      return;
+    }
+
     url = API_BASE + '/api/admin/productos';
     payload = {
       name: c1,
       category: c2,
-      publisher: marcaSeleccionada,
-      price: Number(c3),
-      stock: Number(c4),
+      publisher: cMarca,
+      price: precioProd,
+      stock: stockProd,
       imageUrl: 'img/productos/default.jpg',
       description: c1
     };
+
   } else if (tipoModalActual === 'garantias') {
+    if (!c1) {
+      marcarErrorCampo(c1Input, 'Selecciona un cliente.');
+      hayErrores = true;
+    }
+    if (!c2) {
+      marcarErrorCampo(c2Input, 'Selecciona un producto asociado.');
+      hayErrores = true;
+    }
+    if (!c3) {
+      marcarErrorCampo(c3Input, 'Selecciona los meses de cobertura.');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor completa todos los campos de la garantía');
+      return;
+    }
+
     url = API_BASE + '/api/admin/garantias';
     payload = {
       client: c1,
@@ -604,50 +685,179 @@ function guardarDatos(evento) {
       buyDate: new Date().toISOString().split('T')[0],
       duration: c3 + ' Meses'
     };
+
   } else if (tipoModalActual === 'mantenimientos') {
+    if (!c1 || c1.length < 3) {
+      marcarErrorCampo(c1Input, 'Indica el equipo o consola (mínimo 3 caracteres).');
+      hayErrores = true;
+    }
+    if (!c2) {
+      marcarErrorCampo(c2Input, 'Selecciona el cliente propietario.');
+      hayErrores = true;
+    }
+    if (!c3) {
+      marcarErrorCampo(c3Input, 'Selecciona el técnico responsable.');
+      hayErrores = true;
+    }
+    var costoMnt = Number(c4);
+    if (!c4 || isNaN(costoMnt) || costoMnt <= 0) {
+      marcarErrorCampo(c4Input, 'Ingresa un costo de servicio válido mayor a 0.');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor corrige los campos del mantenimiento');
+      return;
+    }
+
     url = API_BASE + '/api/admin/mantenimientos';
     payload = {
       equipment: c1,
       client: c2,
       tech: c3,
-      cost: Number(c4),
+      cost: costoMnt,
       status: 'En Taller'
     };
+
   } else if (tipoModalActual === 'reparacion') {
+    if (!c1 || c1.length < 3) {
+      marcarErrorCampo(c1Input, 'Indica el dispositivo a reparar (mínimo 3 caracteres).');
+      hayErrores = true;
+    }
+    if (!c2 || c2.length < 4) {
+      marcarErrorCampo(c2Input, 'Describe detalladamente la falla reportada (mínimo 4 caracteres).');
+      hayErrores = true;
+    }
+    if (!c3) {
+      marcarErrorCampo(c3Input, 'Selecciona el cliente vinculado.');
+      hayErrores = true;
+    }
+    var precioRep = Number(c4);
+    if (!c4 || isNaN(precioRep) || precioRep <= 0) {
+      marcarErrorCampo(c4Input, 'Ingresa un presupuesto estimado mayor a 0.');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor completa todos los campos de reparación');
+      return;
+    }
+
     url = API_BASE + '/api/admin/reparaciones';
     payload = {
       device: c1,
       defect: c2,
       client: c3,
-      price: Number(c4)
+      price: precioRep
     };
+
   } else if (tipoModalActual === 'descuentos') {
+    var regexCodigo = /^[A-Za-z0-9\-_]{3,20}$/;
+    if (!c1 || !regexCodigo.test(c1)) {
+      marcarErrorCampo(c1Input, 'El código debe tener 3-20 caracteres alfanuméricos (sin espacios ni símbolos raros).');
+      hayErrores = true;
+    }
+    var numPercent = parseInt(c2);
+    if (isNaN(numPercent) || numPercent < 1 || numPercent > 99) {
+      marcarErrorCampo(c2Input, 'El porcentaje debe ser un valor entero entre 1 y 99.');
+      hayErrores = true;
+    }
+    if (!c3 || c3.length < 3) {
+      marcarErrorCampo(c3Input, 'Ingresa una descripción del cupón (mínimo 3 caracteres).');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor corrige los datos del descuento');
+      return;
+    }
+
     url = API_BASE + '/api/admin/descuentos';
-    var numPercent = parseInt(c2) || 15;
     payload = {
       code: c1.toUpperCase().trim(),
       percent: numPercent,
       limit: 100,
-      desc: c3 || ('Cupón ' + c1)
+      desc: c3
     };
+
   } else if (tipoModalActual === 'clientes') {
+    var regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s]{3,60}$/;
+    if (!c1 || !regexNombre.test(c1) || c1.split(/\s+/).length < 2) {
+      marcarErrorCampo(c1Input, 'Ingresa nombre y apellido completos (solo letras y espacios).');
+      hayErrores = true;
+    }
+    var regexTel = /^[0-9+\-\s()]{7,15}$/;
+    if (!c2 || !regexTel.test(c2)) {
+      marcarErrorCampo(c2Input, 'Ingresa un teléfono válido (entre 7 y 15 dígitos).');
+      hayErrores = true;
+    }
+    var regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!c3 || !regexEmail.test(c3)) {
+      marcarErrorCampo(c3Input, 'Ingresa un correo electrónico válido (ej. usuario@dominio.com).');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor corrige los datos del cliente');
+      return;
+    }
+
     url = API_BASE + '/api/admin/clientes';
     payload = {
       name: c1,
       phone: c2,
       email: c3
     };
+
   } else if (tipoModalActual === 'resenas') {
+    if (!c1) {
+      marcarErrorCampo(c1Input, 'Selecciona el cliente que califica.');
+      hayErrores = true;
+    }
+    if (!c2 || c2.length < 3) {
+      marcarErrorCampo(c2Input, 'Indica el producto o servicio evaluado.');
+      hayErrores = true;
+    }
+    if (!c3) {
+      marcarErrorCampo(c3Input, 'Selecciona la calificación.');
+      hayErrores = true;
+    }
+    if (!c4 || c4.length < 5) {
+      marcarErrorCampo(c4Input, 'El comentario debe contener al menos 5 caracteres.');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor completa todos los campos de la reseña');
+      return;
+    }
+
     url = API_BASE + '/api/admin/resenas';
     payload = {
       client: c1,
       comment: '[' + c3 + '] ' + c2 + ': ' + c4
     };
+
   } else if (tipoModalActual === 'pedidos') {
+    if (!c1) {
+      marcarErrorCampo(c1Input, 'Selecciona un cliente comprador.');
+      hayErrores = true;
+    }
+    var totalPedido = Number(c2);
+    if (!c2 || isNaN(totalPedido) || totalPedido <= 0) {
+      marcarErrorCampo(c2Input, 'Ingresa un total de venta válido mayor a 0.');
+      hayErrores = true;
+    }
+
+    if (hayErrores) {
+      mostrarToast('error', 'Por favor ingresa un total de pedido válido');
+      return;
+    }
+
     url = API_BASE + '/api/admin/pedidos';
     payload = {
       client: c1,
-      total: Number(c2)
+      total: totalPedido
     };
   }
 
@@ -670,6 +880,7 @@ function guardarDatos(evento) {
   .then(function(data) {
     if (data.ok) {
       mostrarToast('success', '✅ ' + (data.message || 'Registro guardado exitosamente'));
+      cerrarModal();
       cargarDashboard(); // Recargar datos frescos desde MySQL
     } else {
       mostrarToast('error', data.message || 'Error al guardar');
@@ -679,8 +890,6 @@ function guardarDatos(evento) {
     console.error('Error al guardar en BD:', err);
     mostrarToast('error', 'Error de conexión con el servidor');
   });
-
-  cerrarModal();
 }
 
 // ==========================================================================
