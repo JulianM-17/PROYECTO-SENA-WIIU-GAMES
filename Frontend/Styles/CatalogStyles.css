@@ -376,6 +376,7 @@ body {
   background: linear-gradient(135deg, rgba(245, 200, 66, 0.03), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .enlace-producto {
@@ -498,7 +499,9 @@ body {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  position: relative;
+  z-index: 5;
+  transition: background 0.2s ease, transform 0.2s ease, color 0.2s ease;
 }
 
 .btn-agregar-carrito:hover:not(:disabled) {

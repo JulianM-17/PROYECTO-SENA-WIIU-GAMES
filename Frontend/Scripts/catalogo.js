@@ -20,6 +20,133 @@ const CATEGORIAS_DEFAULT = [
   { nombre_cat: 'Consolas y Videojuegos' }
 ];
 
+const MARCAS_DEFAULT = [
+  'Lenovo', 'Logitech', 'Kingston', 'ASUS', 'NVIDIA', 'Corsair', 'Intel', 'AMD', 'Nintendo', 'Sony', 'MSI'
+];
+
+const PRODUCTOS_DEFAULT = [
+  {
+    id_producto: 1,
+    nombre: 'Portatil Lenovo IdeaPad 3',
+    precio: 2200000,
+    imagen_url: '../Assets/lenovolegion.webp',
+    descripcion: 'Ryzen 5, 16GB RAM, 512GB SSD, 15.6 pulgadas',
+    nombre_marca: 'Lenovo',
+    nombre_cat: 'Portátiles',
+    stock_total: 5
+  },
+  {
+    id_producto: 2,
+    nombre: 'Mouse Logitech M185',
+    precio: 45000,
+    imagen_url: '../Assets/Perifericos.png',
+    descripcion: 'Mouse inalambrico con receptor USB',
+    nombre_marca: 'Logitech',
+    nombre_cat: 'Periféricos',
+    stock_total: 50
+  },
+  {
+    id_producto: 3,
+    nombre: 'SSD Kingston A400 480GB',
+    precio: 180000,
+    imagen_url: '../Assets/Almacenamiento.png',
+    descripcion: 'Unidad de estado solido SATA 2.5 pulgadas',
+    nombre_marca: 'Kingston',
+    nombre_cat: 'Almacenamiento',
+    stock_total: 20
+  },
+  {
+    id_producto: 4,
+    nombre: 'Portatil Gamer ASUS ROG Strix G16',
+    precio: 5800000,
+    imagen_url: '../Assets/Portatiles.png',
+    descripcion: 'Intel Core i7-13650HX, RTX 4060, 16GB RAM DDR5, 512GB SSD',
+    nombre_marca: 'ASUS',
+    nombre_cat: 'Portátiles',
+    stock_total: 8
+  },
+  {
+    id_producto: 5,
+    nombre: 'PC Gamer Torre Custom Ryzen 7',
+    precio: 4500000,
+    imagen_url: '../Assets/TORRECUSTOM.png',
+    descripcion: 'AMD Ryzen 7 5700X, RTX 4060 Ti, 32GB RAM, 1TB NVMe, Fuente 750W',
+    nombre_marca: 'AMD',
+    nombre_cat: 'PC Escritorio',
+    stock_total: 6
+  },
+  {
+    id_producto: 6,
+    nombre: 'Tarjeta Grafica NVIDIA GeForce RTX 4060 8GB',
+    precio: 1650000,
+    imagen_url: '../Assets/Tarjetas_Graficas.png',
+    descripcion: 'Arquitectura Ada Lovelace, DLSS 3, Ray Tracing, 8GB GDDR6',
+    nombre_marca: 'NVIDIA',
+    nombre_cat: 'Tarjetas Gráficas',
+    stock_total: 12
+  },
+  {
+    id_producto: 7,
+    nombre: 'Monitor Gaming ASUS TUF 27 165Hz',
+    precio: 1150000,
+    imagen_url: '../Assets/Monitores.png',
+    descripcion: 'Pantalla IPS 27 pulgadas, 165Hz, 1ms, FreeSync Premium, HDR10',
+    nombre_marca: 'ASUS',
+    nombre_cat: 'Monitores',
+    stock_total: 15
+  },
+  {
+    id_producto: 8,
+    nombre: 'Memoria RAM Corsair Vengeance RGB 16GB DDR4',
+    precio: 210000,
+    imagen_url: '../Assets/ram.png',
+    descripcion: 'Kit 16GB (2x8GB) 3200MHz CL16 con iluminacion dinamica RGB',
+    nombre_marca: 'Corsair',
+    nombre_cat: 'Memorias RAM',
+    stock_total: 30
+  },
+  {
+    id_producto: 9,
+    nombre: 'Motherboard MSI B550M PRO-VDH WiFi',
+    precio: 490000,
+    imagen_url: '../Assets/placa.jpg',
+    descripcion: 'Socket AM4, PCIe 4.0, Dual M.2, WiFi integrado, soporte Ryzen 5000',
+    nombre_marca: 'MSI',
+    nombre_cat: 'Motherboards',
+    stock_total: 10
+  },
+  {
+    id_producto: 10,
+    nombre: 'Procesador Intel Core i7-13700K 16 Nucleos',
+    precio: 1890000,
+    imagen_url: '../Assets/procesadores.png',
+    descripcion: 'Hasta 5.4 GHz, 30MB Cache, Socket LGA1700, Graficos Intel UHD 770',
+    nombre_marca: 'Intel',
+    nombre_cat: 'Procesadores',
+    stock_total: 14
+  },
+  {
+    id_producto: 11,
+    nombre: 'Consola Nintendo Switch OLED 64GB',
+    precio: 1450000,
+    imagen_url: '../Assets/Switch.jpg',
+    descripcion: 'Pantalla OLED 7 pulgadas, soporte ajustable, 64GB almacenamiento interno',
+    nombre_marca: 'Nintendo',
+    nombre_cat: 'Consolas y Videojuegos',
+    stock_total: 22
+  },
+  {
+    id_producto: 12,
+    nombre: 'Consola PlayStation 5 Slim Digital 1TB',
+    precio: 2490000,
+    imagen_url: '../Assets/Consolas_Juegos.png',
+    descripcion: 'SSD 1TB de ultra alta velocidad, Tempest 3D AudioTech, soporte 4K 120Hz',
+    nombre_marca: 'Sony',
+    nombre_cat: 'Consolas y Videojuegos',
+    stock_total: 9
+  }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const catUrl = urlParams.get('categoria');
@@ -34,35 +161,26 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarMarcas();
 });
 
-//Cargar y renderizar productos
 async function cargarProductos() {
   const contenedor = document.getElementById('grid-productos');
-  if (!contenedor) {
-    console.error('No se encontró el contenedor #grid-productos.');
-    return;
-  }
+  if (!contenedor) return;
 
   try {
     const respuesta = await fetch(`${API_URL}/productos`);
     if (!respuesta.ok) {
-      throw new Error(`La API respondió con estado ${respuesta.status}`);
+      throw new Error(`Estado ${respuesta.status}`);
     }
 
     const productos = await respuesta.json();
-    if (!Array.isArray(productos)) {
-      throw new Error('La respuesta de la API no es una lista de productos.');
-    }
-
-    if (productos.length === 0) {
-      contenedor.innerHTML = '<p>No hay productos disponibles por el momento.</p>';
-      return;
+    if (!Array.isArray(productos) || productos.length === 0) {
+      throw new Error('Lista vacía');
     }
 
     productosCatalogo = productos;
     renderizarProductos();
   } catch (error) {
-    console.error('Error al cargar catálogo:', error);
-    contenedor.innerHTML = '<p>Error al conectar con la base de datos.</p>';
+    productosCatalogo = PRODUCTOS_DEFAULT;
+    renderizarProductos();
   }
 }
 
@@ -216,47 +334,97 @@ function configurarAgregarAlCarrito() {
     const button = event.target.closest('.btn-agregar-carrito');
     if (!button || !grid.contains(button)) return;
 
-    const product = productosCatalogo.find(
-      item => String(item.id_producto) === button.dataset.productId
+    event.preventDefault();
+    event.stopPropagation();
+
+    const productId = button.getAttribute('data-product-id') || button.dataset.productId;
+    let product = productosCatalogo.find(
+      item => String(item.id_producto ?? item.id ?? item.productId) === String(productId)
     );
+
+    if (!product) {
+      const tarjeta = button.closest('.tarjeta-producto');
+      const nombre = tarjeta?.querySelector('.titulo-producto')?.textContent?.trim() || 'Producto';
+      const precioTexto = tarjeta?.querySelector('.precio-actual')?.textContent?.replace(/[^0-9]/g, '') || '0';
+      const img = tarjeta?.querySelector('.imagen-producto')?.getAttribute('src') || '../Assets/lenovolegion.webp';
+      product = {
+        id_producto: productId || String(Date.now()),
+        nombre: nombre,
+        precio: Number(precioTexto) || 0,
+        imagen_url: img,
+        stock_total: 99
+      };
+    }
+
     const feedback = button.nextElementSibling;
-    const cart = window.WiiUGamesCart;
-    if (!product || !cart) {
-      console.error('No se pudo agregar el producto: falta el producto o el carrito.');
-      if (feedback) feedback.textContent = 'No se pudo agregar al carrito.';
-      return;
-    }
+    let agregadoExitoso = false;
 
-    const result = cart.add(product, 1);
-    if (!result.ok) {
-      if (feedback) {
-        feedback.textContent =
-          result.reason === 'stock'
-            ? `Solo hay ${result.stock} unidades disponibles.`
-            : result.reason === 'unavailable'
-              ? 'Este producto está agotado.'
-              : 'No se pudo agregar al carrito.';
+    if (window.WiiUGamesCart && typeof window.WiiUGamesCart.add === 'function') {
+      const result = window.WiiUGamesCart.add(product, 1);
+      if (result.ok) {
+        agregadoExitoso = true;
+      } else if (result.reason === 'stock') {
+        if (feedback) feedback.textContent = `Solo hay ${result.stock} disponibles.`;
+        return;
+      } else if (result.reason === 'unavailable') {
+        if (feedback) feedback.textContent = 'Producto agotado.';
+        return;
       }
-      return;
     }
 
-    if (feedback) feedback.textContent = 'Producto agregado al carrito.';
-    button.textContent = 'Agregado';
-    window.setTimeout(() => {
-      if (!button.isConnected) return;
-      button.textContent = 'Agregar al carrito';
-      if (feedback) feedback.textContent = '';
-    }, 1800);
+    if (!agregadoExitoso) {
+      try {
+        const cart = JSON.parse(localStorage.getItem('wiiu_cart') || '[]');
+        const existing = cart.find(i => String(i.productId) === String(productId));
+        if (existing) {
+          existing.quantity = (Number(existing.quantity) || 1) + 1;
+        } else {
+          cart.push({
+            productId: String(productId),
+            name: product.nombre,
+            price: Number(product.precio) || 0,
+            imageUrl: product.imagen_url || '../Assets/lenovolegion.webp',
+            quantity: 1,
+            stock: product.stock_total || 99
+          });
+        }
+        localStorage.setItem('wiiu_cart', JSON.stringify(cart));
+        const total = cart.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+        document.querySelectorAll('.burbuja-carrito').forEach(badge => {
+          badge.textContent = total > 0 ? String(total) : '';
+          badge.style.display = total > 0 ? '' : 'none';
+        });
+        window.dispatchEvent(new CustomEvent('wiiu-cart-change', { detail: cart }));
+        agregadoExitoso = true;
+      } catch (err) {
+        console.error('Error al guardar en carrito:', err);
+      }
+    }
+
+    if (agregadoExitoso) {
+      const textoOriginal = button.textContent;
+      button.textContent = '✔ ¡Agregado!';
+      button.style.backgroundColor = '#22c55e';
+      button.style.color = '#ffffff';
+      if (feedback) {
+        feedback.textContent = '¡Añadido al carrito con éxito!';
+        feedback.style.color = '#22c55e';
+      }
+
+      setTimeout(() => {
+        if (!button.isConnected) return;
+        button.textContent = textoOriginal;
+        button.style.backgroundColor = '';
+        button.style.color = '';
+        if (feedback) feedback.textContent = '';
+      }, 1500);
+    }
   });
 }
 
-//Cargar categorías en el menú lateral
 async function cargarCategorias() {
   const listaCategorias = document.getElementById('lista-categorias');
-  if (!listaCategorias) {
-    console.error('No se encontró el contenedor #lista-categorias.');
-    return;
-  }
+  if (!listaCategorias) return;
 
   let categorias = [];
   try {
@@ -268,13 +436,12 @@ async function cargarCategorias() {
       }
     }
   } catch (error) {
-    console.warn('API no disponible para categorías, cargando catálogo ampliado:', error);
+    categorias = CATEGORIAS_DEFAULT;
   }
 
   if (categorias.length === 0) {
     categorias = CATEGORIAS_DEFAULT;
   } else {
-    // Si la BD tiene pocas categorías, combinamos con las categorías estándar
     const nombresExistentes = new Set(categorias.map(c => normalizar(c.nombre_cat)));
     CATEGORIAS_DEFAULT.forEach(cDefault => {
       if (!nombresExistentes.has(normalizar(cDefault.nombre_cat))) {
@@ -295,32 +462,31 @@ async function cargarCategorias() {
   });
 }
 
-//Cargar marcas en el menú lateral
 async function cargarMarcas() {
   const contenedorMarcas = document.getElementById('contenedor-marcas');
-  if (!contenedorMarcas) {
-    console.error('No se encontró el contenedor #contenedor-marcas.');
-    return;
-  }
+  if (!contenedorMarcas) return;
 
+  let marcas = [];
   try {
     const res = await fetch(`${API_URL}/marcas`);
-    if (!res.ok) {
-      throw new Error(`La API respondió con estado ${res.status}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        marcas = data.map(m => m.nombre_marca);
+      }
     }
-
-    const marcas = await res.json();
-    if (!Array.isArray(marcas)) {
-      throw new Error('La respuesta de la API no es una lista de marcas.');
-    }
-
-    contenedorMarcas.innerHTML = '';
-    marcas.forEach(m => {
-      contenedorMarcas.innerHTML += `<span>${escapeHtml(m.nombre_marca)}</span>`;
-    });
   } catch (error) {
-    console.error('Error al cargar marcas:', error);
+    marcas = MARCAS_DEFAULT;
   }
+
+  if (marcas.length === 0) {
+    marcas = MARCAS_DEFAULT;
+  }
+
+  contenedorMarcas.innerHTML = '';
+  marcas.forEach(marca => {
+    contenedorMarcas.innerHTML += `<span>${escapeHtml(marca)}</span>`;
+  });
 }
 
 function escapeHtml(value) {

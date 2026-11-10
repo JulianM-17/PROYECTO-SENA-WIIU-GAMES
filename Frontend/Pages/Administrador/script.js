@@ -1,20 +1,11 @@
-/* ==========================================================================
-   LÓGICA JAVASCRIPT DEL PANEL DE ADMINISTRADOR - WIIU-GAMES
-   Conectado con la API del backend para persistir datos en MySQL
-   ========================================================================== */
 
-// URL base del backend
+
 var API_BASE = 'http://localhost:3000';
 
-// Variable para saber qué formulario modal está abierto
 var tipoModalActual = "";
 
-// Token de sesión (se obtiene del localStorage si existe)
 var sessionToken = localStorage.getItem('sessionToken') || '';
 
-// ==========================================================================
-// 0. SISTEMA DE NOTIFICACIONES TOAST
-// ==========================================================================
 function mostrarToast(tipo, mensaje) {
   var contenedor = document.getElementById('contenedor-toast');
   if (!contenedor) {
@@ -36,24 +27,19 @@ function mostrarToast(tipo, mensaje) {
   }, 3500);
 }
 
-// ==========================================================================
-// 1. CAMBIAR ENTRE PESTAÑAS DEL MENÚ LATERAL
-// ==========================================================================
 function cambiarPestana(idSeccion, botonClickeado) {
-  // 1. Ocultar todas las secciones
+
   var secciones = document.querySelectorAll('.seccion');
   for (var i = 0; i < secciones.length; i++) {
     secciones[i].classList.remove('visible');
   }
 
-  // 2. Mostrar la sección seleccionada
-  var seccionDestino = document.getElementById(idSeccion);
+var seccionDestino = document.getElementById(idSeccion);
   if (seccionDestino) {
     seccionDestino.classList.add('visible');
   }
 
-  // 3. Resaltar en amarillo el botón activo en el menú lateral
-  if (botonClickeado) {
+if (botonClickeado) {
     var botones = document.querySelectorAll('.boton-menu');
     for (var j = 0; j < botones.length; j++) {
       botones[j].classList.remove('activo');
@@ -61,13 +47,9 @@ function cambiarPestana(idSeccion, botonClickeado) {
     botonClickeado.classList.add('activo');
   }
 
-  // 4. Subir la vista al inicio del contenido
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ==========================================================================
-// 2. BUSCADOR GLOBAL Y FILTROS EN TIEMPO REAL
-// ==========================================================================
 function filtrarGlobal(texto) {
   var filtro = texto.toLowerCase();
   var filas = document.querySelectorAll('.seccion.visible tbody tr');
@@ -123,9 +105,6 @@ function filtrarEstadoTabla(idTbody, valor, indiceColumna) {
   }
 }
 
-// ==========================================================================
-// 3. MENÚ DE PERFIL, CERRAR SESIÓN Y NOTIFICACIONES
-// ==========================================================================
 function toggleMenuPerfil() {
   var menu = document.getElementById('menuPerfil');
   if (menu) {
@@ -142,21 +121,18 @@ function cerrarSesion(evento) {
 
   mostrarToast('info', 'Cerrando sesión...');
 
-  // Notificar al backend para invalidar la sesión
-  if (sessionToken) {
+if (sessionToken) {
     fetch(API_BASE + '/api/session', {
       method: 'DELETE',
       headers: { 'Authorization': 'Bearer ' + sessionToken }
     }).catch(function() {});
   }
 
-  // Limpiar tokens y datos guardados en el navegador
-  localStorage.removeItem('sessionToken');
+localStorage.removeItem('sessionToken');
   sessionStorage.removeItem('sessionToken');
   sessionStorage.removeItem('wiiu_usuario_activo');
 
-  // Redirigir al Login después de una breve pausa para feedback
-  setTimeout(function() {
+setTimeout(function() {
     window.location.href = '../Login.html';
   }, 600);
 }
@@ -180,15 +156,11 @@ function filtrarPeriodo() {
   }
 }
 
-// Variables globales de datos auxiliares para los modales
 var categoriasDisponibles = [];
 var marcasDisponibles = [];
 var clientesDisponibles = [];
 var productosDisponibles = [];
 
-// ==========================================================================
-// 4. VENTANAS MODALES PARA REGISTRAR DATOS
-// ==========================================================================
 function abrirModal(tipo) {
   tipoModalActual = tipo;
   var modal = document.getElementById('modalFormulario');
@@ -395,9 +367,6 @@ function cerrarModal() {
   tipoModalActual = "";
 }
 
-// ==========================================================================
-// 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
-// ==========================================================================
 function cargarDashboard() {
   fetch(API_BASE + '/api/dashboard/admin', {
     headers: { 'Authorization': 'Bearer ' + sessionToken }
@@ -409,14 +378,12 @@ function cargarDashboard() {
       return;
     }
 
-    // Guardar colecciones para los selectores de los modales
-    if (data.categories) categoriasDisponibles = data.categories;
+if (data.categories) categoriasDisponibles = data.categories;
     if (data.brands) marcasDisponibles = data.brands;
     if (data.clients) clientesDisponibles = data.clients;
     if (data.inventory) productosDisponibles = data.inventory;
 
-    // ---------- HOME: Tarjetas de resumen ----------
-    var el;
+var el;
     el = document.getElementById('homeVentasTotales');
     if (el) el.textContent = '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
 
@@ -426,8 +393,7 @@ function cargarDashboard() {
     el = document.getElementById('homeClientesNuevos');
     if (el) el.textContent = data.summary.clientsCount || 0;
 
-    // ---------- HOME: Productos más vendidos ----------
-    if (data.topProducts && data.topProducts.length > 0) {
+if (data.topProducts && data.topProducts.length > 0) {
       var contenedorTop = document.getElementById('contenedorTopProductos');
       if (contenedorTop) {
         contenedorTop.innerHTML = '';
@@ -438,23 +404,21 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- HOME: Pedidos recientes ----------
-    if (data.recentOrders) {
+if (data.recentOrders) {
       poblarTabla('tablaPedidosBody', data.recentOrders, function(row) {
         var estadoClase = row.estado === 'PAGADA' ? 'etiqueta-verde' : 'etiqueta-naranja';
         return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + row.id_venta + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
-    // ---------- INVENTARIO ----------
-    if (data.inventory) {
+if (data.inventory) {
       poblarTabla('tablaInventarioBody', data.inventory, function(row) {
         var stockTexto = row.stock + ' uds';
         var estadoClase = row.stock > 0 ? 'etiqueta-verde' : 'etiqueta-rojo';
         var estadoTexto = row.stock > 0 ? 'Disponible' : 'Agotado';
         return '<td><strong>' + row.name + '</strong></td><td>' + row.sku + '</td><td>' + row.category + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + (row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td><button class="boton-icono" title="Editar"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'productos\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
-      // Actualizar tarjetas de inventario
+
       el = document.getElementById('invTotalProductos');
       if (el) el.textContent = data.inventory.length + ' items';
 
@@ -477,8 +441,7 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- GARANTÍAS ----------
-    if (data.warranties) {
+if (data.warranties) {
       poblarTabla('tablaGarantiasBody', data.warranties, function(row) {
         var estadoClase = row.status === 'Activa' ? 'etiqueta-verde' : 'etiqueta-naranja';
         var rawId = String(row.id).replace('GAR-', '');
@@ -486,8 +449,7 @@ function cargarDashboard() {
       });
     }
 
-    // ---------- MANTENIMIENTOS ----------
-    if (data.maintenance) {
+if (data.maintenance) {
       poblarTabla('tablaMantenimientosBody', data.maintenance, function(row) {
         var estadoClase = 'etiqueta-naranja';
         if (row.status === 'Listo para Entrega') estadoClase = 'etiqueta-verde';
@@ -497,8 +459,7 @@ function cargarDashboard() {
       });
     }
 
-    // ---------- REPARACIONES ----------
-    if (data.repairs) {
+if (data.repairs) {
       poblarTabla('tablaReparacionBody', data.repairs, function(row) {
         var estadoClase = row.status === 'En Reparación' ? 'etiqueta-azul' : (row.status === 'Completada' ? 'etiqueta-verde' : 'etiqueta-rojo');
         var rawId = String(row.ticket).replace('REP-', '');
@@ -506,8 +467,7 @@ function cargarDashboard() {
       });
     }
 
-    // ---------- DESCUENTOS ----------
-    if (data.discounts) {
+if (data.discounts) {
       poblarTabla('tablaDescuentosBody', data.discounts, function(row) {
         var estadoClase = row.status === 'Activo' ? 'etiqueta-verde' : 'etiqueta-rojo';
         var rawId = String(row.code).replace('PROM-', '');
@@ -517,8 +477,7 @@ function cargarDashboard() {
       if (el) el.textContent = data.discounts.length;
     }
 
-    // ---------- CLIENTES ----------
-    if (data.clients) {
+if (data.clients) {
       poblarTabla('tablaClientesBody', data.clients, function(row) {
         var fechaVisita = row.lastVisit ? new Date(row.lastVisit).toISOString().split('T')[0] : 'N/A';
         return '<td><strong>CLI-' + row.id + '</strong></td><td>' + row.name + '</td><td>' + (row.phone || 'N/A') + '</td><td>' + row.email + '</td><td>$ ' + Number(row.totalSpent).toLocaleString('es-CO') + '</td><td>' + fechaVisita + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'clientes\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
@@ -529,8 +488,7 @@ function cargarDashboard() {
       if (el) el.textContent = data.clients.length;
     }
 
-    // ---------- RESEÑAS ----------
-    if (data.reviews && data.reviews.length > 0) {
+if (data.reviews && data.reviews.length > 0) {
       poblarTabla('tablaResenasBody', data.reviews, function(row) {
         return '<td><strong>RES-' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + row.rating + '</td><td>' + row.comment + '</td><td>' + row.date + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'resenas\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
@@ -538,8 +496,7 @@ function cargarDashboard() {
       if (el) el.textContent = data.reviews.length;
     }
 
-    // ---------- RESUMEN FINANCIERO ----------
-    el = document.getElementById('finIngresos');
+el = document.getElementById('finIngresos');
     if (el) el.textContent = '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
 
     mostrarToast('success', 'Datos del panel cargados correctamente');
@@ -550,17 +507,13 @@ function cargarDashboard() {
   });
 }
 
-// ==========================================================================
-// 6. FUNCIÓN AUXILIAR: POBLAR TABLA CON DATOS
-// ==========================================================================
 function poblarTabla(idTbody, datos, generarFila) {
   var tbody = document.getElementById(idTbody);
   if (!tbody) return;
 
   if (!datos || datos.length === 0) return;
 
-  // Limpiar la tabla (quitar mensajes de "No hay registros")
-  tbody.innerHTML = '';
+tbody.innerHTML = '';
 
   for (var i = 0; i < datos.length; i++) {
     var fila = document.createElement('tr');
@@ -569,9 +522,6 @@ function poblarTabla(idTbody, datos, generarFila) {
   }
 }
 
-// ==========================================================================
-// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (PERSISTENCIA EN BD)
-// ==========================================================================
 function guardarDatos(evento) {
   evento.preventDefault();
 
@@ -683,15 +633,11 @@ function guardarDatos(evento) {
   cerrarModal();
 }
 
-// ==========================================================================
-// 8. FUNCIONES AUXILIARES PARA MANIPULAR FILAS
-// ==========================================================================
 function insertarFila(idTbody, contenidoHtml) {
   var tbody = document.getElementById(idTbody);
   if (!tbody) return;
 
-  // Si existe el mensaje de "No hay registros", lo eliminamos primero
-  var vacio = tbody.querySelector('.texto-vacio');
+var vacio = tbody.querySelector('.texto-vacio');
   if (vacio) {
     tbody.innerHTML = "";
   }
@@ -714,7 +660,6 @@ function eliminarFila(boton) {
   }
 }
 
-// Eliminar producto de la BD (soft-delete)
 function eliminarFilaDB(boton, recurso, id) {
   if (!confirm("¿Estás seguro de que deseas eliminar este registro de la base de datos?")) return;
 
@@ -737,9 +682,6 @@ function eliminarFilaDB(boton, recurso, id) {
   });
 }
 
-// ==========================================================================
-// 9. CARGAR DATOS AL INICIAR LA PÁGINA
-// ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
   cargarDashboard();
 });
