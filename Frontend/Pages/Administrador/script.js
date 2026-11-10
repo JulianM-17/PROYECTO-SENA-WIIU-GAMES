@@ -180,6 +180,12 @@ function filtrarPeriodo() {
   }
 }
 
+// Variables globales de datos auxiliares para los modales
+var categoriasDisponibles = [];
+var marcasDisponibles = [];
+var clientesDisponibles = [];
+var productosDisponibles = [];
+
 // ==========================================================================
 // 4. VENTANAS MODALES PARA REGISTRAR DATOS
 // ==========================================================================
@@ -193,28 +199,191 @@ function abrirModal(tipo) {
 
   if (tipo === 'garantias') {
     titulo.textContent = "Registrar Nueva Garantía";
-    campos.innerHTML = '<div class="campo-grupo"><label>Nombre del Cliente:</label><input type="text" id="campo1" required placeholder="Ej. Carlos Ramirez"></div><div class="campo-grupo"><label>Producto / Serial:</label><input type="text" id="campo2" required placeholder="Ej. Mouse Logitech M185 (SN: 12345)"></div><div class="campo-grupo"><label>Meses de Cobertura:</label><select id="campo3"><option value="6">6 Meses</option><option value="12" selected>12 Meses</option><option value="24">24 Meses</option></select></div>';
+    var optsClientes = clientesDisponibles.length > 0
+      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
+      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+    var optsProds = productosDisponibles.length > 0
+      ? productosDisponibles.map(function(p) { return '<option value="' + p.name + '">' + p.name + '</option>'; }).join('')
+      : '<option value="Mouse Logitech M185">Mouse Logitech M185</option><option value="SSD Kingston A400 480GB">SSD Kingston A400 480GB</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Cliente:</label>
+        <select id="campo1" required>${optsClientes}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Producto Asociado:</label>
+        <select id="campo2" required>${optsProds}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Meses de Cobertura:</label>
+        <select id="campo3">
+          <option value="3">3 Meses</option>
+          <option value="6">6 Meses</option>
+          <option value="12" selected>12 Meses (1 Año)</option>
+          <option value="24">24 Meses (2 Años)</option>
+        </select>
+      </div>
+    `;
   } else if (tipo === 'mantenimientos') {
     titulo.textContent = "Nuevo Servicio de Mantenimiento";
-    campos.innerHTML = '<div class="campo-grupo"><label>Equipo / Consola:</label><input type="text" id="campo1" required placeholder="Ej. PlayStation 5 / Laptop HP"></div><div class="campo-grupo"><label>Nombre del Cliente:</label><input type="text" id="campo2" required placeholder="Ej. Laura Gomez"></div><div class="campo-grupo"><label>Técnico Responsable:</label><input type="text" id="campo3" required placeholder="Ej. Mateo Rios"></div><div class="campo-grupo"><label>Costo Estimado ($):</label><input type="number" id="campo4" required placeholder="Ej. 180000"></div>';
+    var optsClientes = clientesDisponibles.length > 0
+      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
+      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Equipo / Consola a Mantenimiento:</label>
+        <input type="text" id="campo1" required placeholder="Ej. PlayStation 5 / Laptop ASUS">
+      </div>
+      <div class="campo-grupo">
+        <label>Cliente Propietario:</label>
+        <select id="campo2" required>${optsClientes}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Técnico Responsable:</label>
+        <select id="campo3">
+          <option value="Sofia MartineZ">Sofia MartineZ</option>
+          <option value="Mateo Rios">Mateo Rios</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label>Costo del Servicio ($):</label>
+        <input type="number" id="campo4" required min="10000" step="5000" placeholder="Ej. 180000">
+      </div>
+    `;
   } else if (tipo === 'inventario') {
     titulo.textContent = "Agregar Producto al Inventario";
-    campos.innerHTML = '<div class="campo-grupo"><label>Nombre del Producto:</label><input type="text" id="campo1" required placeholder="Ej. Nintendo Switch OLED"></div><div class="campo-grupo"><label>Categoría:</label><select id="campo2"><option value="Periféricos">Periféricos</option><option value="Portátiles">Portátiles</option><option value="Almacenamiento">Almacenamiento</option><option value="Consolas">Consolas</option></select></div><div class="campo-grupo"><label>Precio de Venta ($):</label><input type="number" id="campo3" required placeholder="Ej. 1450000"></div><div class="campo-grupo"><label>Unidades en Stock:</label><input type="number" id="campo4" required placeholder="Ej. 10"></div>';
+    var optsCat = categoriasDisponibles.length > 0
+      ? categoriasDisponibles.map(function(cat) { return '<option value="' + cat.nombre_cat + '">' + cat.nombre_cat + '</option>'; }).join('')
+      : '<option value="Perifericos">Perifericos</option><option value="Portatiles">Portatiles</option><option value="Almacenamiento">Almacenamiento</option><option value="Consolas y Videojuegos">Consolas y Videojuegos</option>';
+
+    var optsMarcas = marcasDisponibles.length > 0
+      ? marcasDisponibles.map(function(m) { return '<option value="' + m.nombre_marca + '">' + m.nombre_marca + '</option>'; }).join('')
+      : '<option value="Logitech">Logitech</option><option value="Sony">Sony</option><option value="Nintendo">Nintendo</option><option value="ASUS">ASUS</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Nombre del Producto:</label>
+        <input type="text" id="campo1" required placeholder="Ej. Nintendo Switch OLED">
+      </div>
+      <div class="campo-grupo">
+        <label>Categoría:</label>
+        <select id="campo2" required>${optsCat}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Marca:</label>
+        <select id="campo_marca" required>${optsMarcas}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Precio de Venta ($):</label>
+        <input type="number" id="campo3" required min="1000" step="1000" placeholder="Ej. 1450000">
+      </div>
+      <div class="campo-grupo">
+        <label>Unidades en Stock Inicial:</label>
+        <input type="number" id="campo4" required min="1" placeholder="Ej. 10">
+      </div>
+    `;
   } else if (tipo === 'reparacion') {
     titulo.textContent = "Nueva Orden de Reparación";
-    campos.innerHTML = '<div class="campo-grupo"><label>Dispositivo:</label><input type="text" id="campo1" required placeholder="Ej. GamePad Wii U"></div><div class="campo-grupo"><label>Falla Reportada:</label><input type="text" id="campo2" required placeholder="Ej. Pantalla rota o no da imagen"></div><div class="campo-grupo"><label>Cliente:</label><input type="text" id="campo3" required placeholder="Ej. Carlos Ramirez"></div><div class="campo-grupo"><label>Presupuesto ($):</label><input type="number" id="campo4" required placeholder="Ej. 65000"></div>';
+    var optsClientes = clientesDisponibles.length > 0
+      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
+      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Dispositivo a Reparar:</label>
+        <input type="text" id="campo1" required placeholder="Ej. GamePad Wii U / Pantalla rota">
+      </div>
+      <div class="campo-grupo">
+        <label>Falla Reportada por el Cliente:</label>
+        <input type="text" id="campo2" required placeholder="Ej. Pantalla no da imagen o puerto HDMI dañado">
+      </div>
+      <div class="campo-grupo">
+        <label>Cliente:</label>
+        <select id="campo3" required>${optsClientes}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Presupuesto Estimado ($):</label>
+        <input type="number" id="campo4" required min="10000" step="5000" placeholder="Ej. 65000">
+      </div>
+    `;
   } else if (tipo === 'descuentos') {
     titulo.textContent = "Crear Código de Descuento";
-    campos.innerHTML = '<div class="campo-grupo"><label>Código del Cupón:</label><input type="text" id="campo1" required placeholder="Ej. WIIU2026"></div><div class="campo-grupo"><label>Porcentaje / Descuento:</label><input type="text" id="campo2" required placeholder="Ej. 15% Descuento"></div><div class="campo-grupo"><label>Fecha Límite:</label><input type="date" id="campo3" required></div>';
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Código del Cupón:</label>
+        <input type="text" id="campo1" required placeholder="Ej. WIIU2026" style="text-transform: uppercase;">
+      </div>
+      <div class="campo-grupo">
+        <label>Porcentaje de Descuento (%):</label>
+        <input type="number" id="campo2" required min="1" max="90" placeholder="Ej. 15">
+      </div>
+      <div class="campo-grupo">
+        <label>Descripción / Nota del Cupón:</label>
+        <input type="text" id="campo3" placeholder="Ej. Descuento de temporada navideña">
+      </div>
+    `;
   } else if (tipo === 'resenas') {
     titulo.textContent = "Moderar / Agregar Reseña";
-    campos.innerHTML = '<div class="campo-grupo"><label>Nombre del Cliente:</label><input type="text" id="campo1" required placeholder="Ej. Andrea Morales"></div><div class="campo-grupo"><label>Producto o Servicio:</label><input type="text" id="campo2" required placeholder="Ej. Mantenimiento Preventivo"></div><div class="campo-grupo"><label>Calificación:</label><select id="campo3"><option value="5 estrellas">⭐⭐⭐⭐⭐ (5 Estrellas)</option><option value="4 estrellas">⭐⭐⭐⭐ (4 Estrellas)</option><option value="3 estrellas">⭐⭐⭐ (3 Estrellas)</option></select></div><div class="campo-grupo"><label>Comentario:</label><textarea id="campo4" rows="3" placeholder="Excelente atención y rapidez..."></textarea></div>';
+    var optsClientes = clientesDisponibles.length > 0
+      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
+      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Cliente:</label>
+        <select id="campo1" required>${optsClientes}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Producto o Servicio:</label>
+        <input type="text" id="campo2" required placeholder="Ej. Mantenimiento Preventivo o Compra">
+      </div>
+      <div class="campo-grupo">
+        <label>Calificación:</label>
+        <select id="campo3">
+          <option value="5 estrellas">⭐⭐⭐⭐⭐ (5 Estrellas)</option>
+          <option value="4 estrellas">⭐⭐⭐⭐ (4 Estrellas)</option>
+          <option value="3 estrellas">⭐⭐⭐ (3 Estrellas)</option>
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label>Comentario u Opinión:</label>
+        <textarea id="campo4" rows="3" required placeholder="Excelente atención, rapidez y calidad..."></textarea>
+      </div>
+    `;
   } else if (tipo === 'clientes') {
     titulo.textContent = "Registrar Nuevo Cliente";
-    campos.innerHTML = '<div class="campo-grupo"><label>Nombre Completo:</label><input type="text" id="campo1" required placeholder="Ej. Mario Alejandro Pérez"></div><div class="campo-grupo"><label>Teléfono:</label><input type="text" id="campo2" required placeholder="Ej. 312 456 7890"></div><div class="campo-grupo"><label>Correo Electrónico:</label><input type="email" id="campo3" required placeholder="Ej. mario@gmail.com"></div><div class="campo-grupo"><label>Ciudad:</label><input type="text" id="campo4" required placeholder="Ej. Sogamoso"></div>';
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Nombre y Apellidos:</label>
+        <input type="text" id="campo1" required placeholder="Ej. Mario Alejandro Pérez">
+      </div>
+      <div class="campo-grupo">
+        <label>Teléfono de Contacto:</label>
+        <input type="tel" id="campo2" required placeholder="Ej. 3124567890">
+      </div>
+      <div class="campo-grupo">
+        <label>Correo Electrónico:</label>
+        <input type="email" id="campo3" required placeholder="Ej. cliente@gmail.com">
+      </div>
+    `;
   } else if (tipo === 'pedidos') {
-    titulo.textContent = "Registrar Nuevo Pedido";
-    campos.innerHTML = '<div class="campo-grupo"><label>Cliente:</label><input type="text" id="campo1" required placeholder="Ej. Carlos Ramirez"></div><div class="campo-grupo"><label>Total del Pedido ($):</label><input type="number" id="campo2" required placeholder="Ej. 180000"></div>';
+    titulo.textContent = "Registrar Nuevo Pedido / Venta";
+    var optsClientes = clientesDisponibles.length > 0
+      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
+      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+
+    campos.innerHTML = `
+      <div class="campo-grupo">
+        <label>Cliente:</label>
+        <select id="campo1" required>${optsClientes}</select>
+      </div>
+      <div class="campo-grupo">
+        <label>Total de la Venta ($):</label>
+        <input type="number" id="campo2" required min="5000" step="1000" placeholder="Ej. 180000">
+      </div>
+    `;
   }
 }
 
@@ -239,6 +408,12 @@ function cargarDashboard() {
       console.warn('Dashboard respondió sin ok:', data.message);
       return;
     }
+
+    // Guardar colecciones para los selectores de los modales
+    if (data.categories) categoriasDisponibles = data.categories;
+    if (data.brands) marcasDisponibles = data.brands;
+    if (data.clients) clientesDisponibles = data.clients;
+    if (data.inventory) productosDisponibles = data.inventory;
 
     // ---------- HOME: Tarjetas de resumen ----------
     var el;
@@ -267,7 +442,7 @@ function cargarDashboard() {
     if (data.recentOrders) {
       poblarTabla('tablaPedidosBody', data.recentOrders, function(row) {
         var estadoClase = row.estado === 'PAGADA' ? 'etiqueta-verde' : 'etiqueta-naranja';
-        return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + row.id_venta + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
@@ -306,7 +481,8 @@ function cargarDashboard() {
     if (data.warranties) {
       poblarTabla('tablaGarantiasBody', data.warranties, function(row) {
         var estadoClase = row.status === 'Activa' ? 'etiqueta-verde' : 'etiqueta-naranja';
-        return '<td><strong>' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + row.buyDate + '</td><td>' + row.expDate + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        var rawId = String(row.id).replace('GAR-', '');
+        return '<td><strong>' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + String(row.buyDate).substring(0,10) + '</td><td>' + String(row.expDate).substring(0,10) + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'garantias\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
@@ -316,7 +492,8 @@ function cargarDashboard() {
         var estadoClase = 'etiqueta-naranja';
         if (row.status === 'Listo para Entrega') estadoClase = 'etiqueta-verde';
         if (row.status === 'En Diagnóstico') estadoClase = 'etiqueta-azul';
-        return '<td><strong>' + row.maintenanceOrder + '</strong></td><td>' + row.equipment + '</td><td>' + row.client + '</td><td>' + row.tech + '</td><td>' + row.cost + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        var rawId = String(row.maintenanceOrder).replace('MNT-', '');
+        return '<td><strong>' + row.maintenanceOrder + '</strong></td><td>' + row.equipment + '</td><td>' + row.client + '</td><td>' + row.tech + '</td><td>' + row.cost + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'mantenimientos\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
@@ -324,7 +501,8 @@ function cargarDashboard() {
     if (data.repairs) {
       poblarTabla('tablaReparacionBody', data.repairs, function(row) {
         var estadoClase = row.status === 'En Reparación' ? 'etiqueta-azul' : (row.status === 'Completada' ? 'etiqueta-verde' : 'etiqueta-rojo');
-        return '<td><strong>' + row.ticket + '</strong></td><td>' + row.device + '</td><td>' + row.defect + '</td><td>' + row.client + '</td><td>' + row.price + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        var rawId = String(row.ticket).replace('REP-', '');
+        return '<td><strong>' + row.ticket + '</strong></td><td>' + row.device + '</td><td>' + row.defect + '</td><td>' + row.client + '</td><td>' + row.price + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'reparaciones\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
@@ -332,7 +510,8 @@ function cargarDashboard() {
     if (data.discounts) {
       poblarTabla('tablaDescuentosBody', data.discounts, function(row) {
         var estadoClase = row.status === 'Activo' ? 'etiqueta-verde' : 'etiqueta-rojo';
-        return '<td><strong>' + row.code + '</strong></td><td>Porcentaje</td><td>' + row.percent + '</td><td>' + (row.discountDescription || '') + '</td><td>' + row.expires + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        var rawId = String(row.code).replace('PROM-', '');
+        return '<td><strong>' + row.code + '</strong></td><td>Porcentaje</td><td>' + row.percent + '</td><td>' + (row.discountDescription || '') + '</td><td>' + row.expires + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'descuentos\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
       el = document.getElementById('descActivos');
       if (el) el.textContent = data.discounts.length;
@@ -342,7 +521,7 @@ function cargarDashboard() {
     if (data.clients) {
       poblarTabla('tablaClientesBody', data.clients, function(row) {
         var fechaVisita = row.lastVisit ? new Date(row.lastVisit).toISOString().split('T')[0] : 'N/A';
-        return '<td><strong>CLI-' + row.id + '</strong></td><td>' + row.name + '</td><td>' + (row.phone || 'N/A') + '</td><td>' + row.email + '</td><td>$ ' + Number(row.totalSpent).toLocaleString('es-CO') + '</td><td>' + fechaVisita + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        return '<td><strong>CLI-' + row.id + '</strong></td><td>' + row.name + '</td><td>' + (row.phone || 'N/A') + '</td><td>' + row.email + '</td><td>$ ' + Number(row.totalSpent).toLocaleString('es-CO') + '</td><td>' + fechaVisita + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'clientes\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
       el = document.getElementById('cliTotal');
       if (el) el.textContent = data.clients.length;
@@ -353,7 +532,7 @@ function cargarDashboard() {
     // ---------- RESEÑAS ----------
     if (data.reviews && data.reviews.length > 0) {
       poblarTabla('tablaResenasBody', data.reviews, function(row) {
-        return '<td><strong>RES-' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + row.rating + '</td><td>' + row.comment + '</td><td>' + row.date + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>';
+        return '<td><strong>RES-' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + row.rating + '</td><td>' + row.comment + '</td><td>' + row.date + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'resenas\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
       el = document.getElementById('resTotal');
       if (el) el.textContent = data.reviews.length;
@@ -391,7 +570,7 @@ function poblarTabla(idTbody, datos, generarFila) {
 }
 
 // ==========================================================================
-// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES
+// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (PERSISTENCIA EN BD)
 // ==========================================================================
 function guardarDatos(evento) {
   evento.preventDefault();
@@ -401,79 +580,107 @@ function guardarDatos(evento) {
   var c3 = document.getElementById('campo3') ? document.getElementById('campo3').value : '';
   var c4 = document.getElementById('campo4') ? document.getElementById('campo4').value : '';
 
-  var fechaHoy = new Date().toISOString().split('T')[0];
+  var url = '';
+  var payload = {};
 
-  // --- INVENTARIO: Crear producto en BD ---
   if (tipoModalActual === 'inventario') {
-    var datosProducto = {
+    var campoMarca = document.getElementById('campo_marca');
+    var marcaSeleccionada = campoMarca ? campoMarca.value : 'General';
+    url = API_BASE + '/api/admin/productos';
+    payload = {
       name: c1,
       category: c2,
-      publisher: 'General',
+      publisher: marcaSeleccionada,
       price: Number(c3),
       stock: Number(c4),
       imageUrl: 'img/productos/default.jpg',
       description: c1
     };
+  } else if (tipoModalActual === 'garantias') {
+    url = API_BASE + '/api/admin/garantias';
+    payload = {
+      client: c1,
+      product: c2,
+      buyDate: new Date().toISOString().split('T')[0],
+      duration: c3 + ' Meses'
+    };
+  } else if (tipoModalActual === 'mantenimientos') {
+    url = API_BASE + '/api/admin/mantenimientos';
+    payload = {
+      equipment: c1,
+      client: c2,
+      tech: c3,
+      cost: Number(c4),
+      status: 'En Taller'
+    };
+  } else if (tipoModalActual === 'reparacion') {
+    url = API_BASE + '/api/admin/reparaciones';
+    payload = {
+      device: c1,
+      defect: c2,
+      client: c3,
+      price: Number(c4)
+    };
+  } else if (tipoModalActual === 'descuentos') {
+    url = API_BASE + '/api/admin/descuentos';
+    var numPercent = parseInt(c2) || 15;
+    payload = {
+      code: c1.toUpperCase().trim(),
+      percent: numPercent,
+      limit: 100,
+      desc: c3 || ('Cupón ' + c1)
+    };
+  } else if (tipoModalActual === 'clientes') {
+    url = API_BASE + '/api/admin/clientes';
+    payload = {
+      name: c1,
+      phone: c2,
+      email: c3
+    };
+  } else if (tipoModalActual === 'resenas') {
+    url = API_BASE + '/api/admin/resenas';
+    payload = {
+      client: c1,
+      comment: '[' + c3 + '] ' + c2 + ': ' + c4
+    };
+  } else if (tipoModalActual === 'pedidos') {
+    url = API_BASE + '/api/admin/pedidos';
+    payload = {
+      client: c1,
+      total: Number(c2)
+    };
+  }
 
-    fetch(API_BASE + '/api/admin/productos', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + sessionToken
-      },
-      body: JSON.stringify(datosProducto)
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (data.ok) {
-        mostrarToast('success', '✅ Producto creado exitosamente');
-        cargarDashboard(); // recargar todos los datos
-      } else {
-        mostrarToast('error', data.message || 'Error al crear producto');
-      }
-    })
-    .catch(function(err) {
-      console.error('Error:', err);
-      mostrarToast('error', 'Error de conexión al crear producto');
-    });
-
+  if (!url) {
     cerrarModal();
     return;
   }
 
-  // --- PARA LOS DEMÁS MÓDULOS: Inserción temporal en la tabla ---
-  if (tipoModalActual === 'garantias') {
-    insertarFila('tablaGarantiasBody', '<td><strong>GAR-' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td>' + c2 + '</td><td>' + fechaHoy + '</td><td>' + c3 + ' Meses</td><td><span class="etiqueta-verde">Activa</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-  } else if (tipoModalActual === 'mantenimientos') {
-    insertarFila('tablaMantenimientosBody', '<td><strong>MNT-' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td>' + c2 + '</td><td>' + c3 + '</td><td>$ ' + Number(c4).toLocaleString('es-CO') + '</td><td><span class="etiqueta-naranja">En Taller</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-  } else if (tipoModalActual === 'reparacion') {
-    insertarFila('tablaReparacionBody', '<td><strong>REP-' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td>' + c2 + '</td><td>' + c3 + '</td><td>$ ' + Number(c4).toLocaleString('es-CO') + '</td><td><span class="etiqueta-azul">En Reparación</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-  } else if (tipoModalActual === 'descuentos') {
-    insertarFila('tablaDescuentosBody', '<td><strong>' + c1.toUpperCase() + '</strong></td><td>Porcentaje</td><td>' + c2 + '</td><td>' + fechaHoy + '</td><td>' + c3 + '</td><td><span class="etiqueta-verde">Activo</span></td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-    var totalDesc = document.querySelectorAll('#tablaDescuentosBody tr').length;
-    var elDesc = document.getElementById('descActivos');
-    if (elDesc) elDesc.textContent = totalDesc;
-  } else if (tipoModalActual === 'resenas') {
-    insertarFila('tablaResenasBody', '<td><strong>RES-' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td>' + c2 + '</td><td>' + c3 + '</td><td>"' + (c4 || 'Sin comentarios') + '"</td><td>' + fechaHoy + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-    var totalRes = document.querySelectorAll('#tablaResenasBody tr').length;
-    var elRes = document.getElementById('resTotal');
-    if (elRes) elRes.textContent = totalRes;
-  } else if (tipoModalActual === 'clientes') {
-    insertarFila('tablaClientesBody', '<td><strong>CLI-' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td>' + c2 + '</td><td>' + c3 + '</td><td>' + c4 + '</td><td>' + fechaHoy + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-    var totalCli = document.querySelectorAll('#tablaClientesBody tr').length;
-    var elCli = document.getElementById('cliTotal');
-    if (elCli) elCli.textContent = totalCli;
-    var elCliAct = document.getElementById('cliActivos');
-    if (elCliAct) elCliAct.textContent = totalCli;
-  } else if (tipoModalActual === 'pedidos') {
-    insertarFila('tablaPedidosBody', '<td><strong>#' + (Math.floor(Math.random()*900)+100) + '</strong></td><td>' + c1 + '</td><td><span class="etiqueta-verde">Pagada</span></td><td>$ ' + Number(c2).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" onclick="eliminarFila(this)"><i class="fi fi-rr-trash"></i></button></td>');
-    var totalPed = document.querySelectorAll('#tablaPedidosBody tr').length;
-    var elPed = document.getElementById('homePedidosTotales');
-    if (elPed) elPed.textContent = totalPed;
-  }
+  mostrarToast('info', 'Guardando en la base de datos...');
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (data.ok) {
+      mostrarToast('success', '✅ ' + (data.message || 'Registro guardado exitosamente'));
+      cargarDashboard(); // Recargar datos frescos desde MySQL
+    } else {
+      mostrarToast('error', data.message || 'Error al guardar');
+    }
+  })
+  .catch(function(err) {
+    console.error('Error al guardar en BD:', err);
+    mostrarToast('error', 'Error de conexión con el servidor');
+  });
 
   cerrarModal();
-  mostrarToast('success', '✅ Registro agregado exitosamente');
 }
 
 // ==========================================================================

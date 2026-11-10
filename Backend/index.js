@@ -388,6 +388,14 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       "SELECT id_marca, nombre_marca, descripcion_marca FROM marca WHERE estado = 'ACTIVO' ORDER BY nombre_marca",
     );
 
+    const [reviewRows] = await pool.query(
+      `SELECT s.id_sugerencia AS id, CONCAT(u.nombre, ' ', u.apellido) AS client, 'Atención al Cliente' AS product, '5 estrellas' AS rating, s.mensaje AS comment, DATE_FORMAT(s.fecha_envio, '%Y-%m-%d') AS date
+       FROM sugerencia s
+       LEFT JOIN usuario u ON u.id_usuario = s.id_usuario
+       ORDER BY s.fecha_envio DESC
+       LIMIT 10`
+    );
+
     res.json({
       ok: true,
       summary: {
@@ -410,7 +418,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       discounts: discountRows || [],
       categories: categoryRows || [],
       brands: brandRows || [],
-      reviews: [],
+      reviews: reviewRows || [],
     });
   } catch (error) {
     console.error("Error cargando dashboard del administrador:", error.message, error.stack);
@@ -1124,6 +1132,115 @@ app.post("/api/admin/descuentos", async (req, res) => {
   } catch (error) {
     console.error("Error al crear descuento:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
+  }
+});
+
+// ---------- RESEÑAS / SUGERENCIAS ----------
+
+app.post("/api/admin/resenas", async (req, res) => {
+  try {
+    const { client, comment } = req.body;
+    const clientName = String(client || "Cliente").trim();
+    const mensaje = String(comment || "Excelente servicio").trim();
+
+    const [userRows] = await pool.query(
+      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
+      [clientName]
+    );
+    const userId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+
+    const [result] = await pool.query(
+      `INSERT INTO sugerencia (mensaje, id_usuario, fecha_envio) VALUES (?, ?, NOW())`,
+      [mensaje, userId]
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Reseña registrada en la base de datos.",
+      id: result.insertId,
+    });
+  } catch (error) {
+    console.error("Error al crear reseña:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la reseña." });
+  }
+});
+
+// ---------- PEDIDOS / VENTAS ----------
+
+app.post("/api/admin/pedidos", async (req, res) => {
+  try {
+    const { client, total } = req.body;
+    const clientName = String(client || "Cliente").trim();
+    const totalVal = Number(total || 0);
+
+    const [userRows] = await pool.query(
+      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
+      [clientName]
+    );
+    const userId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+
+    // Crear venta
+    const [resultVenta] = await pool.query(
+      `INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, tipo_venta, ciudad, direccion_entrega, estado)
+       VALUES (?, 5, 1, NOW(), 'EFECTIVO', 'SUCURSAL', 'Sogamoso', 'Tienda WiiU', 'PAGADA')`,
+      [userId]
+    );
+    const ventaId = resultVenta.insertId;
+
+    // Asociar a un detalle de venta para que sume a ventas
+    const [prodRows] = await pool.query(
+      "SELECT id_producto, precio FROM producto WHERE estado = 'ACTIVO' ORDER BY id_producto LIMIT 1"
+    );
+    if (prodRows.length > 0) {
+      await pool.query(
+        `INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+         VALUES (?, ?, 1, ?, ?, 'Venta manual desde panel')`,
+        [ventaId, prodRows[0].id_producto, totalVal, totalVal]
+      );
+    }
+
+    return res.status(201).json({
+      ok: true,
+      message: "Pedido registrado en la base de datos.",
+      orderId: ventaId,
+    });
+  } catch (error) {
+    console.error("Error al crear pedido:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar el pedido." });
+  }
+});
+
+// ---------- ELIMINACIONES GENÉRICAS DEL PANEL ----------
+
+app.delete("/api/admin/:recurso/:id", async (req, res) => {
+  try {
+    const { recurso, id } = req.params;
+    const numId = Number(id);
+
+    if (isNaN(numId)) {
+      return res.status(400).json({ ok: false, message: "ID inválido." });
+    }
+
+    if (recurso === "garantias") {
+      await pool.query("UPDATE garantia SET estado = 'ANULADA' WHERE id_garantia = ?", [numId]);
+    } else if (recurso === "mantenimientos" || recurso === "reparaciones") {
+      await pool.query("UPDATE servicio SET estado = 'CANCELADO' WHERE id_servicio = ?", [numId]);
+    } else if (recurso === "descuentos") {
+      await pool.query("UPDATE promocion SET estado = 'INACTIVO' WHERE id_promocion = ?", [numId]);
+    } else if (recurso === "clientes") {
+      await pool.query("UPDATE usuario SET estado = 'INACTIVO' WHERE id_usuario = ?", [numId]);
+    } else if (recurso === "pedidos") {
+      await pool.query("UPDATE venta SET estado = 'ANULADA' WHERE id_venta = ?", [numId]);
+    } else if (recurso === "resenas") {
+      await pool.query("DELETE FROM sugerencia WHERE id_sugerencia = ?", [numId]);
+    } else if (recurso === "productos") {
+      await pool.query("UPDATE producto SET estado = 'INACTIVO' WHERE id_producto = ?", [numId]);
+    }
+
+    return res.json({ ok: true, message: "Registro eliminado de la base de datos." });
+  } catch (error) {
+    console.error("Error al eliminar registro:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo eliminar el registro." });
   }
 });
 
