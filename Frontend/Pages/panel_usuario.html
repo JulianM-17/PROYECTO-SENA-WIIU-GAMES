@@ -83,7 +83,6 @@
             <a href="../Index.html">Inicio</a>
             <a href="Catalog.html">Catalogo</a>
             <a href="servicios.html">Servicios</a>
-            <a href="garantias.html">Garantias</a>
           </div>
           <div class="botones-ingreso">
             <!-- Cuando el usuario está logueado se ocultan estos botones -->
@@ -200,15 +199,6 @@
             >
               <i class="fi fi-rr-file-invoice"></i>
               Descarga tu factura
-            </a>
-            <a
-              href="#"
-              class="elemento-nav"
-              id="nav-garantias"
-              data-vista="vista-garantias"
-            >
-              <i class="fi fi-rr-shield-check"></i>
-              Garantías
             </a>
 
             <div class="nav-divider"></div>
@@ -514,115 +504,6 @@
                 </button>
               </div>
             </form>
-          </div>
-
-          <div class="vista-panel" id="vista-garantias">
-            <div class="banner-bienvenida">
-              <div class="banner-encabezado">
-                <i class="fi fi-rr-shield-check"></i>
-                <h1>Gestión de Garantías</h1>
-              </div>
-              <p class="banner-subtitulo">
-                Registra una solicitud y describe el problema de tu producto.
-              </p>
-            </div>
-            <div class="garantias-panel">
-              <form
-                action="#"
-                method="post"
-                class="garantia-form"
-                id="form-garantia"
-                novalidate
-              >
-                <div class="campo">
-                  <label for="id-pedido">Número de pedido / Factura*</label>
-                  <input
-                    type="text"
-                    inputmode="numeric"
-                    id="id-pedido"
-                    name="id-pedido"
-                    placeholder="Ej: 104582 (solo números)"
-                    maxlength="12"
-                    required
-                  />
-                  <span class="error-mensaje" id="error-id-pedido"></span>
-                </div>
-                <div class="campo">
-                  <label for="id-producto">Número de serie del producto*</label>
-                  <input
-                    type="text"
-                    id="id-producto"
-                    name="id-producto"
-                    placeholder="Ej: SN-9842104"
-                    maxlength="25"
-                    required
-                  />
-                  <span class="error-mensaje" id="error-id-producto"></span>
-                </div>
-                <div class="campo garantia-categoria">
-                  <label for="categoria-producto"
-                    >Categoría del producto*</label
-                  >
-                  <select
-                    id="categoria-producto"
-                    name="categoria-producto"
-                    required
-                  >
-                    <option value="" disabled selected>
-                      Selecciona una categoría...
-                    </option>
-                    <option value="Portatiles">Portátiles / Laptops</option>
-                    <option value="PC Escritorio">Computador de Escritorio / PC Gamer</option>
-                    <option value="Tarjetas Graficas">Tarjetas Gráficas</option>
-                    <option value="Monitores">Monitores</option>
-                    <option value="Perifericos">Periféricos (Mouse, Teclados, Audífonos)</option>
-                    <option value="Almacenamiento">Almacenamiento (SSD / Discos Duros)</option>
-                    <option value="Memorias RAM">Memorias RAM</option>
-                    <option value="Motherboards">Motherboards / Placas Base</option>
-                    <option value="Procesadores">Procesadores</option>
-                    <option value="Consola">Consolas y Videojuegos</option>
-                    <option value="Sillas y Accesorios">Sillas y Accesorios</option>
-                  </select>
-                  <span
-                    class="error-mensaje"
-                    id="error-categoria-producto"
-                  ></span>
-                </div>
-                <div class="consulta">
-                  <label for="consulta"
-                    >Descripción detallada del problema*</label
-                  >
-                  <textarea
-                    id="consulta"
-                    name="consulta"
-                    placeholder="Describe la falla (mínimo 15 caracteres)..."
-                    rows="4"
-                    required
-                  ></textarea>
-                  <span class="error-mensaje" id="error-consulta"></span>
-                </div>
-                <button type="submit" class="btn-agendar">
-                  Agregar nueva garantía
-                </button>
-              </form>
-              <aside class="garantia-contacto">
-                <h2>¿Necesitas ayuda?</h2>
-                <p>
-                  Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
-                  Sogamoso, Boyacá
-                </p>
-                <p><strong>Teléfono:</strong> 3046616081</p>
-                <p>
-                  <strong>Horario:</strong> Lunes a sábado, 8:00 a.m. a 12:30
-                  p.m. y 2:00 p.m. a 6:30 p.m.
-                </p>
-                <p><strong>Correo:</strong> wiiugames2026@gmail.com</p>
-              </aside>
-              <p class="garantia-aviso">
-                La solicitud se valida en esta página; el sistema actual no
-                cuenta con una tabla para guardar solicitudes de garantía.
-              </p>
-            </div>
           </div>
 
           <!--Vista sobre las direcciones-->
@@ -1508,7 +1389,6 @@
     </footer>
 
     <!-- JavaScript -->
-    <script src="../Scripts/garantias.js"></script>
     <script src="../Scripts/panel_usuario.js"></script>
     <script src="../Scripts/accessibility.js" defer></script>
   </body>

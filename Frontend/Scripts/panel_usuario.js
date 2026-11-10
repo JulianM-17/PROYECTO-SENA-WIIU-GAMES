@@ -169,7 +169,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     "vista-favoritos": "Mi Lista de Favoritos",
     "vista-seguimiento": "Sigue tu Pedido",
     "vista-factura": "Descarga tu Factura",
-    "vista-garantias": "Garantías",
   };
 
   function activarVista(vistaId, navId) {
@@ -699,16 +698,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             ${card.predeterminada ? '<span class="etiqueta-tarjeta-predeterminada">Predeterminada</span>' : ""}
             <div class="tarjeta-chip ${!isVisa ? "mc" : ""}"></div>
           </div>
-          ${
-            isVisa
-              ? '<span class="tarjeta-visa-logo">VISA</span>'
-              : `
+          ${isVisa
+          ? '<span class="tarjeta-visa-logo">VISA</span>'
+          : `
             <div class="mc-logo">
               <div class="mc-circulo-rojo"></div>
               <div class="mc-circulo-naranja"></div>
             </div>
           `
-          }
+        }
         </div>
         <p class="tarjeta-numero">${card.numero}</p>
         <div class="tarjeta-footer">
@@ -892,15 +890,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = document.createElement("div");
       card.className = "fav-card";
       card.innerHTML = `
-        ${
-          fav.isEmojiHolder
-            ? `
+        ${fav.isEmojiHolder
+          ? `
           <div class="fav-img-emoji">
             <i class="${fav.iconClass}"></i>
             <button class="btn-fav-quitar" data-id="${fav.id}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
           </div>
         `
-            : `
+          : `
           <div class="fav-img-wrap">
             <img src="${fav.img}" alt="${fav.nombre}" />
             <button class="btn-fav-quitar" data-id="${fav.id}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
@@ -1191,7 +1188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             method: "DELETE",
             headers: { Authorization: `Bearer ${sessionUser.token}` },
           });
-        } catch (error) {}
+        } catch (error) { }
         sessionStorage.removeItem("wiiu_usuario_activo");
         window.location.href = "Login.html";
       }
@@ -1206,7 +1203,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Inicializar interfaz completa
   updateUI();
-  if (new URLSearchParams(window.location.search).get("view") === "garantias") {
-    activarVista("vista-garantias", "nav-garantias");
-  }
 });

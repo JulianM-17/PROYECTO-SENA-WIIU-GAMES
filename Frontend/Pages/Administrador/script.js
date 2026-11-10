@@ -169,34 +169,6 @@ function abrirModal(tipo) {
 
   modal.classList.add('activo');
 
-  if (tipo === 'garantias') {
-    titulo.textContent = "Registrar Nueva Garantía";
-    var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
-    var optsProds = productosDisponibles.length > 0
-      ? productosDisponibles.map(function(p) { return '<option value="' + p.name + '">' + p.name + '</option>'; }).join('')
-      : '<option value="Mouse Logitech M185">Mouse Logitech M185</option><option value="SSD Kingston A400 480GB">SSD Kingston A400 480GB</option>';
-
-    campos.innerHTML = `
-      <div class="campo-grupo">
-        <label>Cliente:</label>
-        <select id="campo1" required>${optsClientes}</select>
-      </div>
-      <div class="campo-grupo">
-        <label>Producto Asociado:</label>
-        <select id="campo2" required>${optsProds}</select>
-      </div>
-      <div class="campo-grupo">
-        <label>Meses de Cobertura:</label>
-        <select id="campo3">
-          <option value="3">3 Meses</option>
-          <option value="6">6 Meses</option>
-          <option value="12" selected>12 Meses (1 Año)</option>
-          <option value="24">24 Meses (2 Años)</option>
-        </select>
-      </div>
-    `;
   } else if (tipo === 'mantenimientos') {
     titulo.textContent = "Nuevo Servicio de Mantenimiento";
     var optsClientes = clientesDisponibles.length > 0

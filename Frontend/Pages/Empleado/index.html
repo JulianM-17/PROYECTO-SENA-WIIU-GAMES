@@ -38,11 +38,6 @@
           <span>Consultar Catálogo</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('vista-garantias', this)">
-          <i class="fi fi-rr-shield-check"></i>
-          <span>Registrar Garantía</span>
-        </button>
-
         <button class="boton-menu" onclick="cambiarPestana('vista-taller', this)">
           <i class="fi fi-rr-wrench-simple"></i>
           <span>Recepción Taller</span>
@@ -80,7 +75,7 @@
             Módulo de Atención – Empleado 
             <i class="fi fi-rr-user icono-empleado"></i>
           </h1>
-          <p>Registra ventas en caja, atiende garantías y gestiona servicios de taller.</p>
+          <p>Registra ventas en caja y gestiona servicios de taller.</p>
         </div>
 
         <div class="estado-turno">
@@ -193,37 +188,6 @@
             <tbody id="tablaCatalogoBody">
               <tr>
                 <td colspan="7" class="mensaje-vacio">No hay productos registrados en el catálogo</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section id="vista-garantias" class="seccion-vista">
-        <div class="cabecera-modulo-con-boton">
-          <div>
-            <h2>Registro y Emisión de Garantías</h2>
-            <p>Genera comprobantes de garantía para clientes y consulta certificados existentes.</p>
-          </div>
-          <button class="boton-amarillo" onclick="abrirModalEmpleado('garantia')">+ Registrar Nueva Garantía</button>
-        </div>
-
-        <div class="caja-blanca">
-          <table class="tabla-empleado">
-            <thead>
-              <tr>
-                <th>ID Garantía</th>
-                <th>Cliente</th>
-                <th>Producto / Serial</th>
-                <th>Fecha Compra</th>
-                <th>Vencimiento</th>
-                <th>Estado</th>
-                <th>Comprobante</th>
-              </tr>
-            </thead>
-            <tbody id="tablaGarantiasBody">
-              <tr>
-                <td colspan="7" class="mensaje-vacio">No hay garantías registradas</td>
               </tr>
             </tbody>
           </table>
