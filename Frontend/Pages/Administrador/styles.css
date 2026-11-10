@@ -1,6 +1,5 @@
 
 
-
 * {
   margin: 0;
   padding: 0;
@@ -14,13 +13,11 @@ body {
   min-height: 100vh;
 }
 
-
 .panel-contenedor {
   display: flex;
   min-height: 100vh;
   
 }
-
 
 .menu-lateral {
   width: 235px;
@@ -35,7 +32,6 @@ body {
   flex-shrink: 0;
 }
 
-
 .logo {
   text-align: center;
   margin-bottom: 24px;
@@ -45,7 +41,6 @@ body {
   max-width: 140px;
   height: auto;
 }
-
 
 .navegacion {
   display: flex;
@@ -81,7 +76,6 @@ body {
   color: #ffffff;
 }
 
-
 .boton-menu.activo {
   background-color: #f5a623;
   color: #000000;
@@ -91,7 +85,6 @@ body {
 .boton-menu.activo i {
   color: #000000;
 }
-
 
 .perfil-usuario {
   display: flex;
@@ -135,7 +128,6 @@ body {
   font-size: 14px;
   color: #8a9bb5;
 }
-
 
 .menu-desplegable-perfil {
   position: absolute;
@@ -183,13 +175,11 @@ body {
   margin: 4px 0;
 }
 
-
 .contenido {
   flex: 1;
   padding: 30px 40px;
   overflow-y: auto;
 }
-
 
 .barra-superior {
   display: flex;
@@ -216,7 +206,6 @@ body {
   align-items: center;
   gap: 12px;
 }
-
 
 .caja-buscar {
   display: flex;
@@ -247,7 +236,6 @@ body {
   color: #52637a;
 }
 
-
 .boton-dias {
   display: flex;
   align-items: center;
@@ -260,7 +248,6 @@ body {
   font-size: 12px;
   cursor: pointer;
 }
-
 
 .campana-alerta {
   position: relative;
@@ -290,7 +277,6 @@ body {
   border-radius: 50%;
 }
 
-
 .seccion {
   display: none;
 }
@@ -298,7 +284,6 @@ body {
 .seccion.visible {
   display: block;
 }
-
 
 .fila-tarjetas {
   display: grid;
@@ -358,7 +343,6 @@ body {
   font-size: 11px;
 }
 
-
 .fila-doble {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -415,7 +399,6 @@ body {
 .btn-texto:hover {
   text-decoration: underline;
 }
-
 
 .grafico-simple {
   display: flex;
@@ -487,7 +470,6 @@ body {
   font-size: 10px;
   color: #52637a;
 }
-
 
 .lista-productos-top {
   display: grid;
@@ -572,7 +554,6 @@ body {
   text-decoration: underline;
 }
 
-
 .tabla-panel {
   width: 100%;
   border-collapse: collapse;
@@ -612,7 +593,6 @@ body {
   text-decoration: underline;
 }
 
-
 .etiqueta-verde {
   background-color: rgba(16, 185, 129, 0.15);
   color: #10b981;
@@ -640,7 +620,6 @@ body {
   font-weight: 600;
 }
 
-
 .boton-icono {
   background: transparent;
   border: none;
@@ -659,7 +638,6 @@ body {
 .boton-icono.rojo:hover {
   color: #ef4444;
 }
-
 
 .fila-financiera {
   display: flex;
@@ -713,7 +691,6 @@ body {
   font-weight: 700;
 }
 
-
 .cabecera-modulo {
   display: flex;
   justify-content: space-between;
@@ -748,7 +725,6 @@ body {
   background-color: #d9911a;
 }
 
-
 .barra-filtros {
   display: flex;
   gap: 12px;
@@ -777,7 +753,6 @@ body {
   outline: none;
   cursor: pointer;
 }
-
 
 .pie-pagina {
   margin-top: 60px;
@@ -825,7 +800,6 @@ body {
   color: #f5a623;
   font-weight: 600;
 }
-
 
 .barra-derechos {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -881,7 +855,6 @@ body {
   font-size: 11px;
   color: #8a9bb5;
 }
-
 
 .fondo-modal {
   position: fixed;
@@ -1012,7 +985,6 @@ body {
   color: #ffffff;
 }
 
-
 @media (max-width: 1024px) {
   .fila-doble {
     grid-template-columns: 1fr;
@@ -1042,11 +1014,6 @@ body {
   }
 }
 
-
-/* ==========================================================================
-   SISTEMA DE NOTIFICACIONES TOAST (Abajo a la derecha)
-   Integra con accessibility.js para desplazar el botón de accesibilidad hacia arriba
-   ========================================================================== */
 .contenedor-toast {
   position: fixed;
   bottom: 24px;
