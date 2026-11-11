@@ -595,7 +595,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 8. ENVÍO Y VALIDACIÓN GENERAL DEL FORMULARIO
   // -----------------------------------------------------
   if (formRegistro) {
-    formRegistro.addEventListener('submit', (e) => {
+    formRegistro.addEventListener('submit', async (e) => {
       e.preventDefault();
 
       const vNombre = validarNombre();
@@ -622,10 +622,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // Deshabilitar botón durante proceso
+      const textoOriginalBoton = btnRegistro?.innerHTML;
       if (btnRegistro) {
         btnRegistro.disabled = true;
         btnRegistro.innerHTML = '<i class="fi fi-rr-spinner fi-spin"></i> Registrando cuenta...';
       }
+      let registroExitoso = false;
 
       // Guardar usuario en localStorage para persistencia y validación en Login
       const nuevoUsuario = {
@@ -668,17 +670,20 @@ document.addEventListener('DOMContentLoaded', () => {
           usuariosGuardados.push(nuevoUsuario);
         }
         localStorage.setItem('wiiu_registered_users', JSON.stringify(usuariosGuardados));
-        mostrarToast('Registro exitoso. Ahora puedes iniciar sesión.', 'exito');
+        registroExitoso = true;
+        mostrarToast('¡Cuenta creada exitosamente! Redirigiendo a Iniciar Sesión...', 'exito');
+        setTimeout(() => {
+          window.location.href = 'Login.html';
+        }, 1600);
       } catch (err) {
         console.error('Error al registrar usuario:', err);
         mostrarToast('Error de red al registrar usuario.', 'error');
+      } finally {
+        if (!registroExitoso && btnRegistro) {
+          btnRegistro.disabled = false;
+          btnRegistro.innerHTML = textoOriginalBoton;
+        }
       }
-
-      mostrarToast('¡Cuenta creada exitosamente! Redirigiendo a Iniciar Sesión...', 'exito');
-
-      setTimeout(() => {
-        window.location.href = 'Login.html';
-      }, 1600);
     });
   }
 });
