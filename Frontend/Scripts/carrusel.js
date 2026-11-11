@@ -5,15 +5,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (!productGrid || !previousButton || !nextButton) return;
 
-  const products = JSON.parse(localStorage.getItem("wiiu_products") || "[]");
-
-  if (products.length > 0) {
-    renderProducts(productGrid, products);
-  }
-
+  productGrid.setAttribute("aria-live", "polite");
   productGrid.style.overflowX = "auto";
   productGrid.style.scrollBehavior = "smooth";
   productGrid.style.scrollbarWidth = "none";
+  loadProducts(productGrid);
 
   const getScrollAmount = () => Math.max(productGrid.clientWidth * 0.85, 280);
 
@@ -36,37 +32,82 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 });
 
+async function loadProducts(container) {
+  container.setAttribute("aria-busy", "true");
+  renderStatus(container, "Cargando productos...");
+
+  try {
+    const response = await fetch("http://localhost:3000/api/productos");
+    if (!response.ok) {
+      throw new Error(`La API respondió con estado ${response.status}.`);
+    }
+
+    const products = await response.json();
+    if (!Array.isArray(products)) {
+      throw new Error("La API devolvió un formato de productos no válido.");
+    }
+    if (products.length === 0) {
+      renderStatus(container, "No hay productos activos disponibles.");
+      return;
+    }
+
+    renderProducts(container, products.slice(0, 6));
+  } catch (error) {
+    console.error("No se pudieron cargar los productos de inicio:", error);
+    renderStatus(container, "No se pudieron cargar los productos. Intenta de nuevo más tarde.");
+  } finally {
+    container.setAttribute("aria-busy", "false");
+  }
+}
+
+function renderStatus(container, message) {
+  const status = document.createElement("p");
+  status.setAttribute("role", "status");
+  status.textContent = message;
+  status.style.width = "100%";
+  status.style.padding = "24px";
+  status.style.textAlign = "center";
+  status.style.color = "#ffffff";
+  container.replaceChildren(status);
+}
+
 function renderProducts(container, products) {
   container.innerHTML = products
     .map((product) => {
-      const stockClass = product.stock > 0 ? "disponible" : "consultar";
-      const stockText = product.stock > 0 ? "Con stock" : "Agotado";
-      const image = product.imageUrl || "../Assets/lenovolegion.webp";
-      const price = formatPrice(product.price);
-      const description =
-        product.description ||
-        product.category ||
-        "Producto disponible en WiiU Games";
+      const stock = Number(product.stock_total) || 0;
+      const stockClass = stock > 0 ? "disponible" : "consultar";
+      const stockText = stock > 0 ? "Con stock" : "Agotado";
+      const image = product.imagen_url || "Assets/lenovolegion.webp";
 
       return `
-      <a href="Pages/Product.html?id=${encodeURIComponent(product.id)}" class="enlace-producto">
+      <a href="Pages/Product.html?id=${encodeURIComponent(product.id_producto)}" class="enlace-producto">
         <article class="tarjeta-producto">
           <div class="estado-stock ${stockClass}">${stockText}</div>
-          <img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.name)}" class="imagen-producto" loading="lazy">
-          <div class="calificacion">★★★★★ <span class="resenas">${escapeHtml(product.category || "Producto")}</span></div>
-          <h3 class="titulo-producto">${escapeHtml(product.name)}</h3>
-          <p class="descripcion">${escapeHtml(description)}</p>
-          <div class="precio-actual">${price}</div>
+          <img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.nombre)}" class="imagen-producto" loading="lazy">
+          <div class="calificacion"><span class="resenas">${escapeHtml(product.nombre_marca || product.nombre_cat || "Producto")}</span></div>
+          <h3 class="titulo-producto">${escapeHtml(product.nombre)}</h3>
+          <p class="descripcion-producto">${escapeHtml(product.descripcion || "")}</p>
+          <div class="precio-actual">${formatPrice(product.precio)}</div>
         </article>
       </a>
     `;
     })
     .join("");
+
+  container.querySelectorAll(".imagen-producto").forEach((image) => {
+    image.addEventListener(
+      "error",
+      () => {
+        image.src = "Assets/lenovolegion.webp";
+      },
+      { once: true },
+    );
+  });
 }
 
 function formatPrice(value) {
   const price = Number(value);
-  if (!Number.isFinite(price) || price <= 0) return "Consultar precio";
+  if (!Number.isFinite(price) || price < 0) return "Consultar precio";
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",

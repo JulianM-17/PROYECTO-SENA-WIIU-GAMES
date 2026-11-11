@@ -698,6 +698,21 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+.encabezado-formulario-perfil {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.encabezado-formulario-perfil .titulo-tarjeta-formulario {
+  flex: 1;
+}
+
+.acciones-formulario[hidden] {
+  display: none;
+}
+
 .cuadricula-formulario-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

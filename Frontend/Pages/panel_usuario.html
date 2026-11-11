@@ -386,7 +386,16 @@
 
             <!-- Formulario de datos -->
             <form id="form-perfil-datos" class="tarjeta-formulario">
-              <p class="titulo-tarjeta-formulario">Datos personales</p>
+              <div class="encabezado-formulario-perfil">
+                <p class="titulo-tarjeta-formulario">Datos personales</p>
+                <button
+                  type="button"
+                  class="btn-guardar"
+                  id="btn-editar-perfil"
+                >
+                  Editar datos
+                </button>
+              </div>
               <div class="cuadricula-formulario-2">
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario">Nombres</label>
@@ -395,6 +404,7 @@
                     id="perfil-nombres"
                     value=""
                     class="entrada-formulario"
+                    readonly
                     required
                     maxlength="30"
                   />
@@ -406,6 +416,7 @@
                     id="perfil-apellidos"
                     value=""
                     class="entrada-formulario"
+                    readonly
                     required
                     maxlength="30"
                   />
@@ -417,6 +428,7 @@
                     id="perfil-email"
                     value=""
                     class="entrada-formulario"
+                    readonly
                     required
                     maxlength="120"
                   />
@@ -428,6 +440,7 @@
                     id="perfil-telefono"
                     value=""
                     class="entrada-formulario"
+                    readonly
                     required
                     maxlength="20"
                   />
@@ -439,6 +452,7 @@
                     id="perfil-nacimiento"
                     value=""
                     class="entrada-formulario"
+                    readonly
                   />
                 </div>
                 <div class="campo-formulario">
@@ -450,12 +464,13 @@
                     id="perfil-documento"
                     value=""
                     class="entrada-formulario"
+                    readonly
                     required
                     maxlength="20"
                   />
                 </div>
               </div>
-              <div class="acciones-formulario">
+              <div class="acciones-formulario" id="acciones-edicion-perfil" hidden>
                 <button
                   type="button"
                   class="btn-cancelar"

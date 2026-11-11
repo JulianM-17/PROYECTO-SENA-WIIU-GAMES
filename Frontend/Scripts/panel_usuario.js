@@ -293,8 +293,26 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 5. PERFIL — GUARDAR DATOS & CAMBIAR CONTRASEÑA
   // ===================================================
   const formPerfilDatos = document.getElementById("form-perfil-datos");
+  const btnEditarPerfil = document.getElementById("btn-editar-perfil");
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
   const formPerfilSeguridad = document.getElementById("form-perfil-seguridad");
+  const accionesEdicionPerfil = document.getElementById(
+    "acciones-edicion-perfil",
+  );
+  const camposPerfil = formPerfilDatos?.querySelectorAll(".entrada-formulario");
+
+  function setProfileEditing(editing) {
+    camposPerfil?.forEach((input) => {
+      input.readOnly = !editing;
+    });
+    if (btnEditarPerfil) btnEditarPerfil.hidden = editing;
+    if (accionesEdicionPerfil) accionesEdicionPerfil.hidden = !editing;
+  }
+
+  btnEditarPerfil?.addEventListener("click", () => {
+    setProfileEditing(true);
+    document.getElementById("perfil-nombres")?.focus();
+  });
 
   // Validación en tiempo real para todos los campos de formularios del panel
   document
@@ -402,6 +420,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           "wiiu_usuario_activo",
           JSON.stringify(sessionUser),
         );
+        setProfileEditing(false);
         updateUI();
         showToast("¡Datos personales actualizados con éxito!", "success");
       } catch (error) {
@@ -418,6 +437,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document
         .querySelectorAll("#form-perfil-datos .input-error")
         .forEach((el) => el.classList.remove("input-error"));
+      setProfileEditing(false);
       updateUI();
       showToast("Cambios cancelados.", "info");
     });
