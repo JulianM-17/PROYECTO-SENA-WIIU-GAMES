@@ -273,9 +273,105 @@
     document.body.dataset.contactModalReady = "true";
   }
 
+  function setupMobileMenu() {
+    const navbar = document.querySelector(".menu-principal");
+    const menu = navbar?.querySelector(".contenido-menu");
+    if (!navbar || !menu || navbar.dataset.mobileMenuReady === "true") return;
+    const userIcons = menu.querySelector(".iconos-usuario");
+    const topBar = navbar.parentElement?.querySelector(".barra-superior");
+    const topBarParent = topBar?.parentElement;
+    const topBarNextSibling = topBar?.nextSibling;
+
+    // Crea los controles para abrir y cerrar el menú en pantallas pequeñas.
+    const actions = document.createElement("div");
+    actions.className = "menu-movil-acciones";
+    navbar.appendChild(actions);
+
+    const menuButton = document.createElement("button");
+    menuButton.className = "menu-movil-boton";
+    menuButton.type = "button";
+    menuButton.setAttribute("aria-label", "Abrir menú");
+    menuButton.setAttribute("aria-expanded", "false");
+    menuButton.setAttribute("aria-controls", "menu-navegacion");
+    menuButton.innerHTML =
+      '<span></span><span></span><span></span>';
+    navbar.appendChild(menuButton);
+    menu.id = "menu-navegacion";
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "menu-movil-cerrar";
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Cerrar menú");
+    closeButton.innerHTML = "";
+    menu.prepend(closeButton);
+
+    const overlay = document.createElement("button");
+    overlay.className = "menu-movil-overlay";
+    overlay.type = "button";
+    overlay.setAttribute("aria-label", "Cerrar menú");
+    document.body.appendChild(overlay);
+
+    // Mantiene sincronizado el estado visual y accesible del menú.
+    function setMenuOpen(isOpen) {
+      navbar.classList.toggle("menu-movil-abierto", isOpen);
+      menuButton.setAttribute("aria-expanded", String(isOpen));
+      menuButton.setAttribute("aria-label", isOpen ? "Cerrar menú" : "Abrir menú");
+      document.body.classList.toggle("menu-movil-bloqueo", isOpen);
+    }
+
+    // Cierra el menú al navegar, tocar fuera, pulsar Escape o volver a escritorio.
+    menuButton.addEventListener("click", () => {
+      setMenuOpen(!navbar.classList.contains("menu-movil-abierto"));
+    });
+    closeButton.addEventListener("click", () => setMenuOpen(false));
+    overlay.addEventListener("click", () => setMenuOpen(false));
+    menu.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+    topBar?.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+
+    // Reubica los iconos y la información superior según el tamaño de pantalla.
+    function syncMobileLayout() {
+      if (window.innerWidth <= 768) {
+        if (userIcons && userIcons.parentElement !== actions) {
+          actions.appendChild(userIcons);
+        }
+        if (topBar && topBar.parentElement !== menu) {
+          menu.appendChild(topBar);
+        }
+        return;
+      }
+
+      if (userIcons && userIcons.parentElement !== menu) {
+        menu.appendChild(userIcons);
+      }
+      if (topBar && topBar.parentElement !== topBarParent) {
+        topBarParent.insertBefore(
+          topBar,
+          topBarNextSibling?.parentElement === topBarParent
+            ? topBarNextSibling
+            : null,
+        );
+      }
+      setMenuOpen(false);
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    });
+    window.addEventListener("resize", syncMobileLayout);
+    syncMobileLayout();
+
+    // Evita inicializar los controles más de una vez.
+    navbar.dataset.mobileMenuReady = "true";
+  }
+
   function initialize() {
     createUI();
     applyPreferences();
+    setupMobileMenu();
     setupContactModal();
     setupSessionHeader();
 
