@@ -72,6 +72,10 @@ function renderStatus(container, message) {
 }
 
 function renderProducts(container, products) {
+  const productsById = new Map(
+    products.map((product) => [String(product.id_producto), product]),
+  );
+
   container.innerHTML = products
     .map((product) => {
       const stock = Number(product.stock_total) || 0;
@@ -80,16 +84,19 @@ function renderProducts(container, products) {
       const image = product.imagen_url || "Assets/lenovolegion.webp";
 
       return `
-      <a href="Pages/Product.html?id=${encodeURIComponent(product.id_producto)}" class="enlace-producto">
-        <article class="tarjeta-producto">
-          <div class="estado-stock ${stockClass}">${stockText}</div>
+      <article class="tarjeta-producto">
+        <div class="estado-stock ${stockClass}">${stockText}</div>
+        <a href="Pages/Product.html?id=${encodeURIComponent(product.id_producto)}" class="enlace-detalle-producto">
           <img src="${escapeAttribute(image)}" alt="${escapeAttribute(product.nombre)}" class="imagen-producto" loading="lazy">
           <div class="calificacion"><span class="resenas">${escapeHtml(product.nombre_marca || product.nombre_cat || "Producto")}</span></div>
           <h3 class="titulo-producto">${escapeHtml(product.nombre)}</h3>
-          <p class="descripcion-producto">${escapeHtml(product.descripcion || "")}</p>
-          <div class="precio-actual">${formatPrice(product.precio)}</div>
-        </article>
-      </a>
+        </a>
+        <div class="precio-actual">${formatPrice(product.precio)}</div>
+        <button class="btn-agregar-carrito" type="button" data-product-id="${escapeAttribute(product.id_producto)}" ${stock > 0 ? "" : "disabled"}>
+          ${stock > 0 ? "Agregar al carrito" : "Agotado"}
+        </button>
+        <span class="mensaje-carrito" aria-live="polite"></span>
+      </article>
     `;
     })
     .join("");
@@ -102,6 +109,38 @@ function renderProducts(container, products) {
       },
       { once: true },
     );
+  });
+
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest(".btn-agregar-carrito");
+    if (!button || !container.contains(button)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const product = productsById.get(button.dataset.productId);
+    const feedback = button.nextElementSibling;
+    const result = window.WiiUGamesCart?.add(product, 1);
+    if (!result?.ok) {
+      if (feedback) {
+        feedback.textContent =
+          result?.reason === "stock"
+            ? `Solo hay ${result.stock} disponibles en el carrito.`
+            : result?.reason === "unavailable"
+              ? "Producto agotado."
+              : "No se pudo agregar el producto al carrito.";
+      }
+      return;
+    }
+
+    const originalText = button.textContent;
+    button.textContent = "¡Agregado!";
+    if (feedback) feedback.textContent = "Añadido al carrito.";
+    window.setTimeout(() => {
+      if (!button.isConnected) return;
+      button.textContent = originalText;
+      if (feedback) feedback.textContent = "";
+    }, 1500);
   });
 }
 
