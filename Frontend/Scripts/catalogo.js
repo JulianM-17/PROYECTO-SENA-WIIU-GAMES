@@ -535,3 +535,83 @@ function escapeHtml(value) {
 function normalizar(value) {
   return String(value ?? '').trim().toLocaleLowerCase('es');
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//prueba paginacion
+
+
+const productosPorPagina = 8; // Cambia este número según tu diseño
+let paginaActual = 1;
+let categoriaActual = 'todos';
+
+const tarjetas = Array.from(document.querySelectorAll('.producto-card'));
+const contenedorPaginacion = document.getElementById('paginacion');
+const botonesFiltro = document.querySelectorAll('.filtros button');
+
+function actualizarCatalogo() {
+  // 1. Filtrar tarjetas según la categoría elegida
+  const filtrados = tarjetas.filter(tarjeta => {
+    return categoriaActual === 'todos' || tarjeta.dataset.categoria === categoriaActual;
+  });
+
+  // 2. Ocultar todas las tarjetas primero
+  tarjetas.forEach(t => t.classList.add('oculto'));
+
+  // 3. Calcular qué tarjetas mostrar en la página actual
+  const inicio = (paginaActual - 1) * productosPorPagina;
+  const fin = inicio + productosPorPagina;
+  const tarjetasPagina = filtrados.slice(inicio, fin);
+
+  // 4. Mostrar solo las tarjetas de esta página
+  tarjetasPagina.forEach(t => t.classList.remove('oculto'));
+
+  // 5. Dibujar los botones de paginación
+  renderizarBotones(filtrados.length);
+}
+
+function renderizarBotones(totalProductos) {
+  contenedorPaginacion.innerHTML = '';
+  const totalPaginas = Math.ceil(totalProductos / productosPorPagina);
+
+  // Si solo hay 1 página, no hace falta mostrar botones
+  if (totalPaginas <= 1) return;
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    if (i === paginaActual) btn.classList.add('activa');
+
+    btn.addEventListener('click', () => {
+      paginaActual = i;
+      actualizarCatalogo();
+      window.scrollTo({ top: 0, behavior: 'smooth' }); // Sube al inicio suavemente
+    });
+
+    contenedorPaginacion.appendChild(btn);
+  }
+}
+
+// Conectar con tus filtros existentes
+botonesFiltro.forEach(boton => {
+  boton.addEventListener('click', () => {
+    categoriaActual = boton.dataset.categoria;
+    paginaActual = 1; // Siempre volver a la página 1 al filtrar
+    actualizarCatalogo();
+  });
+});
+
+// Iniciar al cargar la página
+actualizarCatalogo();

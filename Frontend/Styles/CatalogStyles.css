@@ -674,6 +674,11 @@ body {
   }
 }
 
+
+
+.oculto {
+  display: none !important;
+}
 .paginacion {
   display: flex;
   justify-content: center;
@@ -693,6 +698,9 @@ body {
   color: #fff;
   border-color: #222;
 }
+
+
+
 @media (max-width: 700px) {
   .contenedor-principal-catalogo {
     padding: 0 16px;
