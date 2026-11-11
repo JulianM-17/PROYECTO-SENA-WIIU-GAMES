@@ -226,6 +226,13 @@
   transform: scaleX(1);
 }
 
+.menu-movil-boton,
+.menu-movil-cerrar,
+.menu-movil-overlay,
+.menu-movil-acciones {
+  display: none;
+}
+
 .botones-ingreso {
   display: flex;
   gap: 10px;
@@ -350,6 +357,210 @@
   display: none !important;
 }
 
+@media (max-width: 768px) {
+  .menu-principal {
+    min-height: 76px;
+    padding: 8px 18px;
+    flex-wrap: nowrap;
+    gap: 12px;
+  }
+
+  .seccion-logo img {
+    height: 58px;
+  }
+
+  .menu-movil-boton {
+    display: flex;
+    width: 44px;
+    height: 44px;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid rgba(245, 200, 66, 0.6);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .menu-movil-acciones {
+    display: flex;
+    position: absolute;
+    right: 72px;
+    top: 50%;
+    align-items: center;
+    transform: translateY(-50%);
+  }
+
+  .menu-movil-acciones .iconos-usuario {
+    gap: 8px;
+  }
+
+  .menu-movil-acciones .icono-menu {
+    color: var(--yellow);
+    font-size: 20px;
+  }
+
+  .menu-movil-boton span {
+    width: 22px;
+    height: 2px;
+    background: var(--yellow);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .menu-movil-abierto .menu-movil-boton span:first-child {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .menu-movil-abierto .menu-movil-boton span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .menu-movil-abierto .menu-movil-boton span:last-child {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  .menu-principal .contenido-menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1001;
+    width: min(82vw, 320px);
+    height: 100vh;
+    height: 100dvh;
+    padding: 72px 18px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 24px;
+    overflow-y: auto;
+    background: var(--DarkBlue);
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.2);
+    transform: translateX(-105%);
+    visibility: hidden;
+    transition: transform 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  .menu-principal.menu-movil-abierto .contenido-menu {
+    transform: translateX(0);
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  .menu-movil-cerrar {
+    display: block;
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    background: transparent;
+    color: #ffffff;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .menu-principal .enlaces-nav,
+  .menu-principal .botones-ingreso {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .menu-principal .enlaces-nav a {
+    color: #ffffff;
+    font-size: 13px;
+    text-transform: uppercase;
+    padding: 10px 4px;
+    border-radius: 0;
+  }
+
+  .menu-principal .enlaces-nav a::after {
+    display: none;
+  }
+
+  .menu-principal .enlaces-nav a:hover,
+  .menu-principal .enlaces-nav a.activo {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .menu-principal .botones-ingreso {
+    align-items: stretch;
+  }
+
+  .menu-principal .btn-iniciar,
+  .menu-principal .btn-registrar {
+    justify-content: center;
+  }
+
+  .menu-principal .iconos-usuario {
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .menu-principal .barra-superior {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    padding: 18px 4px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: 0;
+    background: transparent;
+    font-size: 12px;
+  }
+
+  .menu-principal .seccion-horario,
+  .menu-principal .seccion-direccion {
+    text-align: left;
+    line-height: 1.7;
+  }
+
+  .menu-principal .seccion-direccion .link-contacto {
+    margin-left: 0;
+  }
+
+  .menu-principal .seccion-contacto {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .menu-movil-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    padding: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    cursor: pointer;
+    transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+  }
+
+  body.menu-movil-bloqueo .menu-movil-overlay {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+
+  body.menu-movil-bloqueo {
+    overflow: hidden;
+  }
+}
+
 .avatar-sesion {
   width: 38px;
   height: 38px;
@@ -411,10 +622,6 @@ a.foto-perfil {
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--yellow), transparent);
-}
-
-.seccion-boletin {
-  /* Placeholder para boletín futuro */
 }
 
 .cuadricula-footer {
