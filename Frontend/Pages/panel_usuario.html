@@ -1235,6 +1235,7 @@
                 type="text"
                 id="perfil-nombres"
                 class="entrada-formulario"
+                data-validation="name"
                 required
                 maxlength="30"
               />
@@ -1247,6 +1248,7 @@
                 type="text"
                 id="perfil-apellidos"
                 class="entrada-formulario"
+                data-validation="name"
                 required
                 maxlength="30"
               />
@@ -1271,6 +1273,8 @@
                 type="tel"
                 id="perfil-telefono"
                 class="entrada-formulario"
+                data-validation="phone"
+                inputmode="tel"
                 required
                 maxlength="20"
               />
@@ -1293,6 +1297,7 @@
                 type="text"
                 id="perfil-documento"
                 class="entrada-formulario"
+                data-validation="document"
                 required
                 maxlength="20"
               />
@@ -1338,6 +1343,7 @@
               type="text"
               id="dir-input-nombre"
               class="entrada-formulario"
+              data-validation="name"
               placeholder="Ej: Tu nombre"
               required
             />
@@ -1358,7 +1364,9 @@
               type="tel"
               id="dir-input-telefono"
               class="entrada-formulario"
+              data-validation="phone"
               placeholder="Ej: +57 310 456 7890"
+              maxlength="20"
               required
             />
           </div>
@@ -1402,8 +1410,11 @@
               type="text"
               id="card-input-numero"
               class="entrada-formulario"
+              data-validation="card-number"
+              inputmode="numeric"
               placeholder="•••• •••• •••• 1234"
               maxlength="19"
+              minlength="13"
               required
             />
           </div>
@@ -1413,7 +1424,9 @@
               type="text"
               id="card-input-titular"
               class="entrada-formulario"
+              data-validation="name"
               placeholder="TITULAR"
+              maxlength="100"
               required
             />
           </div>
@@ -1424,6 +1437,8 @@
                 type="text"
                 id="card-input-vence"
                 class="entrada-formulario"
+                data-validation="expiry"
+                inputmode="numeric"
                 placeholder="08/29"
                 maxlength="5"
                 required
@@ -1435,6 +1450,8 @@
                 type="password"
                 id="card-input-cvc"
                 class="entrada-formulario"
+                data-validation="cvc"
+                inputmode="numeric"
                 placeholder="•••"
                 maxlength="4"
                 required

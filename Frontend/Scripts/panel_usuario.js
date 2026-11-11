@@ -133,6 +133,164 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (modal) modal.classList.remove("activa");
   }
 
+  const typedFieldRules = {
+    name: {
+      normalize: (value) => value.replace(/[^\p{L}\s'-]/gu, ""),
+      hasInvalidCharacters: (value) => /[^\p{L}\s'-]/u.test(value),
+      validate: (value) =>
+        /^[\p{L}][\p{L}\s'-]*$/u.test(value.trim())
+          ? ""
+          : "Ingresa solo letras, espacios, apóstrofes o guiones.",
+      inputMessage: "Este campo solo admite letras, espacios, apóstrofes y guiones.",
+    },
+    phone: {
+      normalize: (value) => value.replace(/[^+\d()\s-]/g, ""),
+      hasInvalidCharacters: (value) => /[^+\d()\s-]/.test(value),
+      validate: (value) =>
+        /^[+\d()\s-]{7,20}$/.test(value) &&
+        (value.match(/\d/g) || []).length >= 7
+          ? ""
+          : "El teléfono debe tener entre 7 y 20 caracteres y al menos 7 dígitos.",
+      inputMessage: "El teléfono no admite letras.",
+    },
+    document: {
+      normalize: (value) => value.replace(/[^\p{L}\p{N}.-]/gu, ""),
+      hasInvalidCharacters: (value) => /[^\p{L}\p{N}.-]/u.test(value),
+      validate: (value) =>
+        /^[\p{L}\p{N}.-]{4,20}$/u.test(value)
+          ? ""
+          : "El documento debe tener entre 4 y 20 letras, números, puntos o guiones.",
+      inputMessage: "El documento solo admite letras, números, puntos y guiones.",
+    },
+    "card-number": {
+      normalize: (value, input) =>
+        value.replace(/[\s-]/g, "").replace(/\D/g, "").slice(0, input.maxLength),
+      hasInvalidCharacters: (value) => /[^0-9\s-]/.test(value),
+      validate: (value) =>
+        /^\d{13,19}$/.test(value)
+          ? ""
+          : "El número de tarjeta debe tener entre 13 y 19 dígitos.",
+      inputMessage: "El número de tarjeta solo admite dígitos.",
+    },
+    expiry: {
+      normalize: (value) => {
+        const digits = value.replace(/\D/g, "").slice(0, 4);
+        return digits.length > 2
+          ? `${digits.slice(0, 2)}/${digits.slice(2)}`
+          : digits;
+      },
+      hasInvalidCharacters: (value) => /[^0-9/]/.test(value),
+      validate: (value) => {
+        const match = /^(0[1-9]|1[0-2])\/(\d{2})$/.exec(value);
+        if (!match) return "Usa un vencimiento válido en formato MM/AA.";
+
+        const month = Number(match[1]);
+        const year = 2000 + Number(match[2]);
+        const now = new Date();
+        if (
+          year < now.getFullYear() ||
+          (year === now.getFullYear() && month < now.getMonth() + 1)
+        ) {
+          return "La tarjeta está vencida.";
+        }
+        return "";
+      },
+      inputMessage: "El vencimiento solo admite números en formato MM/AA.",
+    },
+    cvc: {
+      normalize: (value, input) =>
+        value.replace(/\D/g, "").slice(0, input.maxLength),
+      hasInvalidCharacters: (value) => /\D/.test(value),
+      validate: (value) =>
+        /^\d{3,4}$/.test(value) ? "" : "El CVC debe tener 3 o 4 dígitos.",
+      inputMessage: "El CVC solo admite números.",
+    },
+  };
+
+  function setTypedFieldError(input, message) {
+    const wrapper = input.closest(".campo-formulario");
+    let feedback = wrapper?.querySelector(".error-mensaje-campo");
+    if (message) {
+      input.classList.add("input-error");
+      if (wrapper && !feedback) {
+        feedback = document.createElement("small");
+        feedback.className = "error-mensaje-campo";
+        wrapper.appendChild(feedback);
+      }
+      if (feedback) feedback.textContent = message;
+      return;
+    }
+
+    input.classList.remove("input-error");
+    feedback?.remove();
+  }
+
+  function validateTypedInput(input) {
+    const rule = typedFieldRules[input.dataset.validation];
+    if (!rule) return "";
+    const value = input.value.trim();
+    if (!value) {
+      return input.required ? "Este campo es obligatorio." : "";
+    }
+    return rule.validate(value);
+  }
+
+  function validateTypedFields(form) {
+    let firstInvalid = null;
+    form.querySelectorAll("[data-validation]").forEach((input) => {
+      const message = validateTypedInput(input);
+      setTypedFieldError(input, message);
+      if (message && !firstInvalid) firstInvalid = input;
+    });
+
+    if (firstInvalid) {
+      firstInvalid.focus();
+      showToast("Revisa el formato de los campos señalados.", "error");
+      return false;
+    }
+    return true;
+  }
+
+  document.querySelectorAll("[data-validation]").forEach((input) => {
+    const rule = typedFieldRules[input.dataset.validation];
+    if (!rule) return;
+
+    input.addEventListener("input", () => {
+      const previousValue = input.value;
+      const hasInvalidCharacters = rule.hasInvalidCharacters(previousValue);
+      input.value = rule.normalize(previousValue, input);
+      if (hasInvalidCharacters) {
+        setTypedFieldError(input, rule.inputMessage);
+      } else {
+        setTypedFieldError(input, "");
+      }
+    });
+
+    input.addEventListener("blur", () => {
+      setTypedFieldError(input, validateTypedInput(input));
+    });
+  });
+
+  document.querySelectorAll("form").forEach((form) => {
+    form.addEventListener("reset", () => {
+      window.setTimeout(() => {
+        form
+          .querySelectorAll("[data-validation]")
+          .forEach((input) => setTypedFieldError(input, ""));
+      }, 0);
+    });
+  });
+
+  const birthDateInput = document.getElementById("perfil-nacimiento");
+  if (birthDateInput) {
+    const localDate = new Date(
+      Date.now() - new Date().getTimezoneOffset() * 60000,
+    )
+      .toISOString()
+      .slice(0, 10);
+    birthDateInput.max = localDate;
+  }
+
   // Cerrar modales al hacer clic en botones de cierre o backdrop
   document
     .querySelectorAll("[data-close-modal], .fondo-modal")
@@ -310,8 +468,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   btnEditarPerfil?.addEventListener("click", () => {
     formPerfilDatos
-      ?.querySelectorAll(".input-error")
-      .forEach((input) => input.classList.remove("input-error"));
+      ?.querySelectorAll("[data-validation]")
+      .forEach((input) => setTypedFieldError(input, ""));
     updateUI();
     openModal("modal-editar-perfil");
     document.getElementById("perfil-nombres")?.focus();
@@ -328,17 +486,31 @@ document.addEventListener("DOMContentLoaded", async () => {
           input.addEventListener("blur", () => {
             if (!input.value.trim()) {
               input.classList.add("input-error");
-            } else {
+            } else if (
+              !input.closest(".campo-formulario")?.querySelector(
+                ".error-mensaje-campo",
+              )
+            ) {
               input.classList.remove("input-error");
             }
           });
           input.addEventListener("input", () => {
-            if (input.value.trim()) {
+            if (
+              input.value.trim() &&
+              !input.closest(".campo-formulario")?.querySelector(
+                ".error-mensaje-campo",
+              )
+            ) {
               input.classList.remove("input-error");
             }
           });
           input.addEventListener("change", () => {
-            if (input.value.trim()) {
+            if (
+              input.value.trim() &&
+              !input.closest(".campo-formulario")?.querySelector(
+                ".error-mensaje-campo",
+              )
+            ) {
               input.classList.remove("input-error");
             }
           });
@@ -349,6 +521,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (formPerfilDatos) {
     formPerfilDatos.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (!validateTypedFields(formPerfilDatos)) return;
+
       const inputNombre = document.getElementById("perfil-nombres");
       const inputApellidos = document.getElementById("perfil-apellidos");
       const inputEmail = document.getElementById("perfil-email");
@@ -437,9 +611,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnCancelarPerfil) {
     btnCancelarPerfil.addEventListener("click", (e) => {
       e.preventDefault();
-      document
-        .querySelectorAll("#form-perfil-datos .input-error")
-        .forEach((el) => el.classList.remove("input-error"));
+      formPerfilDatos
+        ?.querySelectorAll("[data-validation]")
+        .forEach((input) => setTypedFieldError(input, ""));
       updateUI();
       closeModal("modal-editar-perfil");
       showToast("Cambios cancelados.", "info");
@@ -617,6 +791,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (formDir) {
     formDir.addEventListener("submit", (e) => {
       e.preventDefault();
+      if (!validateTypedFields(formDir)) return;
+
       const id = document.getElementById("dir-edit-id").value;
       const tipo = document.getElementById("dir-input-tipo").value;
       const inputNombre = document.getElementById("dir-input-nombre");
@@ -801,6 +977,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (formCard) {
     formCard.addEventListener("submit", (e) => {
       e.preventDefault();
+      if (!validateTypedFields(formCard)) return;
+
       const id = document.getElementById("card-edit-id").value;
       const tipo = document.getElementById("card-input-tipo").value;
       const inputNumero = document.getElementById("card-input-numero");
