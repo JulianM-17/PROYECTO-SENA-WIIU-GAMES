@@ -136,20 +136,16 @@
             </div>
 
             <div class="grupo-entrada">
-              <label class="etiqueta"
+              <label class="etiqueta" for="fecha-nacimiento"
                 >Fecha de Nacimiento <span class="obligatorio">*</span></label
               >
-              <div class="fila-formulario">
-                <select class="entrada-seleccion ancho-tercio" id="nacimiento-dia" required>
-                  <option value="">Día</option>
-                </select>
-                <select class="entrada-seleccion ancho-tercio" id="nacimiento-mes" required>
-                  <option value="">Mes</option>
-                </select>
-                <select class="entrada-seleccion ancho-tercio" id="nacimiento-anio" required>
-                  <option value="">Año</option>
-                </select>
-              </div>
+              <input
+                type="date"
+                class="entrada-texto"
+                id="fecha-nacimiento"
+                min="1940-01-01"
+                required
+              />
               <span class="mensaje-error" id="error-nacimiento"></span>
             </div>
 

@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formRegistro = document.getElementById('form-registro');
   const inputNombre = document.getElementById('nombre');
   const inputApellido = document.getElementById('apellido');
-  const selectDia = document.getElementById('nacimiento-dia');
-  const selectMes = document.getElementById('nacimiento-mes');
-  const selectAnio = document.getElementById('nacimiento-anio');
+  const inputFechaNacimiento = document.getElementById('fecha-nacimiento');
   const inputCorreo = document.getElementById('correo');
   const inputConfirmarCorreo = document.getElementById('confirmar-correo');
   const inputContrasena = document.getElementById('contrasena');
@@ -159,39 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
     actualizarMunicipios('Boyacá', 'Sogamoso');
   }
 
-  // -----------------------------------------------------
-  // 2. POBLAR MENÚS DESPLEGABLES (DÍA, MES, AÑO)
-  // -----------------------------------------------------
-  if (selectDia) {
-    for (let i = 1; i <= 31; i++) {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = i;
-      selectDia.appendChild(opt);
-    }
-  }
-
-  if (selectMes) {
-    const meses = [
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-    ];
-    meses.forEach((mes, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx + 1;
-      opt.textContent = mes;
-      selectMes.appendChild(opt);
-    });
-  }
-
-  if (selectAnio) {
+  if (inputFechaNacimiento) {
     const anioActual = new Date().getFullYear();
-    for (let y = anioActual - 10; y >= 1940; y--) {
-      const opt = document.createElement('option');
-      opt.value = y;
-      opt.textContent = y;
-      selectAnio.appendChild(opt);
-    }
+    inputFechaNacimiento.max = `${anioActual - 10}-12-31`;
   }
 
   // -----------------------------------------------------
@@ -377,39 +345,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function validarFechaNacimiento() {
-    let completo = true;
-    if (selectDia && !selectDia.value) {
-      selectDia.classList.add('input-error');
-      completo = false;
-    } else if (selectDia) {
-      selectDia.classList.remove('input-error');
+    if (!inputFechaNacimiento.value) {
+      return mostrarError(inputFechaNacimiento, 'error-nacimiento', 'Selecciona tu fecha de nacimiento.');
     }
-    if (selectMes && !selectMes.value) {
-      selectMes.classList.add('input-error');
-      completo = false;
-    } else if (selectMes) {
-      selectMes.classList.remove('input-error');
+    if (
+      inputFechaNacimiento.value < inputFechaNacimiento.min ||
+      inputFechaNacimiento.value > inputFechaNacimiento.max
+    ) {
+      return mostrarError(inputFechaNacimiento, 'error-nacimiento', 'Selecciona una fecha dentro del rango permitido.');
     }
-    if (selectAnio && !selectAnio.value) {
-      selectAnio.classList.add('input-error');
-      completo = false;
-    } else if (selectAnio) {
-      selectAnio.classList.remove('input-error');
-    }
-
-    const span = document.getElementById('error-nacimiento');
-    if (!completo) {
-      if (span) {
-        span.textContent = 'Selecciona tu fecha de nacimiento completa.';
-        span.classList.add('visible');
-      }
-      return false;
-    }
-    if (span) {
-      span.textContent = '';
-      span.classList.remove('visible');
-    }
-    return true;
+    return limpiarError(inputFechaNacimiento, 'error-nacimiento');
   }
 
   function validarCorreo() {
@@ -531,17 +476,9 @@ document.addEventListener('DOMContentLoaded', () => {
     inputApellido.addEventListener('input', () => { if (inputApellido.classList.contains('input-error')) validarApellido(); });
   }
 
-  if (selectDia) {
-    selectDia.addEventListener('change', validarFechaNacimiento);
-    selectDia.addEventListener('blur', validarFechaNacimiento);
-  }
-  if (selectMes) {
-    selectMes.addEventListener('change', validarFechaNacimiento);
-    selectMes.addEventListener('blur', validarFechaNacimiento);
-  }
-  if (selectAnio) {
-    selectAnio.addEventListener('change', validarFechaNacimiento);
-    selectAnio.addEventListener('blur', validarFechaNacimiento);
+  if (inputFechaNacimiento) {
+    inputFechaNacimiento.addEventListener('change', validarFechaNacimiento);
+    inputFechaNacimiento.addEventListener('blur', validarFechaNacimiento);
   }
 
   if (inputCorreo) {
@@ -641,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
         departamento: selectDepartamento.value,
         ciudad: selectMunicipio.value,
         codigoPostal: inputCodigoPostal ? inputCodigoPostal.value.trim() : '',
-        nacimiento: `${selectDia.value}/${selectMes.value}/${selectAnio.value}`,
+        nacimiento: inputFechaNacimiento.value.split('-').reverse().join('/'),
         rol: 'Cliente'
       };
 
