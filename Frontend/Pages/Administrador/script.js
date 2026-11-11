@@ -444,6 +444,9 @@ function cerrarModal() {
 // 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
 // ==========================================================================
 function cargarDashboard() {
+  var inventoryBranchSelect = document.getElementById('filtroSucursalInventario');
+  var selectedBranchId = inventoryBranchSelect && inventoryBranchSelect.value;
+
   fetch(API_BASE + '/api/dashboard/admin', {
     headers: { 'Authorization': 'Bearer ' + sessionToken }
   })
@@ -459,6 +462,19 @@ function cargarDashboard() {
     if (data.brands) marcasDisponibles = data.brands;
     if (data.clients) clientesDisponibles = data.clients;
     if (data.inventory) productosDisponibles = data.inventory;
+    if (inventoryBranchSelect && data.branches) {
+      var selectedBranchIsActive = data.branches.some(function(branch) {
+        return String(branch.id) === selectedBranchId;
+      });
+      if (!selectedBranchIsActive) {
+        selectedBranchId = String(data.selectedBranchId || '');
+      }
+      inventoryBranchSelect.replaceChildren();
+      data.branches.forEach(function(branch) {
+        inventoryBranchSelect.add(new Option(branch.name, String(branch.id)));
+      });
+      inventoryBranchSelect.value = selectedBranchId;
+    }
 
     // ---------- HOME: Tarjetas de resumen ----------
     var el;
@@ -676,6 +692,7 @@ function guardarDatos(evento) {
       publisher: cMarca,
       price: precioProd,
       stock: stockProd,
+      branchId: Number(document.getElementById('filtroSucursalInventario').value),
       imageUrl: 'img/productos/default.jpg',
       description: c1
     };

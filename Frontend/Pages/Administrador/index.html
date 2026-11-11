@@ -401,7 +401,7 @@
         <div class="cabecera-modulo">
           <div>
             <h2>Inventario de Productos</h2>
-            <p>Administra los videojuegos, consolas, repuestos y accesorios disponibles en tienda.</p>
+            <p>Consulta el stock total disponible entre todas las sucursales.</p>
           </div>
           <button class="boton-amarillo" onclick="abrirModal('inventario')">+ Agregar Producto</button>
         </div>
@@ -423,6 +423,10 @@
 
         <div class="caja-panel">
           <div class="barra-filtros">
+            <label for="filtroSucursalInventario">Sucursal de ingreso:</label>
+            <select id="filtroSucursalInventario" class="select-filtro" aria-label="Sucursal donde ingresar stock">
+              <option value="">Cargando sucursales...</option>
+            </select>
             <input type="text" class="input-filtro" placeholder="Buscar por título, SKU o categoría..." oninput="filtrarTabla('tablaInventarioBody', this.value)">
             <select class="select-filtro" onchange="filtrarEstadoTabla('tablaInventarioBody', this.value, 2)">
               <option value="">Todas las categorías</option>

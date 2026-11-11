@@ -211,6 +211,17 @@ app.delete("/api/session", requireUserSession, (req, res) => {
   return res.json({ ok: true });
 });
 
+async function obtenerSucursalInventarioAdmin(branchId) {
+  const parsedBranchId = Number(branchId);
+  if (!Number.isSafeInteger(parsedBranchId) || parsedBranchId < 1) return null;
+
+  const [rows] = await pool.query(
+    "SELECT id_sucursal FROM sucursal WHERE id_sucursal = ? AND estado = 'ACTIVO'",
+    [parsedBranchId],
+  );
+  return rows[0] || null;
+}
+
 app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
   try {
     const [productsCountRows] = await pool.query(
@@ -262,6 +273,21 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        ORDER BY v.fecha DESC
        LIMIT 5`,
     );
+    const [branchRows] = await pool.query(
+      `SELECT id_sucursal AS id, nombre_suc AS name
+       FROM sucursal
+       WHERE estado = 'ACTIVO'
+       ORDER BY id_sucursal`,
+    );
+    if (!branchRows.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "No hay sucursales activas para consultar el inventario.",
+      });
+    }
+
+    const selectedBranchId = Number(branchRows[0].id);
+
     const [inventoryRows] = await pool.query(
       `SELECT
          p.id_producto AS id,
@@ -269,7 +295,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          CONCAT('PRD-', p.id_producto) AS sku,
          c.nombre_cat AS category,
          p.precio AS price,
-         COALESCE(SUM(i.stock), 0) AS stock,
+         COALESCE(i.stock_total, 0) AS stock,
          3 AS minStock,
          'Nuevo Sellado' AS productCondition,
          '12 Meses' AS warranty,
@@ -280,9 +306,16 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        FROM producto p
        INNER JOIN categoria c ON c.id_categoria = p.id_categoria
        INNER JOIN marca m ON m.id_marca = p.id_marca
-       LEFT JOIN inventario i ON i.id_producto = p.id_producto AND i.estado = 'ACTIVO'
+       LEFT JOIN (
+          SELECT i.id_producto, SUM(i.stock) AS stock_total
+          FROM inventario i
+          INNER JOIN sucursal s
+            ON s.id_sucursal = i.id_sucursal
+           AND s.estado = 'ACTIVO'
+          WHERE i.estado = 'ACTIVO'
+          GROUP BY i.id_producto
+       ) i ON i.id_producto = p.id_producto
        WHERE p.estado = 'ACTIVO'
-       GROUP BY p.id_producto, p.nombre, c.nombre_cat, m.nombre_marca, p.precio, p.imagen_prin, p.descripcion
        ORDER BY p.nombre`,
     );
     const [clientsRows] = await pool.query(
@@ -411,6 +444,8 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       })),
       recentOrders: recentOrdersRows || [],
       inventory: inventoryRows || [],
+      branches: branchRows,
+      selectedBranchId,
       clients: clientsRows || [],
       warranties: warrantyRows || [],
       maintenance: maintenanceRows || [],
@@ -520,10 +555,13 @@ app.get("/api/productos", async (req, res) => {
       INNER JOIN marca m ON p.id_marca = m.id_marca
       INNER JOIN categoria c ON p.id_categoria = c.id_categoria
       LEFT JOIN (
-        SELECT id_producto, SUM(stock) AS stock_total
-        FROM inventario
-        WHERE estado = 'ACTIVO'
-        GROUP BY id_producto
+        SELECT i.id_producto, SUM(i.stock) AS stock_total
+        FROM inventario i
+        INNER JOIN sucursal s
+          ON s.id_sucursal = i.id_sucursal
+         AND s.estado = 'ACTIVO'
+        WHERE i.estado = 'ACTIVO'
+        GROUP BY i.id_producto
       ) i ON p.id_producto = i.id_producto
       WHERE p.estado = 'ACTIVO'
       ORDER BY p.nombre
@@ -563,12 +601,792 @@ app.get("/api/marcas", async (req, res) => {
 
 // ==================== ENDPOINTS CRUD PARA EL PANEL ADMIN ====================
 
+async function obtenerSucursalEmpleado(userId, connection = pool) {
+  const [rows] = await connection.query(
+    `SELECT id_sucursal, nombre_suc, departamento, ciudad
+     FROM sucursal
+     WHERE encargado = ? AND estado = 'ACTIVO'
+     ORDER BY id_sucursal
+     LIMIT 1`,
+    [userId],
+  );
+  return rows[0] || null;
+}
+
+async function revertirTransaccionEmpleado(connection) {
+  try {
+    await connection.rollback();
+  } catch (error) {
+    console.error("Error revirtiendo transacción de empleado:", error.message);
+  }
+}
+
+app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
+  try {
+    const branch = await obtenerSucursalEmpleado(req.userId);
+    if (!branch) {
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa asignada a este empleado.",
+      });
+    }
+
+    const [products, clients, warranties, warrantyPurchases, workshopOrders] =
+      await Promise.all([
+        pool.query(
+          `SELECT
+             p.id_producto AS id,
+             p.nombre AS name,
+             CONCAT('PRD-', p.id_producto) AS sku,
+             c.nombre_cat AS category,
+             p.precio AS price,
+             COALESCE(i.stock_total, 0) AS stock,
+             p.imagen_prin AS imageUrl
+           FROM producto p
+           INNER JOIN categoria c ON c.id_categoria = p.id_categoria
+           LEFT JOIN (
+             SELECT i.id_producto, SUM(i.stock) AS stock_total
+             FROM inventario i
+             INNER JOIN sucursal s
+               ON s.id_sucursal = i.id_sucursal
+              AND s.estado = 'ACTIVO'
+             WHERE i.estado = 'ACTIVO'
+             GROUP BY i.id_producto
+           ) i ON i.id_producto = p.id_producto
+           WHERE p.estado = 'ACTIVO'
+           ORDER BY p.nombre`,
+        ),
+        pool.query(
+          `SELECT
+             u.id_usuario AS id,
+             CONCAT(u.nombre, ' ', u.apellido) AS name,
+             u.telefono AS phone,
+             u.correo AS email,
+             COALESCE(SUM(CASE WHEN v.estado = 'PAGADA' THEN dv.subtotal ELSE 0 END), 0) AS totalSpent,
+             CASE
+               WHEN COALESCE(SUM(CASE WHEN v.estado = 'PAGADA' THEN dv.subtotal ELSE 0 END), 0) >= 500000 THEN 'VIP'
+               WHEN COALESCE(SUM(CASE WHEN v.estado = 'PAGADA' THEN dv.subtotal ELSE 0 END), 0) >= 150000 THEN 'Frecuente'
+               ELSE 'Nuevo'
+             END AS level
+           FROM usuario u
+           INNER JOIN rol r ON r.id_rol = u.id_rol
+           LEFT JOIN venta v ON v.id_usuario = u.id_usuario
+           LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+           WHERE r.nombre_rol = 'Cliente' AND u.estado = 'ACTIVO'
+           GROUP BY u.id_usuario, u.nombre, u.apellido, u.telefono, u.correo
+           ORDER BY u.nombre, u.apellido`,
+        ),
+        pool.query(
+          `SELECT
+             g.id_garantia AS id,
+             CONCAT(u.nombre, ' ', u.apellido) AS client,
+             p.nombre AS product,
+             DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate,
+             DATE_FORMAT(g.fecha_fin, '%Y-%m-%d') AS expDate,
+             CASE
+               WHEN g.estado = 'VIGENTE' AND g.fecha_fin >= CURDATE() THEN 'Activa'
+               WHEN g.estado = 'ANULADA' THEN 'Anulada'
+               ELSE 'Vencida'
+             END AS status
+           FROM garantia g
+           INNER JOIN detalle_venta dv ON dv.id_detalle_venta = g.id_detalle_venta
+           INNER JOIN venta v ON v.id_venta = dv.id_venta
+           INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+           INNER JOIN producto p ON p.id_producto = dv.id_producto
+           WHERE v.id_sucursal = ?
+           ORDER BY g.fecha_inicio DESC`,
+          [branch.id_sucursal],
+        ),
+        pool.query(
+          `SELECT
+             dv.id_detalle_venta AS detailId,
+             u.id_usuario AS clientId,
+             CONCAT(u.nombre, ' ', u.apellido) AS client,
+             p.nombre AS product,
+             DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate
+           FROM detalle_venta dv
+           INNER JOIN venta v ON v.id_venta = dv.id_venta
+           INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+           INNER JOIN producto p ON p.id_producto = dv.id_producto
+           LEFT JOIN garantia g ON g.id_detalle_venta = dv.id_detalle_venta
+           WHERE v.id_sucursal = ?
+             AND v.estado = 'PAGADA'
+             AND g.id_garantia IS NULL
+           ORDER BY v.fecha DESC`,
+          [branch.id_sucursal],
+        ),
+        pool.query(
+          `SELECT
+             s.id_servicio AS id,
+             s.id_tipo_servicio AS serviceTypeId,
+             ts.nombre AS serviceType,
+             CASE
+               WHEN ts.nombre = 'Reparacion' THEN CONCAT('REP-', s.id_servicio)
+               ELSE CONCAT('MNT-', s.id_servicio)
+             END AS ticket,
+             COALESCE(e.descripcion, e.tipo) AS equipment,
+             s.descripcion AS defect,
+             CONCAT(u.nombre, ' ', u.apellido) AS client,
+             COALESCE(ds.cost, 0) AS cost,
+             CASE
+               WHEN s.estado = 'PENDIENTE' THEN 'Pendiente'
+               WHEN s.estado = 'EN PROCESO' THEN 'En proceso'
+               WHEN s.estado = 'COMPLETO' THEN 'Completado'
+               ELSE 'Cancelado'
+             END AS status
+           FROM servicio s
+           INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
+           INNER JOIN equipo e ON e.id_equipo = s.id_equipo
+           INNER JOIN usuario u ON u.id_usuario = s.id_usuario
+           LEFT JOIN (
+             SELECT id_servicio, SUM(subtotal) AS cost
+             FROM detalle_servicio
+             GROUP BY id_servicio
+           ) ds ON ds.id_servicio = s.id_servicio
+           WHERE s.id_encargado = ?
+           ORDER BY s.fecha_creacion DESC`,
+          [req.userId],
+        ),
+      ]);
+
+    return res.json({
+      ok: true,
+      branch: {
+        id: branch.id_sucursal,
+        name: branch.nombre_suc,
+        city: branch.ciudad,
+      },
+      products: products[0],
+      clients: clients[0],
+      warranties: warranties[0],
+      warrantyPurchases: warrantyPurchases[0],
+      workshopOrders: workshopOrders[0],
+    });
+  } catch (error) {
+    console.error("Error cargando el panel de empleado:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo cargar la información del panel de empleado.",
+    });
+  }
+});
+
+app.post("/api/employee/clients", requireEmployee, async (req, res) => {
+  const fullName = String(req.body?.name || "").trim();
+  const phone = String(req.body?.phone || "").trim();
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
+  const nameParts = fullName.split(/\s+/);
+
+  if (
+    fullName.length < 3 ||
+    fullName.length > 61 ||
+    !namePattern.test(fullName) ||
+    nameParts.some((part) => part.length > 30)
+  ) {
+    return res.status(400).json({ ok: false, message: "Ingresa un nombre válido." });
+  }
+  if (!/^[+\d()\s-]{7,20}$/.test(phone) || !/\d{7,}/.test(phone.replace(/\D/g, ""))) {
+    return res.status(400).json({ ok: false, message: "Ingresa un teléfono válido." });
+  }
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+    email.length > 120
+  ) {
+    return res.status(400).json({ ok: false, message: "Ingresa un correo válido." });
+  }
+
+  const firstName = nameParts.shift();
+  const lastName = nameParts.join(" ") || "Sin apellido";
+  const temporaryPassword = crypto.randomBytes(9).toString("base64url");
+  const documentNumber = `CLI${Date.now()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+
+  try {
+    const branch = await obtenerSucursalEmpleado(req.userId);
+    if (!branch) {
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa asignada a este empleado.",
+      });
+    }
+    const passwordHash = await bcrypt.hash(temporaryPassword, 12);
+
+    const [roleRows] = await pool.query(
+      "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
+    );
+    if (!roleRows.length) {
+      return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO usuario
+         (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento,
+          ciudad, direccion, correo, contrasena_hash, estado)
+       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        roleRows[0].id_rol,
+        firstName,
+        lastName,
+        documentNumber,
+        phone,
+        branch.departamento,
+        branch.ciudad,
+        branch.nombre_suc,
+        email,
+        passwordHash,
+      ],
+    );
+
+    return res.status(201).json({
+      ok: true,
+      message: "Cliente registrado.",
+      client: {
+        id: result.insertId,
+        name: fullName,
+        phone,
+        email,
+        totalSpent: 0,
+        level: "Nuevo",
+      },
+      temporaryPassword,
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe una cuenta con ese correo.",
+      });
+    }
+    console.error("Error registrando cliente desde panel de empleado:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar el cliente." });
+  }
+});
+
+app.post("/api/employee/warranties", requireEmployee, async (req, res) => {
+  const detailId = Number(req.body?.detailId);
+  const durationMonths = Number(req.body?.durationMonths);
+  if (
+    !Number.isSafeInteger(detailId) ||
+    detailId <= 0 ||
+    ![3, 6, 12, 24].includes(durationMonths)
+  ) {
+    return res.status(400).json({ ok: false, message: "La compra o duración de garantía no es válida." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const branch = await obtenerSucursalEmpleado(req.userId, connection);
+    if (!branch) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa asignada a este empleado.",
+      });
+    }
+
+    const [purchaseRows] = await connection.query(
+      `SELECT
+         dv.id_detalle_venta AS detailId,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         p.nombre AS product,
+         DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate
+       FROM detalle_venta dv
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE dv.id_detalle_venta = ?
+         AND v.id_sucursal = ?
+         AND v.estado = 'PAGADA'
+       FOR UPDATE`,
+      [detailId, branch.id_sucursal],
+    );
+    if (!purchaseRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(404).json({
+        ok: false,
+        message: "No se encontró una compra válida en esta sucursal.",
+      });
+    }
+
+    const [existingRows] = await connection.query(
+      "SELECT id_garantia FROM garantia WHERE id_detalle_venta = ? LIMIT 1",
+      [detailId],
+    );
+    if (existingRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "Esta compra ya tiene una garantía registrada.",
+      });
+    }
+
+    const buyDate = purchaseRows[0].buyDate;
+    const endDate = new Date(`${buyDate}T00:00:00`);
+    const dayOfMonth = endDate.getDate();
+    endDate.setDate(1);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+    const lastDay = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth() + 1,
+      0,
+    ).getDate();
+    endDate.setDate(Math.min(dayOfMonth, lastDay));
+    const expDate = [
+      endDate.getFullYear(),
+      String(endDate.getMonth() + 1).padStart(2, "0"),
+      String(endDate.getDate()).padStart(2, "0"),
+    ].join("-");
+
+    const [result] = await connection.query(
+      `INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado)
+       VALUES (?, ?, ?, 'VIGENTE')`,
+      [detailId, `${buyDate} 00:00:00`, `${expDate} 00:00:00`],
+    );
+    await connection.commit();
+
+    return res.status(201).json({
+      ok: true,
+      message: "Garantía registrada.",
+      warranty: {
+        id: result.insertId,
+        ...purchaseRows[0],
+        expDate,
+        status: "Activa",
+      },
+    });
+  } catch (error) {
+    if (connection) await revertirTransaccionEmpleado(connection);
+    console.error("Error registrando garantía desde panel de empleado:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la garantía." });
+  } finally {
+    connection?.release();
+  }
+});
+
+app.post("/api/employee/workshop-orders", requireEmployee, async (req, res) => {
+  const customerId = Number(req.body?.customerId);
+  const device = String(req.body?.device || "").trim();
+  const defect = String(req.body?.defect || "").trim();
+  const equipmentType = String(req.body?.equipmentType || "");
+  const serviceType = String(req.body?.serviceType || "");
+  const cost = Number(req.body?.cost);
+  const validEquipmentTypes = ["Portatil", "Torre", "Consola", "Control", "All in one"];
+  const validServiceTypes = ["Reparacion", "Mantenimiento preventivo"];
+
+  if (
+    !Number.isSafeInteger(customerId) ||
+    customerId <= 0 ||
+    device.length < 3 ||
+    device.length > 100 ||
+    defect.length < 3 ||
+    defect.length > 100 ||
+    !validEquipmentTypes.includes(equipmentType) ||
+    !validServiceTypes.includes(serviceType) ||
+    !Number.isFinite(cost) ||
+    cost <= 0
+  ) {
+    return res.status(400).json({ ok: false, message: "Revisa los datos de la orden de taller." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const branch = await obtenerSucursalEmpleado(req.userId, connection);
+    if (!branch) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa asignada a este empleado.",
+      });
+    }
+
+    const [clientRows] = await connection.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [customerId],
+    );
+    if (!clientRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(404).json({ ok: false, message: "No se encontró el cliente seleccionado." });
+    }
+
+    const [serviceTypeRows] = await connection.query(
+      "SELECT id_tipo_servicio FROM tipo_servicio WHERE nombre = ? AND estado = 'ACTIVO' LIMIT 1",
+      [serviceType],
+    );
+    if (!serviceTypeRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({ ok: false, message: "El tipo de servicio no está disponible." });
+    }
+
+    const serial = `EMP-${req.userId}-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
+    const [equipmentResult] = await connection.query(
+      `INSERT INTO equipo
+         (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
+       VALUES (?, ?, ?, 'No especificada', ?, ?, 'ACTIVO')`,
+      [customerId, branch.id_sucursal, equipmentType, serial, device],
+    );
+    const [serviceResult] = await connection.query(
+      `INSERT INTO servicio
+         (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
+       VALUES (?, ?, ?, ?, ?, ?, 'PENDIENTE')`,
+      [
+        `${serviceType}: ${device}`.substring(0, 100),
+        defect,
+        customerId,
+        req.userId,
+        serviceTypeRows[0].id_tipo_servicio,
+        equipmentResult.insertId,
+      ],
+    );
+    await connection.query(
+      `INSERT INTO detalle_servicio
+         (id_servicio, id_producto, descripcion, cantidad, precio_unitario, estado)
+       VALUES (?, NULL, ?, 1, ?, 'PENDIENTE')`,
+      [serviceResult.insertId, defect, cost],
+    );
+    await connection.commit();
+
+    return res.status(201).json({
+      ok: true,
+      message: "Orden de taller registrada.",
+      workshopOrder: {
+        id: serviceResult.insertId,
+        ticket: serviceType === "Reparacion"
+          ? `REP-${serviceResult.insertId}`
+          : `MNT-${serviceResult.insertId}`,
+        serviceType,
+        equipment: device,
+        defect,
+        cost,
+        status: "Pendiente",
+      },
+    });
+  } catch (error) {
+    if (connection) await revertirTransaccionEmpleado(connection);
+    console.error("Error registrando orden de taller:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la orden de taller." });
+  } finally {
+    connection?.release();
+  }
+});
+
+app.patch("/api/employee/workshop-orders/:id", requireEmployee, async (req, res) => {
+  const serviceId = Number(req.params.id);
+  const requestedStatus = String(req.body?.status || "");
+  const statusLabels = {
+    PENDIENTE: "Pendiente",
+    "EN PROCESO": "En proceso",
+    COMPLETO: "Completado",
+  };
+  if (
+    !Number.isSafeInteger(serviceId) ||
+    serviceId <= 0 ||
+    !Object.hasOwn(statusLabels, requestedStatus)
+  ) {
+    return res.status(400).json({ ok: false, message: "El estado solicitado no es válido." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [result] = await connection.query(
+      `UPDATE servicio
+       SET estado = ?
+       WHERE id_servicio = ? AND id_encargado = ? AND estado <> 'CANCELADO'`,
+      [requestedStatus, serviceId, req.userId],
+    );
+    if (!result.affectedRows) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(404).json({ ok: false, message: "No se encontró una orden activa asignada." });
+    }
+
+    await connection.query(
+      `UPDATE detalle_servicio
+       SET estado = ?
+       WHERE id_servicio = ? AND estado <> 'CANCELADO'`,
+      [requestedStatus, serviceId],
+    );
+    await connection.commit();
+    return res.json({
+      ok: true,
+      message: "Estado de la orden actualizado.",
+      status: statusLabels[requestedStatus],
+    });
+  } catch (error) {
+    if (connection) await revertirTransaccionEmpleado(connection);
+    console.error("Error actualizando orden de taller:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar la orden." });
+  } finally {
+    connection?.release();
+  }
+});
+
+app.post("/api/employee/sales", requireEmployee, async (req, res) => {
+  const paymentMethods = {
+    Efectivo: "EFECTIVO",
+    Nequi: "TRANSFERENCIA",
+    Tarjeta: "TARJETA",
+  };
+  const paymentMethod = paymentMethods[req.body?.paymentMethod];
+  const customerId =
+    req.body?.customerId === null || req.body?.customerId === ""
+      ? null
+      : Number(req.body?.customerId);
+  const requestedItems = Array.isArray(req.body?.items) ? req.body.items : [];
+  const items = new Map();
+
+  for (const item of requestedItems) {
+    const productId = Number(item?.productId);
+    const quantity = Number(item?.quantity);
+    if (
+      !Number.isSafeInteger(productId) ||
+      productId <= 0 ||
+      !Number.isSafeInteger(quantity) ||
+      quantity <= 0
+    ) {
+      return res.status(400).json({ ok: false, message: "Hay un producto o cantidad inválida en la venta." });
+    }
+    items.set(productId, (items.get(productId) || 0) + quantity);
+  }
+
+  if (
+    !paymentMethod ||
+    !items.size ||
+    items.size > 50 ||
+    [...items.values()].some((quantity) => !Number.isSafeInteger(quantity))
+  ) {
+    return res.status(400).json({ ok: false, message: "La venta requiere productos y un método de pago válido." });
+  }
+  if (customerId !== null && (!Number.isSafeInteger(customerId) || customerId <= 0)) {
+    return res.status(400).json({ ok: false, message: "El cliente seleccionado no es válido." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const branch = await obtenerSucursalEmpleado(req.userId, connection);
+    if (!branch) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa asignada a este empleado.",
+      });
+    }
+
+    let saleCustomerId = customerId;
+    let customerPhone = null;
+    if (saleCustomerId === null) {
+      const walkInDocument = `MOSTRADOR-${branch.id_sucursal}`;
+      const [walkInRows] = await connection.query(
+        "SELECT id_usuario, telefono FROM usuario WHERE num_doc = ? LIMIT 1",
+        [walkInDocument],
+      );
+      if (walkInRows.length) {
+        saleCustomerId = walkInRows[0].id_usuario;
+        customerPhone = walkInRows[0].telefono;
+      } else {
+        const [roleRows] = await connection.query(
+          "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
+        );
+        if (!roleRows.length) {
+          await revertirTransaccionEmpleado(connection);
+          return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
+        }
+        const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
+        const [walkInResult] = await connection.query(
+          `INSERT INTO usuario
+             (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento,
+              ciudad, direccion, correo, contrasena_hash, estado)
+           VALUES (?, 'Cliente', 'Mostrador', 'CC', ?, '0000000', ?, ?, ?, ?, ?, 'ACTIVO')`,
+          [
+            roleRows[0].id_rol,
+            walkInDocument,
+            branch.departamento,
+            branch.ciudad,
+            branch.nombre_suc,
+            `mostrador-${branch.id_sucursal}@wiiu.local`,
+            passwordHash,
+          ],
+        );
+        saleCustomerId = walkInResult.insertId;
+        customerPhone = "0000000";
+      }
+    } else {
+      const [customerRows] = await connection.query(
+        `SELECT u.id_usuario, u.telefono
+         FROM usuario u
+         INNER JOIN rol r ON r.id_rol = u.id_rol
+         WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+         LIMIT 1`,
+        [saleCustomerId],
+      );
+      if (!customerRows.length) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(404).json({ ok: false, message: "No se encontró el cliente seleccionado." });
+      }
+      customerPhone = customerRows[0].telefono;
+    }
+
+    const saleLines = [];
+    for (const [productId, quantity] of [...items].sort(
+      ([leftId], [rightId]) => leftId - rightId,
+    )) {
+      const [productRows] = await connection.query(
+        `SELECT nombre, precio
+         FROM producto
+         WHERE id_producto = ? AND estado = 'ACTIVO'
+         FOR UPDATE`,
+        [productId],
+      );
+      if (!productRows.length) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(404).json({
+          ok: false,
+          message: "Uno de los productos ya no está disponible.",
+        });
+      }
+      const product = productRows[0];
+      const [inventoryRows] = await connection.query(
+        `SELECT i.id_sucursal AS branchId, i.stock
+         FROM inventario i
+         INNER JOIN sucursal s
+           ON s.id_sucursal = i.id_sucursal
+          AND s.estado = 'ACTIVO'
+         WHERE i.id_producto = ? AND i.estado = 'ACTIVO'
+         ORDER BY i.id_sucursal
+         FOR UPDATE`,
+        [productId],
+      );
+      const totalStock = inventoryRows.reduce(
+        (sum, inventory) => sum + Number(inventory.stock),
+        0,
+      );
+      if (totalStock < quantity) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(409).json({
+          ok: false,
+          message: `Stock global insuficiente para ${product.nombre}.`,
+        });
+      }
+      const prioritizedInventoryRows = [...inventoryRows].sort((left, right) => {
+        const leftIsBranch = Number(left.branchId) === Number(branch.id_sucursal);
+        const rightIsBranch = Number(right.branchId) === Number(branch.id_sucursal);
+        return Number(rightIsBranch) - Number(leftIsBranch) ||
+          Number(left.branchId) - Number(right.branchId);
+      });
+      const unitPrice = Number(product.precio);
+      saleLines.push({
+        productId,
+        quantity,
+        unitPrice,
+        subtotal: Number((unitPrice * quantity).toFixed(2)),
+        inventoryRows: prioritizedInventoryRows,
+      });
+    }
+
+    const total = Number(
+      saleLines.reduce((sum, line) => sum + line.subtotal, 0).toFixed(2),
+    );
+    const [saleResult] = await connection.query(
+      `INSERT INTO venta
+         (id_usuario, id_empleado, id_sucursal, metodo_pago, telefono,
+          tipo_venta, notas, estado)
+       VALUES (?, ?, ?, ?, ?, 'SUCURSAL', 'Venta desde POS de empleado', 'PAGADA')`,
+      [
+        saleCustomerId,
+        req.userId,
+        branch.id_sucursal,
+        paymentMethod,
+        customerPhone,
+      ],
+    );
+
+    for (const line of saleLines) {
+      await connection.query(
+        `INSERT INTO detalle_venta
+           (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+         VALUES (?, ?, ?, ?, ?, 'Venta desde POS de empleado')`,
+        [
+          saleResult.insertId,
+          line.productId,
+          line.quantity,
+          line.unitPrice,
+          line.subtotal,
+        ],
+      );
+      let remainingQuantity = line.quantity;
+      for (const inventory of line.inventoryRows) {
+        if (remainingQuantity === 0) break;
+        const quantityToDeduct = Math.min(
+          Number(inventory.stock),
+          remainingQuantity,
+        );
+        if (quantityToDeduct <= 0) continue;
+
+        const [inventoryResult] = await connection.query(
+          `UPDATE inventario
+           SET stock = stock - ?
+           WHERE id_producto = ? AND id_sucursal = ?
+             AND estado = 'ACTIVO' AND stock >= ?`,
+          [
+            quantityToDeduct,
+            line.productId,
+            inventory.branchId,
+            quantityToDeduct,
+          ],
+        );
+        if (!inventoryResult.affectedRows) {
+          throw new Error("No se pudo descontar el stock global del producto.");
+        }
+        remainingQuantity -= quantityToDeduct;
+      }
+
+      if (remainingQuantity > 0) {
+        throw new Error("El stock global cambió durante el registro de la venta.");
+      }
+    }
+
+    await connection.commit();
+    return res.status(201).json({
+      ok: true,
+      message: "Venta registrada.",
+      sale: {
+        id: saleResult.insertId,
+        total,
+        paymentMethod: req.body.paymentMethod,
+      },
+    });
+  } catch (error) {
+    if (connection) await revertirTransaccionEmpleado(connection);
+    console.error("Error registrando venta desde POS:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo completar la venta." });
+  } finally {
+    connection?.release();
+  }
+});
+
 // ---------- PRODUCTOS ----------
 
 // Crear producto
 app.post("/api/admin/productos", requireAdmin, async (req, res) => {
   try {
     const { name, category, publisher, price, stock, imageUrl, description } = req.body;
+    const branch = await obtenerSucursalInventarioAdmin(req.body?.branchId);
+    if (!branch) {
+      return res.status(400).json({
+        ok: false,
+        message: "Selecciona una sucursal activa para el inventario.",
+      });
+    }
 
     if (!name || String(name).trim().length < 3) {
       return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
@@ -626,14 +1444,14 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
 
     const productId = insertProduct.insertId;
 
-    // Agregar stock al inventario (sucursal 1 por defecto)
+    // Agregar el stock inicial a la sucursal seleccionada.
     const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
     if (stockVal > 0) {
       await pool.query(
         `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
-         VALUES (1, ?, ?, 'ACTIVO')
+         VALUES (?, ?, ?, 'ACTIVO')
          ON DUPLICATE KEY UPDATE stock = stock + VALUES(stock)`,
-        [productId, stockVal],
+        [branch.id_sucursal, productId, stockVal],
       );
     }
 
@@ -653,6 +1471,13 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
   try {
     const productId = Number(req.params.id);
     const { name, category, price, stock, imageUrl, description } = req.body;
+    const branch = await obtenerSucursalInventarioAdmin(req.body?.branchId);
+    if (!branch) {
+      return res.status(400).json({
+        ok: false,
+        message: "Selecciona una sucursal activa para el inventario.",
+      });
+    }
 
     if (!name || String(name).trim().length < 3) {
       return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
@@ -705,13 +1530,13 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
       );
     }
 
-    // Actualizar stock en inventario
+    // Actualizar el stock de la sucursal seleccionada.
     const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
     await pool.query(
       `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
-       VALUES (1, ?, ?, 'ACTIVO')
+       VALUES (?, ?, ?, 'ACTIVO')
        ON DUPLICATE KEY UPDATE stock = ?`,
-      [productId, stockVal, stockVal],
+      [branch.id_sucursal, productId, stockVal, stockVal],
     );
 
     return res.json({ ok: true, message: "Producto actualizado." });
@@ -1250,6 +2075,39 @@ function obtenerRol(userId) {
     `SELECT r.nombre_rol FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'`,
     [userId]
   );
+}
+
+async function requireEmployee(req, res, next) {
+  const token = req.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const session = token ? sessions.get(token) : null;
+  if (!session || session.expiresAt <= Date.now()) {
+    if (token) sessions.delete(token);
+    return res.status(401).json({
+      ok: false,
+      message: "La sesión del empleado no es válida o venció.",
+    });
+  }
+
+  try {
+    const [rows] = await obtenerRol(session.userId);
+    if (rows[0]?.nombre_rol !== "Trabajador") {
+      return res.status(403).json({
+        ok: false,
+        message: "Esta operación está disponible solo para empleados.",
+      });
+    }
+
+    req.userId = session.userId;
+    req.sessionToken = token;
+    req.userRol = "Trabajador";
+    return next();
+  } catch (error) {
+    console.error("Error verificando rol de empleado:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo verificar el acceso del empleado.",
+    });
+  }
 }
 
 // Middleware to ensure the user is an administrator
