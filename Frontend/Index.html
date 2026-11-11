@@ -4,7 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WiiU-Games - Computadores y Videojuegos</title>
-    <meta name="description" content="Encuentra el mejor hardware, laptops gaming y componentes de alto rendimiento al mejor precio en Sogamoso. WiiU-Games, tu tienda de tecnología de confianza." />
+    <meta
+      name="description"
+      content="Encuentra el mejor hardware, laptops gaming y componentes de alto rendimiento al mejor precio en Sogamoso. WiiU-Games, tu tienda de tecnología de confianza."
+    />
     <link rel="stylesheet" href="Index_Styles.css" />
     <link rel="stylesheet" href="Styles/Header&Footer_Styles.css" />
     <link rel="stylesheet" href="Styles/accessibility.css" />
@@ -26,6 +29,7 @@
       rel="stylesheet"
       href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css"
     />
+    <link rel="icon" type="image/png" href="Assets/LogoSinFondo.png">
   </head>
   <body>
     <!-- Encabezado del sitio con información superior, navegación y menú principal -->
@@ -39,7 +43,7 @@
         <div class="seccion-direccion">
           Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
           Boyacá
-          <a href="Pages/contactanos.html" class="link-contacto">Contactanos</a>
+          <a href="" id="btn-abrir-contacto" class="link-contacto">Contactanos</a>
         </div>
         <div class="seccion-contacto">
           Llamanos: <b>(00) 1234 5678</b>
@@ -91,50 +95,168 @@
     </header>
 
     <main>
+      
+      <!-- Animacion Contactanos -->
+      <div id="contacto-overlay" class="overlay"></div>
+
+      <!-- Panel lateral de contacto -->
+      <div id="contacto-panel" class="panel-lateral">
+        <button id="cerrar-panel" class="btn-cerrar">&times;</button>
+
+        <!-- Encabezado azul oscuro -->
+        <div class="panel-header">
+          <h2>Contáctanos</h2>
+          <p>
+            Si tienes alguna pregunta, inquietud o comentario, no dudes en
+            comunicarte con nosotros. Nuestro equipo de atención al cliente
+            estará encantado de ayudarte y brindarte la asistencia que
+            necesites.
+          </p>
+        </div>
+
+        <!-- Contenido del formulario y datos -->
+        <div class="panel-body">
+          <!-- Columna Izquierda: Formulario -->
+          <div class="formulario-contacto">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre" />
+              </div>
+              <div class="input-group">
+                <label>Gmail</label>
+                <input type="email" placeholder="Ej: tuemail@gmail.com" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Teléfono</label>
+              <input type="text" placeholder="Ej: 3001234567" />
+            </div>
+            <div class="input-group">
+              <label>Agrega tu consulta</label>
+              <textarea
+                placeholder="Escribe tu consulta aquí"
+                rows="4"
+              ></textarea>
+            </div>
+            <button class="btn-enviar">Enviar Consulta</button>
+          </div>
+
+          <!-- Columna Derecha: Información -->
+          <div class="info-contacto">
+            <div class="info-card">
+              <h4>DIRECCIÓN:</h4>
+              <p>
+                Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+                Sogamoso, Boyacá
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>TELÉFONO:</h4>
+              <p>3046616081</p>
+            </div>
+            <div class="info-card">
+              <h4>HORARIOS:</h4>
+              <p>
+                Lunes a viernes: 8:30 a.m. a 12:00 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Sabado: 8:30 a.m a 12:30 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Domingo: 10:00 a.m a 1:00 p.m
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>CORREO ELECTRÓNICO:</h4>
+              <p><span class="badge-correo">shop@email.com</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <section class="hero-slider" id="heroSlider">
         <div class="hero-slides">
           <!-- Slide 1 -->
-          <div class="hero-slide active" style="background-image: url('Assets/TORRECUSTOM.png');">
+          <div
+            class="hero-slide active"
+            style="background-image: url(Assets/TORRECUSTOM.png)"
+          >
             <div class="hero-overlay"></div>
             <div class="hero-content" data-animate="fade-up">
               <span class="hero-badge">¡Novedad Exclusiva!</span>
-              <h1 class="hero-title">WIIU-GAMES<br/><span class="hero-title-accent">STORE</span></h1>
-              <p class="hero-subtitle">Encuentra el mejor hardware, laptops gaming y componentes de alto rendimiento al mejor precio en Sogamoso.</p>
+              <h1 class="hero-title">
+                WIIU-GAMES<br /><span class="hero-title-accent">STORE</span>
+              </h1>
+              <p class="hero-subtitle">
+                Encuentra el mejor hardware, laptops gaming y componentes de
+                alto rendimiento al mejor precio en Sogamoso.
+              </p>
               <div class="hero-actions">
-                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">VER CATÁLOGO</a>
-                <a href="Pages/servicios.html" class="hero-btn hero-btn-secondary">SERVICIO TÉCNICO</a>
+                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary"
+                  >VER CATÁLOGO</a
+                >
+                <a
+                  href="Pages/servicios.html"
+                  class="hero-btn hero-btn-secondary"
+                  >SERVICIO TÉCNICO</a
+                >
               </div>
             </div>
           </div>
           <!-- Slide 2 -->
-          <div class="hero-slide" style="background-image: url('Assets/lenovolegion.webp');">
+          <div
+            class="hero-slide"
+            style="background-image: url(Assets/lenovolegion.webp)"
+          >
             <div class="hero-overlay"></div>
             <div class="hero-content" data-animate="fade-up">
               <span class="hero-badge">Portátiles Gaming</span>
-              <h1 class="hero-title">RENDIMIENTO<br/><span class="hero-title-accent">EXTREMO</span></h1>
-              <p class="hero-subtitle">Las mejores laptops gaming de marcas líderes. Potencia que se nota en cada partida.</p>
+              <h1 class="hero-title">
+                RENDIMIENTO<br /><span class="hero-title-accent">EXTREMO</span>
+              </h1>
+              <p class="hero-subtitle">
+                Las mejores laptops gaming de marcas líderes. Potencia que se
+                nota en cada partida.
+              </p>
               <div class="hero-actions">
-                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">EXPLORAR</a>
+                <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary"
+                  >EXPLORAR</a
+                >
               </div>
             </div>
           </div>
           <!-- Slide 3 -->
-          <div class="hero-slide" style="background-image: url('Assets/monitor.jpg');">
+          <div
+            class="hero-slide"
+            style="background-image: url(Assets/monitor.jpg)"
+          >
             <div class="hero-overlay"></div>
             <div class="hero-content" data-animate="fade-up">
               <span class="hero-badge">Servicio Técnico</span>
-              <h1 class="hero-title">ARMA TU<br/><span class="hero-title-accent">PC IDEAL</span></h1>
-              <p class="hero-subtitle">Configuramos tu PC a medida con los mejores componentes. Garantía y soporte profesional.</p>
+              <h1 class="hero-title">
+                ARMA TU<br /><span class="hero-title-accent">PC IDEAL</span>
+              </h1>
+              <p class="hero-subtitle">
+                Configuramos tu PC a medida con los mejores componentes.
+                Garantía y soporte profesional.
+              </p>
               <div class="hero-actions">
-                <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary">ARMA TU PC</a>
-                <a href="Pages/servicios.html" class="hero-btn hero-btn-secondary">NUESTROS SERVICIOS</a>
+                <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary"
+                  >ARMA TU PC</a
+                >
+                <a
+                  href="Pages/servicios.html"
+                  class="hero-btn hero-btn-secondary"
+                  >NUESTROS SERVICIOS</a
+                >
               </div>
             </div>
           </div>
         </div>
         <!-- Slider Controls -->
         <div class="hero-dots">
-          <button class="hero-dot active" data-slide="0" aria-label="Slide 1"></button>
+          <button
+            class="hero-dot active"
+            data-slide="0"
+            aria-label="Slide 1"
+          ></button>
           <button class="hero-dot" data-slide="1" aria-label="Slide 2"></button>
           <button class="hero-dot" data-slide="2" aria-label="Slide 3"></button>
         </div>
@@ -147,74 +269,141 @@
       </section>
 
       <section class="seccion-categorias-corsair" data-animate="fade-up">
-  <div class="seccion-inner">
-    <h2 class="seccion-titulo-corsair">COMPRAR POR CATEGORÍA</h2>
-    <div class="categorias-grid" id="categoriasGrid">
-      
-      <!-- Tarjeta Principal (Ocupa 2x2) -->
-      <a href="Pages/Catalog.html?categoria=portatiles" class="categoria-card card-grande">
-        <div class="categoria-card-img" style="background-image: url('Assets/Portatiles.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">PORTÁTILES</span>
-      </a>
+        <div class="seccion-inner">
+          <h2 class="seccion-titulo-corsair">COMPRAR POR CATEGORÍA</h2>
+          <div class="categorias-grid" id="categoriasGrid">
+            <!-- Tarjeta Principal (Ocupa 2x2) -->
+            <a
+              href="Pages/Catalog.html?categoria=portatiles"
+              class="categoria-card card-grande"
+            >
+              <div
+                class="categoria-card-img"
+                style="background-image: url(&quot;Assets/Portatiles.png&quot;)"
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">PORTÁTILES</span>
+            </a>
 
-      <!-- Tarjetas Normales -->
-      <a href="Pages/Catalog.html?categoria=pc+escritorio" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/ESCRITORIO2.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">PC ESCRITORIO</span>
-      </a>
+            <!-- Tarjetas Normales -->
+            <a
+              href="Pages/Catalog.html?categoria=pc+escritorio"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/ESCRITORIO2.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">PC ESCRITORIO</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=consolas+y+videojuegos" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/Consolas_Juegos.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">CONSOLAS Y JUEGOS</span>
-      </a>
+            <a
+              href="Pages/Catalog.html?categoria=consolas+y+videojuegos"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/Consolas_Juegos.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">CONSOLAS Y JUEGOS</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=tarjetas+graficas" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/Tarjetas_Graficas.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">TARJETAS GRÁFICAS</span>
-      </a>
+            <a
+              href="Pages/Catalog.html?categoria=tarjetas+graficas"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/Tarjetas_Graficas.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">TARJETAS GRÁFICAS</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=monitores" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/Monitores.png');"></div> 
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">MONITORES</span>
-      </a>
+            <a
+              href="Pages/Catalog.html?categoria=monitores"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="background-image: url(&quot;Assets/Monitores.png&quot;)"
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">MONITORES</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=perifericos" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/Perifericos.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">PERIFÉRICOS</span>
-      </a>
+            <a
+              href="Pages/Catalog.html?categoria=perifericos"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/Perifericos.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">PERIFÉRICOS</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=memorias+ram" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/ram.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">MEMORIA RAM</span>
-      </a>
+            <a
+              href="Pages/Catalog.html?categoria=memorias+ram"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="background-image: url(&quot;Assets/ram.png&quot;)"
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">MEMORIA RAM</span>
+            </a>
 
-      <a href="Pages/Catalog.html?categoria=procesadores" class="categoria-card">
-        <div class="categoria-card-img" style="background-image: url('Assets/procesadores.png');"></div>
-        <div class="categoria-card-overlay"></div>
-        <span class="categoria-card-nombre">PROCESADORES</span>
-      </a>
-      
-      <a href="Pages/Catalog.html?categoria=motherboards" class="categoria-card" >
-        <div class="categoria-card-img" style="background-image: url('Assets/Almacenamiento.png');"></div>
-        <div class="categoria-card-overlay-otro"></div>
-        <span class="categoria-card-nombre">OTROS</span>
-      </a>
-    </div>
-  </div>
-</section>
+            <a
+              href="Pages/Catalog.html?categoria=procesadores"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/procesadores.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay"></div>
+              <span class="categoria-card-nombre">PROCESADORES</span>
+            </a>
+
+            <a
+              href="Pages/Catalog.html?categoria=motherboards"
+              class="categoria-card"
+            >
+              <div
+                class="categoria-card-img"
+                style="
+                  background-image: url(&quot;Assets/Almacenamiento.png&quot;);
+                "
+              ></div>
+              <div class="categoria-card-overlay-otro"></div>
+              <span class="categoria-card-nombre">OTROS</span>
+            </a>
+          </div>
+        </div>
+      </section>
 
       <section class="seccion-productos-corsair" data-animate="fade-up">
         <div class="seccion-inner">
           <div class="seccion-header-corsair">
             <h2 class="seccion-titulo-corsair">PRODUCTOS NUEVOS</h2>
-            <a href="Pages/Catalog.html" class="enlace-ver-todos-corsair">VER TODOS →</a>
+            <a href="Pages/Catalog.html" class="enlace-ver-todos-corsair"
+              >VER TODOS →</a
+            >
           </div>
           <div class="productos-carrusel-wrapper">
             <button class="flecha-carrusel flecha-izq" aria-label="Anterior">
@@ -241,7 +430,9 @@
               <!-- Tarjeta Producto 2 -->
               <a href="Pages/Product.html" class="enlace-producto">
                 <article class="tarjeta-producto">
-                  <div class="estado-stock consultar">Revisar Disponibilidad</div>
+                  <div class="estado-stock consultar">
+                    Revisar Disponibilidad
+                  </div>
                   <img
                     src="Assets/lenovolegion.webp"
                     alt="Producto"
@@ -333,27 +524,51 @@
       <section class="banner-destacado" data-animate="fade-up">
         <div class="banner-destacado-inner">
           <div class="banner-destacado-imagen">
-            <img src="Assets/TORRECUSTOM.png" alt="Computadores Personalizados" />
+            <img
+              src="Assets/TORRECUSTOM.png"
+              alt="Computadores Personalizados"
+            />
           </div>
           <div class="banner-destacado-contenido">
             <span class="banner-destacado-tag">// CUSTOM PC</span>
-            <h2 class="banner-destacado-titulo">COMPUTADORES<br/><span class="texto-acento">PERSONALIZADOS</span></h2>
-            <p class="banner-destacado-desc">Armamos tu PC ideal con los mejores componentes del mercado. Rendimiento extremo garantizado para gaming, diseño y trabajo profesional.</p>
+            <h2 class="banner-destacado-titulo">
+              COMPUTADORES<br /><span class="texto-acento">PERSONALIZADOS</span>
+            </h2>
+            <p class="banner-destacado-desc">
+              Armamos tu PC ideal con los mejores componentes del mercado.
+              Rendimiento extremo garantizado para gaming, diseño y trabajo
+              profesional.
+            </p>
             <div class="banner-destacado-acciones">
-              <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary">ARMA TU PC</a>
-              <a href="Pages/Catalog.html" class="hero-btn hero-btn-secondary">VER PRODUCTOS</a>
+              <a href="Pages/ArmaTuPC.html" class="hero-btn hero-btn-primary"
+                >ARMA TU PC</a
+              >
+              <a href="Pages/Catalog.html" class="hero-btn hero-btn-secondary"
+                >VER PRODUCTOS</a
+              >
             </div>
           </div>
         </div>
       </section>
 
-      <section class="banner-fullwidth" data-animate="fade-up" style="background-image: url('Assets/monitor.jpg');">
+      <section
+        class="banner-fullwidth"
+        data-animate="fade-up"
+        style="background-image: url(&quot;Assets/monitor.jpg&quot;)"
+      >
         <div class="banner-fullwidth-overlay"></div>
         <div class="banner-fullwidth-contenido">
           <span class="banner-destacado-tag">// MONITORES</span>
-          <h2 class="banner-destacado-titulo">MONITORES<br/><span class="texto-acento">GAMING</span></h2>
-          <p class="banner-destacado-desc">Pantallas de alta frecuencia para una experiencia visual sin precedentes. 144Hz, 240Hz y más.</p>
-          <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">VER MONITORES</a>
+          <h2 class="banner-destacado-titulo">
+            MONITORES<br /><span class="texto-acento">GAMING</span>
+          </h2>
+          <p class="banner-destacado-desc">
+            Pantallas de alta frecuencia para una experiencia visual sin
+            precedentes. 144Hz, 240Hz y más.
+          </p>
+          <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary"
+            >VER MONITORES</a
+          >
         </div>
       </section>
 
@@ -361,10 +576,17 @@
         <div class="banner-destacado-inner">
           <div class="banner-destacado-contenido">
             <span class="banner-destacado-tag">// PORTÁTILES GAMING</span>
-            <h2 class="banner-destacado-titulo">RENDIMIENTO<br/><span class="texto-acento">PORTÁTIL</span></h2>
-            <p class="banner-destacado-desc">Las laptops gaming más potentes del mercado. Lleva tu experiencia de juego a donde quieras sin comprometer el rendimiento.</p>
+            <h2 class="banner-destacado-titulo">
+              RENDIMIENTO<br /><span class="texto-acento">PORTÁTIL</span>
+            </h2>
+            <p class="banner-destacado-desc">
+              Las laptops gaming más potentes del mercado. Lleva tu experiencia
+              de juego a donde quieras sin comprometer el rendimiento.
+            </p>
             <div class="banner-destacado-acciones">
-              <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary">EXPLORAR</a>
+              <a href="Pages/Catalog.html" class="hero-btn hero-btn-primary"
+                >EXPLORAR</a
+              >
             </div>
           </div>
           <div class="banner-destacado-imagen">
@@ -372,8 +594,6 @@
           </div>
         </div>
       </section>
-
-      
 
       <section class="seccion-porque" data-animate="fade-up">
         <div class="seccion-inner">
@@ -384,28 +604,40 @@
                 <i class="fi fi-rr-shield-check"></i>
               </div>
               <h3>GARANTÍA TOTAL</h3>
-              <p>Todos nuestros productos cuentan con garantía directa. Tu inversión siempre protegida.</p>
+              <p>
+                Todos nuestros productos cuentan con garantía directa. Tu
+                inversión siempre protegida.
+              </p>
             </div>
             <div class="porque-card">
               <div class="porque-icono">
                 <i class="fi fi-rr-settings"></i>
               </div>
               <h3>SERVICIO TÉCNICO</h3>
-              <p>Soporte profesional para mantenimiento, reparación y ensamblaje de equipos.</p>
+              <p>
+                Soporte profesional para mantenimiento, reparación y ensamblaje
+                de equipos.
+              </p>
             </div>
             <div class="porque-card">
               <div class="porque-icono">
                 <i class="fi fi-rr-heart"></i>
               </div>
               <h3>MEJOR PRECIO</h3>
-              <p>Los precios más competitivos de Sogamoso. Calidad premium sin romper tu presupuesto.</p>
+              <p>
+                Los precios más competitivos de Sogamoso. Calidad premium sin
+                romper tu presupuesto.
+              </p>
             </div>
             <div class="porque-card">
               <div class="porque-icono">
                 <i class="fi fi-rr-star"></i>
               </div>
               <h3>ASESORÍA EXPERTA</h3>
-              <p>Te ayudamos a elegir el equipo perfecto para tus necesidades. Atención personalizada.</p>
+              <p>
+                Te ayudamos a elegir el equipo perfecto para tus necesidades.
+                Atención personalizada.
+              </p>
             </div>
           </div>
         </div>

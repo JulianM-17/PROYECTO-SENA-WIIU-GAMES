@@ -211,3 +211,25 @@ function applyMomentum(container, velocity) {
 
   requestAnimationFrame(step);
 }
+
+//Animacion Contactanos
+document.addEventListener('DOMContentLoaded', () => {
+  const btnAbrir = document.getElementById('btn-abrir-contacto');
+  const btnCerrar = document.getElementById('cerrar-panel');
+  const panel = document.getElementById('contacto-panel');
+  const overlay = document.getElementById('contacto-overlay');
+
+  // Funcion para alternar la visibilidad
+  const togglePanel = (e) => {
+    if(e) e.preventDefault(); // Evita que el link "#" recargue la pagina
+    panel.classList.toggle('activo');
+    overlay.classList.toggle('activo');
+  };
+
+  // Asignar eventos
+  btnAbrir.addEventListener('click', togglePanel);
+  btnCerrar.addEventListener('click', togglePanel);
+  
+  // Cerrar el panel si el usuario hace clic fuera de el (en la zona oscura)
+  overlay.addEventListener('click', togglePanel);
+});
