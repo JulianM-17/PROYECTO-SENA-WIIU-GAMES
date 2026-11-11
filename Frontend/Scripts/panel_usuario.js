@@ -40,6 +40,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   let state = loadState();
+  if (window.WiiUGamesCart) {
+    state.cartCount = window.WiiUGamesCart.updateCount();
+  }
 
   function loadState() {
     try {
