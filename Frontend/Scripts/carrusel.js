@@ -92,9 +92,21 @@ function renderProducts(container, products) {
           <h3 class="titulo-producto">${escapeHtml(product.nombre)}</h3>
         </a>
         <div class="precio-actual">${formatPrice(product.precio)}</div>
-        <button class="btn-agregar-carrito" type="button" data-product-id="${escapeAttribute(product.id_producto)}" ${stock > 0 ? "" : "disabled"}>
-          ${stock > 0 ? "Agregar al carrito" : "Agotado"}
-        </button>
+        <div class="acciones-compra-producto">
+          <input
+            class="cantidad-producto"
+            type="number"
+            min="1"
+            max="${stock}"
+            step="1"
+            value="1"
+            aria-label="Cantidad de ${escapeAttribute(product.nombre)}"
+            ${stock > 0 ? "" : "disabled"}
+          >
+          <button class="btn-agregar-carrito" type="button" data-product-id="${escapeAttribute(product.id_producto)}" ${stock > 0 ? "" : "disabled"}>
+            ${stock > 0 ? "Agregar al carrito" : "Agotado"}
+          </button>
+        </div>
         <span class="mensaje-carrito" aria-live="polite"></span>
       </article>
     `;
@@ -119,23 +131,49 @@ function renderProducts(container, products) {
     event.stopPropagation();
 
     const product = productsById.get(button.dataset.productId);
-    const feedback = button.nextElementSibling;
-    const result = window.WiiUGamesCart?.add(product, 1);
+    const card = button.closest(".tarjeta-producto");
+    const quantityInput = card?.querySelector(".cantidad-producto");
+    const feedback = card?.querySelector(".mensaje-carrito");
+    const quantity = Number(quantityInput?.value);
+
+    if (
+      !Number.isInteger(quantity) ||
+      quantity < 1 ||
+      quantity > Number(product?.stock_total)
+    ) {
+      if (feedback) {
+        feedback.textContent = `Selecciona una cantidad entre 1 y ${Number(product?.stock_total) || 0}.`;
+      }
+      quantityInput?.focus();
+      return;
+    }
+
+    const result = window.WiiUGamesCart?.add(product, quantity);
     if (!result?.ok) {
       if (feedback) {
-        feedback.textContent =
-          result?.reason === "stock"
-            ? `Solo hay ${result.stock} disponibles en el carrito.`
-            : result?.reason === "unavailable"
-              ? "Producto agotado."
-              : "No se pudo agregar el producto al carrito.";
+        if (result?.reason === "stock") {
+          const currentQuantity =
+            window.WiiUGamesCart?.read().find(
+              (item) => String(item.productId) === String(product?.id_producto),
+            )?.quantity || 0;
+          const remaining = Math.max(0, result.stock - currentQuantity);
+          feedback.textContent = remaining
+            ? `Solo quedan ${remaining} disponibles.`
+            : "Ya agregaste todas las unidades disponibles.";
+        } else if (result?.reason === "unavailable") {
+          feedback.textContent = "Producto agotado.";
+        } else {
+          feedback.textContent = "No se pudo agregar el producto al carrito.";
+        }
       }
       return;
     }
 
     const originalText = button.textContent;
     button.textContent = "¡Agregado!";
-    if (feedback) feedback.textContent = "Añadido al carrito.";
+    if (feedback) {
+      feedback.textContent = `Se agregaron ${quantity} al carrito.`;
+    }
     window.setTimeout(() => {
       if (!button.isConnected) return;
       button.textContent = originalText;
