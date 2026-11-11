@@ -13,6 +13,32 @@
   --a11y-shift-y: 0px;
 }
 
+/* Oculta el panel hasta que se abre y mantiene la animación al cerrar. */
+#contacto-panel {
+  visibility: hidden;
+  transition:
+    transform 0.4s ease-in-out,
+    visibility 0s linear 0.4s;
+}
+
+#contacto-panel.activo {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Evita que el fondo oscuro aparezca antes de abrir el panel. */
+#contacto-overlay {
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+#contacto-overlay.activo {
+  visibility: visible;
+  transition-delay: 0s;
+}
+
 /* =====================================================
    BOTÓN FLOTANTE (Fijo con Desplazamiento Inteligente)
    ===================================================== */

@@ -1,224 +1,127 @@
-/**
- * Validación y Manejo del Formulario de Contáctanos
- * WiiU-Games
- */
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("form-contacto") || document.querySelector(".formulario-cita .formulario");
-  if (!form) return;
-
-  const nombreInput = document.getElementById("nombre");
-  const emailInput = document.getElementById("email");
-  const telefonoInput = document.getElementById("telefono");
-  const consultaTextarea = document.getElementById("consulta");
-
-  /**
-   * Muestra mensaje de error en un campo y resalta con borde rojo
-   */
-  function mostrarError(input, mensaje) {
-    if (!input) return;
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.add("campo-invalido");
-    contenedor.classList.remove("campo-valido");
-
-    let errorSpan = contenedor.querySelector(".error-mensaje");
-    if (!errorSpan) {
-      errorSpan = document.createElement("span");
-      errorSpan.className = "error-mensaje";
-      contenedor.appendChild(errorSpan);
-    }
-    errorSpan.textContent = mensaje;
+(function () {
+  function getContactStylesheetPath() {
+    const pathParts = window.location.pathname.split('/');
+    const pagesIndex = pathParts.lastIndexOf('Pages');
+    const depth = pagesIndex === -1 ? 0 : pathParts.length - pagesIndex - 1;
+    const prefix = depth === 0 ? '' : '../'.repeat(depth);
+    return `${prefix}Styles/contactanos.css`;
   }
 
-  /**
-   * Limpia mensaje de error en un campo
-   */
-  function limpiarError(input) {
-    if (!input) return;
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.remove("campo-invalido");
-    const errorSpan = contenedor.querySelector(".error-mensaje");
-    if (errorSpan) {
-      errorSpan.textContent = "";
+  function ensureContactModal() {
+    if (document.body.dataset.contactModalReady === 'true') return;
+
+    const href = getContactStylesheetPath();
+    if (!document.querySelector(`link[href="${href}"]`)) {
+      const cssLink = document.createElement('link');
+      cssLink.rel = 'stylesheet';
+      cssLink.href = href;
+      document.head.appendChild(cssLink);
     }
+
+    if (!document.getElementById('contacto-panel')) {
+      const panel = document.createElement('div');
+      panel.id = 'contacto-panel';
+      panel.className = 'panel-lateral';
+      panel.innerHTML = `
+        <button id="cerrar-panel" class="btn-cerrar" type="button" aria-label="Cerrar contacto">&times;</button>
+        <div class="panel-header">
+          <h2>Contáctanos</h2>
+          <p>
+            Si tienes alguna pregunta, inquietud o comentario, no dudes en
+            comunicarte con nosotros. Nuestro equipo de atención al cliente
+            estará encantado de ayudarte y brindarte la asistencia que
+            necesites.
+          </p>
+        </div>
+        <div class="panel-body">
+          <div class="formulario-contacto">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre" />
+              </div>
+              <div class="input-group">
+                <label>Gmail</label>
+                <input type="email" placeholder="Ej: tuemail@gmail.com" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Teléfono</label>
+              <input type="text" placeholder="Ej: 3001234567" />
+            </div>
+            <div class="input-group">
+              <label>Agrega tu consulta</label>
+              <textarea placeholder="Escribe tu consulta aquí" rows="4"></textarea>
+            </div>
+            <button type="button" class="btn-enviar">Enviar Consulta</button>
+          </div>
+          <div class="info-contacto">
+            <div class="info-card">
+              <h4>DIRECCIÓN:</h4>
+              <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
+            </div>
+            <div class="info-card">
+              <h4>TELÉFONO:</h4>
+              <p>3046616081</p>
+            </div>
+            <div class="info-card">
+              <h4>HORARIOS:</h4>
+              <p>
+                Lunes a viernes: 8:30 a.m. a 12:00 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Sabado: 8:30 a.m a 12:30 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Domingo: 10:00 a.m a 1:00 p.m
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>CORREO ELECTRÓNICO:</h4>
+              <p><span class="badge-correo">shop@email.com</span></p>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(panel);
+    }
+
+    if (!document.getElementById('contacto-overlay')) {
+      const overlay = document.createElement('div');
+      overlay.id = 'contacto-overlay';
+      overlay.className = 'overlay';
+      document.body.appendChild(overlay);
+    }
+
+    const panel = document.getElementById('contacto-panel');
+    const overlay = document.getElementById('contacto-overlay');
+    const closeBtn = document.getElementById('cerrar-panel');
+
+    function togglePanel(event) {
+      if (event) event.preventDefault();
+      panel.classList.toggle('activo');
+      overlay.classList.toggle('activo');
+    }
+
+    document.querySelectorAll('#btn-abrir-contacto, .link-contacto, a[href*="contactanos.html"]').forEach((button) => {
+      button.removeEventListener('click', button._contactModalHandler || null);
+      const handler = (event) => {
+        const href = button.getAttribute('href') || '';
+        if (href && !href.includes('contactanos.html') && href !== '#') {
+          return;
+        }
+        togglePanel(event);
+      };
+      button._contactModalHandler = handler;
+      button.addEventListener('click', handler);
+    });
+
+    closeBtn?.removeEventListener('click', closeBtn._contactCloseHandler || null);
+    closeBtn._contactCloseHandler = (event) => togglePanel(event);
+    closeBtn?.addEventListener('click', closeBtn._contactCloseHandler);
+
+    overlay?.removeEventListener('click', overlay._contactOverlayHandler || null);
+    overlay._contactOverlayHandler = (event) => togglePanel(event);
+    overlay?.addEventListener('click', overlay._contactOverlayHandler);
+
+    document.body.dataset.contactModalReady = 'true';
   }
 
-  /**
-   * Marca campo como válido
-   */
-  function marcarValido(input) {
-    if (!input) return;
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.remove("campo-invalido");
-    contenedor.classList.add("campo-valido");
-    const errorSpan = contenedor.querySelector(".error-mensaje");
-    if (errorSpan) {
-      errorSpan.textContent = "";
-    }
-  }
-
-  // 1. CAMPO NOMBRE
-  if (nombreInput) {
-    nombreInput.addEventListener("input", () => {
-      const val = nombreInput.value.trim();
-      if (val.length >= 2) {
-        marcarValido(nombreInput);
-      } else {
-        limpiarError(nombreInput);
-      }
-    });
-
-    nombreInput.addEventListener("blur", () => {
-      const val = nombreInput.value.trim();
-      if (!val) {
-        mostrarError(nombreInput, "El nombre es obligatorio.");
-      } else if (val.length < 2) {
-        mostrarError(nombreInput, "El nombre debe contener al menos 2 letras.");
-      } else {
-        marcarValido(nombreInput);
-      }
-    });
-  }
-
-  // 2. CAMPO CORREO
-  if (emailInput) {
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    emailInput.addEventListener("input", () => {
-      const val = emailInput.value.trim();
-      if (regexEmail.test(val)) {
-        marcarValido(emailInput);
-      } else {
-        limpiarError(emailInput);
-      }
-    });
-
-    emailInput.addEventListener("blur", () => {
-      const val = emailInput.value.trim();
-      if (!val) {
-        mostrarError(emailInput, "El correo electrónico es obligatorio.");
-      } else if (!regexEmail.test(val)) {
-        mostrarError(emailInput, "Ingresa un correo electrónico válido (ej: usuario@gmail.com).");
-      } else {
-        marcarValido(emailInput);
-      }
-    });
-  }
-
-  // 3. CAMPO TELÉFONO
-  if (telefonoInput) {
-    telefonoInput.addEventListener("keypress", (e) => {
-      if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
-      if (!/^\d$/.test(e.key)) {
-        e.preventDefault();
-        mostrarError(telefonoInput, "Solo se admiten números.");
-        setTimeout(() => limpiarError(telefonoInput), 1800);
-      }
-    });
-
-    telefonoInput.addEventListener("input", () => {
-      const soloNums = telefonoInput.value.replace(/\D/g, "").slice(0, 10);
-      if (telefonoInput.value !== soloNums) {
-        telefonoInput.value = soloNums;
-      }
-      if (soloNums.length === 10) {
-        marcarValido(telefonoInput);
-      } else {
-        limpiarError(telefonoInput);
-      }
-    });
-
-    telefonoInput.addEventListener("blur", () => {
-      const val = telefonoInput.value.trim();
-      if (!val) {
-        mostrarError(telefonoInput, "El teléfono es obligatorio.");
-      } else if (val.length < 7) {
-        mostrarError(telefonoInput, "Ingresa un teléfono válido de al menos 7 dígitos.");
-      } else {
-        marcarValido(telefonoInput);
-      }
-    });
-  }
-
-  // 4. CAMPO CONSULTA
-  if (consultaTextarea) {
-    consultaTextarea.addEventListener("input", () => {
-      const val = consultaTextarea.value.trim();
-      if (val.length >= 10) {
-        marcarValido(consultaTextarea);
-      } else {
-        limpiarError(consultaTextarea);
-      }
-    });
-
-    consultaTextarea.addEventListener("blur", () => {
-      const val = consultaTextarea.value.trim();
-      if (!val) {
-        mostrarError(consultaTextarea, "Por favor ingresa tu consulta.");
-      } else if (val.length < 10) {
-        mostrarError(consultaTextarea, "La consulta debe tener al menos 10 caracteres.");
-      } else {
-        marcarValido(consultaTextarea);
-      }
-    });
-  }
-
-  // ENVÍO DEL FORMULARIO
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    let esValido = true;
-
-    // Validar nombre
-    const nombre = nombreInput ? nombreInput.value.trim() : "";
-    if (!nombre) {
-      mostrarError(nombreInput, "El nombre es obligatorio.");
-      esValido = false;
-    } else if (nombre.length < 2) {
-      mostrarError(nombreInput, "El nombre debe contener al menos 2 letras.");
-      esValido = false;
-    }
-
-    // Validar email
-    const email = emailInput ? emailInput.value.trim() : "";
-    const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) {
-      mostrarError(emailInput, "El correo electrónico es obligatorio.");
-      esValido = false;
-    } else if (!regexEmail.test(email)) {
-      mostrarError(emailInput, "Ingresa un correo electrónico válido.");
-      esValido = false;
-    }
-
-    // Validar teléfono
-    const tel = telefonoInput ? telefonoInput.value.trim() : "";
-    if (!tel) {
-      mostrarError(telefonoInput, "El teléfono es obligatorio.");
-      esValido = false;
-    } else if (tel.length < 7) {
-      mostrarError(telefonoInput, "Ingresa un teléfono válido.");
-      esValido = false;
-    }
-
-    // Validar consulta
-    const consulta = consultaTextarea ? consultaTextarea.value.trim() : "";
-    if (!consulta) {
-      mostrarError(consultaTextarea, "Por favor ingresa tu consulta.");
-      esValido = false;
-    } else if (consulta.length < 10) {
-      mostrarError(consultaTextarea, "La consulta debe tener al menos 10 caracteres.");
-      esValido = false;
-    }
-
-    if (!esValido) {
-      const primerError = form.querySelector(".campo-invalido input, .campo-invalido textarea");
-      if (primerError) primerError.focus();
-      return;
-    }
-
-    // Mensaje de éxito
-    alert(`¡Muchas gracias ${nombre}! Tu consulta ha sido enviada exitosamente. Te responderemos pronto a ${email}.`);
-    form.reset();
-    document.querySelectorAll(".campo-valido").forEach((c) => c.classList.remove("campo-valido"));
-  });
-});
+  document.addEventListener('DOMContentLoaded', ensureContactModal);
+})();
