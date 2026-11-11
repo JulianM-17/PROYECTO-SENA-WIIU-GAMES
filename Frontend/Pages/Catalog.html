@@ -95,7 +95,21 @@
     </div>
     <!--MAIN-->
     <main class="contenedor-principal-catalogo">
-      <aside class="barra-lateral">
+      <button
+        class="btn-toggle-filtros"
+        type="button"
+        aria-controls="filtros-catalogo"
+        aria-expanded="false"
+        onclick="toggleFiltrosCatalogo()"
+      >
+        <span class="icono-toggle-filtros" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        Filtros
+      </button>
+      <aside class="barra-lateral" id="filtros-catalogo">
         <button class="btn-limpiar">Limpiar Filtro</button>
 
         <div class="grupo-filtro">
