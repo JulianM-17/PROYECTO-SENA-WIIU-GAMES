@@ -33,9 +33,7 @@ body {
   color: var(--text-main);
 }
 
-/* =====================================================
-   ESTRUCTURA PRINCIPAL
-   ===================================================== */
+/*ESTRUCTURA PRINCIPAL*/
 .contenedor-miga-catalogo {
   max-width: 1400px;
   margin: 24px auto 0;
@@ -81,9 +79,7 @@ body {
   align-items: flex-start;
 }
 
-/* =====================================================
-   BARRA LATERAL (SIDEBAR)
-   ===================================================== */
+/*BARRA LATERAL*/
 .barra-lateral {
   width: 280px;
   flex-shrink: 0;
@@ -256,9 +252,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* =====================================================
-   SECCIÓN PRODUCTOS
-   ===================================================== */
+/*SECCIÓN PRODUCTOS*/
 .seccion-productos-cat {
   flex: 1;
   display: flex;
@@ -345,9 +339,7 @@ body {
   width: 100%;
 }
 
-/* =====================================================
-   TARJETAS DE PRODUCTO
-   ===================================================== */
+/*TARJETAS DE PRODUCTO*/
 .tarjeta-producto {
   background: var(--white);
   border-radius: 16px;
@@ -550,9 +542,7 @@ body {
   font-size: 11px;
 }
 
-/* =====================================================
-   CARRUSEL CONTROLES
-   ===================================================== */
+/*CARRUSEL CONTROLES*/
 .flecha-carrusel {
   position: absolute;
   top: 40%;
@@ -587,9 +577,7 @@ body {
   right: -20px;
 }
 
-/* =====================================================
-   RESPONSIVE
-   ===================================================== */
+/*RESPONSIVE*/
 @media (max-width: 1024px) {
   .contenedor-principal-catalogo {
     flex-direction: column;
@@ -604,4 +592,24 @@ body {
   .seccion-productos-cat {
     width: 100%;
   }
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+}
+
+.paginacion button {
+  padding: 8px 14px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+.paginacion button.activa {
+  background: #222;
+  color: #fff;
+  border-color: #222;
 }
