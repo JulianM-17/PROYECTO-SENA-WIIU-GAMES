@@ -302,7 +302,7 @@
     closeButton.className = "menu-movil-cerrar";
     closeButton.type = "button";
     closeButton.setAttribute("aria-label", "Cerrar menú");
-    closeButton.innerHTML = "";
+    closeButton.innerHTML = "&times;";
     menu.prepend(closeButton);
 
     const overlay = document.createElement("button");
