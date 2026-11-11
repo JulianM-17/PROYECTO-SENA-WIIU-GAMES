@@ -61,8 +61,29 @@ function cambiarPestana(idSeccion, botonClickeado) {
     botonClickeado.classList.add('activo');
   }
 
+  var navegacion = document.getElementById('menuNavegacion');
+  var botonHamburguesa = document.querySelector('.boton-hamburguesa');
+  if (navegacion && botonHamburguesa) {
+    navegacion.classList.remove('abierto');
+    botonHamburguesa.setAttribute('aria-expanded', 'false');
+    botonHamburguesa.setAttribute('aria-label', 'Abrir menú de navegación');
+  }
+
   // 4. Subir la vista al inicio del contenido
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleMenuMovil() {
+  var navegacion = document.getElementById('menuNavegacion');
+  var botonHamburguesa = document.querySelector('.boton-hamburguesa');
+  if (!navegacion || !botonHamburguesa) return;
+
+  var abierto = navegacion.classList.toggle('abierto');
+  botonHamburguesa.setAttribute('aria-expanded', String(abierto));
+  botonHamburguesa.setAttribute(
+    'aria-label',
+    abierto ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'
+  );
 }
 
 // ==========================================================================

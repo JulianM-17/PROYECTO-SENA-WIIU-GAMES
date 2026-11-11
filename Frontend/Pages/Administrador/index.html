@@ -23,13 +23,20 @@
 
 <aside class="menu-lateral">
 
-<div class="logo">
+<div class="cabecera-menu-lateral">
+  <div class="logo">
         <a href="../../Index.html" title="Ir a la tienda">
           <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
         </a>
       </div>
+  <button class="boton-hamburguesa" type="button" aria-label="Abrir menú de navegación" aria-controls="menuNavegacion" aria-expanded="false" onclick="toggleMenuMovil()">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+</div>
 
-<nav class="navegacion">
+<nav class="navegacion" id="menuNavegacion">
         <button class="boton-menu activo" onclick="cambiarPestana('seccion-home', this)">
           <i class="fi fi-rr-home"></i>
           <span>Home</span>
@@ -237,7 +244,8 @@
               <button class="btn-texto" onclick="abrirModal('pedidos')">+ Nuevo Pedido</button>
             </div>
 
-            <table class="tabla-panel">
+            <div class="tabla-responsive">
+              <table class="tabla-panel">
               <thead>
                 <tr>
                   <th>Pedido</th>
@@ -252,7 +260,8 @@
                   <td colspan="5" class="texto-vacio">No hay pedidos registrados en la base de datos</td>
                 </tr>
               </tbody>
-            </table>
+              </table>
+            </div>
           </div>
 
 <div class="caja-panel">
@@ -324,7 +333,8 @@
             </select>
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>ID Garantía</th>
@@ -341,7 +351,8 @@
                 <td colspan="7" class="texto-vacio">No hay garantías registradas en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -361,7 +372,8 @@
             <input type="text" class="input-filtro" placeholder="Buscar orden de mantenimiento..." oninput="filtrarTabla('tablaMantenimientosBody', this.value)">
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>Orden</th>
@@ -378,7 +390,8 @@
                 <td colspan="7" class="texto-vacio">No hay órdenes de mantenimiento registradas en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -420,7 +433,8 @@
             </select>
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>Producto</th>
@@ -438,7 +452,8 @@
                 <td colspan="8" class="texto-vacio">No hay productos registrados en el inventario</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -458,7 +473,8 @@
             <input type="text" class="input-filtro" placeholder="Buscar por falla, cliente o ticket..." oninput="filtrarTabla('tablaReparacionBody', this.value)">
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>Ticket</th>
@@ -475,7 +491,8 @@
                 <td colspan="7" class="texto-vacio">No hay tickets de reparación registrados en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -516,7 +533,8 @@
             </select>
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>Código</th>
@@ -533,7 +551,8 @@
                 <td colspan="7" class="texto-vacio">No hay cupones ni descuentos registrados en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -574,7 +593,8 @@
             </select>
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>ID</th>
@@ -591,7 +611,8 @@
                 <td colspan="7" class="texto-vacio">No hay reseñas registradas en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
@@ -626,7 +647,8 @@
             <input type="text" class="input-filtro" placeholder="Buscar por nombre, teléfono o correo..." oninput="filtrarTabla('tablaClientesBody', this.value)">
           </div>
 
-          <table class="tabla-panel">
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
             <thead>
               <tr>
                 <th>ID</th>
@@ -643,7 +665,8 @@
                 <td colspan="7" class="texto-vacio">No hay clientes registrados en la base de datos</td>
               </tr>
             </tbody>
-          </table>
+            </table>
+          </div>
         </div>
 
       </section>
