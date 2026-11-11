@@ -384,8 +384,7 @@
               </div>
             </div>
 
-            <!-- Formulario de datos -->
-            <form id="form-perfil-datos" class="tarjeta-formulario">
+            <section class="tarjeta-formulario">
               <div class="encabezado-formulario-perfil">
                 <p class="titulo-tarjeta-formulario">Datos personales</p>
                 <button
@@ -396,93 +395,38 @@
                   Editar datos
                 </button>
               </div>
-              <div class="cuadricula-formulario-2">
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Nombres</label>
-                  <input
-                    type="text"
-                    id="perfil-nombres"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                    required
-                    maxlength="30"
-                  />
+              <div class="cuadricula-datos-perfil">
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario">Nombres</span>
+                  <p class="valor-dato-perfil" id="perfil-dato-nombres"></p>
                 </div>
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Apellidos</label>
-                  <input
-                    type="text"
-                    id="perfil-apellidos"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                    required
-                    maxlength="30"
-                  />
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario">Apellidos</span>
+                  <p class="valor-dato-perfil" id="perfil-dato-apellidos"></p>
                 </div>
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Correo electrónico</label>
-                  <input
-                    type="email"
-                    id="perfil-email"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                    required
-                    maxlength="120"
-                  />
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario">Correo electrónico</span>
+                  <p class="valor-dato-perfil" id="perfil-dato-email"></p>
                 </div>
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Teléfono</label>
-                  <input
-                    type="tel"
-                    id="perfil-telefono"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                    required
-                    maxlength="20"
-                  />
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario">Teléfono</span>
+                  <p class="valor-dato-perfil" id="perfil-dato-telefono"></p>
                 </div>
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Fecha de nacimiento</label>
-                  <input
-                    type="date"
-                    id="perfil-nacimiento"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                  />
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario">Fecha de nacimiento</span>
+                  <p
+                    class="valor-dato-perfil"
+                    id="perfil-dato-nacimiento"
+                  ></p>
                 </div>
-                <div class="campo-formulario">
-                  <label class="etiqueta-formulario"
-                    >Documento de identidad</label
+                <div class="campo-dato-perfil">
+                  <span class="etiqueta-formulario"
+                    >Documento de identidad</span
                   >
-                  <input
-                    type="text"
-                    id="perfil-documento"
-                    value=""
-                    class="entrada-formulario"
-                    readonly
-                    required
-                    maxlength="20"
-                  />
+                  <p class="valor-dato-perfil" id="perfil-dato-documento"></p>
                 </div>
               </div>
-              <div class="acciones-formulario" id="acciones-edicion-perfil" hidden>
-                <button
-                  type="button"
-                  class="btn-cancelar"
-                  id="btn-cancelar-perfil"
-                >
-                  Cancelar
-                </button>
-                <button type="submit" class="btn-guardar">
-                  Guardar cambios
-                </button>
-              </div>
-            </form>
+            </section>
 
             <!-- Cambio contraseña -->
             <form id="form-perfil-seguridad" class="tarjeta-formulario">
@@ -1262,6 +1206,112 @@
 
     <!--Contenedor de notificaciones -->
     <div id="contenedor-notificacion" class="contenedor-notificacion"></div>
+
+    <!--Edición de datos personales-->
+    <div id="modal-editar-perfil" class="fondo-modal">
+      <div
+        class="tarjeta-modal tarjeta-modal-grande"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-editar-perfil-titulo"
+      >
+        <div class="encabezado-modal">
+          <h3 id="modal-editar-perfil-titulo">Editar datos personales</h3>
+          <button
+            type="button"
+            class="btn-cerrar-modal"
+            aria-label="Cerrar"
+            data-close-modal
+          >
+            &times;
+          </button>
+        </div>
+        <form id="form-perfil-datos" class="cuerpo-modal">
+          <div class="cuadricula-formulario-2">
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-nombres"
+                >Nombres</label
+              >
+              <input
+                type="text"
+                id="perfil-nombres"
+                class="entrada-formulario"
+                required
+                maxlength="30"
+              />
+            </div>
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-apellidos"
+                >Apellidos</label
+              >
+              <input
+                type="text"
+                id="perfil-apellidos"
+                class="entrada-formulario"
+                required
+                maxlength="30"
+              />
+            </div>
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-email"
+                >Correo electrónico</label
+              >
+              <input
+                type="email"
+                id="perfil-email"
+                class="entrada-formulario"
+                required
+                maxlength="120"
+              />
+            </div>
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-telefono"
+                >Teléfono</label
+              >
+              <input
+                type="tel"
+                id="perfil-telefono"
+                class="entrada-formulario"
+                required
+                maxlength="20"
+              />
+            </div>
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-nacimiento"
+                >Fecha de nacimiento</label
+              >
+              <input
+                type="date"
+                id="perfil-nacimiento"
+                class="entrada-formulario"
+              />
+            </div>
+            <div class="campo-formulario">
+              <label class="etiqueta-formulario" for="perfil-documento"
+                >Documento de identidad</label
+              >
+              <input
+                type="text"
+                id="perfil-documento"
+                class="entrada-formulario"
+                required
+                maxlength="20"
+              />
+            </div>
+          </div>
+          <div class="pie-modal">
+            <button
+              type="button"
+              class="btn-cancelar"
+              id="btn-cancelar-perfil"
+            >
+              Cancelar
+            </button>
+            <button type="submit" class="btn-guardar">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!--Direcciones-->
     <div id="modal-direccion" class="fondo-modal">

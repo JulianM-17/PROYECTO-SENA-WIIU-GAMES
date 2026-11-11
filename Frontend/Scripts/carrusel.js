@@ -143,6 +143,7 @@ function renderProducts(container, products) {
     ) {
       if (feedback) {
         feedback.textContent = `Selecciona una cantidad entre 1 y ${Number(product?.stock_total) || 0}.`;
+        feedback.style.color = "#b91c1c";
       }
       quantityInput?.focus();
       return;
@@ -165,19 +166,28 @@ function renderProducts(container, products) {
         } else {
           feedback.textContent = "No se pudo agregar el producto al carrito.";
         }
+        feedback.style.color = "#b91c1c";
       }
       return;
     }
 
     const originalText = button.textContent;
-    button.textContent = "¡Agregado!";
+    button.textContent = "✔ ¡Agregado!";
+    button.style.backgroundColor = "#22c55e";
+    button.style.color = "#ffffff";
     if (feedback) {
-      feedback.textContent = `Se agregaron ${quantity} al carrito.`;
+      feedback.textContent = "¡Añadido al carrito con éxito!";
+      feedback.style.color = "#22c55e";
     }
     window.setTimeout(() => {
       if (!button.isConnected) return;
       button.textContent = originalText;
-      if (feedback) feedback.textContent = "";
+      button.style.backgroundColor = "";
+      button.style.color = "";
+      if (feedback) {
+        feedback.textContent = "";
+        feedback.style.color = "";
+      }
     }, 1500);
   });
 }

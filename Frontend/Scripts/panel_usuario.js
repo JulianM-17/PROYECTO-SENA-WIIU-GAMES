@@ -267,21 +267,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (statNumeroFavs) statNumeroFavs.textContent = state.favorites.length;
     if (statNumeroDirs) statNumeroDirs.textContent = state.addresses.length;
 
-    // Form inputs de perfil
-    const inputNombre = document.querySelector(
-      '#vista-perfil input[type="text"]:nth-of-type(1)',
-    );
-    const inputsPerfil = document.querySelectorAll(
-      "#vista-perfil .tarjeta-formulario:first-of-type .entrada-formulario",
-    );
-    if (inputsPerfil.length >= 6) {
-      inputsPerfil[0].value = nombre;
-      inputsPerfil[1].value = apellidos;
-      inputsPerfil[2].value = email;
-      inputsPerfil[3].value = telefono;
-      inputsPerfil[4].value = nacimiento;
-      inputsPerfil[5].value = documento;
-    }
+    const nacimientoVisible = nacimiento
+      ? nacimiento.split("-").reverse().join("/")
+      : "";
+    [
+      ["perfil-dato-nombres", nombre],
+      ["perfil-dato-apellidos", apellidos],
+      ["perfil-dato-email", email],
+      ["perfil-dato-telefono", telefono],
+      ["perfil-dato-nacimiento", nacimientoVisible],
+      ["perfil-dato-documento", documento],
+    ].forEach(([id, value]) => {
+      const field = document.getElementById(id);
+      if (field) field.textContent = value || "No registrado";
+    });
+
+    [
+      ["perfil-nombres", nombre],
+      ["perfil-apellidos", apellidos],
+      ["perfil-email", email],
+      ["perfil-telefono", telefono],
+      ["perfil-nacimiento", nacimiento],
+      ["perfil-documento", documento],
+    ].forEach(([id, value]) => {
+      const input = document.getElementById(id);
+      if (input) input.value = value || "";
+    });
 
     renderAddresses();
     renderCards();
@@ -296,21 +307,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnEditarPerfil = document.getElementById("btn-editar-perfil");
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
   const formPerfilSeguridad = document.getElementById("form-perfil-seguridad");
-  const accionesEdicionPerfil = document.getElementById(
-    "acciones-edicion-perfil",
-  );
-  const camposPerfil = formPerfilDatos?.querySelectorAll(".entrada-formulario");
-
-  function setProfileEditing(editing) {
-    camposPerfil?.forEach((input) => {
-      input.readOnly = !editing;
-    });
-    if (btnEditarPerfil) btnEditarPerfil.hidden = editing;
-    if (accionesEdicionPerfil) accionesEdicionPerfil.hidden = !editing;
-  }
 
   btnEditarPerfil?.addEventListener("click", () => {
-    setProfileEditing(true);
+    formPerfilDatos
+      ?.querySelectorAll(".input-error")
+      .forEach((input) => input.classList.remove("input-error"));
+    updateUI();
+    openModal("modal-editar-perfil");
     document.getElementById("perfil-nombres")?.focus();
   });
 
@@ -420,8 +423,8 @@ document.addEventListener("DOMContentLoaded", async () => {
           "wiiu_usuario_activo",
           JSON.stringify(sessionUser),
         );
-        setProfileEditing(false);
         updateUI();
+        closeModal("modal-editar-perfil");
         showToast("¡Datos personales actualizados con éxito!", "success");
       } catch (error) {
         showToast(error.message, "error");
@@ -437,8 +440,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       document
         .querySelectorAll("#form-perfil-datos .input-error")
         .forEach((el) => el.classList.remove("input-error"));
-      setProfileEditing(false);
       updateUI();
+      closeModal("modal-editar-perfil");
       showToast("Cambios cancelados.", "info");
     });
   }

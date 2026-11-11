@@ -709,14 +709,35 @@ body {
   flex: 1;
 }
 
-.acciones-formulario[hidden] {
-  display: none;
-}
-
 .cuadricula-formulario-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+}
+
+.cuadricula-datos-perfil {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.campo-dato-perfil {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.valor-dato-perfil {
+  min-height: 46px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--text-main);
+  font-size: 14px;
+  user-select: none;
+  pointer-events: none;
 }
 
 .campo-formulario {
@@ -1982,6 +2003,9 @@ body {
     grid-template-columns: repeat(2, 1fr);
   }
   .cuadricula-formulario-2 {
+    grid-template-columns: 1fr;
+  }
+  .cuadricula-datos-perfil {
     grid-template-columns: 1fr;
   }
   .tabla-header,
