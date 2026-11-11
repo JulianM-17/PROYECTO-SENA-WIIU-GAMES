@@ -37,7 +37,7 @@
         <div class="seccion-direccion">
           Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
           Boyacá
-          <a href="contactanos.html" class="link-contacto">Contactanos</a>
+          <a href="#" class="link-contacto">Contactanos</a>
         </div>
         <div class="seccion-contacto">
           Llamanos: <b>(00) 1234 5678</b>
@@ -81,6 +81,80 @@
               <i class="fi fi-rr-shopping-cart icono-menu"></i>
               <b class="burbuja-carrito"></b>
             </a>
+          </div>
+        </div>
+      </div>
+      <!-- Animacion Contactanos -->
+      <div id="contacto-overlay" class="overlay"></div>
+
+      <!-- Panel lateral de contacto -->
+      <div id="contacto-panel" class="panel-lateral">
+        <button id="cerrar-panel" class="btn-cerrar">&times;</button>
+
+        <!-- Encabezado azul oscuro -->
+        <div class="panel-header">
+          <h2>Contáctanos</h2>
+          <p>
+            Si tienes alguna pregunta, inquietud o comentario, no dudes en
+            comunicarte con nosotros. Nuestro equipo de atención al cliente
+            estará encantado de ayudarte y brindarte la asistencia que
+            necesites.
+          </p>
+        </div>
+
+        <!-- Contenido del formulario y datos -->
+        <div class="panel-body">
+          <!-- Columna Izquierda: Formulario -->
+          <div class="formulario-contacto">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre" />
+              </div>
+              <div class="input-group">
+                <label>Gmail</label>
+                <input type="email" placeholder="Ej: tuemail@gmail.com" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Teléfono</label>
+              <input type="text" placeholder="Ej: 3001234567" />
+            </div>
+            <div class="input-group">
+              <label>Agrega tu consulta</label>
+              <textarea
+                placeholder="Escribe tu consulta aquí"
+                rows="4"
+              ></textarea>
+            </div>
+            <button class="btn-enviar">Enviar Consulta</button>
+          </div>
+
+          <!-- Columna Derecha: Información -->
+          <div class="info-contacto">
+            <div class="info-card">
+              <h4>DIRECCIÓN:</h4>
+              <p>
+                Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+                Sogamoso, Boyacá
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>TELÉFONO:</h4>
+              <p>3046616081</p>
+            </div>
+            <div class="info-card">
+              <h4>HORARIOS:</h4>
+              <p>
+                Lunes a viernes: 8:30 a.m. a 12:00 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Sabado: 8:30 a.m a 12:30 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Domingo: 10:00 a.m a 1:00 p.m
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>CORREO ELECTRÓNICO:</h4>
+              <p><span class="badge-correo">shop@email.com</span></p>
+            </div>
           </div>
         </div>
       </div>
@@ -238,7 +312,7 @@
             <li><a href="Catalog.html">Buscar</a></li>
             <li><a href="Catalog.html">Terminos y Condiciones</a></li>
             <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
-            <li><a href="contactanos.html">Contactanos</a></li>
+            <li><a href="#" class="link-contacto">Contactanos</a></li>
           </ul>
         </div>
         <div class="columna-footer">
@@ -322,5 +396,6 @@
       </div>
     </footer>
     <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../Scripts/contactanos.js"></script>
   </body>
 </html>
