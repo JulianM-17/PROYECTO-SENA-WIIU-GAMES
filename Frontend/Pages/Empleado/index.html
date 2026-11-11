@@ -55,9 +55,9 @@
       </nav>
 
       <div class="perfil-empleado" onclick="toggleMenuPerfil()">
-        <div class="avatar-cm">CM</div>
+        <div class="avatar-cm">EM</div>
         <div class="info-empleado">
-          <p class="nombre">Carlos M.</p>
+          <p class="nombre">Empleado</p>
           <p class="rol">Asesor de Ventas</p>
         </div>
         <i class="fi fi-rr-angle-small-down flecha"></i>
@@ -104,9 +104,6 @@
               <input type="text" id="buscadorPos" placeholder="Buscar por nombre de juego, consola o SKU..." oninput="filtrarProductosPos(this.value)">
               <select id="filtroCategoriaPos" onchange="filtrarCategoriaPos(this.value)">
                 <option value="">Todas las categorías</option>
-                <option value="Consolas">Consolas</option>
-                <option value="Juegos">Juegos</option>
-                <option value="Accesorios">Accesorios</option>
               </select>
             </div>
 
@@ -300,7 +297,7 @@
         <h3 id="modalEmpleadoTitulo">Formulario</h3>
         <button type="button" class="btn-cerrar-modal" onclick="cerrarModalEmpleado()">&times;</button>
       </div>
-      <form id="formEmpleado" onsubmit="guardarRegistroEmpleado(event)">
+      <form id="formEmpleado">
         <div class="cuerpo-modal-empleado" id="modalEmpleadoCampos"></div>
         <div class="pie-modal-empleado">
           <button type="button" class="btn-cancelar-modal" onclick="cerrarModalEmpleado()">Cancelar</button>
@@ -310,6 +307,7 @@
     </div>
   </div>
 
+  <div id="notificacionesEmpleado" class="notificaciones-empleado" aria-live="polite"></div>
   <script src="script.js"></script>
   <script src="../../Scripts/accessibility.js" defer></script>
 

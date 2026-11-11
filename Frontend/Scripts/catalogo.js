@@ -161,6 +161,15 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarMarcas();
 });
 
+function toggleFiltrosCatalogo() {
+  const contenedor = document.querySelector('.contenedor-principal-catalogo');
+  const boton = document.querySelector('.btn-toggle-filtros');
+  if (!contenedor || !boton) return;
+
+  const abierto = contenedor.classList.toggle('filtros-abiertos');
+  boton.setAttribute('aria-expanded', String(abierto));
+}
+
 async function cargarProductos() {
   const contenedor = document.getElementById('grid-productos');
   if (!contenedor) return;

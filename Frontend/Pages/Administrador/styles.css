@@ -1012,10 +1012,18 @@ body {
   .panel-contenedor {
     flex-direction: column;
   }
+  .contenido {
+    flex: initial;
+    overflow-y: visible;
+  }
   .menu-lateral {
     width: 100%;
     height: auto;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    max-height: 100vh;
+    max-height: 100dvh;
     padding: 14px 16px;
   }
   .cabecera-menu-lateral {
@@ -1057,6 +1065,20 @@ body {
   }
   .navegacion.abierto {
     display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .perfil-usuario {
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-top: 12px;
+  }
+  .menu-desplegable-perfil {
+    position: static;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 10px;
   }
   .fila-tarjetas {
     grid-template-columns: 1fr;
@@ -1071,7 +1093,91 @@ body {
     min-width: 680px;
   }
   #seccion-home .tabla-panel {
-    min-width: 560px;
+    display: block;
+    min-width: 0;
+  }
+  #seccion-home .tabla-responsive {
+    overflow: visible;
+  }
+  #seccion-home .tabla-panel thead {
+    display: none;
+  }
+  #seccion-home .tabla-panel tbody {
+    display: grid;
+  }
+  #seccion-home .tabla-panel tbody tr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2px 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  #seccion-home .tabla-panel td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    padding: 6px 4px;
+    border: 0;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+  #seccion-home .tabla-panel td::before {
+    flex-shrink: 0;
+    color: #8a9bb5;
+    font-size: 10px;
+  }
+  #seccion-home .tabla-panel td:nth-child(1)::before {
+    content: "Pedido";
+  }
+  #seccion-home .tabla-panel td:nth-child(2)::before {
+    content: "Cliente";
+  }
+  #seccion-home .tabla-panel td:nth-child(3)::before {
+    content: "Estado";
+  }
+  #seccion-home .tabla-panel td:nth-child(4)::before {
+    content: "Total";
+  }
+  #seccion-home .tabla-panel td:nth-child(5) {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+  #seccion-home .tabla-panel td[colspan] {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+  #seccion-home .tabla-panel td:nth-child(5)::before,
+  #seccion-home .tabla-panel td[colspan]::before {
+    content: none;
+  }
+  #seccion-home .fila-financiera {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 12px;
+  }
+  #seccion-home .circulo-meta {
+    width: 76px;
+    height: 76px;
+    border-width: 3px;
+  }
+  #seccion-home .circulo-meta .porcentaje {
+    font-size: 18px;
+  }
+  #seccion-home .detalles-dinero,
+  #seccion-home .item-dinero {
+    min-width: 0;
+  }
+  #seccion-home .item-dinero .valor {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+  #seccion-home .pie-enlace a {
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
   }
 }
 
