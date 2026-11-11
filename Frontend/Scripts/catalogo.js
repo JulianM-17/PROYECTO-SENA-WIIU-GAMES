@@ -315,12 +315,24 @@ function crearTarjetaProducto(prod) {
         <p class="descripcion-producto">${escapeHtml(prod.descripcion || '')}</p>
       </a>
       <div class="precio-actual">${precioFormateado}</div>
-      <button
-        class="btn-agregar-carrito"
-        type="button"
-        data-product-id="${escapeHtml(prod.id_producto)}"
-        ${tieneStock ? '' : 'disabled'}
-      >${tieneStock ? 'Agregar al carrito' : 'Agotado'}</button>
+      <div class="contenedor-acciones-producto">
+        <input
+          type="number"
+          id="cantidad-${escapeHtml(prod.id_producto)}"
+          min="1"
+          max="${Math.max(Number(prod.stock_total) || 99, 1)}"
+          value="1"
+          class="cantidad-producto"
+          aria-label="Cantidad para ${escapeHtml(prod.nombre)}"
+          ${tieneStock ? '' : 'disabled'}
+        />
+        <button
+          class="btn-agregar-carrito"
+          type="button"
+          data-product-id="${escapeHtml(prod.id_producto)}"
+          ${tieneStock ? '' : 'disabled'}
+        >${tieneStock ? 'Agregar al carrito' : 'Agotado'}</button>
+      </div>
       <span class="mensaje-carrito" aria-live="polite"></span>
     </article>
   `;
@@ -336,6 +348,10 @@ function configurarAgregarAlCarrito() {
 
     event.preventDefault();
     event.stopPropagation();
+
+    const contenedorAcciones = button.closest('.contenedor-acciones-producto');
+    const inputCantidad = contenedorAcciones?.querySelector('.cantidad-producto');
+    const cantidad = Math.max(Number(inputCantidad?.value) || 1, 1);
 
     const productId = button.getAttribute('data-product-id') || button.dataset.productId;
     let product = productosCatalogo.find(
@@ -356,11 +372,20 @@ function configurarAgregarAlCarrito() {
       };
     }
 
-    const feedback = button.nextElementSibling;
+    const stockDisponible = Number(product.stock_total) || 99;
+    const feedback = button.parentElement?.nextElementSibling || button.nextElementSibling;
     let agregadoExitoso = false;
 
+    if (cantidad > stockDisponible) {
+      if (feedback) {
+        feedback.textContent = `Solo hay ${stockDisponible} disponibles.`;
+        feedback.style.color = '#b91c1c';
+      }
+      return;
+    }
+
     if (window.WiiUGamesCart && typeof window.WiiUGamesCart.add === 'function') {
-      const result = window.WiiUGamesCart.add(product, 1);
+      const result = window.WiiUGamesCart.add(product, cantidad);
       if (result.ok) {
         agregadoExitoso = true;
       } else if (result.reason === 'stock') {
@@ -377,14 +402,14 @@ function configurarAgregarAlCarrito() {
         const cart = JSON.parse(localStorage.getItem('wiiu_cart') || '[]');
         const existing = cart.find(i => String(i.productId) === String(productId));
         if (existing) {
-          existing.quantity = (Number(existing.quantity) || 1) + 1;
+          existing.quantity = (Number(existing.quantity) || 0) + cantidad;
         } else {
           cart.push({
             productId: String(productId),
             name: product.nombre,
             price: Number(product.precio) || 0,
             imageUrl: product.imagen_url || '../Assets/lenovolegion.webp',
-            quantity: 1,
+            quantity: cantidad,
             stock: product.stock_total || 99
           });
         }
@@ -407,7 +432,7 @@ function configurarAgregarAlCarrito() {
       button.style.backgroundColor = '#22c55e';
       button.style.color = '#ffffff';
       if (feedback) {
-        feedback.textContent = '¡Añadido al carrito con éxito!';
+        feedback.textContent = `¡Añadido ${cantidad} al carrito con éxito!`;
         feedback.style.color = '#22c55e';
       }
 
