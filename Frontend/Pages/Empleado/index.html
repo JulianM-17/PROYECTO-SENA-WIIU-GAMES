@@ -21,13 +21,20 @@
 
     <aside class="barra-lateral">
 
-      <div class="logo">
-        <a href="../../Index.html" title="Ir a la tienda">
-          <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
-        </a>
+      <div class="cabecera-menu-lateral">
+        <div class="logo">
+          <a href="../../Index.html" title="Ir a la tienda">
+            <img src="../../Assets/LogoSinFondo.png" alt="WiiU-Games">
+          </a>
+        </div>
+        <button class="boton-hamburguesa" type="button" aria-label="Abrir menú de navegación" aria-controls="menuNavegacion" aria-expanded="false" onclick="toggleMenuMovil()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
 
-      <nav class="navegacion">
+      <nav class="navegacion" id="menuNavegacion">
         <button class="boton-menu activo" onclick="cambiarPestana('vista-pos', this)">
           <i class="fi fi-rr-calculator"></i>
           <span>Punto de Venta (POS)</span>
@@ -175,24 +182,26 @@
             <input type="text" placeholder="Buscar por juego, consola o SKU..." oninput="filtrarTablaGenerica('tablaCatalogoBody', this.value)">
           </div>
 
-          <table class="tabla-empleado">
-            <thead>
-              <tr>
-                <th>Producto</th>
-                <th>SKU</th>
-                <th>Categoría</th>
-                <th>Precio Venta</th>
-                <th>Stock Disponible</th>
-                <th>Estado Físico</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="tablaCatalogoBody">
-              <tr>
-                <td colspan="7" class="mensaje-vacio">No hay productos registrados en el catálogo</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="tabla-responsive">
+            <table class="tabla-empleado">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>SKU</th>
+                  <th>Categoría</th>
+                  <th>Precio Venta</th>
+                  <th>Stock Disponible</th>
+                  <th>Estado Físico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaCatalogoBody">
+                <tr>
+                  <td colspan="7" class="mensaje-vacio">No hay productos registrados en el catálogo</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -206,24 +215,26 @@
         </div>
 
         <div class="caja-blanca">
-          <table class="tabla-empleado">
-            <thead>
-              <tr>
-                <th>ID Garantía</th>
-                <th>Cliente</th>
-                <th>Producto / Serial</th>
-                <th>Fecha Compra</th>
-                <th>Vencimiento</th>
-                <th>Estado</th>
-                <th>Comprobante</th>
-              </tr>
-            </thead>
-            <tbody id="tablaGarantiasBody">
-              <tr>
-                <td colspan="7" class="mensaje-vacio">No hay garantías registradas</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="tabla-responsive">
+            <table class="tabla-empleado">
+              <thead>
+                <tr>
+                  <th>ID Garantía</th>
+                  <th>Cliente</th>
+                  <th>Producto / Serial</th>
+                  <th>Fecha Compra</th>
+                  <th>Vencimiento</th>
+                  <th>Estado</th>
+                  <th>Comprobante</th>
+                </tr>
+              </thead>
+              <tbody id="tablaGarantiasBody">
+                <tr>
+                  <td colspan="7" class="mensaje-vacio">No hay garantías registradas</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -237,24 +248,26 @@
         </div>
 
         <div class="caja-blanca">
-          <table class="tabla-empleado">
-            <thead>
-              <tr>
-                <th>Orden Ticket</th>
-                <th>Dispositivo / Consola</th>
-                <th>Falla Reportada</th>
-                <th>Cliente</th>
-                <th>Presupuesto</th>
-                <th>Estado Taller</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tablaTallerBody">
-              <tr>
-                <td colspan="7" class="mensaje-vacio">No hay órdenes de taller técnico registradas</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="tabla-responsive">
+            <table class="tabla-empleado">
+              <thead>
+                <tr>
+                  <th>Orden Ticket</th>
+                  <th>Dispositivo / Consola</th>
+                  <th>Falla Reportada</th>
+                  <th>Cliente</th>
+                  <th>Presupuesto</th>
+                  <th>Estado Taller</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tablaTallerBody">
+                <tr>
+                  <td colspan="7" class="mensaje-vacio">No hay órdenes de taller técnico registradas</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -268,22 +281,24 @@
         </div>
 
         <div class="caja-blanca">
-          <table class="tabla-empleado">
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Teléfono Contacto</th>
-                <th>Correo Electrónico</th>
-                <th>Total Compras</th>
-                <th>Nivel</th>
-              </tr>
-            </thead>
-            <tbody id="tablaClientesBody">
-              <tr>
-                <td colspan="5" class="mensaje-vacio">No hay clientes registrados</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="tabla-responsive">
+            <table class="tabla-empleado">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Teléfono Contacto</th>
+                  <th>Correo Electrónico</th>
+                  <th>Total Compras</th>
+                  <th>Nivel</th>
+                </tr>
+              </thead>
+              <tbody id="tablaClientesBody">
+                <tr>
+                  <td colspan="5" class="mensaje-vacio">No hay clientes registrados</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 

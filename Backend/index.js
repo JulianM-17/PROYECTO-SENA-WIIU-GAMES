@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const fs = require("fs/promises");
 const path = require("path");
 const pool = require("./db.js");
 
@@ -286,7 +287,11 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       });
     }
 
-    const selectedBranchId = Number(branchRows[0].id);
+    const requestedBranchId = Number(req.query.branchId);
+    const selectedBranch = branchRows.find(
+      (branch) => Number(branch.id) === requestedBranchId,
+    ) || branchRows[0];
+    const selectedBranchId = Number(selectedBranch.id);
 
     const [inventoryRows] = await pool.query(
       `SELECT
@@ -296,10 +301,20 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          c.nombre_cat AS category,
          p.precio AS price,
          COALESCE(i.stock_total, 0) AS stock,
+         COALESCE((
+           SELECT SUM(bi.stock)
+           FROM inventario bi
+           WHERE bi.id_producto = p.id_producto
+             AND bi.id_sucursal = ?
+             AND bi.estado = 'ACTIVO'
+         ), 0) AS branchStock,
          3 AS minStock,
          'Nuevo Sellado' AS productCondition,
          '12 Meses' AS warranty,
          p.imagen_prin AS imageUrl,
+         p.imagen_2 AS imageUrl2,
+         p.imagen_3 AS imageUrl3,
+         p.imagen_4 AS imageUrl4,
          p.descripcion AS description,
          'Original' AS platform,
          m.nombre_marca AS publisher
@@ -317,6 +332,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        ) i ON i.id_producto = p.id_producto
        WHERE p.estado = 'ACTIVO'
        ORDER BY p.nombre`,
+      [selectedBranchId],
     );
     const [clientsRows] = await pool.query(
       `SELECT
@@ -357,6 +373,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [maintenanceRows] = await pool.query(
       `SELECT
+         s.id_servicio AS id,
          CONCAT('MNT-', s.id_servicio) AS maintenanceOrder,
          COALESCE(e.descripcion, e.tipo) AS equipment,
          CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
@@ -366,6 +383,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
            WHEN s.id_servicio = 2 THEN 240000
            ELSE 120000
          END, 0)) AS cost,
+         s.estado AS statusCode,
          CASE
            WHEN s.estado = 'PENDIENTE' THEN 'En Taller'
            WHEN s.estado = 'EN PROCESO' THEN 'En Diagnóstico'
@@ -377,19 +395,22 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        INNER JOIN equipo e ON e.id_equipo = s.id_equipo
        INNER JOIN usuario uCliente ON uCliente.id_usuario = s.id_usuario
        INNER JOIN usuario uEncargado ON uEncargado.id_usuario = s.id_encargado
-       WHERE ts.estado = 'ACTIVO'
+       WHERE ts.nombre = 'Mantenimiento preventivo' AND ts.estado = 'ACTIVO'
        ORDER BY s.fecha_creacion DESC
        LIMIT 10`,
     );
     const [repairRows] = await pool.query(
       `SELECT
+         s.id_servicio AS id,
          CONCAT('REP-', s.id_servicio) AS ticket,
          COALESCE(e.descripcion, e.tipo) AS device,
          s.descripcion AS defect,
          CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
          CONCAT('$ ', FORMAT(CASE WHEN s.id_servicio % 2 = 0 THEN 75000 ELSE 60000 END, 0)) AS price,
+         s.estado AS statusCode,
          CASE
-           WHEN s.estado IN ('PENDIENTE', 'EN PROCESO') THEN 'En Reparación'
+           WHEN s.estado = 'PENDIENTE' THEN 'En Taller'
+           WHEN s.estado = 'EN PROCESO' THEN 'En Reparación'
            WHEN s.estado = 'COMPLETO' THEN 'Completada'
            ELSE 'Cancelada'
          END AS status
@@ -546,7 +567,10 @@ app.get("/api/productos", async (req, res) => {
         p.id_producto, 
         p.nombre, 
         p.precio, 
-        p.imagen_prin AS imagen_url, -- Cambiado de p.imagen_url a p.imagen_prin
+        p.imagen_prin AS imagen_url,
+        p.imagen_2 AS imagen_url_2,
+        p.imagen_3 AS imagen_url_3,
+        p.imagen_4 AS imagen_url_4,
         p.descripcion,
         m.nombre_marca,
         c.nombre_cat,
@@ -1376,10 +1400,72 @@ app.post("/api/employee/sales", requireEmployee, async (req, res) => {
 
 // ---------- PRODUCTOS ----------
 
+const productImageTypes = new Map([
+  ["image/jpeg", { extension: "jpg", signature: (buffer) => buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff }],
+  ["image/png", { extension: "png", signature: (buffer) => buffer.length >= 8 && buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])) }],
+  ["image/webp", { extension: "webp", signature: (buffer) => buffer.length >= 12 && buffer.toString("ascii", 0, 4) === "RIFF" && buffer.toString("ascii", 8, 12) === "WEBP" }],
+  ["image/gif", { extension: "gif", signature: (buffer) => buffer.length >= 6 && ["GIF87a", "GIF89a"].includes(buffer.toString("ascii", 0, 6)) }],
+]);
+const parseProductImage = express.raw({
+  type: Array.from(productImageTypes.keys()),
+  limit: "5mb",
+});
+const productImageDirectory = path.join(__dirname, "..", "Frontend", "Assets", "uploads");
+
+app.post(
+  "/api/admin/product-images",
+  requireAdmin,
+  (req, res, next) => {
+    parseProductImage(req, res, (error) => {
+      if (!error) return next();
+      if (error.status === 413) {
+        return res.status(413).json({ ok: false, message: "La imagen no puede superar 5 MB." });
+      }
+      return next(error);
+    });
+  },
+  async (req, res) => {
+    const mimeType = String(req.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    const imageType = productImageTypes.get(mimeType);
+    const imageBuffer = req.body;
+    if (!imageType || !Buffer.isBuffer(imageBuffer) || !imageBuffer.length) {
+      return res.status(400).json({ ok: false, message: "Selecciona un archivo de imagen válido." });
+    }
+    if (!imageType.signature(imageBuffer)) {
+      return res.status(415).json({ ok: false, message: "El contenido del archivo no coincide con su formato de imagen." });
+    }
+
+    const fileName = `${crypto.randomBytes(16).toString("hex")}.${imageType.extension}`;
+    try {
+      await fs.mkdir(productImageDirectory, { recursive: true });
+      await fs.writeFile(path.join(productImageDirectory, fileName), imageBuffer, { flag: "wx" });
+      return res.status(201).json({
+        ok: true,
+        imageUrl: `../Assets/uploads/${fileName}`,
+        message: "Imagen subida correctamente.",
+      });
+    } catch (error) {
+      console.error("Error al guardar la imagen del producto:", error.message);
+      return res.status(500).json({ ok: false, message: "No se pudo guardar la imagen." });
+    }
+  },
+);
+
 // Crear producto
 app.post("/api/admin/productos", requireAdmin, async (req, res) => {
   try {
-    const { name, category, publisher, price, stock, imageUrl, description } = req.body;
+    const {
+      name,
+      category,
+      publisher,
+      price,
+      stock,
+      imageUrl,
+      imageUrl2,
+      imageUrl3,
+      imageUrl4,
+      description,
+    } = req.body;
     const branch = await obtenerSucursalInventarioAdmin(req.body?.branchId);
     if (!branch) {
       return res.status(400).json({
@@ -1391,8 +1477,11 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
     if (!name || String(name).trim().length < 3) {
       return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
     }
-    if (isNaN(price) || Number(price) <= 0) {
+    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
       return res.status(400).json({ ok: false, message: "Precio inválido." });
+    }
+    if (!Number.isInteger(Number(stock)) || Number(stock) < 0) {
+      return res.status(400).json({ ok: false, message: "Stock inválido." });
     }
 
     // Buscar o crear marca
@@ -1430,13 +1519,17 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
     }
 
     const [insertProduct] = await pool.query(
-      `INSERT INTO producto (id_marca, id_categoria, nombre, imagen_prin, descripcion, precio, estado)
-       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      `INSERT INTO producto
+         (id_marca, id_categoria, nombre, imagen_prin, imagen_2, imagen_3, imagen_4, descripcion, precio, estado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         marcaId,
         catId,
         String(name).trim().substring(0, 100),
-        String(imageUrl || "img/productos/default.jpg").trim().substring(0, 255),
+        String(imageUrl || "../Assets/lenovolegion.webp").trim().substring(0, 255),
+        String(imageUrl2 || "").trim().substring(0, 255) || null,
+        String(imageUrl3 || "").trim().substring(0, 255) || null,
+        String(imageUrl4 || "").trim().substring(0, 255) || null,
         String(description || "").trim().substring(0, 100),
         Number(price),
       ],
@@ -1470,7 +1563,18 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
 app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
   try {
     const productId = Number(req.params.id);
-    const { name, category, price, stock, imageUrl, description } = req.body;
+    const {
+      name,
+      category,
+      publisher,
+      price,
+      stock,
+      imageUrl,
+      imageUrl2,
+      imageUrl3,
+      imageUrl4,
+      description,
+    } = req.body;
     const branch = await obtenerSucursalInventarioAdmin(req.body?.branchId);
     if (!branch) {
       return res.status(400).json({
@@ -1479,8 +1583,25 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
       });
     }
 
+    if (!Number.isSafeInteger(productId) || productId < 1) {
+      return res.status(400).json({ ok: false, message: "Producto inválido." });
+    }
     if (!name || String(name).trim().length < 3) {
       return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
+    }
+    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
+      return res.status(400).json({ ok: false, message: "Precio inválido." });
+    }
+    if (!Number.isInteger(Number(stock)) || Number(stock) < 0) {
+      return res.status(400).json({ ok: false, message: "Stock inválido." });
+    }
+
+    const [existingProductRows] = await pool.query(
+      "SELECT id_producto FROM producto WHERE id_producto = ? AND estado = 'ACTIVO'",
+      [productId],
+    );
+    if (!existingProductRows.length) {
+      return res.status(404).json({ ok: false, message: "Producto no encontrado." });
     }
 
     let catId = null;
@@ -1501,41 +1622,65 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
       }
     }
 
-    if (catId) {
-      await pool.query(
-        `UPDATE producto
-         SET nombre = ?, id_categoria = ?, precio = ?, imagen_prin = ?, descripcion = ?
-         WHERE id_producto = ? AND estado = 'ACTIVO'`,
-        [
-          String(name).trim().substring(0, 100),
-          catId,
-          Number(price) || 0,
-          String(imageUrl || "").trim().substring(0, 255),
-          String(description || "").trim().substring(0, 100),
-          productId,
-        ],
+    let brandId = null;
+    if (publisher && String(publisher).trim().length > 0) {
+      const publisherName = String(publisher).trim();
+      const [brandRows] = await pool.query(
+        "SELECT id_marca FROM marca WHERE nombre_marca = ? AND estado = 'ACTIVO'",
+        [publisherName],
       );
-    } else {
-      await pool.query(
-        `UPDATE producto
-         SET nombre = ?, precio = ?, imagen_prin = ?, descripcion = ?
-         WHERE id_producto = ? AND estado = 'ACTIVO'`,
-        [
-          String(name).trim().substring(0, 100),
-          Number(price) || 0,
-          String(imageUrl || "").trim().substring(0, 255),
-          String(description || "").trim().substring(0, 100),
-          productId,
-        ],
-      );
+      if (brandRows.length > 0) {
+        brandId = brandRows[0].id_marca;
+      } else {
+        const [insertBrand] = await pool.query(
+          "INSERT INTO marca (nombre_marca, descripcion_marca, estado) VALUES (?, ?, 'ACTIVO')",
+          [publisherName.substring(0, 20), `Marca ${publisherName}`],
+        );
+        brandId = insertBrand.insertId;
+      }
     }
 
+    const updates = ["nombre = ?", "precio = ?", "descripcion = ?"];
+    const updateValues = [
+      String(name).trim().substring(0, 100),
+      Number(price),
+      String(description || "").trim().substring(0, 100),
+    ];
+    const imageFields = [
+      ["imageUrl", "imagen_prin"],
+      ["imageUrl2", "imagen_2"],
+      ["imageUrl3", "imagen_3"],
+      ["imageUrl4", "imagen_4"],
+    ];
+    imageFields.forEach(([bodyField, column]) => {
+      if (!Object.prototype.hasOwnProperty.call(req.body, bodyField)) return;
+      const imagePath = String(req.body[bodyField] || "").trim().substring(0, 255);
+      if (column === "imagen_prin" && !imagePath) return;
+      updates.push(`${column} = ?`);
+      updateValues.push(imagePath || null);
+    });
+    if (catId) {
+      updates.push("id_categoria = ?");
+      updateValues.push(catId);
+    }
+    if (brandId) {
+      updates.push("id_marca = ?");
+      updateValues.push(brandId);
+    }
+    updateValues.push(productId);
+    await pool.query(
+      `UPDATE producto
+       SET ${updates.join(", ")}
+       WHERE id_producto = ? AND estado = 'ACTIVO'`,
+      updateValues,
+    );
+
     // Actualizar el stock de la sucursal seleccionada.
-    const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
+    const stockVal = Number(stock);
     await pool.query(
       `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
        VALUES (?, ?, ?, 'ACTIVO')
-       ON DUPLICATE KEY UPDATE stock = ?`,
+       ON DUPLICATE KEY UPDATE stock = ?, estado = 'ACTIVO'`,
       [branch.id_sucursal, productId, stockVal, stockVal],
     );
 
@@ -1891,6 +2036,71 @@ app.post("/api/admin/reparaciones", async (req, res) => {
     return res.status(500).json({ ok: false, message: "No se pudo registrar la reparación." });
   }
 });
+
+async function actualizarEstadoServicioAdmin(req, res, nombreTipoServicio) {
+  const serviceId = Number(req.params.id);
+  const status = String(req.body?.status || "");
+  const validStatuses = ["PENDIENTE", "EN PROCESO", "COMPLETO", "CANCELADO"];
+  if (
+    !Number.isSafeInteger(serviceId) ||
+    serviceId <= 0 ||
+    !validStatuses.includes(status)
+  ) {
+    return res.status(400).json({ ok: false, message: "El estado solicitado no es válido." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [serviceRows] = await connection.query(
+      `SELECT s.id_servicio
+       FROM servicio s
+       INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
+       WHERE s.id_servicio = ? AND ts.nombre = ?
+       FOR UPDATE`,
+      [serviceId, nombreTipoServicio],
+    );
+    if (!serviceRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "No se encontró la orden solicitada." });
+    }
+
+    await connection.query(
+      "UPDATE servicio SET estado = ? WHERE id_servicio = ?",
+      [status, serviceId],
+    );
+    await connection.query(
+      "UPDATE detalle_servicio SET estado = ? WHERE id_servicio = ?",
+      [status, serviceId],
+    );
+    await connection.commit();
+    return res.json({ ok: true, message: "Estado de la orden actualizado." });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo el cambio de estado:", rollbackError.message);
+      }
+    }
+    console.error("Error al actualizar el estado de la orden:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar el estado de la orden." });
+  } finally {
+    connection?.release();
+  }
+}
+
+app.patch(
+  "/api/admin/mantenimientos/:id/estado",
+  requireAdmin,
+  (req, res) => actualizarEstadoServicioAdmin(req, res, "Mantenimiento preventivo"),
+);
+app.patch(
+  "/api/admin/reparaciones/:id/estado",
+  requireAdmin,
+  (req, res) => actualizarEstadoServicioAdmin(req, res, "Reparacion"),
+);
 
 // ---------- DESCUENTOS / PROMOCIONES ----------
 

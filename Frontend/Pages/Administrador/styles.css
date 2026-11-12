@@ -894,6 +894,8 @@ body {
   border-radius: 14px;
   width: 90%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 24px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
@@ -942,6 +944,11 @@ body {
   color: #8a9bb5;
 }
 
+.ayuda-campo {
+  color: #8a9bb5;
+  font-size: 11px;
+}
+
 .campo-grupo input, .campo-grupo select, .campo-grupo textarea {
   background-color: #080f1e;
   border: 1px solid #16223d;
@@ -971,6 +978,11 @@ body {
   display: block;
   margin-top: 2px;
   animation: fadeIn 0.2s ease;
+}
+
+.select-estado-servicio {
+  min-width: 150px;
+  max-width: 210px;
 }
 
 @keyframes fadeIn {

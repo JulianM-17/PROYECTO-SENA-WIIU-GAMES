@@ -702,6 +702,51 @@ body.a11y-mode-dark-mode .check-porque {
   visibility: visible !important;
 }
 
+body.a11y-mode-dark-mode .panel-layout .barra-lateral-perfil,
+body.a11y-mode-dark-mode .panel-layout .banner-bienvenida,
+body.a11y-mode-dark-mode .panel-layout .resumen-total {
+  background: linear-gradient(135deg, #080f20 0%, #0d1f3c 55%, #1a3a7a 100%) !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .barra-lateral-perfil .nombre,
+body.a11y-mode-dark-mode .panel-layout .barra-lateral-perfil .email,
+body.a11y-mode-dark-mode .panel-layout .banner-encabezado h1,
+body.a11y-mode-dark-mode .panel-layout .banner-saludo,
+body.a11y-mode-dark-mode .panel-layout .banner-subtitulo,
+body.a11y-mode-dark-mode .panel-layout .resumen-total {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .barra-lateral-perfil .email,
+body.a11y-mode-dark-mode .panel-layout .banner-subtitulo {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .banner-saludo span,
+body.a11y-mode-dark-mode .panel-layout .insignia-perfil {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .elemento-nav.activo {
+  background: rgba(245, 200, 66, 0.12) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-guardar {
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-cambiar-password,
+body.a11y-mode-dark-mode .panel-layout .btn-filtro-activo,
+body.a11y-mode-dark-mode .panel-layout .tarjeta-pago.visa {
+  background: linear-gradient(135deg, #080f20, #0d1f3c) !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-descargar-pdf {
+  color: #f5c842 !important;
+}
+
 body.a11y-mode-dark-mode .btn-agendar-porque {
   background: #f5c842 !important;
   color: #070d1e !important;

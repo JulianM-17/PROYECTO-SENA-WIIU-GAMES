@@ -3,31 +3,36 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 async function initializeProduct() {
-  const products = readProducts();
   const productId = new URLSearchParams(window.location.search).get("id");
-  let product =
-    products.find((item) => item.id === productId) ||
-    products.find((item) => String(item.id) === String(productId));
+  const storedProducts = readProducts();
+  let products = storedProducts;
+  let product = products.find((item) => String(item.id) === String(productId));
 
-  if (!product && productId) {
-    product = await loadProductFromApi(productId);
+  if ((!products.length || (productId && !product))) {
+    const apiProducts = await loadProductsFromApi();
+    if (apiProducts?.length) {
+      products = apiProducts;
+      product = products.find((item) => String(item.id) === String(productId));
+    }
   }
   product ||= products[0] || getFallbackProduct();
 
   updateProductHeader(product);
-  replaceFixedSections(product);
+  renderProductSections(product, products);
   configureCartButton(product);
 }
 
 function readProducts() {
   try {
-    return JSON.parse(localStorage.getItem("wiiu_products") || "[]");
-  } catch {
+    const products = JSON.parse(localStorage.getItem("wiiu_products") || "[]");
+    return Array.isArray(products) ? products.map(normalizeProduct) : [];
+  } catch (error) {
+    console.error("No se pudo leer el catálogo guardado:", error);
     return [];
   }
 }
 
-async function loadProductFromApi(productId) {
+async function loadProductsFromApi() {
   try {
     const response = await fetch("http://localhost:3000/api/productos");
     if (!response.ok) {
@@ -35,28 +40,49 @@ async function loadProductFromApi(productId) {
     }
 
     const products = await response.json();
-    const product = Array.isArray(products)
-      ? products.find((item) => String(item.id_producto) === String(productId))
-      : null;
-    if (!product || !product.id_producto) {
-      throw new Error("La API no encontró el producto solicitado.");
+    if (!Array.isArray(products)) {
+      throw new Error("La API devolvió un catálogo con formato inválido.");
     }
-    return {
-      id: product.id_producto,
-      name: product.nombre,
-      price: Number(product.precio),
-      imageUrl: product.imagen_url,
-      description: product.descripcion,
-      category: product.nombre_cat,
-      condition: "Nuevo Sellado",
-      warranty: "12 Meses",
-      platform: product.nombre_marca,
-      stock: Number(product.stock_total) || 0,
-    };
+
+    const normalizedProducts = products.map(normalizeProduct);
+    try {
+      localStorage.setItem("wiiu_products", JSON.stringify(normalizedProducts));
+    } catch (error) {
+      console.error("No se pudo guardar el catálogo de productos:", error);
+    }
+    return normalizedProducts;
   } catch (error) {
     console.error("No se pudo cargar el producto desde la API:", error);
     return null;
   }
+}
+
+function normalizeProduct(product) {
+  const images = [
+    ...(Array.isArray(product.images) ? product.images : []),
+    product.imageUrl ?? product.imagen_url,
+    product.imagen_url_2 ?? product.imageUrl2,
+    product.imagen_url_3 ?? product.imageUrl3,
+    product.imagen_url_4 ?? product.imageUrl4,
+  ]
+    .filter((image) => typeof image === "string" && image.trim())
+    .map((image) => image.trim())
+    .filter((image, index, list) => list.indexOf(image) === index);
+
+  return {
+    ...product,
+    id: product.id ?? product.id_producto ?? product.productId,
+    name: product.name ?? product.nombre,
+    price: product.price ?? product.precio,
+    imageUrl: product.imageUrl ?? product.imagen_url ?? images[0],
+    images,
+    description: product.description ?? product.descripcion,
+    category: product.category ?? product.nombre_cat,
+    condition: product.condition ?? "Nuevo sellado",
+    warranty: product.warranty ?? "12 meses",
+    platform: product.platform ?? product.nombre_marca,
+    stock: product.stock ?? product.stock_total,
+  };
 }
 
 function getFallbackProduct() {
@@ -81,37 +107,54 @@ function updateProductHeader(product) {
   const category = product.category || "Productos";
 
   document.title = `${name} - WiiU Games`;
-  setText(".sku strong", name);
-  setText(".categoria-ruta", `Inicio > ${category} > ${name}`);
   setText(".info-producto h1", name);
-  setText(".descripcion-corta", description);
 
-  // Formatear miga de pan con enlaces y estilo
   const rutaEl = document.querySelector(".categoria-ruta");
   if (rutaEl) {
-    rutaEl.innerHTML = `
-      <a href="../Index.html">Inicio</a>
-      <span class="miga-separador">›</span>
-      <a href="Catalog.html">${category}</a>
-      <span class="miga-separador">›</span>
-      <span class="miga-activa">${name}</span>
-    `;
+    rutaEl.replaceChildren();
+    [
+      { text: "Inicio", href: "../Index.html" },
+      { text: category, href: "Catalog.html" },
+      { text: name },
+    ].forEach((crumb, index) => {
+      if (index > 0) {
+        const separator = document.createElement("span");
+        separator.className = "miga-separador";
+        separator.textContent = "›";
+        rutaEl.append(separator);
+      }
+
+      const element = document.createElement(crumb.href ? "a" : "span");
+      element.textContent = crumb.text;
+      if (crumb.href) element.setAttribute("href", crumb.href);
+      if (!crumb.href) element.className = "miga-activa";
+      rutaEl.append(element);
+    });
   }
 
-  // Mostrar precio formateado si existe el producto
-  let precioEl = document.querySelector(".precio-producto-hero");
-  if (!precioEl) {
-    const contenedorAcciones = document.querySelector(".sub-nav-acciones");
-    if (contenedorAcciones && product.price) {
-      precioEl = document.createElement("span");
-      precioEl.className = "precio-producto-hero";
-      precioEl.style.cssText = "font-weight: 800; font-size: 18px; color: var(--dark-blue); margin-right: 12px;";
-      contenedorAcciones.insertBefore(precioEl, contenedorAcciones.querySelector(".input-cantidad"));
-    }
+  const price = Number(product.price);
+  if (Number.isFinite(price)) {
+    setText(
+      ".precio-producto-hero",
+      new Intl.NumberFormat("es-CO", {
+        style: "currency",
+        currency: "COP",
+        maximumFractionDigits: 0,
+      }).format(price),
+    );
   }
-  if (precioEl && product.price) {
-    precioEl.textContent = `$ ${Number(product.price).toLocaleString("es-CO")}`;
-  }
+
+  const stock = Number(product.stock);
+  const inStock = Number.isFinite(stock) && stock > 0;
+  setText(
+    ".estado-disponibilidad",
+    inStock ? "¡Disponible en tienda!" : Number.isFinite(stock) ? "Agotado" : "Consulta disponibilidad",
+  );
+  setText(
+    ".unidades-disponibles",
+    inStock ? `Unidades disponibles: ${stock}` : "Consulta la disponibilidad con nuestro equipo.",
+  );
+  setText(".insignia-stock", inStock ? "En stock" : "Consulta disponibilidad");
 
   const image = document.querySelector(".imagen-hero");
   if (image) {
@@ -140,81 +183,106 @@ function updateProductHeader(product) {
       }
     };
 
-    if (product.imageUrl) {
-      image.src = product.imageUrl.startsWith("http") || product.imageUrl.startsWith("../") 
-        ? product.imageUrl 
-        : `../${product.imageUrl}`;
-    } else {
-      image.onerror();
-    }
+    image.src = resolveProductImage(product.imageUrl);
+    renderProductGallery(product, image, name);
   }
 }
 
-function replaceFixedSections(product) {
-  document.querySelector(".banner-publicitario")?.remove();
-  document.querySelector(".seccion-soporte")?.remove();
-  document.querySelector(".seccion-caracteristicas")?.remove();
+function renderProductGallery(product, mainImage, productName) {
+  const thumbnails = document.querySelector(".miniaturas-producto");
+  if (!thumbnails) return;
 
-  const main = document.querySelector("main");
-  const detailSection = document.querySelector(".detalle-principal");
-  if (!main || !detailSection) return;
+  const images = product.images?.length
+    ? product.images
+    : product.imageUrl
+      ? [product.imageUrl]
+      : [];
+  thumbnails.replaceChildren();
 
-  const description =
-    product.description || "Este producto cuenta con respaldo y garantía oficial de WiiU Games.";
-  const fields = [
-    { label: "Categoría", value: product.category, icon: "fi fi-rr-box-alt" },
-    { label: "Condición", value: product.condition || "Nuevo Sellado", icon: "fi fi-rr-shield-check" },
-    { label: "Garantía Oficial", value: product.warranty || "12 Meses", icon: "fi fi-rr-award" },
-    { label: "Marca / Fabricante", value: product.platform || "Original", icon: "fi fi-rr-tag" },
-    {
-      label: "Disponibilidad",
-      value: Number(product.stock) > 0 ? `${product.stock} unidades en stock` : "Consultar disponibilidad",
-      icon: "fi fi-rr-check-circle"
-    },
-    { label: "Envío Nacional", value: "Asegurado a todo Colombia", icon: "fi fi-rr-truck-side" }
-  ].filter((f) => f.value);
+  images.forEach((imageUrl, index) => {
+    const thumbnail = document.createElement("button");
+    thumbnail.type = "button";
+    thumbnail.className = "miniatura-producto";
+    thumbnail.setAttribute("aria-label", `Ver imagen ${index + 1} de ${productName}`);
+    thumbnail.setAttribute("aria-pressed", String(index === 0));
+    if (index === 0) thumbnail.classList.add("activo");
 
-  const section = document.createElement("section");
-  section.className = "seccion-caracteristicas informacion-dinamica";
-  section.setAttribute("aria-labelledby", "titulo-informacion-producto");
+    const image = document.createElement("img");
+    image.src = resolveProductImage(imageUrl);
+    image.alt = `${productName}, imagen ${index + 1}`;
+    image.loading = "lazy";
+    image.addEventListener("error", () => thumbnail.remove(), { once: true });
+    thumbnail.append(image);
 
-  section.innerHTML = `
-    <div class="contenedor-acerca-producto">
-      <span class="etiqueta-dorada">Especificaciones y Detalles</span>
-      <h2 id="titulo-informacion-producto">Acerca de este Producto</h2>
-      <p class="subtitulo-caracteristicas">${description}</p>
-      
-      <div class="grid-tarjetas-acerca">
-        ${fields.map(f => `
-          <div class="tarjeta-info-acerca">
-            <div class="icono-acerca"><i class="${f.icon}"></i></div>
-            <div class="texto-acerca">
-              <span class="label-acerca">${f.label}</span>
-              <strong class="valor-acerca">${f.value}</strong>
-            </div>
-          </div>
-        `).join('')}
-      </div>
+    thumbnail.addEventListener("click", () => {
+      mainImage.src = resolveProductImage(imageUrl);
+      mainImage.alt = image.alt;
+      thumbnails.querySelectorAll(".miniatura-producto").forEach((item) => {
+        const active = item === thumbnail;
+        item.classList.toggle("activo", active);
+        item.setAttribute("aria-pressed", String(active));
+      });
+    });
 
-      <div class="banner-garantia-acerca">
-        <div class="icono-garantia-grande"><i class="fi fi-rr-badge-check"></i></div>
-        <div class="texto-garantia">
-          <h4>Garantía y Soporte Técnico Directo</h4>
-          <p>Todos nuestros productos son 100% originales, cuentan con inspección técnica previa y soporte garantizado en nuestra tienda física en Sogamoso, Boyacá.</p>
-        </div>
-      </div>
-    </div>
-  `;
+    thumbnails.append(thumbnail);
+  });
+}
 
-  main.insertBefore(
-    section,
-    document.querySelector(".seccion-beneficios") || null,
+function resolveProductImage(imageUrl) {
+  const source = String(imageUrl || "").trim();
+  if (!source) return "../Assets/MSI.png";
+  return source.startsWith("http") || source.startsWith("../")
+    ? source
+    : `../${source}`;
+}
+
+function renderProductSections(product, products) {
+  setText(
+    ".texto-descripcion-producto",
+    product.description || "Consulta con nuestro equipo para conocer más detalles de este producto.",
   );
+
+  const recommendations = products
+    .filter((item) => item.id && String(item.id) !== String(product.id))
+    .slice(0, 4);
+  const container = document.querySelector("#productos-sugeridos");
+  if (!container) return;
+
+  if (recommendations.length === 0) {
+    container.innerHTML = '<p class="sin-sugerencias">Por ahora no hay otros productos para mostrar.</p>';
+    return;
+  }
+
+  container.innerHTML = recommendations
+    .map((item) => {
+      const name = escapeHtml(item.name || "Producto WiiU Games");
+      const image = escapeHtml(item.imageUrl || "../Assets/lenovolegion.webp");
+      const id = encodeURIComponent(String(item.id));
+      const price = Number(item.price);
+      const formattedPrice = Number.isFinite(price)
+        ? new Intl.NumberFormat("es-CO", {
+            style: "currency",
+            currency: "COP",
+            maximumFractionDigits: 0,
+          }).format(price)
+        : "Consultar precio";
+
+      return `
+        <a class="tarjeta-sugerencia" href="Product.html?id=${id}">
+          <span class="imagen-sugerencia">
+            <img src="${image}" alt="${name}" loading="lazy" onerror="this.src='../Assets/lenovolegion.webp'">
+          </span>
+          <span class="nombre-sugerencia">${name}</span>
+          <span class="precio-sugerencia">${escapeHtml(formattedPrice)}</span>
+        </a>
+      `;
+    })
+    .join("");
 }
 
 function configureCartButton(product) {
   const button = document.querySelector(".btn-añadir");
-  const quantityInput = document.querySelector(".input-cantidad");
+  const quantityInput = document.querySelector("#cantidad-producto");
   if (!button) return;
 
   const stock = Number(product.stock ?? product.stock_total);
@@ -262,4 +330,17 @@ function configureCartButton(product) {
 function setText(selector, value) {
   const element = document.querySelector(selector);
   if (element) element.textContent = value;
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
 }

@@ -87,21 +87,6 @@
     </header>
 
     <main>
-      <section class="sub-nav-compra">
-        <div class="sub-nav-container">
-          <div class="sub-nav-links">
-            <a href="Catalog.html" class="activo">Acerca del Producto</a>
-            <a href="Catalog.html">Detalles</a>
-            <a href="Catalog.html">Especificaciones</a>
-          </div>
-          <div class="sub-nav-acciones">
-            <span class="sku"><strong>MSI MPG Trident 3</strong></span>
-            <input type="number" value="1" min="1" class="input-cantidad" />
-            <button class="btn-añadir">Añadir al carrito</button>
-          </div>
-        </div>
-      </section>
-
       <section class="detalle-principal">
         <div class="detalle-container">
           <div class="info-producto">
@@ -114,149 +99,73 @@
             </nav>
             <h1>MSI MPG Trident 3</h1>
             <p class="resena-link">
-              <a href="Catalog.html">4.9 ★★★★★ (28 reseñas de clientes)</a>
+              <a href="Catalog.html">4.9 (28 reseñas)</a>
             </p>
-            <p class="descripcion-corta">Disfruta de la mejor calidad gráfica, velocidad de carga instantánea y construcción premium diseñada para entusiastas de los videojuegos.</p>
-            <div class="variantes-color">
-              <span
-                class="circulo-color activo"
-                style="background-color: #3b5998"
-              ></span>
-              <span
-                class="circulo-color"
-                style="background-color: #ffffff; border: 1px solid #ccc"
-              ></span>
-              <span
-                class="circulo-color"
-                style="background-color: #000000"
-              ></span>
+            <div class="precio-disponibilidad">
+              <strong class="precio-producto-hero"></strong>
+              <span class="estado-disponibilidad" aria-live="polite"></span>
+            </div>
+            <p class="unidades-disponibles"></p>
+            <ul class="resumen-producto">
+              <li>Rendimiento confiable para tus juegos y tareas diarias.</li>
+              <li>Asesoría especializada y compra segura en WiiU Games.</li>
+            </ul>
+            <div class="acciones-compra">
+              <label class="sr-only" for="cantidad-producto">Cantidad</label>
+              <input
+                type="number"
+                id="cantidad-producto"
+                value="1"
+                min="1"
+                class="input-cantidad"
+              />
+              <button class="btn-añadir" type="button">Añadir al carrito</button>
+            </div>
+            <div class="etiquetas-envio">
+              <span>Envío seguro</span>
+              <span>Compra protegida</span>
             </div>
             <p class="pregunta">
-              Alguna duda? <a href="Catalog.html">Contactanos</a>
+              ¿Tienes alguna duda? <a href="contactanos.html">Contáctanos</a>
             </p>
           </div>
           <div class="galeria-producto">
-            <img
-              src="../Assets/MSI.png"
-              alt="MSI MPG Trident 3"
-              class="imagen-hero"
-            />
+            <span class="insignia-stock">En stock</span>
+            <div class="galeria-layout">
+              <div
+                class="miniaturas-producto"
+                aria-label="Imágenes del producto"
+              ></div>
+              <div class="marco-imagen-principal">
+                <img
+                  src="../Assets/MSI.png"
+                  alt="MSI MPG Trident 3"
+                  class="imagen-hero"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="banner-publicitario">
-        <div class="banner-publicitario-container">
-          <div class="banner-publicitario-texto">
-            <span class="insignia-premium">⚡ Máximo Rendimiento</span>
-            <h2>Potencia y Precisión para Verdaderos Gamers</h2>
-            <p>Diseñado con componentes de alta gama para ofrecer una experiencia fluida, silenciosa y visualmente inmersiva en cada partida.</p>
-            <div class="puntos-clave-banner">
-              <div class="punto-clave"><i class="fi fi-rr-check"></i> Garantía oficial de fábrica</div>
-              <div class="punto-clave"><i class="fi fi-rr-check"></i> Envíos seguros a todo el país</div>
-              <div class="punto-clave"><i class="fi fi-rr-check"></i> Asesoría técnica especializada</div>
-            </div>
-            <span class="nota-pie">Arquitectura optimizada para gaming competitivo y creación de contenido</span>
-          </div>
-          <div class="banner-publicitario-imagen">
-            <img
-              src="../Assets/intel.png"
-              alt="Procesamiento de Alto Rendimiento"
-              class="imagen-fusionada"
-            />
-          </div>
+      <section class="descripcion-producto" aria-labelledby="titulo-descripcion">
+        <div class="contenido-seccion-producto">
+          <span class="etiqueta-seccion">Conoce más</span>
+          <h2 id="titulo-descripcion">Descripción del producto</h2>
+          <p class="texto-descripcion-producto"></p>
         </div>
       </section>
 
-      <section class="seccion-soporte">
-        <div class="soporte-overlay"></div>
-        <div class="soporte-container">
-          <div class="bloque-acordiones">
-            <!-- Acordeón 1 -->
-            <details class="acordion-item" open>
-              <summary class="acordion-header">Soporte del producto</summary>
-              <div class="acordion-content">
-                <p>
-                  Aquí puedes colocar toda la información detallada sobre el
-                  soporte técnico de este producto. Garantías, manuales de
-                  usuario y contactos directos.
-                </p>
-              </div>
-            </details>
-
-            <!-- Acordeón 2 -->
-            <details class="acordion-item">
-              <summary class="acordion-header">FAQ</summary>
-              <div class="acordion-content">
-                <p>
-                  Respuestas a las preguntas más frecuentes de los clientes
-                  sobre envíos, métodos de pago y especificaciones técnicas.
-                </p>
-              </div>
-            </details>
-
-            <!-- Acordeón 3 -->
-            <details class="acordion-item">
-              <summary class="acordion-header">Guia de Compra</summary>
-              <div class="acordion-content">
-                <p>
-                  Guía de compra para ayudarte a decidir si este es el producto
-                  adecuado para ti o si deberías mirar otras opciones de nuestro
-                  catálogo.
-                </p>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
-
-      <section class="seccion-caracteristicas">
-        <h2>Features</h2>
-        <p class="subtitulo-caracteristicas">
-          The MPG series brings out the best in gamers by allowing full
-          expression in color with advanced RGB lighting control and
-          synchronization.
-        </p>
-        <div class="grid-caracteristicas">
-          <div class="item-caracteristica">
-            <div class="circulo-icono">
-              <img src="../Assets/intel(2).png" alt="Intel" />
+      <section class="sugerencias-productos" aria-labelledby="titulo-sugerencias">
+        <div class="contenido-seccion-producto">
+          <div class="encabezado-sugerencias">
+            <div>
+              <span class="etiqueta-seccion">También te puede interesar</span>
+              <h2 id="titulo-sugerencias">Sugerencias de la tienda</h2>
             </div>
-            <p>
-              Procesador Intel® Core™ i7 con la máxima potencia de cálculo para
-              ofrecerte una experiencia de juego inigualable.
-            </p>
+            <a href="Catalog.html" class="enlace-catalogo">Ver catálogo</a>
           </div>
-          <div class="item-caracteristica">
-            <div class="circulo-icono">
-              <img src="../Assets/nvidia-geforce-rtx-logo.png" alt="RTX" />
-            </div>
-            <p>
-              La nueva serie GeForce® RTX SUPER™ cuenta con más núcleos y
-              frecuencias de reloj más altas para un rendimiento ultrarrápido en
-              comparación con las GPU de la generación anterior.
-            </p>
-          </div>
-          <div class="item-caracteristica">
-            <div class="circulo-icono">
-              <img src="../Assets/nvm.png" alt="SSD" />
-            </div>
-            <p>
-              Libera todo el potencial con la última tecnología SSD, NVM
-              Express. Cuatro veces más rápida que las unidades SSD SATA
-              tradicionales.
-            </p>
-          </div>
-          <div class="item-caracteristica">
-            <div class="circulo-icono">
-              <img src="../Assets/ddr.png" alt="RAM" />
-            </div>
-            <p>
-              Equipado con el procesador Intel® Core™ de décima generación, la
-              memoria se puede ampliar hasta DDR4 2933MHz para ofrecer una
-              experiencia de juego sin precedentes.
-            </p>
-          </div>
+          <div class="rejilla-sugerencias" id="productos-sugeridos"></div>
         </div>
       </section>
     </main>
