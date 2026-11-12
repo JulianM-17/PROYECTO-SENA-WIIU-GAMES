@@ -6,7 +6,7 @@
 
     <title>Arma tu PC | WiiU-Games</title>
 
-    <link rel="stylesheet" href="../Styles/armatupc.css" />
+    <link rel="stylesheet" href="../Styles/ArmaTuPC.css" />
     <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
     <link rel="stylesheet" href="../Styles/accessibility.css" />
 
@@ -99,172 +99,74 @@
         </div>
       </div>
     </header>
-    <div class="particles"></div>
-
-    <section class="hero">
-      <div class="hero-text">
-        <nav class="breadcrumb-armatupc" aria-label="Miga de pan">
-          <a href="../Index.html">Inicio</a>
-          <span class="breadcrumb-separator">></span>
-          <span class="activo">Arma Tu PC</span>
-        </nav>
-        <span class="tag">CONFIGURADOR PREMIUM</span>
-
-        <h1>Crea el PC de tus sueños</h1>
-
-        <p>Elige cada componente y conoce el precio al instante.</p>
-
-        <div class="hero-buttons">
-          <a href="#builder" class="btn-primary"> Comenzar </a>
-
-          <a href="../Pages/Product.html" class="btn-secondary">
-            Ver PCs armados
-          </a>
+    <main>
+      <section class="navblur">
+        <div class="textoarma">
+          <span>CONFIGURADOR PERSONALIZADO</span>
+          <h1>ARMA TU PC</h1>
         </div>
-      </div>
+        <div class="precioycompra">
+          <div class="precio-total">
+            <span>PRECIO TOTAL</span>
+            <h2>$<span id="precioTotal">0</span></h2>
+          </div>
+          <div class="cfg-accion-compra">
+            <button id="btnComprar" disabled>Comprar</button>
+            <span
+              id="cfgCompraFeedback"
+              class="cfg-compra-feedback"
+              role="status"
+              aria-live="polite"
+            ></span>
+          </div>
+        </div>
+      </section>
 
-      <div class="hero-image">
-        <AsyncImage
-          query="RGB gaming PC case with purple blue lighting futuristic"
-          aspectRatio="1:1"
-          maxWidth="420"
-        />
-      </div>
-    </section>
+      <!-- NUEVO: configurador -->
+      <section
+        class="configurador"
+        id="configurador"
+        aria-label="Configurador de PC"
+      >
+        <nav
+          class="cfg-menu"
+          id="cfgMenu"
+          aria-label="Categorías de componentes"
+        ></nav>
 
-    <section class="builder" id="builder">
-      <div class="preview-card">
-        <h2>Vista previa</h2>
-
-        <div class="pc-preview">
-          <AsyncImage
-            query="white RGB gaming PC case side panel purple blue lighting"
-            aspectRatio="4:5"
+        <div class="cfg-centro">
+          <img
+            id="cfgImg"
+            src="../Assets/TORRECUSTOM.png"
+            alt="Vista de tu PC personalizado"
           />
-
-          <div class="rgb-ring"></div>
+          <div class="cfg-placeholder" id="cfgPlaceholder" hidden>
+            Vista previa de tu PC personalizado
+          </div>
+          <div class="cfg-base-glow"></div>
+          <div
+            class="cfg-colores"
+            id="cfgColores"
+            aria-label="Color de iluminación"
+          ></div>
         </div>
 
-        <div class="color-picker">
-          <button class="color active" data-color="#00d4ff"></button>
-          <button class="color" data-color="#8b5cf6"></button>
-          <button class="color" data-color="#ff0055"></button>
-          <button class="color" data-color="#22c55e"></button>
+        <aside class="cfg-resumen">
+          <h2>TU CONFIGURACIÓN</h2>
+          <div id="cfgSpecs">
+            <p class="cfg-nota">Selecciona componentes para ver el resumen.</p>
+          </div>
+        </aside>
+
+        <div class="cfg-cards">
+          <div>
+            <h3 id="cfgTitulo"></h3>
+            <p id="cfgDesc"></p>
+          </div>
+          <div class="cfg-fila" id="cfgFila"></div>
         </div>
-      </div>
-
-      <div class="config-card">
-        <h2>Selecciona tus componentes</h2>
-
-        <div class="option">
-          <label>Procesador</label>
-
-          <select id="cpu">
-            <option value="0">Seleccionar</option>
-            <option value="1200000">Ryzen 7 7700X</option>
-            <option value="1500000">Ryzen 9 7900X</option>
-            <option value="1800000">Intel i7-14700K</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>Tarjeta gráfica</label>
-
-          <select id="gpu">
-            <option value="0">Seleccionar</option>
-            <option value="2100000">RTX 4060</option>
-            <option value="3200000">RTX 4070</option>
-            <option value="4500000">RTX 4080</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>Memoria RAM</label>
-
-          <select id="ram">
-            <option value="0">Seleccionar</option>
-            <option value="350000">16GB RGB</option>
-            <option value="600000">32GB RGB</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>SSD</label>
-
-          <select id="ssd">
-            <option value="0">Seleccionar</option>
-            <option value="300000">1TB NVMe</option>
-            <option value="520000">2TB NVMe</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>Refrigeración</label>
-
-          <select id="cooler">
-            <option value="0">Seleccionar</option>
-            <option value="250000">Aire RGB</option>
-            <option value="700000">Líquida 360mm</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>Fuente de Poder</label>
-
-          <select id="psu">
-            <option value="0">Seleccionar</option>
-            <option value="450000">750W Gold</option>
-            <option value="650000">850W Gold</option>
-          </select>
-        </div>
-
-        <div class="option">
-          <label>Gabinete</label>
-
-          <select id="case">
-            <option value="0">Seleccionar</option>
-            <option value="450000">NZXT Style</option>
-            <option value="550000">Lian Li Style</option>
-          </select>
-        </div>
-      </div>
-    </section>
-
-    <section class="summary">
-      <div class="compatibility">
-        <i class="fa-solid fa-shield-halved"></i>
-
-        <div>
-          <h3>Compatibilidad</h3>
-          <p>Todos los componentes seleccionados son compatibles.</p>
-        </div>
-
-        <div class="progress">
-          <div class="progress-fill"></div>
-        </div>
-      </div>
-
-      <div class="total-card">
-        <div>
-          <h2>Total</h2>
-
-          <h1 id="total">$0</h1>
-        </div>
-
-        <div class="buttons">
-          <button class="buy">
-            <i class="fa-solid fa-cart-shopping"></i>
-            Añadir al carrito
-          </button>
-
-          <button class="save">
-            <i class="fa-solid fa-floppy-disk"></i>
-            Guardar
-          </button>
-        </div>
-      </div>
-    </section>
-
+      </section>
+    </main>
     <footer class="sitio-footer">
       <div class="seccion-boletin"></div>
       <div class="cuadricula-footer">
@@ -354,6 +256,6 @@
     </footer>
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
-    <script src="../JS/armatupc.js"></script>
+    <script src="../Scripts/armaTuPC-ui.js" defer></script>
   </body>
 </html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Configura tu PC</title>
+  
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <h1>MI PC GAMER</h1>
+    <div><span class="precio">$<span id="total">0</span></span><button class="btn">Agregar al carrito</button></div>
+  </div>
+
+  <nav class="menu" id="menu"></nav>
+
+  <div class="centro">
+    <!-- Reemplaza pc.png por tu imagen del PC. Si no existe, se ve el placeholder. -->
+    <img id="pcimg" src="pc.png" alt="PC" onerror="this.style.display='none';document.getElementById('ph').style.display='grid'">
+    <div class="placeholder" id="ph" style="display:none">Aquí va la imagen de tu PC<br>(pc.png)</div>
+    <div class="base-glow"></div>
+    <div class="colores" id="colores"></div>
+  </div>
+
+  <aside class="resumen">
+    <h2>RENDIMIENTO</h2>
+    <div class="fps"><b id="fps">0</b> FPS<small>estimado en 1080p</small><div class="barra"><i id="barra"></i></div></div>
+    <div id="specs"></div>
+  </aside>
+
+  <section class="cards">
+    <div><h3 id="cTitulo"></h3><p id="cDesc"></p></div>
+    <div class="fila" id="fila"></div>
+  </section>
+</div>
+
+<script>
+const BASE = 4500000;
+const CATS = [
+  { id: 'cpu', titulo: 'Procesador', desc: 'El procesador es el cerebro de tu PC: ejecuta instrucciones y procesa datos. En juegos, uno potente significa menos tiempos de carga y mayor fluidez.',
+    opciones: [
+      { nombre: 'Intel Core i5 13400F', extra: 0,       fps: 0  },
+      { nombre: 'Intel Core i7 14700K', extra: 600000,  fps: 12, rec: true },
+      { nombre: 'Intel Core i9 14900K', extra: 1500000, fps: 22 },
+      { nombre: 'AMD Ryzen 7 7800X3D',  extra: 1100000, fps: 28 },
+    ]},
+  { id: 'gpu', titulo: 'Tarjeta gráfica', desc: 'La GPU dibuja todo lo que ves en pantalla. Es la pieza que más influye en los FPS y en la calidad visual de los juegos.',
+    opciones: [
+      { nombre: 'RTX 4060',       extra: 0,       fps: 0  },
+      { nombre: 'RTX 4070 Super', extra: 1400000, fps: 35, rec: true },
+      { nombre: 'RTX 4080 Super', extra: 3800000, fps: 65 },
+      { nombre: 'RTX 4090',       extra: 7000000, fps: 95 },
+    ]},
+  { id: 'ram', titulo: 'Memoria', desc: 'La RAM guarda temporalmente lo que el PC necesita al instante. Más memoria permite jugar y hacer varias cosas a la vez sin tirones.',
+    opciones: [
+      { nombre: '16 GB DDR5', extra: 0,      fps: 0 },
+      { nombre: '32 GB DDR5', extra: 300000, fps: 5, rec: true },
+      { nombre: '64 GB DDR5', extra: 800000, fps: 8 },
+    ]},
+  { id: 'ssd', titulo: 'Almacenamiento', desc: 'Un SSD NVMe reduce los tiempos de carga del sistema y de los juegos. Más capacidad, más juegos instalados.',
+    opciones: [
+      { nombre: '1 TB NVMe', extra: 0,      fps: 0 },
+      { nombre: '2 TB NVMe', extra: 350000, fps: 2, rec: true },
+      { nombre: '4 TB NVMe', extra: 900000, fps: 3 },
+    ]},
+  { id: 'cool', titulo: 'Refrigeración', desc: 'Mantener la temperatura baja evita que el procesador reduzca su velocidad. La refrigeración líquida enfría mejor y suena menos.',
+    opciones: [
+      { nombre: 'Aire estándar',  extra: 0,      fps: 0 },
+      { nombre: 'Líquida 240 mm', extra: 450000, fps: 4, rec: true },
+      { nombre: 'Líquida 360 mm', extra: 700000, fps: 6 },
+    ]},
+];
+const COLORES = ['#ff3b30', '#00e5ff', '#ff2bd6', '#7cff4d', '#ffb020'];
+const BASE_FPS = 60, MAX_FPS = 240;
+
+const sel = {};            // categoría -> índice elegido
+CATS.forEach(c => sel[c.id] = 0);
+let catActual = 0;
+
+const $ = id => document.getElementById(id);
+
+function pintarMenu() {
+  $('menu').innerHTML = '';
+  CATS.forEach((c, i) => {
+    const b = document.createElement('button');
+    b.textContent = c.titulo;
+    b.className = i === catActual ? 'activo' : '';
+    b.onclick = () => { catActual = i; pintarMenu(); pintarCards(); };
+    $('menu').appendChild(b);
+  });
+}
+
+function pintarCards() {
+  const c = CATS[catActual];
+  $('cTitulo').textContent = c.titulo.toUpperCase();
+  $('cDesc').textContent = c.desc;
+  $('fila').innerHTML = '';
+  c.opciones.forEach((o, i) => {
+    const d = document.createElement('div');
+    d.className = 'card' + (sel[c.id] === i ? ' activo' : '');
+    d.style.animationDelay = (i * 70) + 'ms';       // aparecen en cascada
+    d.innerHTML = (o.rec ? '<span class="rec">RECOMENDADO</span>' : '') +
+      o.nombre + '<em>' + (o.extra ? '+$' + o.extra.toLocaleString('es-CO') : '+$0') + '</em>';
+    d.onclick = () => { sel[c.id] = i; pintarCards(); actualizar(); };
+    $('fila').appendChild(d);
+  });
+}
+
+function actualizar() {
+  const total = BASE + CATS.reduce((s, c) => s + c.opciones[sel[c.id]].extra, 0);
+  const fps = BASE_FPS + CATS.reduce((s, c) => s + c.opciones[sel[c.id]].fps, 0);
+  animar($('total'), total);
+  animar($('fps'), fps);
+  $('barra').style.width = Math.min(fps / MAX_FPS * 100, 100) + '%';
+  $('specs').innerHTML = CATS.map(c =>
+    `<div class="spec"><span>${c.titulo}</span>${c.opciones[sel[c.id]].nombre}</div>`).join('');
+}
+
+function animar(el, hasta, dur = 500) {
+  const desde = Number(el.dataset.v || 0), t0 = performance.now();
+  (function paso(t) {
+    const p = Math.min((t - t0) / dur, 1);
+    const v = Math.round(desde + (hasta - desde) * p);
+    el.textContent = v.toLocaleString('es-CO');
+    el.dataset.v = v;
+    if (p < 1) requestAnimationFrame(paso);
+  })(t0);
+}
+
+COLORES.forEach(c => {
+  const b = document.createElement('button');
+  b.style.background = c;
+  b.onclick = () => document.documentElement.style.setProperty('--luz', c);
+  $('colores').appendChild(b);
+});
+
+pintarMenu(); pintarCards(); actualizar();
+</script>
+</body>
+</html>
