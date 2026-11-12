@@ -747,6 +747,108 @@ body.a11y-mode-dark-mode .panel-layout .btn-descargar-pdf {
   color: #f5c842 !important;
 }
 
+body.a11y-mode-dark-mode .panel-layout .valor-dato-perfil {
+  background: #0e1834 !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .tarjeta-formulario .entrada-formulario {
+  background-color: #070d1e !important;
+  border-color: #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode
+  .panel-layout
+  .tarjeta-formulario
+  .entrada-formulario::placeholder {
+  color: #94a3b8 !important;
+  opacity: 1;
+}
+
+body.a11y-mode-dark-mode .panel-layout .pedido-card {
+  background: #0e1834 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .pedido-numero,
+body.a11y-mode-dark-mode .panel-layout .pedido-fecha,
+body.a11y-mode-dark-mode .panel-layout .pedido-cantidad {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .pedido-numero b,
+body.a11y-mode-dark-mode .panel-layout .pedido-producto {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .insignia-entregado {
+  background: #064e3b !important;
+  border-color: #047857 !important;
+  color: #a7f3d0 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .insignia-en-camino {
+  background: #172554 !important;
+  border-color: #1d4ed8 !important;
+  color: #bfdbfe !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .insignia-procesando {
+  background: #713f12 !important;
+  border-color: #a16207 !important;
+  color: #fef08a !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-ver-detalle {
+  background: #132247 !important;
+  border-color: #334b7c !important;
+  color: #e2e8f0 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-reordenar {
+  background: rgba(245, 200, 66, 0.14) !important;
+  border-color: rgba(245, 200, 66, 0.45) !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-rastrear {
+  background: #172554 !important;
+  border-color: #1d4ed8 !important;
+  color: #bfdbfe !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .btn-cancelar-pedido {
+  background: #450a0a !important;
+  border-color: #991b1b !important;
+  color: #fecaca !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .pedido-img,
+body.a11y-mode-dark-mode .panel-layout .pedido-img-emoji {
+  background: #132247 !important;
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .garantia-contacto {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .garantia-contacto h2 {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .garantia-contacto p {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .panel-layout .garantia-contacto strong {
+  color: #f5c842 !important;
+}
+
 body.a11y-mode-dark-mode .btn-agendar-porque {
   background: #f5c842 !important;
   color: #070d1e !important;
