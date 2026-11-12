@@ -265,6 +265,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       function resolverRutaPorRol(rol, returnTo) {
         const r = (rol || "").trim().toLowerCase();
+        if (returnTo === "metodos_pago.html") {
+          return returnTo;
+        }
         if (r.includes("admin")) {
           return "Administrador/index.html";
         }
@@ -315,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarToast(`¡Bienvenido, ${usuario.nombre}!`, "exito");
 
         let rutaFinal = resolverRutaPorRol(usuario.rol, returnTo);
-        if (redirectToApi && redirectToApi.includes("index.html") && !redirectToApi.includes("index_admin.html")) {
+        if (returnTo !== "metodos_pago.html" && redirectToApi && redirectToApi.includes("index.html") && !redirectToApi.includes("index_admin.html")) {
           rutaFinal = redirectToApi;
         }
 

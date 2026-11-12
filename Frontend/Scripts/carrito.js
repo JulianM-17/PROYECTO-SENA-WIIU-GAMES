@@ -90,9 +90,54 @@ document.addEventListener('DOMContentLoaded', () => {
     window.WiiUGamesCart.clear();
   });
   document.getElementById('btn-actualizar')?.addEventListener('click', renderCart);
+  document.getElementById('btn-proceder-pago')?.addEventListener('click', (event) => {
+    event.preventDefault();
+
+    if (window.WiiUGamesCart.read().length === 0) {
+      mostrarToast(
+        'Tu carrito está vacío. Agrega al menos un producto para continuar.',
+      );
+      return;
+    }
+
+    let usuarioActivo;
+    try {
+      usuarioActivo = JSON.parse(
+        sessionStorage.getItem('wiiu_usuario_activo') || 'null',
+      );
+    } catch (error) {
+      console.error('No se pudo validar la sesión del usuario:', error);
+    }
+
+    if (!usuarioActivo?.token) {
+      window.location.href = 'Login.html?returnTo=metodos_pago.html';
+      return;
+    }
+
+    window.location.href = 'metodos_pago.html';
+  });
   window.addEventListener('wiiu-cart-change', renderCart);
   renderCart();
 });
+
+function mostrarToast(mensaje) {
+  const contenedor = document.getElementById('contenedor-toast');
+  if (!contenedor) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast error';
+  toast.setAttribute('role', 'status');
+  toast.innerHTML = `
+    <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
+    <span></span>
+  `;
+  toast.querySelector('span').textContent = mensaje;
+  contenedor.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.remove();
+  }, 3500);
+}
 
 function escapeHtml(value) {
   return String(value ?? '')

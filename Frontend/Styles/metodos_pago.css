@@ -1,0 +1,356 @@
+:root {
+  --pago-azul: #080f20;
+  --pago-texto: #1e293b;
+  --pago-muted: #64748b;
+  --pago-borde: #e2e8f0;
+  --pago-fondo: #f1f4f9;
+  --pago-amarillo: #f5c842;
+}
+
+.pagina-pago {
+  min-height: 75vh;
+  max-width: 1180px;
+  margin: 40px auto 80px;
+  padding: 0 28px;
+  color: var(--pago-texto);
+  font-family: "Poppins", sans-serif;
+}
+
+.migas-pan {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+  color: var(--pago-muted);
+  font-size: 13px;
+}
+
+.migas-pan a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.migas-pan a:hover,
+.volver-carrito:hover {
+  text-decoration: underline;
+}
+
+.pagina-pago h1 {
+  margin: 0;
+  color: var(--pago-azul);
+  font-size: clamp(28px, 4vw, 36px);
+}
+
+.introduccion {
+  margin: 8px 0 28px;
+  color: var(--pago-muted);
+}
+
+.contenido-pago {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.tarjeta-metodos,
+.resumen-pedido {
+  padding: 28px;
+  border: 1px solid var(--pago-borde);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 4%);
+}
+
+.tarjeta-metodos h2,
+.resumen-pedido h2 {
+  margin: 0 0 20px;
+  color: var(--pago-azul);
+  font-size: 20px;
+}
+
+.opcion-metodo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+  padding: 16px;
+  border: 1px solid var(--pago-borde);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.opcion-metodo:has(input:checked) {
+  border-color: var(--pago-amarillo);
+  background: #fffcf0;
+}
+
+.opcion-metodo input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--pago-azul);
+}
+
+.opcion-metodo strong,
+.opcion-metodo small {
+  display: block;
+}
+
+.opcion-metodo small {
+  margin-top: 3px;
+  color: var(--pago-muted);
+}
+
+.icono-metodo {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--pago-fondo);
+  color: var(--pago-azul);
+  font-weight: 700;
+}
+
+.icono-metodo i {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.datos-metodo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+  margin: -2px 0 18px;
+  padding: 18px;
+  border: 1px solid var(--pago-borde);
+  border-radius: 12px;
+}
+
+.datos-metodo[hidden] {
+  display: none;
+}
+
+.datos-metodo:disabled {
+  display: none;
+}
+
+.campo-pago {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.campo-completo {
+  grid-column: 1 / -1;
+}
+
+.error-campo {
+  min-height: 18px;
+  color: #b91c1c;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.campo-pago input.input-error {
+  border-color: #dc2626;
+  background: #fff7f7;
+}
+
+.campo-pago input.input-valido {
+  border-color: #15803d;
+}
+
+.campo-pago label {
+  color: var(--pago-azul);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.campo-pago input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--pago-borde);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--pago-texto);
+  font: inherit;
+  font-size: 14px;
+}
+
+.campo-pago input:focus {
+  border-color: var(--pago-amarillo);
+  outline: 3px solid rgb(245 200 66 / 22%);
+}
+
+.aviso-seguridad,
+.aviso-transferencia {
+  margin: 0;
+  color: var(--pago-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.btn-continuar {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--pago-amarillo);
+  color: var(--pago-azul);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-continuar:hover {
+  background: #e8b830;
+}
+
+.mensaje-metodo {
+  min-height: 24px;
+  margin: 12px 0 0;
+  color: #155e36;
+  font-size: 14px;
+}
+
+.productos-resumen {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--pago-borde);
+}
+
+.producto-resumen,
+.fila-resumen {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.producto-resumen {
+  color: var(--pago-muted);
+}
+
+.fila-resumen {
+  margin-top: 14px;
+}
+
+.total-pedido {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--pago-borde);
+  color: var(--pago-azul);
+  font-size: 17px;
+}
+
+.volver-carrito {
+  display: inline-block;
+  margin-top: 22px;
+  color: var(--pago-azul);
+  font-size: 14px;
+}
+
+body.a11y-mode-dark-mode .pagina-pago {
+  color: #e2e8f0;
+}
+
+body.a11y-mode-dark-mode .pagina-pago h1,
+body.a11y-mode-dark-mode .pagina-pago h2,
+body.a11y-mode-dark-mode .pagina-pago strong,
+body.a11y-mode-dark-mode .pagina-pago .campo-pago label,
+body.a11y-mode-dark-mode .pagina-pago .volver-carrito {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .introduccion,
+body.a11y-mode-dark-mode .migas-pan,
+body.a11y-mode-dark-mode .opcion-metodo small,
+body.a11y-mode-dark-mode .aviso-seguridad,
+body.a11y-mode-dark-mode .aviso-transferencia,
+body.a11y-mode-dark-mode .producto-resumen {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-metodos,
+body.a11y-mode-dark-mode .resumen-pedido,
+body.a11y-mode-dark-mode .datos-metodo {
+  border-color: #334155;
+  background: #0e1834;
+}
+
+body.a11y-mode-dark-mode .opcion-metodo {
+  border-color: #334155;
+  background: #111d3a;
+}
+
+body.a11y-mode-dark-mode .opcion-metodo:has(input:checked) {
+  border-color: var(--pago-amarillo);
+  background: #292719;
+}
+
+body.a11y-mode-dark-mode .icono-metodo {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+body.a11y-mode-dark-mode .campo-pago input {
+  border-color: #475569 !important;
+  background: #070d1e !important;
+  color: #f8fafc !important;
+  color-scheme: dark;
+}
+
+body.a11y-mode-dark-mode .campo-pago input::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode .campo-pago input.input-error {
+  border-color: #f87171 !important;
+  background: #321b27 !important;
+}
+
+body.a11y-mode-dark-mode .error-campo {
+  color: #fca5a5 !important;
+}
+
+body.a11y-mode-dark-mode .mensaje-metodo {
+  color: #86efac !important;
+}
+
+body.a11y-mode-dark-mode .total-pedido {
+  border-color: #334155;
+}
+
+@media (max-width: 760px) {
+  .pagina-pago {
+    margin-top: 28px;
+    padding: 0 16px;
+  }
+
+  .contenido-pago {
+    grid-template-columns: 1fr;
+  }
+
+  .tarjeta-metodos,
+  .resumen-pedido {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .datos-metodo {
+    grid-template-columns: 1fr;
+    padding: 14px;
+  }
+
+  .campo-completo {
+    grid-column: auto;
+  }
+}

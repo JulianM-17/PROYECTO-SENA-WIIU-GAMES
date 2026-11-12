@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WiiU-Games - Métodos de pago</title>
+    <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
+    <link rel="stylesheet" href="../Styles/metodos_pago.css" />
+    <link rel="stylesheet" href="../Styles/accessibility.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="menu-principal">
+        <div class="seccion-logo">
+          <a href="../Index.html">
+            <img src="../Assets/LogoSinFondo.png" alt="WiiU Games" />
+          </a>
+        </div>
+        <div class="contenido-menu">
+          <div class="enlaces-nav">
+            <a href="../Index.html">Inicio</a>
+            <a href="Catalog.html">Catálogo</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="ArmaTuPC.html">Arma tu PC</a>
+          </div>
+          <div class="botones-ingreso">
+            <a href="Login.html" class="btn-iniciar">Iniciar sesión</a>
+            <a href="Registro.html" class="btn-registrar">Registrarse</a>
+          </div>
+          <div class="iconos-usuario">
+            <a href="carrito.html" class="contenedor-carrito" title="Ver carrito">
+              <i class="fi fi-rr-shopping-cart icono-menu"></i>
+              <b class="burbuja-carrito" id="cart-count">0</b>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="pagina-pago">
+      <nav class="migas-pan" aria-label="Ruta de navegación">
+        <a href="../Index.html">Inicio</a>
+        <span aria-hidden="true">›</span>
+        <a href="carrito.html">Carrito</a>
+        <span aria-hidden="true">›</span>
+        <span>Métodos de pago</span>
+      </nav>
+
+      <h1>Métodos de pago</h1>
+      <p class="introduccion">
+        Selecciona cómo deseas realizar el pago de tu pedido.
+      </p>
+
+      <div class="contenido-pago">
+        <section class="tarjeta-metodos" aria-labelledby="titulo-metodos">
+          <h2 id="titulo-metodos">Elige un método</h2>
+          <form id="form-metodo-pago" novalidate>
+            <label class="opcion-metodo">
+              <input type="radio" name="metodo" value="tarjeta" />
+              <span class="icono-metodo" aria-hidden="true">
+                <i class="fi fi-rr-credit-card"></i>
+              </span>
+              <span>
+                <strong>Tarjeta débito o crédito</strong>
+                <small>Visa, Mastercard y otras tarjetas</small>
+              </span>
+            </label>
+            <fieldset
+              id="datos-tarjeta"
+              class="datos-metodo"
+              aria-label="Datos de la tarjeta"
+              disabled
+              hidden
+            >
+              <div class="campo-pago campo-completo">
+                <label for="titular-tarjeta">Nombre del titular</label>
+                <input
+                  id="titular-tarjeta"
+                  name="titularTarjeta"
+                  type="text"
+                  data-validation="name"
+                  autocomplete="cc-name"
+                  placeholder="Como aparece en la tarjeta"
+                  aria-describedby="error-titular-tarjeta"
+                  required
+                />
+                <small class="error-campo" id="error-titular-tarjeta" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago campo-completo">
+                <label for="numero-tarjeta">Número de tarjeta</label>
+                <input
+                  id="numero-tarjeta"
+                  name="numeroTarjeta"
+                  type="text"
+                  data-validation="card-number"
+                  inputmode="numeric"
+                  autocomplete="cc-number"
+                  placeholder="1234 5678 9012 3456"
+                  maxlength="23"
+                  aria-describedby="error-numero-tarjeta"
+                  required
+                />
+                <small class="error-campo" id="error-numero-tarjeta" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="vencimiento-tarjeta">Vencimiento</label>
+                <input
+                  id="vencimiento-tarjeta"
+                  name="vencimientoTarjeta"
+                  type="month"
+                  data-validation="expiry"
+                  autocomplete="cc-exp"
+                  aria-describedby="error-vencimiento-tarjeta"
+                  required
+                />
+                <small class="error-campo" id="error-vencimiento-tarjeta" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="cvv-tarjeta">Código de seguridad</label>
+                <input
+                  id="cvv-tarjeta"
+                  name="cvvTarjeta"
+                  type="password"
+                  data-validation="cvv"
+                  inputmode="numeric"
+                  autocomplete="cc-csc"
+                  placeholder="3 o 4 dígitos"
+                  minlength="3"
+                  maxlength="4"
+                  aria-describedby="error-cvv-tarjeta"
+                  required
+                />
+                <small class="error-campo" id="error-cvv-tarjeta" aria-live="polite"></small>
+              </div>
+              <p class="aviso-seguridad campo-completo">
+                Esta demostración no envía ni guarda datos de tarjetas. Para
+                aceptar pagos reales se necesita una pasarela segura.
+              </p>
+            </fieldset>
+
+            <label class="opcion-metodo">
+              <input type="radio" name="metodo" value="transferencia" />
+              <span class="icono-metodo" aria-hidden="true">
+                <i class="fi fi-rr-bank"></i>
+              </span>
+              <span>
+                <strong>Transferencia bancaria</strong>
+                <small>Te compartiremos los datos al confirmar el pedido</small>
+              </span>
+            </label>
+            <fieldset
+              id="datos-transferencia"
+              class="datos-metodo"
+              aria-label="Datos de la transferencia"
+              disabled
+              hidden
+            >
+              <p class="aviso-transferencia campo-completo">
+                Los datos de la cuenta de destino se proporcionarán al confirmar
+                el pedido. Completa la información de la transferencia cuando
+                la hayas realizado.
+              </p>
+              <div class="campo-pago">
+                <label for="titular-transferencia">Nombre de quien transfiere</label>
+                <input
+                  id="titular-transferencia"
+                  name="titularTransferencia"
+                  type="text"
+                  data-validation="name"
+                  autocomplete="name"
+                  aria-describedby="error-titular-transferencia"
+                  required
+                />
+                <small class="error-campo" id="error-titular-transferencia" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="banco-transferencia">Banco de origen</label>
+                <input
+                  id="banco-transferencia"
+                  name="bancoTransferencia"
+                  type="text"
+                  data-validation="name"
+                  autocomplete="off"
+                  aria-describedby="error-banco-transferencia"
+                  required
+                />
+                <small class="error-campo" id="error-banco-transferencia" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="referencia-transferencia">Referencia o comprobante</label>
+                <input
+                  id="referencia-transferencia"
+                  name="referenciaTransferencia"
+                  type="text"
+                  data-validation="reference"
+                  autocomplete="off" 
+                  aria-describedby="error-referencia-transferencia"
+                  required
+                />
+                <small class="error-campo" id="error-referencia-transferencia" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="fecha-transferencia">Fecha de transferencia</label>
+                <input
+                  id="fecha-transferencia"
+                  name="fechaTransferencia"
+                  type="date"
+                  data-validation="transfer-date"
+                  aria-describedby="error-fecha-transferencia"
+                  required
+                />
+                <small class="error-campo" id="error-fecha-transferencia" aria-live="polite"></small>
+              </div>
+            </fieldset>
+            <button type="submit" class="btn-continuar">Continuar</button>
+            <p
+              id="mensaje-metodo"
+              class="mensaje-metodo"
+              role="status"
+              aria-live="polite"
+            ></p>
+          </form>
+        </section>
+
+        <aside class="resumen-pedido" aria-labelledby="titulo-resumen">
+          <h2 id="titulo-resumen">Resumen de tu pedido</h2>
+          <div id="productos-resumen" class="productos-resumen"></div>
+          <div class="fila-resumen">
+            <span>Subtotal</span>
+            <strong id="subtotal-pedido">$0 COP</strong>
+          </div>
+          <div class="fila-resumen">
+            <span>Envío estimado</span>
+            <strong id="envio-pedido">$0 COP</strong>
+          </div>
+          <div class="fila-resumen">
+            <span>Impuestos (IVA 19%)</span>
+            <strong id="impuestos-pedido">$0 COP</strong>
+          </div>
+          <div class="fila-resumen">
+            <span>Tasa de servicio (10%)</span>
+            <strong id="tasa-pedido">$0 COP</strong>
+          </div>
+          <div class="fila-resumen total-pedido">
+            <span>Total</span>
+            <strong id="total-pedido">$0 COP</strong>
+          </div>
+          <a href="carrito.html" class="volver-carrito">Volver al carrito</a>
+        </aside>
+      </div>
+    </main>
+
+    <script src="../Scripts/carrito-store.js" defer></script>
+    <script src="../Scripts/metodos_pago.js" defer></script>
+    <script src="../Scripts/accessibility.js" defer></script>
+  </body>
+</html>

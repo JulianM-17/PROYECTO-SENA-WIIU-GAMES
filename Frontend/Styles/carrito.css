@@ -355,6 +355,48 @@ body {
   margin-bottom: 24px;
 }
 
+.contenedor-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+}
+
+.contenedor-toast .toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-left: 4px solid #ef4444;
+  border-radius: 12px;
+  background: var(--dark-blue);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: carrito-toast-in 0.3s ease forwards;
+}
+
+.contenedor-toast .toast i {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+@keyframes carrito-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* =====================================================
    COLUMNA DERECHA: RESUMEN DEL PEDIDO
    ===================================================== */

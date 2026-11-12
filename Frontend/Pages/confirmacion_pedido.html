@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WiiU-Games - Confirmación del pedido</title>
+    <link rel="stylesheet" href="../Styles/Header&Footer_Styles.css" />
+    <link rel="stylesheet" href="../Styles/confirmacion_pedido.css" />
+    <link rel="stylesheet" href="../Styles/accessibility.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+  </head>
+  <body>
+    <header>
+      <div class="menu-principal">
+        <div class="seccion-logo">
+          <a href="../Index.html">
+            <img src="../Assets/LogoSinFondo.png" alt="WiiU Games" />
+          </a>
+        </div>
+        <div class="contenido-menu">
+          <div class="enlaces-nav">
+            <a href="../Index.html">Inicio</a>
+            <a href="Catalog.html">Catálogo</a>
+            <a href="servicios.html">Servicios</a>
+            <a href="ArmaTuPC.html">Arma tu PC</a>
+          </div>
+          <div class="botones-ingreso">
+            <a href="Login.html" class="btn-iniciar">Iniciar sesión</a>
+            <a href="Registro.html" class="btn-registrar">Registrarse</a>
+          </div>
+          <div class="iconos-usuario">
+            <a href="carrito.html" class="contenedor-carrito" title="Ver carrito">
+              <i class="fi fi-rr-shopping-cart icono-menu"></i>
+              <b class="burbuja-carrito" id="cart-count">0</b>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="pagina-confirmacion">
+      <section class="encabezado-confirmacion">
+        <span class="icono-confirmacion" aria-hidden="true">
+          <i class="fi fi-rr-time-forward"></i>
+        </span>
+        <p class="estado-pedido">Pedido recibido · Pago pendiente</p>
+        <h1>Resumen de tu pedido</h1>
+        <p>
+          Esta es una confirmación de demostración. Tu pedido no está guardado
+          en una base de datos y el pago no ha sido procesado.
+        </p>
+        <p class="numero-pedido">
+          Referencia de confirmación: <strong id="numero-pedido"></strong>
+        </p>
+      </section>
+
+      <div class="contenido-confirmacion">
+        <section class="panel-confirmacion" aria-labelledby="titulo-productos">
+          <h2 id="titulo-productos">Productos</h2>
+          <div id="lista-productos-confirmacion" class="lista-confirmacion"></div>
+          <dl class="totales-confirmacion">
+            <div><dt>Subtotal</dt><dd id="confirmacion-subtotal"></dd></div>
+            <div><dt>Envío estimado</dt><dd id="confirmacion-envio"></dd></div>
+            <div><dt>Impuestos (IVA 19%)</dt><dd id="confirmacion-impuestos"></dd></div>
+            <div><dt>Tasa de servicio (10%)</dt><dd id="confirmacion-tasa"></dd></div>
+            <div class="total-final"><dt>Total</dt><dd id="confirmacion-total"></dd></div>
+          </dl>
+        </section>
+
+        <section class="panel-confirmacion panel-pago" aria-labelledby="titulo-pago">
+          <h2 id="titulo-pago">Datos del método de pago</h2>
+          <p class="estado-pendiente">
+            <i class="fi fi-rr-info" aria-hidden="true"></i>
+            Pendiente de confirmación. No se realizó ningún cobro.
+          </p>
+          <dl id="detalle-pago" class="detalle-pago"></dl>
+          <p class="nota-seguridad">
+            Por seguridad, nunca mostramos ni guardamos el número completo de
+            la tarjeta o el código de seguridad.
+          </p>
+        </section>
+      </div>
+
+      <div class="acciones-confirmacion">
+        <a href="Catalog.html" class="btn-volver-catalogo">Volver al catálogo</a>
+        <a href="carrito.html" class="enlace-carrito">Regresar al carrito</a>
+      </div>
+    </main>
+
+    <script src="../Scripts/carrito-store.js" defer></script>
+    <script src="../Scripts/confirmacion_pedido.js" defer></script>
+    <script src="../Scripts/accessibility.js" defer></script>
+  </body>
+</html>
