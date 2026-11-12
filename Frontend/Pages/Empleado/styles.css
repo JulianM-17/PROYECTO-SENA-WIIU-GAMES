@@ -29,9 +29,17 @@ body {
   flex-shrink: 0;
 }
 
+.cabecera-menu-lateral {
+  display: block;
+}
+
 .logo {
   text-align: center;
   margin-bottom: 28px;
+}
+
+.boton-hamburguesa {
+  display: none;
 }
 
 .logo img {
@@ -172,6 +180,7 @@ body {
 
 .contenido-empleado {
   flex: 1;
+  min-width: 0;
   padding: 30px 40px;
   overflow-y: auto;
 }
@@ -516,6 +525,12 @@ body {
   font-size: 12px;
 }
 
+.tabla-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .tabla-empleado th {
   text-align: left;
   padding: 12px 14px;
@@ -782,7 +797,99 @@ body.a11y-mode-dark-mode .btn-cancelar-modal {
   .barra-lateral {
     width: 100%;
     height: auto;
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    max-height: 100vh;
+    max-height: 100dvh;
+    padding: 14px 16px;
+  }
+  .cabecera-menu-lateral {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .logo {
+    margin-bottom: 0;
+  }
+  .logo img {
+    max-width: 120px;
+  }
+  .boton-hamburguesa {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .boton-hamburguesa span {
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #f5a623;
+    border-radius: 2px;
+  }
+  .navegacion {
+    display: none;
+    flex: none;
+    margin-top: 12px;
+  }
+  .navegacion.abierto {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .perfil-empleado {
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    margin-top: 12px;
+  }
+  .menu-desplegable-perfil {
+    position: static;
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .contenido-empleado {
+    flex: initial;
+    overflow-y: visible;
+    padding: 24px 20px;
+  }
+  .saludo {
+    min-width: 0;
+  }
+  .saludo h1 {
+    flex-wrap: wrap;
+    font-size: 20px;
+  }
+  .cabecera-modulo-con-boton {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .tabla-empleado {
+    min-width: 700px;
+  }
+  .buscador-modulo input {
+    width: 100%;
+  }
+  .barra-buscar-pos {
+    flex-direction: column;
+  }
+  .barra-buscar-pos input,
+  .barra-buscar-pos select {
+    width: 100%;
+  }
+  .caja-blanca {
+    padding: 14px;
   }
 }
 
@@ -937,6 +1044,27 @@ body.a11y-mode-dark-mode .grupo-campo textarea {
 }
 
 @media (max-width: 600px) {
+  .contenido-empleado {
+    padding: 20px 14px;
+  }
+  .estado-turno {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .cabecera-modulo-con-boton h2,
+  .cabecera-modulo h2 {
+    font-size: 18px;
+  }
+  .boton-amarillo {
+    max-width: 100%;
+  }
+  .tarjeta-orden-caja {
+    padding: 16px;
+  }
+  .opciones-pago {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
   .caja-vacia-pos.productos-pos-lista {
     grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
   }

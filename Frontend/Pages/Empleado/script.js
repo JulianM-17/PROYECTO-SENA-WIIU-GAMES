@@ -106,7 +106,27 @@ function cambiarPestana(idVista, botonClickeado) {
   document.querySelectorAll(".boton-menu").forEach((button) => {
     button.classList.toggle("activo", button === botonClickeado);
   });
+  const navegacion = document.getElementById("menuNavegacion");
+  const botonHamburguesa = document.querySelector(".boton-hamburguesa");
+  navegacion.classList.remove("abierto");
+  botonHamburguesa.setAttribute("aria-expanded", "false");
+  botonHamburguesa.setAttribute(
+    "aria-label",
+    "Abrir menú de navegación",
+  );
   window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggleMenuMovil() {
+  const navegacion = document.getElementById("menuNavegacion");
+  const botonHamburguesa = document.querySelector(".boton-hamburguesa");
+  const abierto = navegacion.classList.toggle("abierto");
+
+  botonHamburguesa.setAttribute("aria-expanded", String(abierto));
+  botonHamburguesa.setAttribute(
+    "aria-label",
+    abierto ? "Cerrar menú de navegación" : "Abrir menú de navegación",
+  );
 }
 
 function toggleMenuPerfil() {
