@@ -402,7 +402,7 @@
     const homeLink = document.querySelector(".seccion-logo a");
     const baseUrl = homeLink?.href || document.baseURI;
     const destinations = {
-      Administrador: "Pages/Administrador/index_admin.html",
+      Administrador: "Pages/Administrador/index.html",
       Trabajador: "Pages/Empleado/index.html",
       Cliente: "Pages/panel_usuario.html",
       Proveedor: "Pages/panel_usuario.html",
