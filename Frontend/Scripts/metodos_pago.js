@@ -55,6 +55,17 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   let metodoSeleccionado = null;
 
+  function getTodayLocalDate() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0",
+    )}-${String(now.getDate()).padStart(2, "0")}`;
+  }
+
+  const transferDateInput = document.getElementById("fecha-transferencia");
+  transferDateInput.min = getTodayLocalDate();
+
   function getValidationError(input) {
     const value = input.value.trim();
     if (!value) return "Este campo es obligatorio.";
@@ -104,16 +115,12 @@ document.addEventListener("DOMContentLoaded", () => {
           ? ""
           : "La referencia contiene caracteres no permitidos.";
       case "transfer-date": {
-        const now = new Date();
-        const today = `${now.getFullYear()}-${String(
-          now.getMonth() + 1,
-        ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
         if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
           return "Selecciona la fecha de la transferencia.";
         }
-        return value <= today
+        return value >= getTodayLocalDate()
           ? ""
-          : "La fecha de transferencia no puede ser futura.";
+          : "La fecha de transferencia no puede ser anterior a hoy.";
       }
       default:
         return "";
