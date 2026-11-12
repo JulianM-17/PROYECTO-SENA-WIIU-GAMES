@@ -424,7 +424,7 @@
         <div class="caja-panel">
           <div class="barra-filtros">
             <label for="filtroSucursalInventario">Sucursal de ingreso:</label>
-            <select id="filtroSucursalInventario" class="select-filtro" aria-label="Sucursal donde ingresar stock">
+            <select id="filtroSucursalInventario" class="select-filtro" aria-label="Sucursal donde ingresar stock" onchange="cargarDashboard()">
               <option value="">Cargando sucursales...</option>
             </select>
             <input type="text" class="input-filtro" placeholder="Buscar por título, SKU o categoría..." oninput="filtrarTabla('tablaInventarioBody', this.value)">

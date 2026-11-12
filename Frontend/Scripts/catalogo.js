@@ -186,10 +186,20 @@ async function cargarProductos() {
     }
 
     productosCatalogo = productos;
+    guardarProductosCatalogo(productosCatalogo);
     renderizarProductos();
   } catch (error) {
     productosCatalogo = PRODUCTOS_DEFAULT;
+    guardarProductosCatalogo(productosCatalogo);
     renderizarProductos();
+  }
+}
+
+function guardarProductosCatalogo(productos) {
+  try {
+    localStorage.setItem("wiiu_products", JSON.stringify(productos));
+  } catch (error) {
+    console.error("No se pudo guardar el catálogo para las sugerencias:", error);
   }
 }
 

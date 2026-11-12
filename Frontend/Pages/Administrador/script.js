@@ -206,12 +206,25 @@ var categoriasDisponibles = [];
 var marcasDisponibles = [];
 var clientesDisponibles = [];
 var productosDisponibles = [];
+var productoInventarioEdicion = null;
 
 // ==========================================================================
 // 4. VENTANAS MODALES PARA REGISTRAR DATOS
 // ==========================================================================
-function abrirModal(tipo) {
+function abrirModal(tipo, productoId) {
   tipoModalActual = tipo;
+  productoInventarioEdicion = null;
+  if (tipo === 'inventario' && productoId !== undefined) {
+    productoInventarioEdicion = productosDisponibles.find(function(producto) {
+      return String(producto.id) === String(productoId);
+    });
+    if (!productoInventarioEdicion) {
+      mostrarToast('error', 'No se encontró el producto seleccionado.');
+      tipoModalActual = '';
+      return;
+    }
+  }
+
   var modal = document.getElementById('modalFormulario');
   var titulo = document.getElementById('modalTitulo');
   var campos = document.getElementById('modalCampos');
@@ -275,19 +288,39 @@ function abrirModal(tipo) {
       </div>
     `;
   } else if (tipo === 'inventario') {
-    titulo.textContent = "Agregar Producto al Inventario";
-    var optsCat = categoriasDisponibles.length > 0
-      ? categoriasDisponibles.map(function(cat) { return '<option value="' + cat.nombre_cat + '">' + cat.nombre_cat + '</option>'; }).join('')
-      : '<option value="Perifericos">Perifericos</option><option value="Portatiles">Portatiles</option><option value="Almacenamiento">Almacenamiento</option><option value="Consolas y Videojuegos">Consolas y Videojuegos</option>';
-
-    var optsMarcas = marcasDisponibles.length > 0
-      ? marcasDisponibles.map(function(m) { return '<option value="' + m.nombre_marca + '">' + m.nombre_marca + '</option>'; }).join('')
-      : '<option value="Logitech">Logitech</option><option value="Sony">Sony</option><option value="Nintendo">Nintendo</option><option value="ASUS">ASUS</option>';
+    var producto = productoInventarioEdicion;
+    var categorias = categoriasDisponibles.length > 0
+      ? categoriasDisponibles.map(function(cat) { return cat.nombre_cat; })
+      : ['Periféricos', 'Portátiles', 'Almacenamiento', 'Consolas y Videojuegos'];
+    var marcas = marcasDisponibles.length > 0
+      ? marcasDisponibles.map(function(marca) { return marca.nombre_marca; })
+      : ['Logitech', 'Sony', 'Nintendo', 'ASUS'];
+    if (producto && categorias.indexOf(producto.category) === -1) {
+      categorias.unshift(producto.category);
+    }
+    if (producto && marcas.indexOf(producto.publisher) === -1) {
+      marcas.unshift(producto.publisher);
+    }
+    var optsCat = categorias.map(function(nombre) {
+      var selected = producto && nombre === producto.category ? ' selected' : '';
+      return '<option value="' + escaparHtmlAdmin(nombre) + '"' + selected + '>' + escaparHtmlAdmin(nombre) + '</option>';
+    }).join('');
+    var optsMarcas = marcas.map(function(nombre) {
+      var selected = producto && nombre === producto.publisher ? ' selected' : '';
+      return '<option value="' + escaparHtmlAdmin(nombre) + '"' + selected + '>' + escaparHtmlAdmin(nombre) + '</option>';
+    }).join('');
+    var valorCampo = function(valor) {
+      return escaparHtmlAdmin(valor === undefined || valor === null ? '' : valor);
+    };
+    var stockSucursal = producto
+      ? (producto.branchStock === undefined ? producto.stock : producto.branchStock)
+      : '';
+    titulo.textContent = producto ? 'Editar Producto del Inventario' : 'Agregar Producto al Inventario';
 
     campos.innerHTML = `
       <div class="campo-grupo">
         <label>Nombre del Producto:</label>
-        <input type="text" id="campo1" required placeholder="Ej. Nintendo Switch OLED">
+        <input type="text" id="campo1" required maxlength="100" value="${valorCampo(producto && producto.name)}" placeholder="Ej. Nintendo Switch OLED">
       </div>
       <div class="campo-grupo">
         <label>Categoría:</label>
@@ -299,11 +332,40 @@ function abrirModal(tipo) {
       </div>
       <div class="campo-grupo">
         <label>Precio de Venta ($):</label>
-        <input type="number" id="campo3" required min="100" step="500" placeholder="Ej. 1450000">
+        <input type="number" id="campo3" required min="1" step="1" value="${valorCampo(producto && producto.price)}" placeholder="Ej. 1450000">
       </div>
       <div class="campo-grupo">
-        <label>Unidades en Stock Inicial:</label>
-        <input type="number" id="campo4" required min="1" step="1" placeholder="Ej. 10">
+        <label>Unidades en la sucursal seleccionada:</label>
+        <input type="number" id="campo4" required min="0" step="1" value="${valorCampo(stockSucursal)}" placeholder="Ej. 10">
+      </div>
+      <div class="campo-grupo">
+        <label>Descripción:</label>
+        <textarea id="campo_descripcion" required maxlength="100" rows="3" placeholder="Descripción breve">${valorCampo(producto && producto.description)}</textarea>
+      </div>
+      <div class="campo-grupo">
+        <label>Imagen principal (ruta o URL):</label>
+        <input type="text" id="campo_imagen_principal" required maxlength="255" value="${valorCampo(producto ? producto.imageUrl : '../Assets/lenovolegion.webp')}" placeholder="../Assets/producto.png">
+      </div>
+      <div class="campo-grupo">
+        <label>Imagen adicional 1 (opcional):</label>
+        <input type="text" id="campo_imagen_2" maxlength="255" value="${valorCampo(producto && producto.imageUrl2)}" placeholder="../Assets/producto-2.png">
+        <label for="archivo_imagen_2">O subir desde la PC:</label>
+        <input type="file" id="archivo_imagen_2" accept="image/jpeg,image/png,image/webp,image/gif">
+        <small class="ayuda-campo">Si eliges un archivo, reemplazará el enlace de arriba.</small>
+      </div>
+      <div class="campo-grupo">
+        <label>Imagen adicional 2 (opcional):</label>
+        <input type="text" id="campo_imagen_3" maxlength="255" value="${valorCampo(producto && producto.imageUrl3)}" placeholder="../Assets/producto-3.png">
+        <label for="archivo_imagen_3">O subir desde la PC:</label>
+        <input type="file" id="archivo_imagen_3" accept="image/jpeg,image/png,image/webp,image/gif">
+        <small class="ayuda-campo">Si eliges un archivo, reemplazará el enlace de arriba.</small>
+      </div>
+      <div class="campo-grupo">
+        <label>Imagen adicional 3 (opcional):</label>
+        <input type="text" id="campo_imagen_4" maxlength="255" value="${valorCampo(producto && producto.imageUrl4)}" placeholder="../Assets/producto-4.png">
+        <label for="archivo_imagen_4">O subir desde la PC:</label>
+        <input type="file" id="archivo_imagen_4" accept="image/jpeg,image/png,image/webp,image/gif">
+        <small class="ayuda-campo">Si eliges un archivo, reemplazará el enlace de arriba.</small>
       </div>
     `;
   } else if (tipo === 'reparacion') {
@@ -438,6 +500,77 @@ function cerrarModal() {
     modal.classList.remove('activo');
   }
   tipoModalActual = "";
+  productoInventarioEdicion = null;
+}
+
+function escaparHtmlAdmin(valor) {
+  return String(valor).replace(/[&<>"']/g, function(caracter) {
+    var entidades = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    };
+    return entidades[caracter];
+  });
+}
+
+function crearSelectorEstadoServicio(tipo, orden) {
+  var estados = tipo === 'mantenimientos'
+    ? [
+        ['PENDIENTE', 'En Taller'],
+        ['EN PROCESO', 'En Diagnóstico'],
+        ['COMPLETO', 'Listo para Entrega'],
+        ['CANCELADO', 'Cancelado']
+      ]
+    : [
+        ['PENDIENTE', 'En Taller'],
+        ['EN PROCESO', 'En Reparación'],
+        ['COMPLETO', 'Completada'],
+        ['CANCELADO', 'Cancelada']
+      ];
+  var actual = estados.some(function(estado) {
+    return estado[0] === orden.statusCode;
+  }) ? orden.statusCode : 'PENDIENTE';
+  var id = Number(orden.id);
+  return '<select class="select-filtro select-estado-servicio" id="estado-' + tipo + '-' + id + '" aria-label="Estado de la orden ' + escaparHtmlAdmin(orden.maintenanceOrder || orden.ticket) + '">' +
+    estados.map(function(estado) {
+      return '<option value="' + estado[0] + '"' + (estado[0] === actual ? ' selected' : '') + '>' + estado[1] + '</option>';
+    }).join('') +
+    '</select>';
+}
+
+function actualizarEstadoServicio(tipo, id) {
+  if (tipo !== 'mantenimientos' && tipo !== 'reparaciones') return;
+
+  var estadoSelect = document.getElementById('estado-' + tipo + '-' + id);
+  if (!estadoSelect) {
+    mostrarToast('error', 'No se encontró el selector de estado de la orden.');
+    return;
+  }
+
+  fetch(API_BASE + '/api/admin/' + tipo + '/' + encodeURIComponent(id) + '/estado', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify({ status: estadoSelect.value })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (!data.ok) {
+      mostrarToast('error', data.message || 'No se pudo actualizar el estado.');
+      return;
+    }
+    mostrarToast('success', data.message || 'Estado actualizado.');
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al actualizar el estado de la orden:', error);
+    mostrarToast('error', 'Error de conexión al actualizar el estado.');
+  });
 }
 
 // ==========================================================================
@@ -446,8 +579,12 @@ function cerrarModal() {
 function cargarDashboard() {
   var inventoryBranchSelect = document.getElementById('filtroSucursalInventario');
   var selectedBranchId = inventoryBranchSelect && inventoryBranchSelect.value;
+  var dashboardUrl = API_BASE + '/api/dashboard/admin';
+  if (selectedBranchId) {
+    dashboardUrl += '?branchId=' + encodeURIComponent(selectedBranchId);
+  }
 
-  fetch(API_BASE + '/api/dashboard/admin', {
+  fetch(dashboardUrl, {
     headers: { 'Authorization': 'Bearer ' + sessionToken }
   })
   .then(function(res) { return res.json(); })
@@ -513,7 +650,8 @@ function cargarDashboard() {
         var stockTexto = row.stock + ' uds';
         var estadoClase = row.stock > 0 ? 'etiqueta-verde' : 'etiqueta-rojo';
         var estadoTexto = row.stock > 0 ? 'Disponible' : 'Agotado';
-        return '<td><strong>' + row.name + '</strong></td><td>' + row.sku + '</td><td>' + row.category + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + (row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td><button class="boton-icono" title="Editar"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'productos\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var productId = Number(row.id);
+        return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td><button class="boton-icono" title="Editar" aria-label="Editar ' + escaparHtmlAdmin(row.name) + '" onclick="abrirModal(\'inventario\', ' + productId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'productos\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
       // Actualizar tarjetas de inventario
       el = document.getElementById('invTotalProductos');
@@ -550,20 +688,16 @@ function cargarDashboard() {
     // ---------- MANTENIMIENTOS ----------
     if (data.maintenance) {
       poblarTabla('tablaMantenimientosBody', data.maintenance, function(row) {
-        var estadoClase = 'etiqueta-naranja';
-        if (row.status === 'Listo para Entrega') estadoClase = 'etiqueta-verde';
-        if (row.status === 'En Diagnóstico') estadoClase = 'etiqueta-azul';
-        var rawId = String(row.maintenanceOrder).replace('MNT-', '');
-        return '<td><strong>' + row.maintenanceOrder + '</strong></td><td>' + row.equipment + '</td><td>' + row.client + '</td><td>' + row.tech + '</td><td>' + row.cost + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'mantenimientos\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var productId = Number(row.id);
+        return '<td><strong>' + escaparHtmlAdmin(row.maintenanceOrder) + '</strong></td><td>' + escaparHtmlAdmin(row.equipment) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.tech) + '</td><td>' + escaparHtmlAdmin(row.cost) + '</td><td>' + crearSelectorEstadoServicio('mantenimientos', row) + '</td><td><button class="boton-icono" title="Guardar estado" aria-label="Guardar estado de ' + escaparHtmlAdmin(row.maintenanceOrder) + '" onclick="actualizarEstadoServicio(\'mantenimientos\', ' + productId + ')"><i class="fi fi-rr-check"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'mantenimientos\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
     // ---------- REPARACIONES ----------
     if (data.repairs) {
       poblarTabla('tablaReparacionBody', data.repairs, function(row) {
-        var estadoClase = row.status === 'En Reparación' ? 'etiqueta-azul' : (row.status === 'Completada' ? 'etiqueta-verde' : 'etiqueta-rojo');
-        var rawId = String(row.ticket).replace('REP-', '');
-        return '<td><strong>' + row.ticket + '</strong></td><td>' + row.device + '</td><td>' + row.defect + '</td><td>' + row.client + '</td><td>' + row.price + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'reparaciones\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var productId = Number(row.id);
+        return '<td><strong>' + escaparHtmlAdmin(row.ticket) + '</strong></td><td>' + escaparHtmlAdmin(row.device) + '</td><td>' + escaparHtmlAdmin(row.defect) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.price) + '</td><td>' + crearSelectorEstadoServicio('reparaciones', row) + '</td><td><button class="boton-icono" title="Guardar estado" aria-label="Guardar estado de ' + escaparHtmlAdmin(row.ticket) + '" onclick="actualizarEstadoServicio(\'reparaciones\', ' + productId + ')"><i class="fi fi-rr-check"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'reparaciones\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
 
@@ -633,8 +767,32 @@ function poblarTabla(idTbody, datos, generarFila) {
 // ==========================================================================
 // 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (CON VALIDACIÓN COMPLETA)
 // ==========================================================================
-function guardarDatos(evento) {
+async function subirImagenProducto(file) {
+  var response = await fetch(API_BASE + '/api/admin/product-images', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + sessionToken,
+      'Content-Type': file.type
+    },
+    body: file
+  });
+  var data;
+  try {
+    data = await response.json();
+  } catch (error) {
+    throw new Error('El servidor devolvió una respuesta inválida al subir la imagen.');
+  }
+  if (!response.ok || !data.ok || !data.imageUrl) {
+    throw new Error(data.message || 'No se pudo subir la imagen.');
+  }
+  return data.imageUrl;
+}
+
+var inventarioGuardando = false;
+
+async function guardarDatos(evento) {
   evento.preventDefault();
+  if (tipoModalActual === 'inventario' && inventarioGuardando) return;
   limpiarErroresModal();
 
   var c1Input = document.getElementById('campo1');
@@ -650,6 +808,7 @@ function guardarDatos(evento) {
   var cMarca = cMarcaInput ? cMarcaInput.value.trim() : 'General';
 
   var url = '';
+  var metodo = 'POST';
   var payload = {};
   var hayErrores = false;
 
@@ -657,6 +816,21 @@ function guardarDatos(evento) {
   // VALIDACIONES ESPECÍFICAS SEGÚN EL MÓDULO ACTUAL
   // -------------------------------------------------------------
   if (tipoModalActual === 'inventario') {
+    var imagenPrincipal = document.getElementById('campo_imagen_principal');
+    var imagen2 = document.getElementById('campo_imagen_2');
+    var imagen3 = document.getElementById('campo_imagen_3');
+    var imagen4 = document.getElementById('campo_imagen_4');
+    var archivoImagen2 = document.getElementById('archivo_imagen_2');
+    var archivoImagen3 = document.getElementById('archivo_imagen_3');
+    var archivoImagen4 = document.getElementById('archivo_imagen_4');
+    var archivosImagenes = [
+      { input: archivoImagen2, campo: imagen2 },
+      { input: archivoImagen3, campo: imagen3 },
+      { input: archivoImagen4, campo: imagen4 }
+    ];
+    var descripcion = document.getElementById('campo_descripcion');
+    var sucursalId = Number(document.getElementById('filtroSucursalInventario').value);
+
     if (!c1 || c1.length < 3) {
       marcarErrorCampo(c1Input, 'El nombre debe tener al menos 3 caracteres.');
       hayErrores = true;
@@ -679,22 +853,70 @@ function guardarDatos(evento) {
       marcarErrorCampo(c4Input, 'Ingresa una cantidad de stock válida (entero >= 0).');
       hayErrores = true;
     }
+    if (!imagenPrincipal || !imagenPrincipal.value.trim()) {
+      marcarErrorCampo(imagenPrincipal, 'Indica la ruta de la imagen principal.');
+      hayErrores = true;
+    }
+    archivosImagenes.forEach(function(imagen) {
+      var file = imagen.input.files && imagen.input.files[0];
+      if (!file) return;
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type)) {
+        marcarErrorCampo(imagen.input, 'Usa una imagen JPG, PNG, WEBP o GIF.');
+        hayErrores = true;
+      } else if (file.size > 5 * 1024 * 1024) {
+        marcarErrorCampo(imagen.input, 'La imagen no puede superar 5 MB.');
+        hayErrores = true;
+      }
+    });
+    if (!descripcion || descripcion.value.trim().length > 100) {
+      marcarErrorCampo(descripcion, 'La descripción no puede superar 100 caracteres.');
+      hayErrores = true;
+    }
+    if (!Number.isSafeInteger(sucursalId) || sucursalId < 1) {
+      marcarErrorCampo(document.getElementById('filtroSucursalInventario'), 'Selecciona una sucursal válida.');
+      hayErrores = true;
+    }
 
     if (hayErrores) {
       mostrarToast('error', 'Por favor corrige los campos señalados en rojo');
       return;
     }
 
-    url = API_BASE + '/api/admin/productos';
+    inventarioGuardando = true;
+    try {
+      var hayImagenesLocales = archivosImagenes.some(function(imagen) {
+        return imagen.input.files && imagen.input.files.length > 0;
+      });
+      if (hayImagenesLocales) mostrarToast('info', 'Subiendo imágenes del producto...');
+      for (var imagenLocal of archivosImagenes) {
+        var archivoLocal = imagenLocal.input.files && imagenLocal.input.files[0];
+        if (archivoLocal) {
+          imagenLocal.campo.value = await subirImagenProducto(archivoLocal);
+        }
+      }
+    } catch (error) {
+      inventarioGuardando = false;
+      console.error('Error al subir imagen del producto:', error);
+      mostrarToast('error', error.message || 'No se pudo subir la imagen.');
+      return;
+    }
+
+    url = productoInventarioEdicion
+      ? API_BASE + '/api/admin/productos/' + encodeURIComponent(productoInventarioEdicion.id)
+      : API_BASE + '/api/admin/productos';
+    if (productoInventarioEdicion) metodo = 'PUT';
     payload = {
       name: c1,
       category: c2,
       publisher: cMarca,
       price: precioProd,
       stock: stockProd,
-      branchId: Number(document.getElementById('filtroSucursalInventario').value),
-      imageUrl: 'img/productos/default.jpg',
-      description: c1
+      branchId: sucursalId,
+      imageUrl: imagenPrincipal.value.trim(),
+      imageUrl2: imagen2.value.trim(),
+      imageUrl3: imagen3.value.trim(),
+      imageUrl4: imagen4.value.trim(),
+      description: descripcion.value.trim()
     };
 
   } else if (tipoModalActual === 'garantias') {
@@ -907,7 +1129,7 @@ function guardarDatos(evento) {
   mostrarToast('info', 'Guardando en la base de datos...');
 
   fetch(url, {
-    method: 'POST',
+    method: metodo,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ' + sessionToken
@@ -927,6 +1149,9 @@ function guardarDatos(evento) {
   .catch(function(err) {
     console.error('Error al guardar en BD:', err);
     mostrarToast('error', 'Error de conexión con el servidor');
+  })
+  .finally(function() {
+    inventarioGuardando = false;
   });
 }
 
