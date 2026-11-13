@@ -468,15 +468,37 @@ body {
   opacity: 1;
 }
 
+.resumen-stock {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
 .estado-stock {
   font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 5px;
-  margin-bottom: 16px;
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.cantidad-stock {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #fff8df;
+  color: #8a6200;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cantidad-stock.sin-stock {
+  background: #fef2f2;
+  color: #b91c1c;
 }
 
 .estado-stock::before {
@@ -731,9 +753,17 @@ body {
     flex-shrink: 0;
   }
 
-  .estado-stock {
+  .resumen-stock {
     margin-bottom: 8px;
+  }
+
+  .estado-stock,
+  .cantidad-stock {
     font-size: 9px;
+  }
+
+  .cantidad-stock {
+    padding: 3px 6px;
   }
 
   .imagen-producto {
