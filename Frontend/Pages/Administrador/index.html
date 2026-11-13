@@ -111,15 +111,18 @@
             <input type="text" id="buscadorGlobal" placeholder="Buscar productos, pedidos, clientes..." oninput="filtrarGlobal(this.value)">
           </div>
 
-<button class="boton-dias" onclick="filtrarPeriodo()">
-            <span>Últimos 7 días</span>
-            <i class="fi fi-rr-angle-small-down"></i>
-          </button>
-
-<button class="campana-alerta" title="Notificaciones" onclick="mostrarNotificaciones()">
-            <i class="fi fi-rr-bell"></i>
-            <span class="punto-amarillo"></span>
-          </button>
+          <div class="campana-contenedor">
+            <button class="campana-alerta" type="button" title="Notificaciones" aria-label="Abrir notificaciones" aria-expanded="false" aria-controls="panelNotificaciones" onclick="mostrarNotificaciones()">
+              <i class="fi fi-rr-bell"></i>
+              <span class="punto-amarillo" id="contadorNotificaciones" hidden></span>
+            </button>
+            <div class="panel-notificaciones" id="panelNotificaciones" role="region" aria-label="Notificaciones" hidden>
+              <h3>Notificaciones</h3>
+              <ul id="listaNotificaciones">
+                <li class="notificacion-vacia">Cargando notificaciones...</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </header>
 

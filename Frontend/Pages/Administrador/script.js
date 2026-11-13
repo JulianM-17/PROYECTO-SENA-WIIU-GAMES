@@ -188,17 +188,63 @@ document.addEventListener('click', function (evento) {
   if (perfil && menu && !perfil.contains(evento.target)) {
     menu.classList.remove('abierto');
   }
+  var campana = document.querySelector('.campana-contenedor');
+  var panelNotificaciones = document.getElementById('panelNotificaciones');
+  var botonCampana = document.querySelector('.campana-alerta');
+  if (campana && panelNotificaciones && botonCampana && !campana.contains(evento.target)) {
+    panelNotificaciones.hidden = true;
+    botonCampana.setAttribute('aria-expanded', 'false');
+  }
 });
 
 function mostrarNotificaciones() {
-  alert("🔔 Notificaciones del Sistema:\n\nActualmente tienes 0 alertas pendientes. La tienda funciona con normalidad.");
+  var panel = document.getElementById('panelNotificaciones');
+  var boton = document.querySelector('.campana-alerta');
+  if (!panel || !boton) return;
+
+  panel.hidden = !panel.hidden;
+  boton.setAttribute('aria-expanded', String(!panel.hidden));
+  if (!panel.hidden) {
+    var contador = document.getElementById('contadorNotificaciones');
+    if (contador) contador.hidden = true;
+  }
 }
 
-function filtrarPeriodo() {
-  var nuevo = prompt("Selecciona el período de consulta:\n1. Hoy\n2. Últimos 7 días\n3. Este mes\n4. Este año", "Últimos 7 días");
-  if (nuevo) {
-    document.querySelector('.boton-dias span').textContent = nuevo;
+function actualizarNotificaciones(pedidos, inventario) {
+  var notificaciones = [];
+  (pedidos || []).forEach(function(pedido) {
+    if (pedido.estado !== 'PAGADA') {
+      notificaciones.push({
+        titulo: 'Pedido #' + escaparHtmlAdmin(pedido.id_venta),
+        detalle: escaparHtmlAdmin(pedido.nombre + ' ' + pedido.apellido) + ' · ' + escaparHtmlAdmin(pedido.estado || 'Pendiente')
+      });
+    }
+  });
+  (inventario || []).forEach(function(producto) {
+    var stock = Number(producto.stock);
+    if (stock <= Number(producto.minStock || 3)) {
+      notificaciones.push({
+        titulo: 'Stock bajo: ' + escaparHtmlAdmin(producto.name),
+        detalle: 'Quedan ' + stock + ' unidades disponibles.'
+      });
+    }
+  });
+
+  var lista = document.getElementById('listaNotificaciones');
+  var contador = document.getElementById('contadorNotificaciones');
+  if (!lista || !contador) return;
+
+  if (notificaciones.length === 0) {
+    lista.innerHTML = '<li class="notificacion-vacia">No hay notificaciones por ahora.</li>';
+    contador.hidden = true;
+    return;
   }
+
+  lista.innerHTML = notificaciones.map(function(notificacion) {
+    return '<li><strong>' + notificacion.titulo + '</strong><span>' + notificacion.detalle + '</span></li>';
+  }).join('');
+  contador.hidden = false;
+  contador.setAttribute('aria-label', notificaciones.length + ' notificaciones pendientes');
 }
 
 // Variables globales de datos auxiliares para los modales
@@ -643,6 +689,7 @@ function cargarDashboard() {
         return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + row.id_venta + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
+    actualizarNotificaciones(data.recentOrders, data.inventory);
 
     // ---------- INVENTARIO ----------
     if (data.inventory) {
