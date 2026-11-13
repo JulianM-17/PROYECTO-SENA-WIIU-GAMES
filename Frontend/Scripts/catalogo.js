@@ -308,7 +308,8 @@ function renderizarProductos() {
 }
 
 function crearTarjetaProducto(prod) {
-  const tieneStock = Number(prod.stock_total) > 0;
+  const stockDisponible = Math.max(Number(prod.stock_total) || 0, 0);
+  const tieneStock = stockDisponible > 0;
   const precioFormateado = new Intl.NumberFormat('es-CO', {
     style: 'currency',
     currency: 'COP',
@@ -317,8 +318,11 @@ function crearTarjetaProducto(prod) {
 
   return `
     <article class="tarjeta-producto">
-      <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
-        ${tieneStock ? 'Con Stock' : 'Agotado'}
+      <div class="resumen-stock">
+        <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
+          ${tieneStock ? 'Con Stock' : 'Agotado'}
+        </div>
+        <span class="cantidad-stock ${tieneStock ? '' : 'sin-stock'}">${stockDisponible} disponibles</span>
       </div>
       <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
         <img
