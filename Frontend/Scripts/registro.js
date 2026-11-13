@@ -1,9 +1,11 @@
-
+/**
+ * =====================================================
+ * REGISTRO DE USUARIO — WiiU Games
+ * Lógica Completa, Validaciones en Tiempo Real y Dinamismo
+ * =====================================================
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
-  localStorage.removeItem('wiiu_user');
-  localStorage.removeItem('wiiu_registered_users');
-
   // Elementos DOM del Formulario
   const formRegistro = document.getElementById('form-registro');
   const inputNombre = document.getElementById('nombre');
@@ -32,9 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCancelarTerminos = document.getElementById('btn-cancelar-terminos');
   const btnAceptarTerminos = document.getElementById('btn-aceptar-terminos');
 
-
-  // DICCIONARIO DE DEPARTAMENTOS Y MUNICIPIOS DE COLOMBIA
-
+  // -----------------------------------------------------
+  // 1. DICCIONARIO DE DEPARTAMENTOS Y MUNICIPIOS DE COLOMBIA
+  // -----------------------------------------------------
   const departamentosColombia = {
     "Boyacá": [
       "Sogamoso", "Tunja", "Duitama", "Paipa", "Chiquinquirá", "Villa de Leyva",
@@ -320,40 +322,35 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Validaciones individuales
-  const patronNombre = /^[\p{L}]+(?:[ '\u2019-][\p{L}]+)*$/u;
-  const patronTelefono = /^[+\d()\s-]{7,20}$/;
-
-  function validarNombreCompleto(input, idSpan, campo) {
-    const val = input.value.trim();
-    if (!val) {
-      return mostrarError(input, idSpan, `${campo} es obligatorio.`);
-    }
-    if (val.length < 2 || val.length > 30 || !patronNombre.test(val)) {
-      return mostrarError(input, idSpan, 'Usa solo letras, espacios, apóstrofes o guiones (máximo 30 caracteres).');
-    }
-    return limpiarError(input, idSpan);
-  }
-
   function validarNombre() {
-    return validarNombreCompleto(inputNombre, 'error-nombre', 'El nombre');
+    const val = inputNombre.value.trim();
+    if (!val) {
+      return mostrarError(inputNombre, 'error-nombre', 'El nombre es obligatorio.');
+    }
+    if (val.length < 2) {
+      return mostrarError(inputNombre, 'error-nombre', 'Ingresa un nombre válido (mínimo 2 letras).');
+    }
+    return limpiarError(inputNombre, 'error-nombre');
   }
 
   function validarApellido() {
-    return validarNombreCompleto(inputApellido, 'error-apellido', 'El apellido');
+    const val = inputApellido.value.trim();
+    if (!val) {
+      return mostrarError(inputApellido, 'error-apellido', 'El apellido es obligatorio.');
+    }
+    if (val.length < 2) {
+      return mostrarError(inputApellido, 'error-apellido', 'Ingresa un apellido válido (mínimo 2 letras).');
+    }
+    return limpiarError(inputApellido, 'error-apellido');
   }
 
   function validarFechaNacimiento() {
-    const val = inputFechaNacimiento.value;
-    if (!val) {
+    if (!inputFechaNacimiento.value) {
       return mostrarError(inputFechaNacimiento, 'error-nacimiento', 'Selecciona tu fecha de nacimiento.');
     }
-    const fecha = new Date(`${val}T00:00:00Z`);
     if (
-      !/^\d{4}-\d{2}-\d{2}$/.test(val) ||
-      Number.isNaN(fecha.getTime()) ||
-      fecha.toISOString().slice(0, 10) !== val ||
-      val < inputFechaNacimiento.min ||
-      val > inputFechaNacimiento.max
+      inputFechaNacimiento.value < inputFechaNacimiento.min ||
+      inputFechaNacimiento.value > inputFechaNacimiento.max
     ) {
       return mostrarError(inputFechaNacimiento, 'error-nacimiento', 'Selecciona una fecha dentro del rango permitido.');
     }
@@ -366,8 +363,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!val) {
       return mostrarError(inputCorreo, 'error-correo', 'El correo electrónico es obligatorio.');
     }
-    if (!regexEmail.test(val) || val.length > 120) {
-      return mostrarError(inputCorreo, 'error-correo', 'Ingresa un correo válido de máximo 120 caracteres.');
+    if (!regexEmail.test(val)) {
+      return mostrarError(inputCorreo, 'error-correo', 'Ingresa un formato de correo válido (ej: nombre@dominio.com).');
     }
     return limpiarError(inputCorreo, 'error-correo');
   }
@@ -391,9 +388,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (val.length < 8) {
       return mostrarError(inputContrasena, 'error-contrasena', 'La contraseña debe tener al menos 8 caracteres.');
     }
-    if (new TextEncoder().encode(val).length > 72) {
-      return mostrarError(inputContrasena, 'error-contrasena', 'La contraseña no puede superar 72 bytes.');
-    }
     return limpiarError(inputContrasena, 'error-contrasena');
   }
 
@@ -413,22 +407,21 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!val) {
       return mostrarError(inputDireccion, 'error-direccion', 'La dirección es obligatoria.');
     }
-    if (val.length < 5 || val.length > 40 || /[\u0000-\u001f\u007f]/.test(val)) {
-      return mostrarError(inputDireccion, 'error-direccion', 'Ingresa una dirección de 5 a 40 caracteres.');
+    if (val.length < 5) {
+      return mostrarError(inputDireccion, 'error-direccion', 'Ingresa una dirección completa.');
     }
     return limpiarError(inputDireccion, 'error-direccion');
   }
 
   function validarDepartamento() {
-    if (!Object.prototype.hasOwnProperty.call(departamentosColombia, selectDepartamento.value)) {
+    if (!selectDepartamento.value) {
       return mostrarError(selectDepartamento, 'error-departamento', 'Selecciona un departamento.');
     }
     return limpiarError(selectDepartamento, 'error-departamento');
   }
 
   function validarMunicipio() {
-    const municipios = departamentosColombia[selectDepartamento.value] || [];
-    if (!municipios.includes(selectMunicipio.value)) {
+    if (!selectMunicipio.value) {
       return mostrarError(selectMunicipio, 'error-municipio', 'Selecciona un municipio o ciudad.');
     }
     return limpiarError(selectMunicipio, 'error-municipio');
@@ -440,32 +433,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'El teléfono principal es obligatorio.');
     }
     const cleanDigits = val.replace(/\D/g, '');
-    if (!patronTelefono.test(val) || cleanDigits.length < 7) {
-      return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'Ingresa un teléfono válido de 7 a 20 caracteres.');
+    if (cleanDigits.length < 7) {
+      return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'Ingresa un número telefónico válido (mínimo 7 dígitos).');
     }
     return limpiarError(inputTelefonoPrincipal, 'error-telefono');
-  }
-
-  function validarTelefonoSecundario() {
-    const val = inputTelefonoSecundario.value.trim();
-    if (!val) {
-      return limpiarError(inputTelefonoSecundario, 'error-telefono-secundario');
-    }
-    if (!patronTelefono.test(val) || val.replace(/\D/g, '').length < 7) {
-      return mostrarError(inputTelefonoSecundario, 'error-telefono-secundario', 'Ingresa un teléfono válido de 7 a 20 caracteres.');
-    }
-    return limpiarError(inputTelefonoSecundario, 'error-telefono-secundario');
-  }
-
-  function validarCodigoPostal() {
-    const val = inputCodigoPostal.value.trim();
-    if (!val) {
-      return limpiarError(inputCodigoPostal, 'error-codigo-postal');
-    }
-    if (!/^\d{6}$/.test(val)) {
-      return mostrarError(inputCodigoPostal, 'error-codigo-postal', 'El código postal debe tener 6 dígitos.');
-    }
-    return limpiarError(inputCodigoPostal, 'error-codigo-postal');
   }
 
   function validarTerminos() {
@@ -553,20 +524,6 @@ document.addEventListener('DOMContentLoaded', () => {
     inputTelefonoPrincipal.addEventListener('input', () => { if (inputTelefonoPrincipal.classList.contains('input-error')) validarTelefono(); });
   }
 
-  if (inputTelefonoSecundario) {
-    inputTelefonoSecundario.addEventListener('blur', validarTelefonoSecundario);
-    inputTelefonoSecundario.addEventListener('input', () => {
-      if (inputTelefonoSecundario.classList.contains('input-error')) validarTelefonoSecundario();
-    });
-  }
-
-  if (inputCodigoPostal) {
-    inputCodigoPostal.addEventListener('blur', validarCodigoPostal);
-    inputCodigoPostal.addEventListener('input', () => {
-      if (inputCodigoPostal.classList.contains('input-error')) validarCodigoPostal();
-    });
-  }
-
   if (checkTerminos) {
     checkTerminos.addEventListener('change', validarTerminos);
   }
@@ -589,13 +546,10 @@ document.addEventListener('DOMContentLoaded', () => {
       const vDep = validarDepartamento();
       const vMun = validarMunicipio();
       const vTel = validarTelefono();
-      const vTelSecundario = validarTelefonoSecundario();
-      const vCodigoPostal = validarCodigoPostal();
       const vTerm = validarTerminos();
 
       const esValido = vNombre && vApellido && vFecha && vCorreo && vConfCorreo &&
-                        vPass && vConfPass && vDir && vDep && vMun && vTel &&
-                        vTelSecundario && vCodigoPostal && vTerm;
+                        vPass && vConfPass && vDir && vDep && vMun && vTel && vTerm;
 
       if (!esValido) {
         mostrarToast('Por favor completa y corrige todos los campos obligatorios.', 'error');
@@ -612,18 +566,19 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       let registroExitoso = false;
 
+      // Guardar usuario en localStorage para persistencia y validación en Login
       const nuevoUsuario = {
         nombre: inputNombre.value.trim(),
         apellido: inputApellido.value.trim(),
         email: inputCorreo.value.trim().toLowerCase(),
         password: inputContrasena.value,
         telefono: inputTelefonoPrincipal.value.trim(),
-        telefono_secundario: inputTelefonoSecundario ? inputTelefonoSecundario.value.trim() : '',
+        telefonoSecundario: inputTelefonoSecundario ? inputTelefonoSecundario.value.trim() : '',
         direccion: inputDireccion.value.trim(),
         departamento: selectDepartamento.value,
         ciudad: selectMunicipio.value,
         codigoPostal: inputCodigoPostal ? inputCodigoPostal.value.trim() : '',
-        nacimiento: inputFechaNacimiento.value,
+        nacimiento: inputFechaNacimiento.value.split('-').reverse().join('/'),
         rol: 'Cliente'
       };
 
@@ -641,6 +596,17 @@ document.addEventListener('DOMContentLoaded', () => {
           mostrarToast(result.message || 'Error al registrar usuario.', 'error');
           return;
         }
+        // Guardar usuario en localStorage para sesión actual
+        localStorage.setItem('wiiu_user', JSON.stringify(nuevoUsuario));
+        // Mantener lista de usuarios registrados en localStorage
+        const usuariosGuardados = JSON.parse(localStorage.getItem('wiiu_registered_users') || '[]');
+        const indexExistente = usuariosGuardados.findIndex(u => u.email === nuevoUsuario.email);
+        if (indexExistente >= 0) {
+          usuariosGuardados[indexExistente] = nuevoUsuario;
+        } else {
+          usuariosGuardados.push(nuevoUsuario);
+        }
+        localStorage.setItem('wiiu_registered_users', JSON.stringify(usuariosGuardados));
         registroExitoso = true;
         mostrarToast('¡Cuenta creada exitosamente! Redirigiendo a Iniciar Sesión...', 'exito');
         setTimeout(() => {

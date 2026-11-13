@@ -84,6 +84,80 @@
           </div>
         </div>
       </div>
+      <!-- Animacion Contactanos -->
+      <div id="contacto-overlay" class="overlay"></div>
+
+      <!-- Panel lateral de contacto -->
+      <div id="contacto-panel" class="panel-lateral">
+        <button id="cerrar-panel" class="btn-cerrar">&times;</button>
+
+        <!-- Encabezado azul oscuro -->
+        <div class="panel-header">
+          <h2>Contáctanos</h2>
+          <p>
+            Si tienes alguna pregunta, inquietud o comentario, no dudes en
+            comunicarte con nosotros. Nuestro equipo de atención al cliente
+            estará encantado de ayudarte y brindarte la asistencia que
+            necesites.
+          </p>
+        </div>
+
+        <!-- Contenido del formulario y datos -->
+        <div class="panel-body">
+          <!-- Columna Izquierda: Formulario -->
+          <div class="formulario-contacto">
+            <div class="input-row">
+              <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre" />
+              </div>
+              <div class="input-group">
+                <label>Gmail</label>
+                <input type="email" placeholder="Ej: tuemail@gmail.com" />
+              </div>
+            </div>
+            <div class="input-group">
+              <label>Teléfono</label>
+              <input type="text" placeholder="Ej: 3001234567" />
+            </div>
+            <div class="input-group">
+              <label>Agrega tu consulta</label>
+              <textarea
+                placeholder="Escribe tu consulta aquí"
+                rows="4"
+              ></textarea>
+            </div>
+            <button class="btn-enviar">Enviar Consulta</button>
+          </div>
+
+          <!-- Columna Derecha: Información -->
+          <div class="info-contacto">
+            <div class="info-card">
+              <h4>DIRECCIÓN:</h4>
+              <p>
+                Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126,
+                Sogamoso, Boyacá
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>TELÉFONO:</h4>
+              <p>3046616081</p>
+            </div>
+            <div class="info-card">
+              <h4>HORARIOS:</h4>
+              <p>
+                Lunes a viernes: 8:30 a.m. a 12:00 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Sabado: 8:30 a.m a 12:30 p.m, 2:30 p.m a 6:30 p.m.<br />
+                Domingo: 10:00 a.m a 1:00 p.m
+              </p>
+            </div>
+            <div class="info-card">
+              <h4>CORREO ELECTRÓNICO:</h4>
+              <p><span class="badge-correo">shop@email.com</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
     <!--Seccion-->
     <section class="seccion-header">
@@ -98,33 +172,31 @@
     </section>
     <!-- Descripcion servicios-->
     <main class="contenedor-servicios">
-      <section class="card">
-        <div class="lado claro">
-          <h2>Reparación</h2>
-          <h3>¿Qué es una reparación?</h3>
-          <p>
-            Una reparación para un local de videojuegos es el trabajo correctivo
-            realizado en consolas, mandos o PCs tras una falla para restaurar
-            sus condiciones de operación. Incluye cambiar pantallas rotas,
-            reparar puertos HDMI, limpiar componentes internos, corregir fallos
-            de software o reparar mandos. Es crucial para mantener la
-            operatividad y reducir tiempos de inactividad.
-          </p>
-        </div>
-        <div class="lado oscuro">
-          <h2>Mantenimiento</h2>
-          <h3>¿Qué es un mantenimiento?</h3>
-          <p>
-            Es el conjunto de acciones técnicas y preventivas como la limpieza
-            interna de consolas/PC, cambio de pasta térmica, revisión de cables
-            y actualización de software para garantizar el funcionamiento,
-            evitar sobrecalentamientos y asegurar la seguridad de los equipos.
-            Su objetivo es proteger la inversión y mejorar la experiencia del
-            cliente.
-          </p>
-        </div>
-
-        <button class="btn"><span>Solicitar Servicio</span></button>
+      <section class="tarjeta tarjeta-clara">
+        <h2 class="titulo-servicio">Reparación</h2>
+        <h3 class="pregunta-servicio">¿Qué es una reparación?</h3>
+        <p class="descripcion-servicio">
+          Una reparación para un local de videojuegos es el trabajo correctivo
+          realizado en consolas, mandos o PCs tras una falla para restaurar sus
+          condiciones de operación. Incluye cambiar pantallas rotas, reparar
+          puertos HDMI, limpiar componentes internos, corregir fallos de
+          software o reparar mandos. Es crucial para mantener la operatividad y
+          reducir tiempos de inactividad.
+        </p>
+        <a href="cita.html" class="btn-accion">Solicitar Servicio</a>
+      </section>
+      <section class="tarjeta tarjeta-oscura">
+        <h2 class="titulo-servicio">Mantenimiento</h2>
+        <h3 class="pregunta-servicio">¿Qué es un mantenimiento?</h3>
+        <p class="descripcion-servicio">
+          Es el conjunto de acciones técnicas y preventivas como la limpieza
+          interna de consolas/PC, cambio de pasta térmica, revisión de cables y
+          actualización de software para garantizar el funcionamiento, evitar
+          sobrecalentamientos y asegurar la seguridad de los equipos. Su
+          objetivo es proteger la inversión y mejorar la experiencia del
+          cliente.
+        </p>
+        <a href="cita.html" class="btn-accion">Solicitar Servicio</a>
       </section>
     </main>
     <!-- Porque trabajar con nosotros -->
@@ -139,9 +211,7 @@
         <div class="porque-info">
           <h2 class="title-porque">¿Por qué trabajar con nosotros?</h2>
           <p class="subtitulo-porque">
-            En WiiU-Games combinamos experiencia técnica, transparencia y pasión
-            gamer para recuperar el máximo rendimiento de tus consolas y
-            computadores.
+            En WiiU-Games combinamos experiencia técnica, transparencia y pasión gamer para recuperar el máximo rendimiento de tus consolas y computadores.
           </p>
 
           <ul class="lista-beneficios-porque">
@@ -149,40 +219,28 @@
               <span class="check-porque">✓</span>
               <div>
                 <strong>Evidencia Detallada</strong>
-                <p>
-                  Registro fotográfico y audiovisual paso a paso de cada
-                  intervención.
-                </p>
+                <p>Registro fotográfico y audiovisual paso a paso de cada intervención.</p>
               </div>
             </li>
             <li>
               <span class="check-porque">✓</span>
               <div>
                 <strong>Garantía Certificada</strong>
-                <p>
-                  Respaldo por escrito directo sobre reparaciones y repuestos
-                  instalados.
-                </p>
+                <p>Respaldo por escrito directo sobre reparaciones y repuestos instalados.</p>
               </div>
             </li>
             <li>
               <span class="check-porque">✓</span>
               <div>
                 <strong>Prueba en Vivo</strong>
-                <p>
-                  Comprobación funcional frente a ti en pantalla antes de la
-                  entrega.
-                </p>
+                <p>Comprobación funcional frente a ti en pantalla antes de la entrega.</p>
               </div>
             </li>
             <li>
               <span class="check-porque">✓</span>
               <div>
                 <strong>Diagnóstico Rápido</strong>
-                <p>
-                  Presupuestos claros y tiempos de entrega optimizados sin
-                  demoras.
-                </p>
+                <p>Presupuestos claros y tiempos de entrega optimizados sin demoras.</p>
               </div>
             </li>
           </ul>
@@ -203,17 +261,11 @@
           <span class="numero-paso-razon">Paso 01</span>
           <h2 class="title-razon1">Toma de evidencia detallada</h2>
           <p class="description-razon1">
-            En WiiU-Games documentamos cada etapa del proceso técnico con
-            registro fotográfico y audiovisual. Te mostramos con total
-            transparencia el estado inicial, las pruebas de diagnóstico y el
-            procedimiento correctivo aplicado a tu equipo.
+            En WiiU-Games documentamos cada etapa del proceso técnico con registro fotográfico y audiovisual. Te mostramos con total transparencia el estado inicial, las pruebas de diagnóstico y el procedimiento correctivo aplicado a tu equipo.
           </p>
         </div>
         <div class="razon1-img">
-          <img
-            src="../Assets/placa.jpg"
-            alt="Toma de evidencia técnica detallada"
-          />
+          <img src="../Assets/placa.jpg" alt="Toma de evidencia técnica detallada" />
         </div>
       </div>
     </section>
@@ -225,17 +277,11 @@
           <span class="numero-paso-razon">Paso 02</span>
           <h2 class="title-razon2">Garantía Certificada</h2>
           <p class="description-razon2">
-            Cada servicio cuenta con respaldo de garantía formal por escrito. Si
-            el inconveniente reincide dentro del período de cobertura,
-            respondemos oportunamente y sin costos adicionales sobre el trabajo
-            realizado.
+            Cada servicio cuenta con respaldo de garantía formal por escrito. Si el inconveniente reincide dentro del período de cobertura, respondemos oportunamente y sin costos adicionales sobre el trabajo realizado.
           </p>
         </div>
         <div class="razon2-img">
-          <img
-            src="../Assets/local.jpg"
-            alt="Garantía de servicio técnico WiiU-Games"
-          />
+          <img src="../Assets/local.jpg" alt="Garantía de servicio técnico WiiU-Games" />
         </div>
       </div>
     </section>
@@ -247,17 +293,11 @@
           <span class="numero-paso-razon">Paso 03</span>
           <h2 class="title-razon3">Prueba en vivo frente al cliente</h2>
           <p class="description-razon3">
-            Antes de retirar tu consola o computador, realizamos una prueba
-            completa de funcionamiento frente a ti en nuestras pantallas de
-            taller. Así tienes la certeza absoluta de que el daño fue
-            solucionado al 100%.
+            Antes de retirar tu consola o computador, realizamos una prueba completa de funcionamiento frente a ti en nuestras pantallas de taller. Así tienes la certeza absoluta de que el daño fue solucionado al 100%.
           </p>
         </div>
         <div class="razon3-img">
-          <img
-            src="../Assets/One.jpg"
-            alt="Prueba de funcionamiento en vivo frente al cliente"
-          />
+          <img src="../Assets/One.jpg" alt="Prueba de funcionamiento en vivo frente al cliente" />
         </div>
       </div>
     </section>
@@ -345,20 +385,18 @@
             ><i class="fi fi-brands-instagram"></i
           ></a>
         </div>
-        <div class="pagos-copyright-footer">
-          <div class="metodos-pago">
-            <span class="tarjeta-icono">PayPal</span>
-            <span class="tarjeta-icono">Visa</span>
-            <span class="tarjeta-icono">MasterCard</span>
-          </div>
-          <div class="copyright">
-            <p>Copyright © 2026 WiiU-Games.</p>
-          </div>
+        <div class="metodos-pago">
+          <span class="tarjeta-icono">PayPal</span>
+          <span class="tarjeta-icono">Visa</span>
+          <span class="tarjeta-icono">MasterCard</span>
+        </div>
+        <div class="copyright">
+          <p>Copyright © 2026 WiiU-Games.</p>
         </div>
       </div>
     </footer>
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
-    <script src="../Scripts/contactanos.js" defer></script>
+    <script src="../Scripts/contactanos.js"></script>
   </body>
 </html>

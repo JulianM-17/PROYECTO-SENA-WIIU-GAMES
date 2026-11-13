@@ -2034,82 +2034,25 @@ app.delete("/api/admin/productos/:id", requireAdmin, async (req, res) => {
 // Registro de usuarios (público)
 app.post("/api/usuarios", async (req, res) => {
   try {
-    const nombre = String(req.body?.nombre || "").trim();
-    const apellido = String(req.body?.apellido || "").trim();
-    const email = String(req.body?.email || "").trim().toLowerCase();
-    const password =
-      typeof req.body?.password === "string" ? req.body.password : "";
-    const telefono = String(req.body?.telefono || "").trim();
-    const telefonoSecundario = String(
-      req.body?.telefono_secundario || "",
-    ).trim();
-    const direccion = String(req.body?.direccion || "").trim();
-    const departamento = String(req.body?.departamento || "").trim();
-    const ciudad = String(req.body?.ciudad || "").trim();
-    const nacimiento = String(req.body?.nacimiento || "").trim();
-    const patronNombre = /^[\p{L}]+(?:[ '\u2019-][\p{L}]+)*$/u;
-    const patronUbicacion = /^[\p{L}][\p{L}\s.'\u2019-]*$/u;
-    const patronTelefono = /^[+\d()\s-]{7,20}$/;
-
-    if (
-      nombre.length < 2 ||
-      nombre.length > 30 ||
-      !patronNombre.test(nombre) ||
-      apellido.length < 2 ||
-      apellido.length > 30 ||
-      !patronNombre.test(apellido)
-    ) {
-      return res.status(400).json({
-        ok: false,
-        message: "Nombre y apellido deben contener solo letras y separadores válidos (máximo 30 caracteres).",
-      });
+    const {
+      nombre,
+      apellido,
+      email,
+      password,
+      telefono,
+      telefono_secundario,
+      direccion,
+      departamento,
+      ciudad,
+      nacimiento,
+    } = req.body;
+    if (!nombre || !apellido || !email || !password) {
+      return res.status(400).json({ ok: false, message: "Datos obligatorios faltantes." });
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) {
+    // Validar email
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({ ok: false, message: "Formato de correo inválido." });
     }
-    if (password.length < 8 || Buffer.byteLength(password, "utf8") > 72) {
-      return res.status(400).json({
-        ok: false,
-        message: "La contraseña debe tener al menos 8 caracteres y no superar 72 bytes.",
-      });
-    }
-    if (
-      !patronTelefono.test(telefono) ||
-      telefono.replace(/\D/g, "").length < 7 ||
-      (telefonoSecundario &&
-        (!patronTelefono.test(telefonoSecundario) ||
-          telefonoSecundario.replace(/\D/g, "").length < 7))
-    ) {
-      return res.status(400).json({ ok: false, message: "Ingresa teléfonos válidos." });
-    }
-    if (
-      direccion.length < 5 ||
-      direccion.length > 40 ||
-      /[\u0000-\u001f\u007f]/.test(direccion)
-    ) {
-      return res.status(400).json({ ok: false, message: "Ingresa una dirección de 5 a 40 caracteres." });
-    }
-    if (
-      !patronUbicacion.test(departamento) ||
-      departamento.length > 30 ||
-      !patronUbicacion.test(ciudad) ||
-      ciudad.length > 30
-    ) {
-      return res.status(400).json({ ok: false, message: "Selecciona un departamento y una ciudad válidos." });
-    }
-    const fechaNacimiento = new Date(`${nacimiento}T00:00:00Z`);
-    const fechaMinima = "1940-01-01";
-    const fechaMaxima = `${new Date().getFullYear() - 10}-12-31`;
-    const fechaValida =
-      /^\d{4}-\d{2}-\d{2}$/.test(nacimiento) &&
-      !Number.isNaN(fechaNacimiento.getTime()) &&
-      fechaNacimiento.toISOString().slice(0, 10) === nacimiento &&
-      nacimiento >= fechaMinima &&
-      nacimiento <= fechaMaxima;
-    if (!fechaValida) {
-      return res.status(400).json({ ok: false, message: "Selecciona una fecha de nacimiento válida." });
-    }
-
     // Generar documento (ID) único
     const numDoc = `CLI${Date.now().toString().slice(-8)}`;
     const passwordHash = await bcrypt.hash(password, 12);
@@ -2117,16 +2060,16 @@ app.post("/api/usuarios", async (req, res) => {
       `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario, departamento, ciudad, direccion, fecha_nacimiento, correo, contrasena_hash, estado)
        VALUES (1, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
-        nombre,
-        apellido,
+        nombre.trim().substring(0, 30),
+        apellido.trim().substring(0, 30),
         numDoc,
-        telefono,
-        telefonoSecundario || null,
-        departamento,
-        ciudad,
-        direccion,
-        nacimiento,
-        email,
+        telefono?.trim().substring(0, 20) || null,
+        telefono_secundario?.trim().substring(0, 20) || null,
+        departamento?.trim() || null,
+        ciudad?.trim() || null,
+        direccion?.trim().substring(0, 255) || null,
+        nacimiento || null,
+        email.trim().toLowerCase().substring(0, 120),
         passwordHash,
       ],
     );
