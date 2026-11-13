@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const telefonoInput = document.getElementById("telefono");
   const fechaInput = document.getElementById("fecha");
   const servicioInput = document.getElementById("servicio");
+  const CITAS_STORAGE_KEY = "wiiu_citas";
 
   // Configurar fecha mínima permitida (Hoy)
   if (fechaInput) {
@@ -64,6 +65,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (errorSpan) {
       errorSpan.textContent = "";
     }
+  }
+
+  function guardarCita(datos) {
+    const citasGuardadas = JSON.parse(
+      localStorage.getItem(CITAS_STORAGE_KEY) || "[]",
+    );
+    if (!Array.isArray(citasGuardadas)) {
+      throw new Error("El registro de citas guardado no es válido.");
+    }
+
+    const usuarioActivo = JSON.parse(
+      sessionStorage.getItem("wiiu_usuario_activo") || "null",
+    );
+    const correo = String(usuarioActivo?.correo || "")
+      .trim()
+      .toLowerCase();
+
+    citasGuardadas.push({
+      ...datos,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      correo,
+      estado: "Solicitud recibida",
+    });
+    localStorage.setItem(CITAS_STORAGE_KEY, JSON.stringify(citasGuardadas));
   }
 
   // ============================================================
@@ -317,14 +342,25 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    // Si todo es válido: Mostrar confirmación exitosa
-    mostrarModalExito({
+    const datosCita = {
       nombre,
       equipo,
       telefono: tel,
       fecha: fechaInput.value,
-      servicio: servicioInput.value
-    });
+      servicio: servicioInput.value,
+    };
+
+    try {
+      guardarCita(datosCita);
+    } catch (error) {
+      console.error("No se pudo guardar la cita:", error);
+      window.alert(
+        "No se pudo guardar tu cita. Inténtalo de nuevo antes de cerrar esta página.",
+      );
+      return;
+    }
+
+    mostrarModalExito(datosCita);
 
     form.reset();
     document.querySelectorAll(".campo-valido").forEach((c) => c.classList.remove("campo-valido"));
@@ -344,7 +380,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="modal-tarjeta-exito">
         <div class="icono-check-exito">✓</div>
         <h2>¡Cita Agendada con Éxito!</h2>
-        <p>Tu solicitud ha sido registrada correctamente en nuestro sistema de taller.</p>
+        <p>Tu solicitud se guardó correctamente en este navegador. Si tenías la sesión iniciada, podrás consultarla en "Mis Citas".</p>
         <div class="detalles-resumen-cita">
           <div><strong>Cliente:</strong> ${escapeHTML(datos.nombre)}</div>
           <div><strong>Equipo:</strong> ${escapeHTML(datos.equipo)}</div>

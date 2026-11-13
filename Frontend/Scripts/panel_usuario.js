@@ -355,6 +355,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     "vista-perfil": "Mi Perfil",
     "vista-direcciones": "Direcciones de Envío",
     "vista-pedidos": "Mis Pedidos",
+    "vista-citas": "Mis Citas",
     "vista-pagos": "Métodos de Pago",
     "vista-favoritos": "Mi Lista de Favoritos",
     "vista-seguimiento": "Sigue tu Pedido",
@@ -488,6 +489,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderCards();
     renderFavorites();
     renderOrders();
+    renderAppointments();
   }
 
   // ===================================================
@@ -1295,6 +1297,98 @@ document.addEventListener("DOMContentLoaded", async () => {
           </article>`;
       })
       .join("");
+  }
+
+  const CITAS_STORAGE_KEY = "wiiu_citas";
+  const listaCitas = document.getElementById("lista-citas");
+
+  function renderAppointments() {
+    if (!listaCitas) return;
+
+    try {
+      const citasGuardadas = JSON.parse(
+        localStorage.getItem(CITAS_STORAGE_KEY) || "[]",
+      );
+      if (!Array.isArray(citasGuardadas)) {
+        throw new Error("El registro de citas guardado no es válido.");
+      }
+
+      const correoUsuario = String(state.profile.email || "")
+        .trim()
+        .toLowerCase();
+      const citasUsuario = citasGuardadas
+        .filter(
+          (cita) =>
+            cita &&
+            typeof cita === "object" &&
+            correoUsuario &&
+            String(cita.correo || "").trim().toLowerCase() === correoUsuario,
+        )
+        .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")));
+
+      if (citasUsuario.length === 0) {
+        listaCitas.innerHTML =
+          '<p class="pedidos-mensaje">Aún no tienes citas agendadas.</p>';
+        return;
+      }
+
+      const servicios = {
+        MANTENIMIENTO: "Mantenimiento preventivo / Limpieza interna",
+        REPARACION: "Reparación técnica de componentes",
+      };
+      const fragmento = document.createDocumentFragment();
+
+      citasUsuario.forEach((cita) => {
+        const tarjeta = document.createElement("article");
+        tarjeta.className = "cita-card";
+
+        const encabezado = document.createElement("div");
+        encabezado.className = "cita-card-encabezado";
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = Object.hasOwn(servicios, cita.servicio)
+          ? servicios[cita.servicio]
+          : "Servicio técnico";
+
+        const estado = document.createElement("span");
+        estado.className = "cita-estado";
+        estado.textContent = cita.estado || "Solicitud recibida";
+        encabezado.append(titulo, estado);
+
+        const detalles = document.createElement("div");
+        detalles.className = "cita-detalles";
+        const fecha = new Date(`${cita.fecha}T00:00:00`);
+        const fechaTexto = Number.isNaN(fecha.getTime())
+          ? "Fecha no disponible"
+          : new Intl.DateTimeFormat("es-CO", { dateStyle: "long" }).format(
+              fecha,
+            );
+
+        [
+          ["Fecha", fechaTexto],
+          ["Equipo", cita.equipo || "No especificado"],
+          ["Teléfono", cita.telefono || "No especificado"],
+        ].forEach(([etiqueta, valor]) => {
+          const detalle = document.createElement("div");
+          detalle.className = "cita-detalle";
+          const nombreDetalle = document.createElement("span");
+          nombreDetalle.textContent = etiqueta;
+          const valorDetalle = document.createElement("strong");
+          valorDetalle.textContent = valor;
+          detalle.append(nombreDetalle, valorDetalle);
+          detalles.appendChild(detalle);
+        });
+
+        tarjeta.append(encabezado, detalles);
+        fragmento.appendChild(tarjeta);
+      });
+
+      listaCitas.replaceChildren(fragmento);
+    } catch (error) {
+      console.error("No se pudieron cargar las citas:", error);
+      listaCitas.innerHTML =
+        '<p class="pedidos-mensaje" role="alert">No se pudieron cargar tus citas. Intenta actualizar la página.</p>';
+    }
   }
 
   const filtroBtns = document.querySelectorAll(".filtros-pedidos button");

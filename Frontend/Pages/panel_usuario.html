@@ -164,6 +164,15 @@
             <a
               href="#"
               class="elemento-nav"
+              id="nav-citas"
+              data-vista="vista-citas"
+            >
+              <i class="fi fi-rr-calendar"></i>
+              Mis Citas
+            </a>
+            <a
+              href="#"
+              class="elemento-nav"
               id="nav-pagos"
               data-vista="vista-pagos"
             >
@@ -673,6 +682,34 @@
 
             <div id="lista-pedidos" class="lista-pedidos" aria-live="polite">
               <p class="pedidos-mensaje" role="status">Cargando tus pedidos...</p>
+            </div>
+          </div>
+
+          <!--Vista sobre las citas-->
+          <div class="vista-panel" id="vista-citas">
+            <div class="banner-bienvenida">
+              <div class="banner-encabezado">
+                <i class="fi fi-rr-calendar"></i>
+                <h1>Mis Citas</h1>
+              </div>
+              <p class="banner-subtitulo">
+                Consulta las solicitudes de servicio técnico que has realizado.
+              </p>
+            </div>
+
+            <div class="acciones-top">
+              <a class="btn-agregar" href="cita.html">
+                <i class="fi fi-rr-plus"></i> Agendar una cita
+              </a>
+            </div>
+            <p class="citas-aviso">
+              Aquí aparecen las citas agendadas desde este navegador con tu
+              sesión iniciada.
+            </p>
+            <div id="lista-citas" class="lista-citas" aria-live="polite">
+              <p class="pedidos-mensaje" role="status">
+                Cargando tus citas...
+              </p>
             </div>
           </div>
 

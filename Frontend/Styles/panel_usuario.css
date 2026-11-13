@@ -841,6 +841,10 @@ body {
   box-shadow: 0 4px 14px rgba(245, 200, 66, 0.3);
 }
 
+a.btn-agregar {
+  text-decoration: none;
+}
+
 .grid-direcciones {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -986,6 +990,71 @@ body {
   background: var(--surface);
   color: var(--text-muted);
   font-size: 13px;
+}
+
+.citas-aviso {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.lista-citas {
+  display: grid;
+  gap: 16px;
+}
+
+.cita-card {
+  display: grid;
+  gap: 18px;
+  padding: 22px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(8, 15, 32, 0.05);
+}
+
+.cita-card-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cita-card-encabezado h2 {
+  color: var(--dark-blue);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.cita-estado {
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: var(--yellow-light);
+  color: var(--dark-blue);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.cita-detalles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.cita-detalle {
+  display: grid;
+  gap: 4px;
+}
+
+.cita-detalle span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.cita-detalle strong {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .filtros-label {
