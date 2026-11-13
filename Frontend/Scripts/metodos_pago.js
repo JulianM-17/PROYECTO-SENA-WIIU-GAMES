@@ -195,7 +195,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  formMetodoPago.addEventListener("submit", (event) => {
+  const submitButton = formMetodoPago.querySelector('button[type="submit"]');
+  formMetodoPago.addEventListener("submit", async (event) => {
     event.preventDefault();
     const method = new FormData(formMetodoPago).get("metodo");
     const names = {
@@ -221,65 +222,91 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const now = new Date();
-    const confirmation = {
-      orderNumber: `WIIU-${now.getTime()}-${Math.random()
-        .toString(36)
-        .slice(2, 6)
-        .toUpperCase()}`,
-      createdAt: now.toISOString(),
-      method,
-      paymentDetails:
-        method === "tarjeta"
-          ? {
-              holder: document.getElementById("titular-tarjeta").value.trim(),
-              lastFour: document
-                .getElementById("numero-tarjeta")
-                .value.replace(/\D/g, "")
-                .slice(-4),
-              expiry: document.getElementById("vencimiento-tarjeta").value,
-            }
-          : {
-              holder: document
-                .getElementById("titular-transferencia")
-                .value.trim(),
-              bank: document
-                .getElementById("banco-transferencia")
-                .value.trim(),
-              reference: document
-                .getElementById("referencia-transferencia")
-                .value.trim(),
-              date: document.getElementById("fecha-transferencia").value,
-            },
-      items: cart.map((item) => ({
-        name: String(item.name),
-        quantity: Number(item.quantity),
-        unitPrice: Number(item.price),
-      })),
-      totals: {
-        subtotal,
-        shipping,
-        taxes,
-        serviceFee,
-        total: subtotal + shipping + taxes + serviceFee,
-      },
-    };
+    submitButton.disabled = true;
+    mensajeMetodo.textContent = "Registrando la compra...";
+    let purchaseRecorded = false;
+    let recordedReference = "";
 
     try {
+      const response = await fetch("http://localhost:3000/api/purchases", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${usuarioActivo.token}`,
+        },
+        body: JSON.stringify({
+          method,
+          items: cart.map((item) => ({
+            productId: item.productId,
+            quantity: Number(item.quantity),
+          })),
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 404) {
+        throw new Error(
+          "El backend está desactualizado. Reinícialo desde Backend con `node index.js`.",
+        );
+      }
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
+        window.location.replace("Login.html?returnTo=metodos_pago.html");
+        return;
+      }
+      if (!response.ok || !data.ok || !data.purchase) {
+        throw new Error(data.message || "No se pudo registrar la compra.");
+      }
+      purchaseRecorded = true;
+      recordedReference = data.purchase.orderNumber;
+
+      const confirmation = {
+        ...data.purchase,
+        paymentDetails:
+          method === "tarjeta"
+            ? {
+                holder: document.getElementById("titular-tarjeta").value.trim(),
+                lastFour: document
+                  .getElementById("numero-tarjeta")
+                  .value.replace(/\D/g, "")
+                  .slice(-4),
+                expiry: document.getElementById("vencimiento-tarjeta").value,
+              }
+            : {
+                holder: document
+                  .getElementById("titular-transferencia")
+                  .value.trim(),
+                bank: document
+                  .getElementById("banco-transferencia")
+                  .value.trim(),
+                reference: document
+                  .getElementById("referencia-transferencia")
+                  .value.trim(),
+                date: document.getElementById("fecha-transferencia").value,
+              },
+      };
+      paymentDetails.tarjeta.querySelector("#numero-tarjeta").value = "";
+      paymentDetails.tarjeta.querySelector("#cvv-tarjeta").value = "";
       sessionStorage.setItem(
         "wiiu_checkout_confirmation",
         JSON.stringify(confirmation),
       );
+      window.location.href = "confirmacion_pedido.html";
     } catch (error) {
-      console.error("No se pudo guardar la confirmación del pedido:", error);
-      mensajeMetodo.textContent =
-        "No se pudo preparar la confirmación. Intenta nuevamente.";
-      return;
+      console.error("Error procesando la compra:", error.message);
+      if (purchaseRecorded) {
+        mensajeMetodo.textContent =
+          `La compra quedó registrada. No se pudo mostrar el comprobante. ` +
+          `Conserva esta referencia y no vuelvas a enviar el pago: ${recordedReference}.`;
+      } else {
+        mensajeMetodo.textContent =
+          error instanceof TypeError
+            ? "No se pudo conectar con el servidor. Verifica que el backend esté activo."
+            : error.message || "No se pudo registrar la compra. Intenta nuevamente.";
+        submitButton.disabled = false;
+      }
     }
-
-    paymentDetails.tarjeta.querySelector("#numero-tarjeta").value = "";
-    paymentDetails.tarjeta.querySelector("#cvv-tarjeta").value = "";
-    window.location.href = "confirmacion_pedido.html";
   });
 });
 

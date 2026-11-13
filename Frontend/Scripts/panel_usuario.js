@@ -40,6 +40,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   let state = loadState();
+  let ordersLoading = true;
+  let ordersLoadError = "";
   if (window.WiiUGamesCart) {
     state.cartCount = window.WiiUGamesCart.updateCount();
   }
@@ -49,13 +51,19 @@ document.addEventListener("DOMContentLoaded", async () => {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
+        const hasLegacyPanelData =
+          Object.hasOwn(parsed, "profile") || Object.hasOwn(parsed, "orders");
+        delete parsed.orders;
         if (Object.hasOwn(parsed, "profile")) {
           delete parsed.profile;
+        }
+        if (hasLegacyPanelData) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
         }
         return {
           ...defaultState,
           ...parsed,
+          orders: [],
           profile: defaultState.profile,
         };
       }
@@ -67,7 +75,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   function saveState() {
     try {
-      const { profile, ...panelData } = state;
+      const panelData = { ...state };
+      delete panelData.profile;
+      delete panelData.orders;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(panelData));
     } catch (e) {
       console.warn("Error al guardar estado:", e);
@@ -100,6 +110,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       `${state.profile.nombre} ${state.profile.apellidos}`.trim();
     sessionUser.correo = state.profile.email;
     sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
+  }
+
+  async function loadOrdersFromDatabase() {
+    const response = await fetch("http://localhost:3000/api/my-orders", {
+      headers: { Authorization: `Bearer ${sessionUser.token}` },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sessionStorage.removeItem("wiiu_usuario_activo");
+      sessionStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionToken");
+      window.location.replace("Login.html?returnTo=panel_usuario.html");
+      throw new Error("Tu sesión venció. Inicia sesión nuevamente.");
+    }
+    if (!response.ok || !data.ok || !Array.isArray(data.orders)) {
+      throw new Error(data.message || "No se pudieron cargar tus pedidos.");
+    }
+
+    state.orders = data.orders;
   }
 
   // ===================================================
@@ -1163,136 +1192,174 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===================================================
   // 9. MIS PEDIDOS & FILTROS DE ESTADO
   // ===================================================
-  const vistaPedidos = document.getElementById("vista-pedidos");
-  let filtroPedidoActual = "Todos";
+  const listaPedidos = document.getElementById("lista-pedidos");
+  let filtroPedidoActual = "todos";
+  const formatCOP = (amount) =>
+    "$" + Math.round(Number(amount) || 0).toLocaleString("es-CO") + " COP";
+  const escapeHtml = (value) =>
+    String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
   function renderOrders() {
-    if (!vistaPedidos) return;
-    const orderCards = vistaPedidos.querySelectorAll(".pedido-card");
+    if (!listaPedidos) return;
+    if (ordersLoading) {
+      listaPedidos.innerHTML =
+        '<p class="pedidos-mensaje" role="status">Cargando tus pedidos...</p>';
+      return;
+    }
+    if (ordersLoadError) {
+      listaPedidos.innerHTML =
+        `<p class="pedidos-mensaje" role="alert">${escapeHtml(ordersLoadError)}</p>`;
+      return;
+    }
+    if (state.orders.length === 0) {
+      listaPedidos.innerHTML =
+        '<p class="pedidos-mensaje">Aún no tienes compras registradas.</p>';
+      return;
+    }
 
-    orderCards.forEach((card) => {
-      const reordenarBtn = card.querySelector(".btn-reordenar");
-      const rastrearBtn = card.querySelector(".btn-rastrear");
-      const cancelarBtn = card.querySelector(".btn-cancelar-pedido");
-      const detalleBtn = card.querySelector(".btn-ver-detalle");
+    const filteredOrders = state.orders.filter(
+      (order) =>
+        filtroPedidoActual === "todos" ||
+        order.status === filtroPedidoActual,
+    );
+    if (filteredOrders.length === 0) {
+      listaPedidos.innerHTML =
+        '<p class="pedidos-mensaje">No tienes pedidos con ese estado.</p>';
+      return;
+    }
 
-      if (reordenarBtn && !reordenarBtn.dataset.bound) {
-        reordenarBtn.dataset.bound = "true";
-        reordenarBtn.addEventListener("click", () => {
-          state.cartCount++;
-          saveState();
-          updateUI();
-          showToast(
-            "¡Pedido reordenado! Producto añadido al carrito.",
-            "success",
-          );
-        });
-      }
+    listaPedidos.innerHTML = filteredOrders
+      .map((order) => {
+        const status =
+          order.status === "PAGADA"
+            ? {
+                label: "Pago confirmado",
+                icon: "fi-rr-check",
+                className: "insignia-entregado",
+              }
+            : order.status === "ANULADA"
+              ? {
+                  label: "Anulado",
+                  icon: "fi-rr-cross-circle",
+                  className: "insignia-anulado",
+                }
+              : {
+                  label: order.status || "Pendiente",
+                  icon: "fi-rr-clock",
+                  className: "insignia-procesando",
+                };
+        const firstItem = order.items[0];
+        const productSummary = firstItem
+          ? `${escapeHtml(firstItem.name)}${order.items.length > 1 ? ` y ${order.items.length - 1} producto(s) más` : ""}`
+          : "Pedido sin productos";
+        const date = order.createdAt ? new Date(order.createdAt) : null;
+        const dateLabel = !date || Number.isNaN(date.getTime())
+          ? "Fecha no disponible"
+          : `Realizado el ${new Intl.DateTimeFormat("es-CO", {
+              dateStyle: "long",
+            }).format(date)}`;
+        const imageMarkup = firstItem?.imageUrl
+          ? `<div class="pedido-img"><img src="${escapeHtml(firstItem.imageUrl)}" alt="${escapeHtml(firstItem.name)}" onerror="this.src='../Assets/lenovolegion.webp'"></div>`
+          : '<div class="pedido-img-emoji"><i class="fi fi-rr-box"></i></div>';
 
-      if (rastrearBtn && !rastrearBtn.dataset.bound) {
-        rastrearBtn.dataset.bound = "true";
-        rastrearBtn.addEventListener("click", () => {
-          const numEl = card.querySelector(".pedido-numero b");
-          const num = numEl ? numEl.textContent : "WG-20260912";
-          activarVista("vista-seguimiento", "nav-seguimiento");
-          const segInput = document.querySelector(".seguimiento-input");
-          if (segInput) {
-            segInput.value = num;
-            buscarSeguimiento(num);
-          }
-        });
-      }
-
-      if (cancelarBtn && !cancelarBtn.dataset.bound) {
-        cancelarBtn.dataset.bound = "true";
-        cancelarBtn.addEventListener("click", () => {
-          if (confirm("¿Deseas cancelar este pedido?")) {
-            const badge = card.querySelector(".badge-procesando");
-            if (badge) {
-              badge.className = "insignia-entregado";
-              badge.style.background = "#fee2e2";
-              badge.style.color = "#e74c3c";
-              badge.style.borderColor = "#fca5a5";
-              badge.innerHTML =
-                '<i class="fi fi-rr-cross-circle"></i> Cancelado';
-            }
-            cancelarBtn.remove();
-            showToast("El pedido ha sido cancelado.", "info");
-          }
-        });
-      }
-
-      if (detalleBtn && !detalleBtn.dataset.bound) {
-        detalleBtn.dataset.bound = "true";
-        detalleBtn.addEventListener("click", () => {
-          const numEl = card.querySelector(".pedido-numero b");
-          const num = numEl ? numEl.textContent : "WG-20260901";
-          const prodEl = card.querySelector(".pedido-producto")?.textContent;
-          const precioEl = card.querySelector(".pedido-cantidad")?.textContent;
-
-          mostrarModalDetallePedido(num, prodEl, precioEl);
-        });
-      }
-    });
+        return `
+          <article class="pedido-card" data-order-id="${escapeHtml(order.id)}">
+            <div class="pedido-header">
+              <div>
+                <p class="pedido-numero">Pedido #<b>${escapeHtml(order.number)}</b></p>
+                <p class="pedido-fecha">${dateLabel}</p>
+              </div>
+              <span class="${status.className}">
+                <i class="fi ${status.icon}" aria-hidden="true"></i> ${status.label}
+              </span>
+            </div>
+            <div class="pedido-cuerpo">
+              ${imageMarkup}
+              <div class="pedido-info">
+                <p class="pedido-producto">${productSummary}</p>
+                <p class="pedido-cantidad">
+                  Cantidad: ${Number(order.itemCount)} &nbsp;|&nbsp; ${formatCOP(order.total)}
+                </p>
+              </div>
+              <div class="pedido-btns">
+                <button class="btn-ver-detalle" type="button" data-order-id="${escapeHtml(order.id)}">
+                  Ver detalle
+                </button>
+              </div>
+            </div>
+          </article>`;
+      })
+      .join("");
   }
 
-  // Filtros de Pedidos
   const filtroBtns = document.querySelectorAll(".filtros-pedidos button");
   filtroBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      filtroBtns.forEach((b) => {
-        b.className = "btn-filtro";
+      filtroPedidoActual = btn.dataset.pedidoFiltro || "todos";
+      filtroBtns.forEach((filterButton) => {
+        filterButton.className =
+          filterButton === btn ? "btn-filtro-activo" : "btn-filtro";
       });
-      btn.className = "btn-filtro-activo";
-
-      const filtro = btn.textContent.trim();
-      const orderCards = vistaPedidos.querySelectorAll(".pedido-card");
-
-      orderCards.forEach((card) => {
-        const badgeEntregado = card.querySelector(".insignia-entregado");
-        const badgeCamino = card.querySelector(".insignia-en-camino");
-        const badgeProceso = card.querySelector(".insignia-procesando");
-
-        if (filtro === "Todos") {
-          card.style.display = "block";
-        } else if (filtro === "En camino") {
-          card.style.display = badgeCamino ? "block" : "none";
-        } else if (filtro === "Entregados") {
-          card.style.display = badgeEntregado ? "block" : "none";
-        } else if (filtro === "Cancelados") {
-          card.style.display =
-            badgeProceso && badgeProceso.textContent.includes("Cancelado")
-              ? "block"
-              : "none";
-        }
-      });
+      renderOrders();
     });
   });
 
-  // Modal Detalle Pedido
-  function mostrarModalDetallePedido(num, producto, cantidadTotal) {
-    document.getElementById("det-pedido-num").textContent = `#${num}`;
-    const contenido = document.getElementById("det-pedido-contenido");
+  listaPedidos?.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const detailButton = event.target.closest(".btn-ver-detalle");
+    if (!detailButton) return;
+    const order = state.orders.find(
+      (item) => String(item.id) === detailButton.dataset.orderId,
+    );
+    if (order) mostrarModalDetallePedido(order);
+  });
 
+  function mostrarModalDetallePedido(order) {
+    document.getElementById("det-pedido-num").textContent = `#${order.number}`;
+    const contenido = document.getElementById("det-pedido-contenido");
+    const paymentMethods = {
+      TARJETA: "Tarjeta débito o crédito",
+      TRANSFERENCIA: "Transferencia bancaria",
+      EFECTIVO: "Efectivo",
+    };
+    const statusLabels = {
+      PAGADA: "Pago confirmado",
+      ANULADA: "Anulado",
+    };
     contenido.innerHTML = `
       <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">
-        <p style="font-size: 13px; color: var(--text-muted);">Comprador: <b>${state.profile.nombre} ${state.profile.apellidos}</b></p>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Dirección de entrega: <b>${state.addresses[0]?.detalle || "Cra. 11 #14-14, Sogamoso"}</b></p>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Método de Pago: <b>VISA (•••• 4821)</b></p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Estado: <b>${escapeHtml(statusLabels[order.status] || order.status)}</b></p>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Método de pago: <b>${escapeHtml(paymentMethods[order.paymentMethod] || order.paymentMethod || "No registrado")}</b></p>
       </div>
       <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
         <thead>
           <tr style="border-bottom: 1.5px solid var(--border); text-align: left; color: var(--text-muted);">
             <th style="padding: 8px 0;">Producto</th>
-            <th style="padding: 8px 0; text-align: right;">Total</th>
+            <th style="padding: 8px 0; text-align: right;">Cantidad</th>
+            <th style="padding: 8px 0; text-align: right;">Subtotal</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody>${order.items
+          .map(
+            (item) => `
+              <tr style="border-bottom: 1px solid var(--border);">
+                <td style="padding: 12px 8px 12px 0;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px 0; text-align: right;">${Number(item.quantity)}</td>
+                <td style="padding: 12px 0 12px 8px; text-align: right; font-weight: 700;">${formatCOP(item.subtotal)}</td>
+              </tr>`,
+          )
+          .join("")}</tbody>
+        <tfoot>
           <tr>
-            <td style="padding: 12px 0;">${producto || "MSI MEG Trident X — PC Gamer i7"}</td>
-            <td style="padding: 12px 0; text-align: right; font-weight: 700;">${cantidadTotal || "$4,349.000 COP"}</td>
+            <td colspan="2" style="padding: 12px 0; font-weight: 700;">Total</td>
+            <td style="padding: 12px 0; text-align: right; font-weight: 700;">${formatCOP(order.total)}</td>
           </tr>
-        </tbody>
+        </tfoot>
       </table>
     `;
 
@@ -1320,22 +1387,62 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    const orderFound = state.orders.find(
-      (o) => o.num.toUpperCase() === term || term.includes(o.num.toUpperCase()),
-    );
+    const orderFound = state.orders.find((order) => {
+      const orderNumber = String(order.number || "").toUpperCase();
+      return orderNumber === term || term.includes(orderNumber);
+    });
 
     const pedNumEl = document.querySelector(".seguimiento-pedido-num b");
     const estimadoEl = document.querySelector(".seguimiento-estimado b");
+    const estadoEl = document.getElementById("estado-seguimiento");
+    const detalleEl = document.getElementById("detalle-seguimiento");
 
     if (orderFound) {
-      if (pedNumEl) pedNumEl.textContent = `#${orderFound.num}`;
-      if (estimadoEl)
-        estimadoEl.textContent =
-          orderFound.estimado || "19 de septiembre, 2026";
-      showToast(`Mostrando estado del pedido #${orderFound.num}`, "success");
+      if (pedNumEl) pedNumEl.textContent = `#${orderFound.number}`;
+      const statusLabel =
+        orderFound.status === "PAGADA"
+          ? "Pago confirmado"
+          : orderFound.status === "ANULADA"
+            ? "Anulado"
+            : orderFound.status || "Pendiente";
+      if (estadoEl) {
+        estadoEl.textContent = statusLabel;
+        estadoEl.className =
+          orderFound.status === "PAGADA"
+            ? "insignia-entregado"
+            : orderFound.status === "ANULADA"
+              ? "insignia-anulado"
+              : "insignia-procesando";
+      }
+      if (estimadoEl) {
+        estimadoEl.textContent = orderFound.trackingNumber || "Sin asignar";
+      }
+      if (detalleEl) {
+        detalleEl.textContent =
+          "No hay eventos de envío registrados para este pedido todavía.";
+      }
+      if (!orderFound.trackingNumber) {
+        showToast(
+          `El pedido #${orderFound.number} aún no tiene una guía de envío registrada.`,
+          "info",
+        );
+        return;
+      }
+      showToast(
+        `Guía registrada para el pedido #${orderFound.number}: ${orderFound.trackingNumber}`,
+        "success",
+      );
     } else {
       if (pedNumEl) pedNumEl.textContent = `#${term}`;
-      showToast("Pedido cargado en la red de la transportadora.", "info");
+      if (estadoEl) {
+        estadoEl.textContent = "No encontrado";
+        estadoEl.className = "insignia-procesando";
+      }
+      if (estimadoEl) estimadoEl.textContent = "Sin asignar";
+      if (detalleEl) {
+        detalleEl.textContent = "No encontramos ese pedido en tu historial.";
+      }
+      showToast("No encontramos ese pedido en tu historial.", "error");
     }
   }
 
@@ -1353,7 +1460,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnTransportadora) {
     btnTransportadora.addEventListener("click", () => {
       showToast(
-        "Redirigiendo a la plataforma oficial de Servientrega...",
+        "El seguimiento externo no está disponible todavía.",
         "info",
       );
     });
@@ -1406,6 +1513,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadProfileFromDatabase();
   } catch (error) {
     showToast(error.message, "error");
+  }
+
+  try {
+    await loadOrdersFromDatabase();
+  } catch (error) {
+    ordersLoadError = error.message || "No se pudieron cargar tus pedidos.";
+    showToast(ordersLoadError, "error");
+  } finally {
+    ordersLoading = false;
   }
 
   // Inicializar interfaz completa

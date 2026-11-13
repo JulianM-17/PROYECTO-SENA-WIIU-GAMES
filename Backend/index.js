@@ -85,6 +85,87 @@ app.get("/api/profile", requireUserSession, async (req, res) => {
   }
 });
 
+app.get("/api/my-orders", requireUserSession, async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT
+         v.id_venta AS id,
+         DATE_FORMAT(v.fecha, '%Y-%m-%dT%H:%i:%s') AS createdAt,
+         v.metodo_pago AS paymentMethod,
+         v.nro_pago AS paymentReference,
+         v.numero_guia AS trackingNumber,
+         v.estado AS status,
+         v.notas AS notes,
+         dv.id_detalle_venta AS detailId,
+         dv.id_producto AS productId,
+         p.nombre AS productName,
+         p.imagen_prin AS imageUrl,
+         dv.cantidad AS quantity,
+         dv.precio_unitario AS unitPrice,
+         dv.subtotal AS lineSubtotal
+       FROM venta v
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       LEFT JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE v.id_usuario = ?
+       ORDER BY v.fecha DESC, v.id_venta DESC, dv.id_detalle_venta`,
+      [req.userId],
+    );
+
+    const ordersById = new Map();
+    for (const row of rows) {
+      let order = ordersById.get(row.id);
+      if (!order) {
+        const totalMatch = String(row.notes || "").match(
+          /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
+        );
+        const recordedTotal = totalMatch ? Number(totalMatch[1]) : null;
+        order = {
+          id: row.id,
+          number: row.paymentReference || `WG-${row.id}`,
+          createdAt: row.createdAt,
+          paymentMethod: row.paymentMethod,
+          trackingNumber: row.trackingNumber,
+          status: row.status,
+          itemCount: 0,
+          subtotal: 0,
+          total: Number.isFinite(recordedTotal) ? recordedTotal : null,
+          items: [],
+        };
+        ordersById.set(row.id, order);
+      }
+
+      if (row.detailId !== null) {
+        const quantity = Number(row.quantity);
+        const unitPrice = Number(row.unitPrice);
+        const lineSubtotal = Number(row.lineSubtotal);
+        order.itemCount += quantity;
+        order.subtotal += lineSubtotal;
+        order.items.push({
+          productId: row.productId,
+          name: row.productName || "Producto no disponible",
+          imageUrl: row.imageUrl,
+          quantity,
+          unitPrice,
+          subtotal: lineSubtotal,
+        });
+      }
+    }
+
+    const orders = [...ordersById.values()].map((order) => ({
+      ...order,
+      subtotal: Number(order.subtotal.toFixed(2)),
+      total: order.total ?? Number(order.subtotal.toFixed(2)),
+    }));
+    return res.json({ ok: true, orders });
+  } catch (error) {
+    console.error("Error consultando pedidos del cliente:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron cargar tus pedidos.",
+    });
+  }
+});
+
 app.put("/api/profile", requireUserSession, async (req, res) => {
   const profile = {
     nombre: String(req.body?.nombre || "").trim(),
@@ -556,6 +637,244 @@ app.post("/api/login", async (req, res) => {
     return res
       .status(500)
       .json({ ok: false, message: "Ocurrió un error al iniciar sesión." });
+  }
+});
+
+app.post("/api/purchases", requireUserSession, async (req, res) => {
+  const paymentMethods = {
+    tarjeta: "TARJETA",
+    transferencia: "TRANSFERENCIA",
+  };
+  const paymentMethod = Object.hasOwn(paymentMethods, req.body?.method)
+    ? paymentMethods[req.body.method]
+    : null;
+  const requestedItems = Array.isArray(req.body?.items) ? req.body.items : [];
+  const items = new Map();
+
+  if (requestedItems.length > 50) {
+    return res.status(400).json({
+      ok: false,
+      message: "El pedido no puede contener más de 50 productos.",
+    });
+  }
+
+  for (const item of requestedItems) {
+    const productId = Number(item?.productId);
+    const quantity = Number(item?.quantity);
+    if (
+      !Number.isSafeInteger(productId) ||
+      productId <= 0 ||
+      !Number.isSafeInteger(quantity) ||
+      quantity <= 0
+    ) {
+      return res.status(400).json({
+        ok: false,
+        message: "Hay un producto o una cantidad inválida en el pedido.",
+      });
+    }
+    items.set(productId, (items.get(productId) || 0) + quantity);
+  }
+
+  if (
+    !paymentMethod ||
+    !items.size ||
+    items.size > 50 ||
+    [...items.values()].some((quantity) => !Number.isSafeInteger(quantity))
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "El pedido requiere productos y un método de pago válido.",
+    });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const [customerRows] = await connection.query(
+      `SELECT u.telefono
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
+         AND r.nombre_rol = 'Cliente'
+       FOR UPDATE`,
+      [req.userId],
+    );
+    if (!customerRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(403).json({
+        ok: false,
+        message: "Solo una cuenta de cliente activa puede realizar compras.",
+      });
+    }
+
+    const [branchRows] = await connection.query(
+      `SELECT id_sucursal
+       FROM sucursal
+       WHERE estado = 'ACTIVO'
+       ORDER BY id_sucursal
+       LIMIT 1`,
+    );
+    if (!branchRows.length) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "No hay una sucursal activa para registrar la venta.",
+      });
+    }
+
+    const saleLines = [];
+    for (const [productId, quantity] of [...items].sort(
+      ([leftId], [rightId]) => leftId - rightId,
+    )) {
+      const [productRows] = await connection.query(
+        `SELECT id_producto, nombre, precio
+         FROM producto
+         WHERE id_producto = ? AND estado = 'ACTIVO'
+         FOR UPDATE`,
+        [productId],
+      );
+      if (!productRows.length) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(409).json({
+          ok: false,
+          message: "Uno de los productos ya no está disponible.",
+        });
+      }
+
+      const [inventoryRows] = await connection.query(
+        `SELECT i.id_sucursal AS branchId, i.stock
+         FROM inventario i
+         INNER JOIN sucursal s
+           ON s.id_sucursal = i.id_sucursal
+          AND s.estado = 'ACTIVO'
+         WHERE i.id_producto = ? AND i.estado = 'ACTIVO'
+         ORDER BY i.id_sucursal
+         FOR UPDATE`,
+        [productId],
+      );
+      const totalStock = inventoryRows.reduce(
+        (sum, inventory) => sum + Number(inventory.stock),
+        0,
+      );
+      if (totalStock < quantity) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(409).json({
+          ok: false,
+          message: `No hay existencias suficientes de ${productRows[0].nombre}.`,
+        });
+      }
+
+      const unitPrice = Number(productRows[0].precio);
+      saleLines.push({
+        productId,
+        name: productRows[0].nombre,
+        quantity,
+        unitPrice,
+        subtotal: Number((unitPrice * quantity).toFixed(2)),
+        inventoryRows,
+      });
+    }
+
+    const subtotal = Number(
+      saleLines.reduce((sum, line) => sum + line.subtotal, 0).toFixed(2),
+    );
+    const shipping = 25000;
+    const taxes = Number((subtotal * 0.19).toFixed(2));
+    const serviceFee = Number((subtotal * 0.1).toFixed(2));
+    const total = Number((subtotal + shipping + taxes + serviceFee).toFixed(2));
+    const paymentReference = `DEMO-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
+    const notes =
+      `Compra web - pago de demostración. Subtotal ${subtotal}; envío ${shipping}; ` +
+      `IVA ${taxes}; servicio ${serviceFee}; total ${total} COP.`;
+
+    const [saleResult] = await connection.query(
+      `INSERT INTO venta
+         (id_usuario, id_sucursal, metodo_pago, nro_pago, telefono,
+          tipo_venta, notas, estado)
+       VALUES (?, ?, ?, ?, ?, 'SUCURSAL', ?, 'PAGADA')`,
+      [
+        req.userId,
+        branchRows[0].id_sucursal,
+        paymentMethod,
+        paymentReference,
+        customerRows[0].telefono,
+        notes,
+      ],
+    );
+
+    for (const line of saleLines) {
+      await connection.query(
+        `INSERT INTO detalle_venta
+           (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+         VALUES (?, ?, ?, ?, ?, 'Compra web de demostración')`,
+        [
+          saleResult.insertId,
+          line.productId,
+          line.quantity,
+          line.unitPrice,
+          line.subtotal,
+        ],
+      );
+
+      let remainingQuantity = line.quantity;
+      for (const inventory of line.inventoryRows) {
+        if (remainingQuantity === 0) break;
+        const quantityToDeduct = Math.min(
+          Number(inventory.stock),
+          remainingQuantity,
+        );
+        if (quantityToDeduct <= 0) continue;
+
+        const [inventoryResult] = await connection.query(
+          `UPDATE inventario
+           SET stock = stock - ?
+           WHERE id_producto = ? AND id_sucursal = ?
+             AND estado = 'ACTIVO' AND stock >= ?`,
+          [
+            quantityToDeduct,
+            line.productId,
+            inventory.branchId,
+            quantityToDeduct,
+          ],
+        );
+        if (!inventoryResult.affectedRows) {
+          throw new Error("No se pudo descontar el stock del producto.");
+        }
+        remainingQuantity -= quantityToDeduct;
+      }
+      if (remainingQuantity > 0) {
+        throw new Error("El stock cambió durante el registro de la compra.");
+      }
+    }
+
+    await connection.commit();
+    return res.status(201).json({
+      ok: true,
+      purchase: {
+        id: saleResult.insertId,
+        orderNumber: paymentReference,
+        createdAt: new Date().toISOString(),
+        method: req.body.method,
+        status: "PAGADA",
+        items: saleLines.map(({ name, quantity, unitPrice }) => ({
+          name,
+          quantity,
+          unitPrice,
+        })),
+        totals: { subtotal, shipping, taxes, serviceFee, total },
+      },
+    });
+  } catch (error) {
+    if (connection) await revertirTransaccionEmpleado(connection);
+    console.error("Error registrando compra web:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo registrar la compra. Intenta nuevamente.",
+    });
+  } finally {
+    connection?.release();
   }
 });
 

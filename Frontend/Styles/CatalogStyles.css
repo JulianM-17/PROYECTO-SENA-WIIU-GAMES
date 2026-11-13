@@ -509,7 +509,7 @@ body {
 .estado-stock.disponible {
   color: #22c55e;
 }
-.estado-stock.consultar {
+.estado-stock.agotado {
   color: #ef4444;
 }
 

@@ -658,114 +658,21 @@
                 <h1>Mis Pedidos</h1>
               </div>
               <p class="banner-subtitulo">
-                Historial completo de tus compras, devoluciones y fechas de
-                entrega.
+                Consulta las compras registradas en tu cuenta y el estado de
+                cada pago.
               </p>
             </div>
 
             <!-- Filtros -->
             <div class="filtros-pedidos">
               <span class="filtros-label">Filtrar:</span>
-              <button class="btn-filtro-activo">Todos</button>
-              <button class="btn-filtro">En camino</button>
-              <button class="btn-filtro">Entregados</button>
-              <button class="btn-filtro">Cancelados</button>
+              <button class="btn-filtro-activo" data-pedido-filtro="todos">Todos</button>
+              <button class="btn-filtro" data-pedido-filtro="PAGADA">Pagados</button>
+              <button class="btn-filtro" data-pedido-filtro="ANULADA">Anulados</button>
             </div>
 
-            <!-- Primer pedido -->
-            <div class="pedido-card">
-              <div class="pedido-header">
-                <div>
-                  <p class="pedido-numero">Pedido #<b>WG-20260901</b></p>
-                  <p class="pedido-fecha">Realizado el 1 de septiembre, 2026</p>
-                </div>
-                <span class="insignia-entregado"
-                  ><i class="fi fi-rr-check"></i> Entregado</span
-                >
-              </div>
-              <div class="pedido-cuerpo">
-                <div class="pedido-img">
-                  <img
-                    src="https://images.unsplash.com/photo-1587202372634-32705e3bf49c?w=120&q=80"
-                    alt="PC Gamer"
-                  />
-                </div>
-                <div class="pedido-info">
-                  <p class="pedido-producto">MSI MEG Trident X — PC Gamer i7</p>
-                  <p class="pedido-cantidad">
-                    Cantidad: 1 &nbsp;|&nbsp; $4,349.000 COP
-                  </p>
-                </div>
-                <div class="pedido-btns">
-                  <button class="btn-ver-detalle">Ver detalle</button>
-                  <button class="btn-reordenar">Reordenar</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Segundo pedido -->
-            <div class="pedido-card">
-              <div class="pedido-header">
-                <div>
-                  <p class="pedido-numero">Pedido #<b>WG-20260912</b></p>
-                  <p class="pedido-fecha">
-                    Realizado el 12 de septiembre, 2026
-                  </p>
-                </div>
-                <span class="insignia-en-camino"
-                  ><i class="fi fi-rr-truck-side"></i> En camino</span
-                >
-              </div>
-              <div class="pedido-cuerpo">
-                <div class="pedido-img">
-                  <img
-                    src="https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=120&q=80"
-                    alt="Laptop"
-                  />
-                </div>
-                <div class="pedido-info">
-                  <p class="pedido-producto">
-                    ASUS ROG Zephyrus G14 — Gaming Laptop
-                  </p>
-                  <p class="pedido-cantidad">
-                    Cantidad: 1 &nbsp;|&nbsp; $6,850.000 COP
-                  </p>
-                </div>
-                <div class="pedido-btns">
-                  <button class="btn-ver-detalle">Ver detalle</button>
-                  <button class="btn-rastrear">Rastrear</button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Tercer pedido -->
-            <div class="pedido-card">
-              <div class="pedido-header">
-                <div>
-                  <p class="pedido-numero">Pedido #<b>WG-20260815</b></p>
-                  <p class="pedido-fecha">Realizado el 15 de agosto, 2026</p>
-                </div>
-                <span class="insignia-procesando"
-                  ><i class="fi fi-rr-clock"></i> Procesando</span
-                >
-              </div>
-              <div class="pedido-cuerpo">
-                <div class="pedido-img-emoji">
-                  <i class="fi fi-rr-mouse"></i>
-                </div>
-                <div class="pedido-info">
-                  <p class="pedido-producto">
-                    Logitech G Pro X Superlight 2 — Mouse Gaming
-                  </p>
-                  <p class="pedido-cantidad">
-                    Cantidad: 2 &nbsp;|&nbsp; $580.000 COP
-                  </p>
-                </div>
-                <div class="pedido-btns">
-                  <button class="btn-ver-detalle">Ver detalle</button>
-                  <button class="btn-cancelar-pedido">Cancelar</button>
-                </div>
-              </div>
+            <div id="lista-pedidos" class="lista-pedidos" aria-live="polite">
+              <p class="pedidos-mensaje" role="status">Cargando tus pedidos...</p>
             </div>
           </div>
 
@@ -986,7 +893,6 @@
               <i class="fi fi-rr-search"></i>
               <input
                 type="text"
-                value="WG-20260912"
                 class="seguimiento-input"
                 placeholder="Ingresa el número de pedido..."
               />
@@ -998,102 +904,37 @@
               <div class="seguimiento-top">
                 <div>
                   <p class="seguimiento-pedido-num">
-                    Pedido <b>#WG-20260912</b>
+                    Pedido <b>Sin seleccionar</b>
                   </p>
                   <p class="seguimiento-estimado">
-                    Estimado de entrega: <b>19 de septiembre, 2026</b>
+                    Guía de envío: <b>Sin asignar</b>
                   </p>
                 </div>
-                <span class="insignia-en-camino"
-                  ><i class="fi fi-rr-truck-side"></i> En camino</span
-                >
+                <span class="insignia-procesando" id="estado-seguimiento">
+                  Sin información
+                </span>
               </div>
 
-              <!-- orden del seguimiento -->
               <div class="timeline">
-                <!-- Paso 1: Confirmado -->
-                <div class="timeline-paso">
-                  <div class="timeline-conector">
-                    <div class="timeline-circulo completado">
-                      <i class="fi fi-rr-check"></i>
-                    </div>
-                    <div class="timeline-linea completada"></div>
-                  </div>
-                  <div class="timeline-texto">
-                    <p class="timeline-titulo">Pedido Confirmado</p>
-                    <p class="timeline-hora">12 Sep 2026 — 10:32 a.m.</p>
-                    <p class="timeline-desc">
-                      Tu pedido fue recibido y está siendo preparado.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Paso 2: Empacado -->
-                <div class="timeline-paso">
-                  <div class="timeline-conector">
-                    <div class="timeline-circulo completado">
-                      <i class="fi fi-rr-check"></i>
-                    </div>
-                    <div class="timeline-linea completada"></div>
-                  </div>
-                  <div class="timeline-texto">
-                    <p class="timeline-titulo">Empacado y Listo</p>
-                    <p class="timeline-hora">13 Sep 2026 — 2:15 p.m.</p>
-                    <p class="timeline-desc">
-                      Tu paquete fue empacado y entregado a la transportadora.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Paso 3: En camino (activo) -->
-                <div class="timeline-paso">
-                  <div class="timeline-conector">
-                    <div class="timeline-circulo activo">
-                      <i class="fi fi-rr-truck-side"></i>
-                    </div>
-                    <div class="timeline-linea pendiente"></div>
-                  </div>
-                  <div class="timeline-texto">
-                    <p class="timeline-titulo activo">
-                      En camino — <span class="timeline-titulo-now">Ahora</span>
-                    </p>
-                    <p class="timeline-hora">15 Sep 2026 — 9:00 a.m.</p>
-                    <p class="timeline-desc">
-                      El paquete está en tránsito hacia Sogamoso, Boyacá.
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Paso 4: Entregado (pendiente) -->
-                <div class="timeline-paso">
-                  <div class="timeline-conector">
-                    <div class="timeline-circulo pendiente">
-                      <i class="fi fi-rr-home"></i>
-                    </div>
-                  </div>
-                  <div class="timeline-texto">
-                    <p class="timeline-titulo pendiente">Entregado</p>
-                    <p class="timeline-hora">Estimado: 19 Sep 2026</p>
-                    <p class="timeline-desc">
-                      Entrega en tu dirección: Cra. 11 #14-14, Apto 302.
-                    </p>
-                  </div>
-                </div>
+                <p class="seguimiento-sin-eventos" id="detalle-seguimiento">
+                  Los eventos de envío aparecerán cuando estén registrados.
+                </p>
               </div>
             </div>
 
-            <!-- Información de la transportadora -->
             <div class="seguimiento-transportadora">
               <div class="transportadora-izq">
                 <div class="transportadora-icono">
                   <i class="fi fi-rr-box-alt"></i>
                 </div>
                 <div>
-                  <p class="transportadora-nombre">Servientrega</p>
-                  <p class="transportadora-guia">Guía: SE-7812349-COL</p>
+                  <p class="transportadora-nombre">Transportadora</p>
+                  <p class="transportadora-guia">No asignada</p>
                 </div>
               </div>
-              <button class="btn-transportadora">Ver en transportadora</button>
+              <button class="btn-transportadora" type="button" disabled>
+                Seguimiento externo no disponible
+              </button>
             </div>
           </div>
 
@@ -1467,7 +1308,7 @@
         <div class="encabezado-modal">
           <h3>
             <i class="fi fi-rr-file-invoice"></i> Detalle del Pedido
-            <span id="det-pedido-num">#WG-20260901</span>
+            <span id="det-pedido-num">#</span>
           </h3>
           <button class="btn-cerrar-modal" data-close-modal>&times;</button>
         </div>

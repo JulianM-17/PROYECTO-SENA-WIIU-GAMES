@@ -974,6 +974,20 @@ body {
   box-shadow: 0 2px 8px rgba(8, 15, 32, 0.04);
 }
 
+.lista-pedidos {
+  display: grid;
+  gap: 18px;
+}
+
+.pedidos-mensaje {
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
 .filtros-label {
   font-size: 12px;
   font-weight: 600;
@@ -1074,9 +1088,23 @@ body {
   gap: 6px;
 }
 
+.insignia-anulado {
+  font-size: 11px;
+  font-weight: 700;
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid #fecaca;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .insignia-entregado i,
 .insignia-en-camino i,
-.insignia-procesando i {
+.insignia-procesando i,
+.insignia-anulado i {
   font-size: 12px;
 }
 
@@ -1579,6 +1607,16 @@ body {
   flex-direction: column;
   gap: 0;
 }
+
+.seguimiento-sin-eventos {
+  margin: 0;
+  padding: 18px 22px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
 .timeline-paso {
   display: flex;
   gap: 16px;
@@ -1719,6 +1757,11 @@ body {
   cursor: pointer;
   background: transparent;
   color: var(--text-muted);
+}
+
+.btn-transportadora:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 /* =====================================================

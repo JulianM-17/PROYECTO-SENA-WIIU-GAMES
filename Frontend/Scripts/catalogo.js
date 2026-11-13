@@ -318,11 +318,16 @@ function crearTarjetaProducto(prod) {
 
   return `
     <article class="tarjeta-producto">
+<<<<<<< Updated upstream
       <div class="resumen-stock">
         <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
           ${tieneStock ? 'Con Stock' : 'Agotado'}
         </div>
         <span class="cantidad-stock ${tieneStock ? '' : 'sin-stock'}">${stockDisponible} disponibles</span>
+=======
+      <div class="estado-stock ${tieneStock ? 'disponible' : 'agotado'}">
+        ${tieneStock ? `${stockDisponible} unidades disponibles` : 'Agotado'}
+>>>>>>> Stashed changes
       </div>
       <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
         <img

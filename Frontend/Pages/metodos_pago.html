@@ -143,8 +143,9 @@
                 <small class="error-campo" id="error-cvv-tarjeta" aria-live="polite"></small>
               </div>
               <p class="aviso-seguridad campo-completo">
-                Esta demostración no envía ni guarda datos de tarjetas. Para
-                aceptar pagos reales se necesita una pasarela segura.
+                Modo demostración: al continuar, la compra se registra como
+                pagada en la base de datos, pero no se realiza un cobro real.
+                No se envían ni guardan los datos de la tarjeta.
               </p>
             </fieldset>
 
@@ -166,9 +167,8 @@
               hidden
             >
               <p class="aviso-transferencia campo-completo">
-                Los datos de la cuenta de destino se proporcionarán al confirmar
-                el pedido. Completa la información de la transferencia cuando
-                la hayas realizado.
+                Modo demostración: la transferencia se confirmará automáticamente
+                al registrar la compra. No se verifica ni realiza una transferencia real.
               </p>
               <div class="campo-pago">
                 <label for="titular-transferencia">Nombre de quien transfiere</label>
