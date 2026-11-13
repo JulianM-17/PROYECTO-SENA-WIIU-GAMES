@@ -818,16 +818,17 @@ body {
 .barra-derechos {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  flex-wrap: wrap;
   gap: 15px;
 }
 
 .redes {
   display: flex;
   gap: 10px;
+  grid-column: 1;
+  grid-row: 1 / span 2;
 }
 
 .icono-social {
@@ -853,6 +854,9 @@ body {
 .pagos {
   display: flex;
   gap: 8px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
 }
 
 .badge-pago {
@@ -868,6 +872,9 @@ body {
 .copyright-texto {
   font-size: 11px;
   color: #8a9bb5;
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: center;
 }
 
 .fondo-modal {
@@ -1021,6 +1028,26 @@ body {
 }
 
 @media (max-width: 768px) {
+  .barra-derechos {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .barra-derechos .redes {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .barra-derechos .pagos {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .barra-derechos .copyright-texto {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
   .panel-contenedor {
     flex-direction: column;
   }

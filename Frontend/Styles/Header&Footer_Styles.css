@@ -37,9 +37,7 @@
   font-style: normal;
 }
 
-/* =====================================================
-   BARRA SUPERIOR (Top Bar)
-   ===================================================== */
+/*BARRA SUPERIOR*/
 .barra-superior {
   background: linear-gradient(135deg, #05090f 0%, #0a0e1a 100%);
   color: rgba(255, 255, 255, 0.8);
@@ -73,13 +71,19 @@
 .link-contacto {
   color: var(--yellow);
   text-decoration: none;
-  font-weight: 600;
-  margin-left: 8px;
   display: inline-block;
-  border-bottom: 1px solid rgba(245, 200, 66, 0.4);
+
   transition:
     color 0.2s ease,
     border-color 0.2s ease;
+}
+
+.correo-contactanos {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+    text-decoration: none;
 }
 
 .link-contacto:hover {
@@ -692,11 +696,29 @@ a.foto-perfil {
   border-top: 1px solid rgba(255, 255, 255, 0.07);
   padding-top: 24px;
   margin-top: 48px;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  flex-wrap: wrap;
   gap: 20px;
+}
+
+.barra-inferior-footer > .redes-footer {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  justify-self: start;
+}
+
+.barra-inferior-footer > .metodos-pago,
+.barra-inferior-footer > .pagos-copyright-footer {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: center;
+}
+
+.barra-inferior-footer > .copyright {
+  grid-column: 2;
+  grid-row: 2;
+  justify-self: center;
 }
 
 .redes-footer {
@@ -747,6 +769,13 @@ a.foto-perfil {
   gap: 8px;
 }
 
+.pagos-copyright-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 .tarjeta-icono {
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -772,6 +801,32 @@ a.foto-perfil {
   font-size: 12px;
   color: rgba(255, 255, 255, 0.22);
   letter-spacing: 0.02em;
+}
+
+@media (max-width: 768px) {
+  .barra-inferior-footer {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .barra-inferior-footer > .redes-footer {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .barra-inferior-footer > .metodos-pago,
+  .barra-inferior-footer > .pagos-copyright-footer {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+  }
+
+  .barra-inferior-footer > .copyright {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: center;
+  }
 }
 
 /* =====================================================

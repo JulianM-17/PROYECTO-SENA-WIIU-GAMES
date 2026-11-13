@@ -117,6 +117,7 @@
                   id="nombre"
                   class="entrada-texto"
                   placeholder="Tu nombre"
+                  maxlength="30"
                   required
                 />
                 <span class="mensaje-error" id="error-nombre"></span>
@@ -130,6 +131,7 @@
                   id="apellido"
                   class="entrada-texto"
                   placeholder="Tu apellido"
+                  maxlength="30"
                   required
                 />
                 <span class="mensaje-error" id="error-apellido"></span>
@@ -163,6 +165,7 @@
                 id="correo"
                 class="entrada-texto"
                 placeholder="ejemplo@correo.com"
+                maxlength="120"
                 required
               />
               <span class="mensaje-error" id="error-correo"></span>
@@ -178,6 +181,7 @@
                 id="confirmar-correo"
                 class="entrada-texto"
                 placeholder="Repite tu correo electrónico"
+                maxlength="120"
                 required
               />
               <span class="mensaje-error" id="error-confirmar-correo"></span>
@@ -250,6 +254,7 @@
                 id="direccion"
                 class="entrada-texto"
                 placeholder="Ej: Carrera 11 # 14 - 14 Local 126"
+                maxlength="40"
                 required
               />
               <small class="texto-ayuda">Apartamento, torre, suite o conjunto (opcional)</small>
@@ -287,7 +292,9 @@
                   id="codigo-postal"
                   class="entrada-texto"
                   placeholder="Ej: 152210"
+                  maxlength="6"
                 />
+                <span class="mensaje-error" id="error-codigo-postal"></span>
               </div>
               <div class="grupo-entrada ancho-mitad">
                 <label class="etiqueta" for="telefono-principal"
@@ -298,6 +305,7 @@
                   id="telefono-principal"
                   class="entrada-texto"
                   placeholder="Ej: 312 345 6789"
+                  maxlength="20"
                   required
                 />
                 <span class="mensaje-error" id="error-telefono"></span>
@@ -313,7 +321,9 @@
                 id="telefono-secundario"
                 class="entrada-texto"
                 placeholder="Ej: (608) 770 1234 o número de respaldo"
+                maxlength="20"
               />
+              <span class="mensaje-error" id="error-telefono-secundario"></span>
             </div>
 
             <div class="control-seleccion">
@@ -524,6 +534,7 @@
 
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../Scripts/contactanos.js" defer></script>
     <script src="../Scripts/registro.js" defer></script>
   </body>
 </html>
