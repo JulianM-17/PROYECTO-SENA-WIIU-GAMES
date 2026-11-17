@@ -251,8 +251,11 @@ function actualizarNotificaciones(pedidos, inventario) {
 var categoriasDisponibles = [];
 var marcasDisponibles = [];
 var clientesDisponibles = [];
+var tecnicosDisponibles = [];
 var productosDisponibles = [];
 var productoInventarioEdicion = null;
+var detallesOrdenServicio = new Map();
+var detalleOrdenAbiertaAdmin = null;
 
 // ==========================================================================
 // 4. VENTANAS MODALES PARA REGISTRAR DATOS
@@ -308,29 +311,60 @@ function abrirModal(tipo, productoId) {
     `;
   } else if (tipo === 'mantenimientos') {
     titulo.textContent = "Nuevo Servicio de Mantenimiento";
-    var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+    var optsClientes = clientesDisponibles.map(function(c) {
+      return '<option value="' + escaparHtmlAdmin(c.id) + '">' + escaparHtmlAdmin(c.name) + '</option>';
+    }).join('');
+    var optsTecnicos = tecnicosDisponibles.map(function(tech) {
+      return '<option value="' + escaparHtmlAdmin(tech.id) + '">' + escaparHtmlAdmin(tech.name) + '</option>';
+    }).join('');
 
     campos.innerHTML = `
       <div class="campo-grupo">
-        <label>Equipo / Consola a Mantenimiento:</label>
-        <input type="text" id="campo1" required placeholder="Ej. PlayStation 5 / Laptop ASUS">
+        <label for="campo1">Equipo / modelo:</label>
+        <input type="text" id="campo1" required maxlength="100" placeholder="Ej. PlayStation 5 / Laptop ASUS">
       </div>
       <div class="campo-grupo">
-        <label>Cliente Propietario:</label>
-        <select id="campo2" required>${optsClientes}</select>
-      </div>
-      <div class="campo-grupo">
-        <label>Técnico Responsable:</label>
-        <select id="campo3" required>
-          <option value="Sofia MartineZ">Sofia MartineZ</option>
-          <option value="Mateo Rios">Mateo Rios</option>
+        <label for="campo_tipo_equipo">Tipo de equipo:</label>
+        <select id="campo_tipo_equipo" required>
+          <option value="">Selecciona el tipo de equipo</option>
+          <option value="Portatil">Portátil</option>
+          <option value="Torre">Torre / PC</option>
+          <option value="Consola">Consola</option>
+          <option value="Control">Control</option>
+          <option value="All in one">All in one</option>
         </select>
       </div>
       <div class="campo-grupo">
-        <label>Costo del Servicio ($):</label>
-        <input type="number" id="campo4" required min="10000" step="1000" placeholder="Ej. 180000">
+        <label for="campo_marca_equipo">Marca:</label>
+        <input type="text" id="campo_marca_equipo" required maxlength="20" placeholder="Ej. Nintendo, HP, ASUS">
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_serie_equipo">Número de serie (opcional):</label>
+        <input type="text" id="campo_serie_equipo" maxlength="40" placeholder="Déjalo vacío si no está disponible">
+      </div>
+      <div class="campo-grupo">
+        <label for="campo2">Cliente propietario:</label>
+        <select id="campo2" required>
+          <option value="">Selecciona un cliente</option>${optsClientes}
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo3">Técnico responsable:</label>
+        <select id="campo3" required>
+          <option value="">Selecciona un técnico</option>${optsTecnicos}
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_detalle">Trabajo solicitado:</label>
+        <textarea id="campo_detalle" required maxlength="100" rows="3" placeholder="Describe qué mantenimiento necesita el equipo"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_diagnostico">Diagnóstico u observaciones:</label>
+        <textarea id="campo_diagnostico" maxlength="100" rows="3" placeholder="Opcional; si aún no se revisa, quedará pendiente de diagnóstico"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo4">Presupuesto estimado ($):</label>
+        <input type="number" id="campo4" required min="1" max="99999999" step="1" placeholder="Ej. 180000">
       </div>
     `;
   } else if (tipo === 'inventario') {
@@ -416,26 +450,60 @@ function abrirModal(tipo, productoId) {
     `;
   } else if (tipo === 'reparacion') {
     titulo.textContent = "Nueva Orden de Reparación";
-    var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+    var optsClientes = clientesDisponibles.map(function(c) {
+      return '<option value="' + escaparHtmlAdmin(c.id) + '">' + escaparHtmlAdmin(c.name) + '</option>';
+    }).join('');
+    var optsTecnicos = tecnicosDisponibles.map(function(tech) {
+      return '<option value="' + escaparHtmlAdmin(tech.id) + '">' + escaparHtmlAdmin(tech.name) + '</option>';
+    }).join('');
 
     campos.innerHTML = `
       <div class="campo-grupo">
-        <label>Dispositivo a Reparar:</label>
-        <input type="text" id="campo1" required placeholder="Ej. GamePad Wii U">
+        <label for="campo1">Equipo / modelo:</label>
+        <input type="text" id="campo1" required maxlength="100" placeholder="Ej. GamePad Wii U">
       </div>
       <div class="campo-grupo">
-        <label>Falla Reportada por el Cliente:</label>
-        <input type="text" id="campo2" required placeholder="Ej. Pantalla no da imagen o puerto HDMI dañado">
+        <label for="campo_tipo_equipo">Tipo de equipo:</label>
+        <select id="campo_tipo_equipo" required>
+          <option value="">Selecciona el tipo de equipo</option>
+          <option value="Portatil">Portátil</option>
+          <option value="Torre">Torre / PC</option>
+          <option value="Consola">Consola</option>
+          <option value="Control">Control</option>
+          <option value="All in one">All in one</option>
+        </select>
       </div>
       <div class="campo-grupo">
-        <label>Cliente:</label>
-        <select id="campo3" required>${optsClientes}</select>
+        <label for="campo_marca_equipo">Marca:</label>
+        <input type="text" id="campo_marca_equipo" required maxlength="20" placeholder="Ej. Nintendo, HP, ASUS">
       </div>
       <div class="campo-grupo">
-        <label>Presupuesto Estimado ($):</label>
-        <input type="number" id="campo4" required min="5000" step="1000" placeholder="Ej. 65000">
+        <label for="campo_serie_equipo">Número de serie (opcional):</label>
+        <input type="text" id="campo_serie_equipo" maxlength="40" placeholder="Déjalo vacío si no está disponible">
+      </div>
+      <div class="campo-grupo">
+        <label for="campo2">Falla reportada por el cliente:</label>
+        <textarea id="campo2" required maxlength="100" rows="3" placeholder="Describe la falla reportada"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_diagnostico">Causa / diagnóstico técnico:</label>
+        <textarea id="campo_diagnostico" maxlength="100" rows="3" placeholder="Opcional; si aún no se revisa, quedará pendiente de diagnóstico"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo3">Cliente:</label>
+        <select id="campo3" required>
+          <option value="">Selecciona un cliente</option>${optsClientes}
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_tecnico">Técnico responsable:</label>
+        <select id="campo_tecnico" required>
+          <option value="">Selecciona un técnico</option>${optsTecnicos}
+        </select>
+      </div>
+      <div class="campo-grupo">
+        <label for="campo4">Presupuesto estimado ($):</label>
+        <input type="number" id="campo4" required min="1" max="99999999" step="1" placeholder="Ej. 65000">
       </div>
     `;
   } else if (tipo === 'descuentos') {
@@ -587,6 +655,296 @@ function crearSelectorEstadoServicio(tipo, orden) {
     '</select>';
 }
 
+function crearDetalleOrdenServicio(row, tipo) {
+  var id = String(row.id);
+  var source = row.source || 'service';
+  detallesOrdenServicio.set(tipo + ':' + source + ':' + id, row);
+  return '<button type="button" class="btn-mas-informacion" data-servicio-tipo="' +
+    escaparHtmlAdmin(tipo) + '" data-servicio-id="' + escaparHtmlAdmin(id) +
+    '" data-servicio-origen="' + escaparHtmlAdmin(source) +
+    '" aria-label="Más información de ' +
+    escaparHtmlAdmin(row.maintenanceOrder || row.ticket) +
+    '">Más información</button>';
+}
+
+function agregarDatoLecturaDetalleAdmin(lista, etiquetaTexto, valorTexto) {
+  var fila = document.createElement('div');
+  var etiqueta = document.createElement('dt');
+  var valor = document.createElement('dd');
+  etiqueta.textContent = etiquetaTexto;
+  valor.textContent = valorTexto || 'No registrado';
+  fila.append(etiqueta, valor);
+  lista.appendChild(fila);
+}
+
+function agregarCampoEdicionDetalleAdmin(form, nombre, etiquetaTexto, valor, tipo, opciones) {
+  var contenedor = document.createElement('label');
+  var etiqueta = document.createElement('span');
+  var control = document.createElement(tipo === 'textarea' ? 'textarea' : tipo === 'select' ? 'select' : 'input');
+  etiqueta.textContent = etiquetaTexto;
+  contenedor.className = 'campo-edicion-detalle';
+  control.name = nombre;
+  control.id = 'campo-detalle-' + nombre;
+  control.required =
+    nombre === 'status' ||
+    (nombre !== 'price' &&
+      (nombre !== 'technicianId' || opciones?.[0]?.label !== 'Sin asignar'));
+
+  if (tipo === 'select') {
+    opciones.forEach(function(opcion) {
+      var option = new Option(opcion.label, opcion.value);
+      option.selected = String(opcion.value) === String(valor ?? '');
+      control.add(option);
+    });
+  } else {
+    control.type = tipo;
+    control.value = valor ?? '';
+    if (tipo === 'number') {
+      control.min = '0';
+      control.step = '0.01';
+    }
+    if (tipo === 'textarea') {
+      control.rows = 4;
+      control.maxLength = nombre === 'description' ? 1000 : 100;
+    }
+  }
+
+  contenedor.append(etiqueta, control);
+  form.appendChild(contenedor);
+  return control;
+}
+
+function opcionesEstadoDetalleAdmin(origen) {
+  return origen === 'appointment'
+    ? [
+        { value: 'SOLICITUD RECIBIDA', label: 'Solicitud recibida' },
+        { value: 'CONFIRMADA', label: 'Confirmada' },
+        { value: 'EN PROCESO', label: 'En proceso' },
+        { value: 'COMPLETADA', label: 'Completada' },
+        { value: 'CANCELADA', label: 'Cancelada' }
+      ]
+    : [
+        { value: 'PENDIENTE', label: 'En Taller' },
+        { value: 'EN PROCESO', label: 'En proceso' },
+        { value: 'COMPLETO', label: 'Completada' },
+        { value: 'CANCELADO', label: 'Cancelada' }
+      ];
+}
+
+function opcionesTecnicoDetalleAdmin(tecnicoId, permitirSinAsignar) {
+  var opciones = permitirSinAsignar
+    ? [{ value: '', label: 'Sin asignar' }]
+    : [{ value: '', label: 'Selecciona un técnico' }];
+  return opciones.concat(tecnicosDisponibles.map(function(tecnico) {
+    return { value: tecnico.id, label: tecnico.name };
+  }));
+}
+
+function nombreEstadoCitaAdmin(status) {
+  var estados = {
+    'SOLICITUD RECIBIDA': 'Solicitud recibida',
+    CONFIRMADA: 'Confirmada',
+    'EN PROCESO': 'En proceso',
+    COMPLETADA: 'Completada',
+    CANCELADA: 'Cancelada'
+  };
+  return estados[status] || status || 'Sin estado';
+}
+
+function mostrarDetalleOrdenServicio(tipo, id, source) {
+  var orden = detallesOrdenServicio.get(tipo + ':' + (source || 'service') + ':' + id);
+  var dialogo = document.getElementById('modalDetalleServicio');
+  var titulo = document.getElementById('modalDetalleTitulo');
+  var contenido = document.getElementById('modalDetalleContenido');
+  if (!orden || !dialogo || !titulo || !contenido) return;
+
+  var esCita = orden.source === 'appointment';
+  detalleOrdenAbiertaAdmin = { tipo: tipo, id: orden.id, source: esCita ? 'appointment' : 'service' };
+  titulo.textContent = esCita
+    ? (tipo === 'mantenimientos' ? 'Ticket de mantenimiento ' : 'Ticket de reparación ') + orden.reference
+    : (tipo === 'mantenimientos' ? 'Mantenimiento ' + orden.maintenanceOrder : 'Reparación ' + orden.ticket);
+
+  var form = document.createElement('form');
+  form.id = 'formEditarDetalleServicio';
+  form.className = 'form-edicion-detalle';
+  form.addEventListener('submit', guardarDetalleOrdenServicioAdmin);
+  var datosLectura = document.createElement('dl');
+  datosLectura.className = 'lista-detalle-servicio';
+  agregarDatoLecturaDetalleAdmin(
+    datosLectura,
+    'Ticket',
+    esCita ? orden.reference : orden.maintenanceOrder || orden.ticket,
+  );
+  agregarDatoLecturaDetalleAdmin(datosLectura, 'Cliente', orden.client);
+
+  if (esCita) {
+    agregarDatoLecturaDetalleAdmin(
+      datosLectura,
+      'Tipo de servicio',
+      tipo === 'mantenimientos' ? 'Mantenimiento' : 'Reparación',
+    );
+    agregarCampoEdicionDetalleAdmin(form, 'equipment', 'Equipo', orden.equipment, 'text');
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'description',
+      'Descripción del problema o necesidad',
+      orden.description,
+      'textarea',
+    );
+    agregarCampoEdicionDetalleAdmin(form, 'phone', 'Teléfono', orden.phone, 'tel');
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'appointmentDate',
+      'Fecha de la cita',
+      orden.appointmentDate,
+      'date',
+    );
+    agregarCampoEdicionDetalleAdmin(form, 'price', 'Precio', orden.price, 'number');
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'technicianId',
+      'Técnico asignado',
+      orden.technicianId,
+      'select',
+      opcionesTecnicoDetalleAdmin(orden.technicianId, true),
+    );
+  } else {
+    agregarDatoLecturaDetalleAdmin(datosLectura, 'Equipo', orden.equipment || orden.device);
+    agregarDatoLecturaDetalleAdmin(datosLectura, 'Tipo de equipo', orden.equipmentType);
+    agregarDatoLecturaDetalleAdmin(datosLectura, 'Marca', orden.brand);
+    agregarDatoLecturaDetalleAdmin(datosLectura, 'Número de serie', orden.serialNumber);
+    agregarDatoLecturaDetalleAdmin(datosLectura, 'Fecha de ingreso', orden.createdAt);
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'serviceDescription',
+      tipo === 'mantenimientos' ? 'Trabajo solicitado' : 'Falla reportada',
+      tipo === 'mantenimientos' ? orden.workRequested : orden.defect,
+      'textarea',
+    );
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'diagnosis',
+      tipo === 'mantenimientos' ? 'Observaciones / diagnóstico' : 'Causa / diagnóstico técnico',
+      orden.details,
+      'textarea',
+    );
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'cost',
+      'Precio total',
+      tipo === 'mantenimientos' ? orden.cost : orden.price,
+      'number',
+    );
+    agregarCampoEdicionDetalleAdmin(
+      form,
+      'technicianId',
+      'Técnico responsable',
+      orden.technicianId,
+      'select',
+      opcionesTecnicoDetalleAdmin(orden.technicianId, false),
+    );
+  }
+
+  agregarCampoEdicionDetalleAdmin(
+    form,
+    'status',
+    'Estado',
+    esCita ? orden.status : orden.statusCode,
+    'select',
+    opcionesEstadoDetalleAdmin(esCita ? 'appointment' : 'service'),
+  );
+  form.prepend(datosLectura);
+  contenido.replaceChildren(form);
+  dialogo.showModal();
+}
+
+function guardarDetalleOrdenServicioAdmin(evento) {
+  evento.preventDefault();
+  if (!detalleOrdenAbiertaAdmin) return;
+
+  var form = evento.currentTarget;
+  var origen = detalleOrdenAbiertaAdmin.source;
+  var tipo = detalleOrdenAbiertaAdmin.tipo;
+  var id = detalleOrdenAbiertaAdmin.id;
+  var payload;
+  var url;
+
+  if (origen === 'appointment') {
+    var citaPrecio = form.elements.price.value;
+    payload = {
+      equipment: form.elements.equipment.value.trim(),
+      description: form.elements.description.value.trim(),
+      phone: form.elements.phone.value.trim(),
+      appointmentDate: form.elements.appointmentDate.value,
+      price: citaPrecio === '' ? null : Number(citaPrecio),
+      technicianId: form.elements.technicianId.value
+        ? Number(form.elements.technicianId.value)
+        : null,
+      status: form.elements.status.value
+    };
+    url = API_BASE + '/api/admin/appointments/' + encodeURIComponent(id);
+  } else {
+    payload = {
+      serviceDescription: form.elements.serviceDescription.value.trim(),
+      diagnosis: form.elements.diagnosis.value.trim(),
+      cost: Number(form.elements.cost.value),
+      technicianId: Number(form.elements.technicianId.value),
+      status: form.elements.status.value
+    };
+    url = API_BASE + '/api/admin/' + tipo + '/' + encodeURIComponent(id);
+  }
+
+  fetch(url, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(response) {
+    if (!response.ok || !response.data.ok) {
+      mostrarToast('error', response.data.message || 'No se pudieron guardar los cambios.');
+      return;
+    }
+    mostrarToast('success', response.data.message || 'Cambios guardados.');
+    document.getElementById('modalDetalleServicio')?.close();
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al guardar los detalles del servicio:', error);
+    mostrarToast('error', 'Error de conexión al guardar los cambios.');
+  });
+}
+
+document.addEventListener('click', function(evento) {
+  if (!(evento.target instanceof Element)) return;
+  var boton = evento.target.closest('.btn-mas-informacion');
+  if (boton) {
+    mostrarDetalleOrdenServicio(
+      boton.dataset.servicioTipo,
+      boton.dataset.servicioId,
+      boton.dataset.servicioOrigen,
+    );
+  }
+});
+
+var modalDetalleServicio = document.getElementById('modalDetalleServicio');
+document.getElementById('btnCerrarDetalleServicio')?.addEventListener('click', function() {
+  modalDetalleServicio?.close();
+});
+document.getElementById('btnCerrarDetalleServicioPie')?.addEventListener('click', function() {
+  modalDetalleServicio?.close();
+});
+modalDetalleServicio?.addEventListener('click', function(evento) {
+  if (evento.target === modalDetalleServicio) modalDetalleServicio.close();
+});
+
 function actualizarEstadoServicio(tipo, id) {
   if (tipo !== 'mantenimientos' && tipo !== 'reparaciones') return;
 
@@ -619,6 +977,102 @@ function actualizarEstadoServicio(tipo, id) {
   });
 }
 
+function crearSelectorEstadoCita(cita) {
+  var estados = [
+    ['SOLICITUD RECIBIDA', 'Solicitud recibida'],
+    ['CONFIRMADA', 'Confirmada'],
+    ['EN PROCESO', 'En proceso'],
+    ['COMPLETADA', 'Completada'],
+    ['CANCELADA', 'Cancelada']
+  ];
+  var actual = estados.some(function(estado) {
+    return estado[0] === cita.status;
+  }) ? cita.status : 'SOLICITUD RECIBIDA';
+  var id = Number(cita.id);
+  return '<select class="select-filtro select-estado-servicio" id="estado-cita-' + id + '" aria-label="Estado de la cita ' + escaparHtmlAdmin(cita.reference) + '">' +
+    estados.map(function(estado) {
+      return '<option value="' + estado[0] + '"' + (estado[0] === actual ? ' selected' : '') + '>' + estado[1] + '</option>';
+    }).join('') +
+    '</select>';
+}
+
+function crearSelectorTecnicoCita(cita) {
+  var id = Number(cita.id);
+  var actual = cita.technicianId == null ? '' : String(cita.technicianId);
+  var opciones = '<option value="">Sin asignar</option>';
+  opciones += tecnicosDisponibles.map(function(tecnico) {
+    var tecnicoId = String(tecnico.id);
+    return '<option value="' + escaparHtmlAdmin(tecnicoId) + '"' +
+      (tecnicoId === actual ? ' selected' : '') + '>' +
+      escaparHtmlAdmin(tecnico.name) + '</option>';
+  }).join('');
+  return '<select class="select-filtro select-estado-servicio" id="tecnico-cita-' + id + '" aria-label="Técnico asignado a ' + escaparHtmlAdmin(cita.reference) + '">' +
+    opciones +
+    '</select>';
+}
+
+function asignarTecnicoCitaAdmin(id) {
+  var tecnicoSelect = document.getElementById('tecnico-cita-' + id);
+  if (!tecnicoSelect) {
+    mostrarToast('error', 'No se encontró el selector de técnico de la cita.');
+    return;
+  }
+
+  fetch(API_BASE + '/api/admin/appointments/' + encodeURIComponent(id) + '/technician', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify({
+      technicianId: tecnicoSelect.value ? Number(tecnicoSelect.value) : null
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (!data.ok) {
+      mostrarToast('error', data.message || 'No se pudo asignar el técnico.');
+      return;
+    }
+    mostrarToast('success', data.message || 'Técnico asignado.');
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al asignar técnico a la cita:', error);
+    mostrarToast('error', 'Error de conexión al asignar el técnico.');
+  });
+}
+
+function actualizarEstadoCitaAdmin(id) {
+  var estadoSelect = document.getElementById('estado-cita-' + id);
+  if (!estadoSelect) {
+    mostrarToast('error', 'No se encontró el selector de estado de la cita.');
+    return;
+  }
+
+  fetch(API_BASE + '/api/admin/appointments/' + encodeURIComponent(id) + '/status', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify({ status: estadoSelect.value })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    if (!data.ok) {
+      mostrarToast('error', data.message || 'No se pudo actualizar el estado de la cita.');
+      return;
+    }
+    mostrarToast('success', data.message || 'Estado de la cita actualizado.');
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al actualizar el estado de la cita:', error);
+    mostrarToast('error', 'Error de conexión al actualizar el estado de la cita.');
+  });
+}
+
 // ==========================================================================
 // 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
 // ==========================================================================
@@ -633,17 +1087,27 @@ function cargarDashboard() {
   fetch(dashboardUrl, {
     headers: { 'Authorization': 'Bearer ' + sessionToken }
   })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (!data.ok) {
-      console.warn('Dashboard respondió sin ok:', data.message);
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { status: res.status, data: data };
+    });
+  })
+  .then(function(response) {
+    var data = response.data;
+    if (!response.status || response.status >= 400 || !data.ok) {
+      var errorMessage = data.message || 'No se pudo cargar el panel del administrador.';
+      console.warn('Dashboard respondió con error:', response.status, errorMessage);
+      mostrarToast('error', errorMessage);
       return;
     }
+
+    detallesOrdenServicio.clear();
 
     // Guardar colecciones para los selectores de los modales
     if (data.categories) categoriasDisponibles = data.categories;
     if (data.brands) marcasDisponibles = data.brands;
     if (data.clients) clientesDisponibles = data.clients;
+    if (data.technicians) tecnicosDisponibles = data.technicians;
     if (data.inventory) productosDisponibles = data.inventory;
     if (inventoryBranchSelect && data.branches) {
       var selectedBranchIsActive = data.branches.some(function(branch) {
@@ -733,18 +1197,47 @@ function cargarDashboard() {
     }
 
     // ---------- MANTENIMIENTOS ----------
-    if (data.maintenance) {
-      poblarTabla('tablaMantenimientosBody', data.maintenance, function(row) {
-        var productId = Number(row.id);
-        return '<td><strong>' + escaparHtmlAdmin(row.maintenanceOrder) + '</strong></td><td>' + escaparHtmlAdmin(row.equipment) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.tech) + '</td><td>' + escaparHtmlAdmin(row.cost) + '</td><td>' + crearSelectorEstadoServicio('mantenimientos', row) + '</td><td><button class="boton-icono" title="Guardar estado" aria-label="Guardar estado de ' + escaparHtmlAdmin(row.maintenanceOrder) + '" onclick="actualizarEstadoServicio(\'mantenimientos\', ' + productId + ')"><i class="fi fi-rr-check"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'mantenimientos\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+    var maintenanceRows = (data.maintenance || []).slice();
+    (data.appointments || []).filter(function(appointment) {
+      return appointment.serviceType === 'MANTENIMIENTO';
+    }).forEach(function(appointment) {
+      var appointmentTicket = 'MNT-CIT-' + Number(appointment.id);
+      maintenanceRows.unshift(Object.assign({}, appointment, {
+        source: 'appointment',
+        reference: appointmentTicket,
+        maintenanceOrder: appointmentTicket
+      }));
+    });
+    if (data.maintenance || data.appointments) {
+      poblarTabla('tablaMantenimientosBody', maintenanceRows, function(row) {
+        if (row.source === 'appointment') {
+          var precioCita = row.price == null ? 'Pendiente' : '$ ' + Number(row.price).toLocaleString('es-CO');
+          return '<td><strong>' + escaparHtmlAdmin(row.reference) + '</strong></td><td>' + escaparHtmlAdmin(row.equipment) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.appointmentDate) + '</td><td>' + escaparHtmlAdmin(precioCita) + '</td><td>' + escaparHtmlAdmin(row.tech || 'Sin asignar') + '</td><td>' + escaparHtmlAdmin(nombreEstadoCitaAdmin(row.status)) + '</td><td class="acciones-servicio">' + crearDetalleOrdenServicio(row, 'mantenimientos') + '</td>';
+        }
+        return '<td><strong>' + escaparHtmlAdmin(row.maintenanceOrder) + '</strong></td><td>' + escaparHtmlAdmin(row.equipment) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.createdAt) + '</td><td>$ ' + Number(row.cost).toLocaleString('es-CO') + '</td><td>' + escaparHtmlAdmin(row.tech || 'No asignado') + '</td><td>' + escaparHtmlAdmin(row.status) + '</td><td class="acciones-servicio">' + crearDetalleOrdenServicio(row, 'mantenimientos') + '</td>';
       });
     }
 
     // ---------- REPARACIONES ----------
-    if (data.repairs) {
-      poblarTabla('tablaReparacionBody', data.repairs, function(row) {
-        var productId = Number(row.id);
-        return '<td><strong>' + escaparHtmlAdmin(row.ticket) + '</strong></td><td>' + escaparHtmlAdmin(row.device) + '</td><td>' + escaparHtmlAdmin(row.defect) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.price) + '</td><td>' + crearSelectorEstadoServicio('reparaciones', row) + '</td><td><button class="boton-icono" title="Guardar estado" aria-label="Guardar estado de ' + escaparHtmlAdmin(row.ticket) + '" onclick="actualizarEstadoServicio(\'reparaciones\', ' + productId + ')"><i class="fi fi-rr-check"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'reparaciones\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+    var repairRows = (data.repairs || []).slice();
+    (data.appointments || []).filter(function(appointment) {
+      return appointment.serviceType === 'REPARACION';
+    }).forEach(function(appointment) {
+      var appointmentTicket = 'REP-CIT-' + Number(appointment.id);
+      repairRows.unshift(Object.assign({}, appointment, {
+        source: 'appointment',
+        reference: appointmentTicket,
+        ticket: appointmentTicket,
+        device: appointment.equipment
+      }));
+    });
+    if (data.repairs || data.appointments) {
+      poblarTabla('tablaReparacionBody', repairRows, function(row) {
+        if (row.source === 'appointment') {
+          var precioCita = row.price == null ? 'Pendiente' : '$ ' + Number(row.price).toLocaleString('es-CO');
+          return '<td><strong>' + escaparHtmlAdmin(row.reference) + '</strong></td><td>' + escaparHtmlAdmin(row.equipment) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.appointmentDate) + '</td><td>' + escaparHtmlAdmin(precioCita) + '</td><td>' + escaparHtmlAdmin(row.tech || 'Sin asignar') + '</td><td>' + escaparHtmlAdmin(nombreEstadoCitaAdmin(row.status)) + '</td><td class="acciones-servicio">' + crearDetalleOrdenServicio(row, 'reparaciones') + '</td>';
+        }
+        return '<td><strong>' + escaparHtmlAdmin(row.ticket) + '</strong></td><td>' + escaparHtmlAdmin(row.device) + '</td><td>' + escaparHtmlAdmin(row.client) + '</td><td>' + escaparHtmlAdmin(row.createdAt) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + escaparHtmlAdmin(row.tech || 'No asignado') + '</td><td>' + escaparHtmlAdmin(row.status) + '</td><td class="acciones-servicio">' + crearDetalleOrdenServicio(row, 'reparaciones') + '</td>';
       });
     }
 
@@ -994,8 +1487,21 @@ async function guardarDatos(evento) {
     };
 
   } else if (tipoModalActual === 'mantenimientos') {
+    var tipoEquipoMntInput = document.getElementById('campo_tipo_equipo');
+    var marcaEquipoMntInput = document.getElementById('campo_marca_equipo');
+    var serialEquipoMntInput = document.getElementById('campo_serie_equipo');
+    var trabajoMntInput = document.getElementById('campo_detalle');
+    var diagnosticoMntInput = document.getElementById('campo_diagnostico');
     if (!c1 || c1.length < 3) {
       marcarErrorCampo(c1Input, 'Indica el equipo o consola (mínimo 3 caracteres).');
+      hayErrores = true;
+    }
+    if (!tipoEquipoMntInput.value) {
+      marcarErrorCampo(tipoEquipoMntInput, 'Selecciona el tipo de equipo.');
+      hayErrores = true;
+    }
+    if (!marcaEquipoMntInput.value.trim()) {
+      marcarErrorCampo(marcaEquipoMntInput, 'Indica la marca del equipo.');
       hayErrores = true;
     }
     if (!c2) {
@@ -1004,6 +1510,14 @@ async function guardarDatos(evento) {
     }
     if (!c3) {
       marcarErrorCampo(c3Input, 'Selecciona el técnico responsable.');
+      hayErrores = true;
+    }
+    if (!trabajoMntInput.value.trim() || trabajoMntInput.value.trim().length < 3) {
+      marcarErrorCampo(trabajoMntInput, 'Describe el trabajo de mantenimiento solicitado.');
+      hayErrores = true;
+    }
+    if (trabajoMntInput.value.trim().length > 100 || diagnosticoMntInput.value.trim().length > 100) {
+      marcarErrorCampo(trabajoMntInput, 'Los detalles no pueden superar 100 caracteres.');
       hayErrores = true;
     }
     var costoMnt = Number(c4);
@@ -1020,15 +1534,32 @@ async function guardarDatos(evento) {
     url = API_BASE + '/api/admin/mantenimientos';
     payload = {
       equipment: c1,
-      client: c2,
-      tech: c3,
+      equipmentType: tipoEquipoMntInput.value,
+      brand: marcaEquipoMntInput.value.trim(),
+      serialNumber: serialEquipoMntInput.value.trim(),
+      clientId: Number(c2),
+      technicianId: Number(c3),
+      serviceDescription: trabajoMntInput.value.trim(),
+      diagnosis: diagnosticoMntInput.value.trim(),
       cost: costoMnt,
-      status: 'En Taller'
     };
 
   } else if (tipoModalActual === 'reparacion') {
+    var tipoEquipoRepInput = document.getElementById('campo_tipo_equipo');
+    var marcaEquipoRepInput = document.getElementById('campo_marca_equipo');
+    var serialEquipoRepInput = document.getElementById('campo_serie_equipo');
+    var diagnosticoRepInput = document.getElementById('campo_diagnostico');
+    var tecnicoRepInput = document.getElementById('campo_tecnico');
     if (!c1 || c1.length < 3) {
       marcarErrorCampo(c1Input, 'Indica el dispositivo a reparar (mínimo 3 caracteres).');
+      hayErrores = true;
+    }
+    if (!tipoEquipoRepInput.value) {
+      marcarErrorCampo(tipoEquipoRepInput, 'Selecciona el tipo de equipo.');
+      hayErrores = true;
+    }
+    if (!marcaEquipoRepInput.value.trim()) {
+      marcarErrorCampo(marcaEquipoRepInput, 'Indica la marca del equipo.');
       hayErrores = true;
     }
     if (!c2 || c2.length < 4) {
@@ -1037,6 +1568,10 @@ async function guardarDatos(evento) {
     }
     if (!c3) {
       marcarErrorCampo(c3Input, 'Selecciona el cliente vinculado.');
+      hayErrores = true;
+    }
+    if (!tecnicoRepInput.value) {
+      marcarErrorCampo(tecnicoRepInput, 'Selecciona el técnico responsable.');
       hayErrores = true;
     }
     var precioRep = Number(c4);
@@ -1052,10 +1587,15 @@ async function guardarDatos(evento) {
 
     url = API_BASE + '/api/admin/reparaciones';
     payload = {
-      device: c1,
-      defect: c2,
-      client: c3,
-      price: precioRep
+      equipment: c1,
+      equipmentType: tipoEquipoRepInput.value,
+      brand: marcaEquipoRepInput.value.trim(),
+      serialNumber: serialEquipoRepInput.value.trim(),
+      serviceDescription: c2,
+      diagnosis: diagnosticoRepInput.value.trim(),
+      clientId: Number(c3),
+      technicianId: Number(tecnicoRepInput.value),
+      cost: precioRep
     };
 
   } else if (tipoModalActual === 'descuentos') {

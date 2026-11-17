@@ -1029,10 +1029,29 @@ a.btn-agregar {
 .cita-estado {
   padding: 6px 12px;
   border-radius: 20px;
-  background: var(--yellow-light);
-  color: var(--dark-blue);
   font-size: 11px;
   font-weight: 600;
+}
+
+.cita-estado-pendiente {
+  background: var(--yellow-light);
+  color: #7a5700;
+}
+
+.cita-estado-confirmada,
+.cita-estado-completada {
+  background: #e8f7ed;
+  color: #18743a;
+}
+
+.cita-estado-proceso {
+  background: #e8f1ff;
+  color: #2456a6;
+}
+
+.cita-estado-cancelada {
+  background: #fdecec;
+  color: #a52a2a;
 }
 
 .cita-detalles {

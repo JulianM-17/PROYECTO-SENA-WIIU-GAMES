@@ -106,7 +106,12 @@
     <!--Campos de espacio-->
     <section class="formulario-cita">
       <div class="formulario-container">
-        <form action="#" method="post" class="formulario" id="form-cita" novalidate>
+        <div id="aviso-iniciar-sesion" class="aviso-cita-sesion" role="status" hidden>
+          <p>Para agendar y consultar el estado de tu cita, primero inicia sesión con tu cuenta de cliente.</p>
+          <a href="Login.html?returnTo=cita.html">Iniciar sesión para agendar</a>
+        </div>
+        <p id="mensaje-cita" class="mensaje-cita" role="status" aria-live="polite" hidden></p>
+        <form action="#" method="post" class="formulario" id="form-cita" novalidate hidden>
           <div class="campo">
             <label for="nombre">Nombre completo*</label>
             <input
@@ -115,7 +120,9 @@
               name="nombre"
               placeholder="Ej: Carlos Gómez"
               required
+              maxlength="61"
               autocomplete="name"
+              readonly
             />
             <span class="error-mensaje" id="error-nombre"></span>
           </div>
@@ -127,6 +134,7 @@
               id="equipo"
               name="equipo"
               placeholder="Ej: PS4, Xbox Series X, PC Gamer"
+              maxlength="100"
               required
             />
             <span class="error-mensaje" id="error-equipo"></span>
@@ -161,6 +169,19 @@
               <option value="REPARACION">Reparación técnica de componentes</option>
             </select>
             <span class="error-mensaje" id="error-servicio"></span>
+          </div>
+
+          <div class="campo" style="grid-column: 1 / -1;">
+            <label for="descripcion">Descripción del problema o necesidad del servicio*</label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              rows="4"
+              maxlength="1000"
+              placeholder="Selecciona primero el servicio que necesitas."
+              required
+            ></textarea>
+            <span class="error-mensaje" id="error-descripcion"></span>
           </div>
           <button type="submit" class="btn-agendar">Agendar Cita</button>
         </form>

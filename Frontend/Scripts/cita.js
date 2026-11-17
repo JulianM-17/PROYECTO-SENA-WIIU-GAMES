@@ -2,16 +2,75 @@
  * Validación y Manejo del Formulario de Agendar Cita
  * WiiU-Games
  */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const form = document.getElementById("form-cita") || document.querySelector(".formulario");
   if (!form) return;
 
   const nombreInput = document.getElementById("nombre");
-  const equipoInput = document.getElementById("equipo") || document.getElementById("email");
+  const equipoInput = document.getElementById("equipo");
   const telefonoInput = document.getElementById("telefono");
   const fechaInput = document.getElementById("fecha");
+  const descripcionInput = document.getElementById("descripcion");
   const servicioInput = document.getElementById("servicio");
-  const CITAS_STORAGE_KEY = "wiiu_citas";
+  const avisoSesion = document.getElementById("aviso-iniciar-sesion");
+  const mensajeCita = document.getElementById("mensaje-cita");
+  const submitButton = form.querySelector('[type="submit"]');
+  let sessionUser = null;
+  let nombrePerfil = "";
+  let telefonoPerfil = "";
+
+  try {
+    sessionUser = JSON.parse(
+      sessionStorage.getItem("wiiu_usuario_activo") || "null",
+    );
+  } catch (error) {
+    sessionUser = null;
+  }
+
+  if (!sessionUser?.token) {
+    form.hidden = true;
+    if (avisoSesion) avisoSesion.hidden = false;
+    return;
+  }
+
+  let sesionVencida = false;
+  try {
+    const response = await fetch("http://localhost:3000/api/profile", {
+      headers: { Authorization: `Bearer ${sessionUser.token}` },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sesionVencida = true;
+      throw new Error("Tu sesión venció. Inicia sesión nuevamente para agendar.");
+    }
+    if (!response.ok || !data.ok || !data.profile) {
+      throw new Error(data.message || "No se pudieron cargar los datos de tu cuenta.");
+    }
+
+    nombrePerfil = `${data.profile.nombre || ""} ${data.profile.apellido || ""}`.trim();
+    telefonoPerfil = String(data.profile.telefono || "").replace(/\D/g, "").slice(0, 10);
+    if (!nombrePerfil) {
+      throw new Error("Tu cuenta no tiene un nombre válido para registrar la cita.");
+    }
+    nombreInput.value = nombrePerfil;
+    if (telefonoPerfil.length === 10) telefonoInput.value = telefonoPerfil;
+    form.hidden = false;
+  } catch (error) {
+    console.error("No se pudo validar la cuenta para agendar la cita:", error);
+    if (sesionVencida) {
+      sessionStorage.removeItem("wiiu_usuario_activo");
+      sessionStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionToken");
+      form.hidden = true;
+      if (avisoSesion) avisoSesion.hidden = false;
+    }
+    if (mensajeCita) {
+      mensajeCita.textContent = error.message || "No se pudieron cargar los datos de tu cuenta.";
+      mensajeCita.hidden = false;
+      mensajeCita.setAttribute("role", "alert");
+    }
+    return;
+  }
 
   // Configurar fecha mínima permitida (Hoy)
   if (fechaInput) {
@@ -67,28 +126,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  function guardarCita(datos) {
-    const citasGuardadas = JSON.parse(
-      localStorage.getItem(CITAS_STORAGE_KEY) || "[]",
-    );
-    if (!Array.isArray(citasGuardadas)) {
-      throw new Error("El registro de citas guardado no es válido.");
-    }
-
-    const usuarioActivo = JSON.parse(
-      sessionStorage.getItem("wiiu_usuario_activo") || "null",
-    );
-    const correo = String(usuarioActivo?.correo || "")
-      .trim()
-      .toLowerCase();
-
-    citasGuardadas.push({
-      ...datos,
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      correo,
-      estado: "Solicitud recibida",
-    });
-    localStorage.setItem(CITAS_STORAGE_KEY, JSON.stringify(citasGuardadas));
+  function mostrarMensajeCita(texto, tipo = "error") {
+    if (!mensajeCita) return;
+    mensajeCita.textContent = texto;
+    mensajeCita.hidden = !texto;
+    mensajeCita.setAttribute("role", tipo === "error" ? "alert" : "status");
   }
 
   // ============================================================
@@ -265,6 +307,12 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         marcarValido(servicioInput);
       }
+      if (descripcionInput) {
+        descripcionInput.placeholder =
+          servicioInput.value === "REPARACION"
+            ? "Describe la falla, los síntomas y cuándo ocurre (mínimo 10 caracteres)."
+            : "Describe qué mantenimiento necesita el equipo (mínimo 10 caracteres).";
+      }
     });
 
     servicioInput.addEventListener("blur", () => {
@@ -276,10 +324,39 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (descripcionInput) {
+    descripcionInput.addEventListener("input", () => {
+      const longitud = descripcionInput.value.trim().length;
+      if (longitud >= 10 && longitud <= 1000) {
+        marcarValido(descripcionInput);
+      } else {
+        limpiarError(descripcionInput);
+        descripcionInput.closest(".campo")?.classList.remove("campo-valido");
+      }
+    });
+
+    descripcionInput.addEventListener("blur", () => {
+      const longitud = descripcionInput.value.trim().length;
+      if (longitud < 10) {
+        mostrarError(
+          descripcionInput,
+          "Describe el problema o la necesidad con al menos 10 caracteres.",
+        );
+      } else if (longitud > 1000) {
+        mostrarError(
+          descripcionInput,
+          "La descripción no puede superar los 1000 caracteres.",
+        );
+      } else {
+        marcarValido(descripcionInput);
+      }
+    });
+  }
+
   // ============================================================
   // ENVÍO DEL FORMULARIO
   // ============================================================
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let esValido = true;
 
@@ -330,6 +407,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    const descripcion = descripcionInput
+      ? descripcionInput.value.trim()
+      : "";
+    if (descripcion.length < 10) {
+      mostrarError(
+        descripcionInput,
+        "Describe el problema o la necesidad con al menos 10 caracteres.",
+      );
+      esValido = false;
+    } else if (descripcion.length > 1000) {
+      mostrarError(
+        descripcionInput,
+        "La descripción no puede superar los 1000 caracteres.",
+      );
+      esValido = false;
+    }
+
     // Validar Servicio
     if (!servicioInput || !servicioInput.value) {
       mostrarError(servicioInput, "Debes seleccionar un servicio.");
@@ -337,33 +431,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!esValido) {
-      const primerError = form.querySelector(".campo-invalido input, .campo-invalido select");
+      const primerError = form.querySelector(
+        ".campo-invalido input, .campo-invalido select, .campo-invalido textarea",
+      );
       if (primerError) primerError.focus();
       return;
     }
 
-    const datosCita = {
-      nombre,
-      equipo,
-      telefono: tel,
-      fecha: fechaInput.value,
-      servicio: servicioInput.value,
-    };
-
+    const textoBoton = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = "Registrando cita...";
+    mostrarMensajeCita("");
     try {
-      guardarCita(datosCita);
+      const response = await fetch("http://localhost:3000/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionUser.token}`,
+        },
+        body: JSON.stringify({
+          equipment: equipo,
+          description: descripcion,
+          phone: tel,
+          date: fechaInput.value,
+          serviceType: servicioInput.value,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
+        form.hidden = true;
+        if (avisoSesion) avisoSesion.hidden = false;
+        throw new Error("Tu sesión venció. Inicia sesión nuevamente para agendar.");
+      }
+      if (!response.ok || !data.ok || !data.appointment) {
+        throw new Error(data.message || "No se pudo registrar la cita.");
+      }
+
+      const nombresServicios = {
+        MANTENIMIENTO: "Mantenimiento preventivo / Limpieza interna",
+        REPARACION: "Reparación técnica de componentes",
+      };
+      mostrarModalExito({
+        id: data.appointment.id,
+        nombre,
+        equipo,
+        descripcion,
+        telefono: tel,
+        fecha: fechaInput.value,
+        servicio: nombresServicios[servicioInput.value] || servicioInput.value,
+        estado: "Solicitud recibida",
+      });
+      form.reset();
+      nombreInput.value = nombrePerfil;
+      telefonoInput.value = telefonoPerfil;
+      if (descripcionInput) {
+        descripcionInput.placeholder =
+          "Describe la falla o por qué necesitas el servicio (mínimo 10 caracteres).";
+      }
+      document.querySelectorAll(".campo-valido").forEach((campo) => {
+        campo.classList.remove("campo-valido");
+      });
     } catch (error) {
-      console.error("No se pudo guardar la cita:", error);
-      window.alert(
-        "No se pudo guardar tu cita. Inténtalo de nuevo antes de cerrar esta página.",
+      console.error("No se pudo registrar la cita:", error);
+      mostrarMensajeCita(
+        error.message || "No se pudo registrar tu cita. Inténtalo de nuevo.",
       );
-      return;
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = textoBoton;
     }
-
-    mostrarModalExito(datosCita);
-
-    form.reset();
-    document.querySelectorAll(".campo-valido").forEach((c) => c.classList.remove("campo-valido"));
   });
 
   /**
@@ -380,13 +519,16 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="modal-tarjeta-exito">
         <div class="icono-check-exito">✓</div>
         <h2>¡Cita Agendada con Éxito!</h2>
-        <p>Tu solicitud se guardó correctamente en este navegador. Si tenías la sesión iniciada, podrás consultarla en "Mis Citas".</p>
+        <p>Tu cita se registró en tu cuenta. Puedes consultar su estado en el apartado "Mis Citas".</p>
         <div class="detalles-resumen-cita">
+          <div><strong>Referencia:</strong> CIT-${escapeHTML(datos.id)}</div>
           <div><strong>Cliente:</strong> ${escapeHTML(datos.nombre)}</div>
           <div><strong>Equipo:</strong> ${escapeHTML(datos.equipo)}</div>
+          <div><strong>Descripción:</strong> ${escapeHTML(datos.descripcion)}</div>
           <div><strong>Teléfono:</strong> ${escapeHTML(datos.telefono)}</div>
           <div><strong>Fecha:</strong> ${escapeHTML(datos.fecha)}</div>
           <div><strong>Servicio:</strong> ${escapeHTML(datos.servicio)}</div>
+          <div><strong>Estado:</strong> ${escapeHTML(datos.estado)}</div>
         </div>
         <button type="button" class="btn-cerrar-modal" id="btnCerrarModalCita">Entendido</button>
       </div>

@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   let state = loadState();
   let ordersLoading = true;
   let ordersLoadError = "";
+  let appointments = [];
+  let appointmentsLoading = true;
+  let appointmentsLoadError = "";
   if (window.WiiUGamesCart) {
     state.cartCount = window.WiiUGamesCart.updateCount();
   }
@@ -129,6 +132,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     state.orders = data.orders;
+  }
+
+  async function loadAppointmentsFromDatabase() {
+    const response = await fetch("http://localhost:3000/api/my-appointments", {
+      headers: { Authorization: `Bearer ${sessionUser.token}` },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sessionStorage.removeItem("wiiu_usuario_activo");
+      sessionStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionToken");
+      window.location.replace("Login.html?returnTo=panel_usuario.html");
+      throw new Error("Tu sesión venció. Inicia sesión nuevamente.");
+    }
+    if (!response.ok || !data.ok || !Array.isArray(data.appointments)) {
+      throw new Error(data.message || "No se pudieron cargar tus citas.");
+    }
+
+    appointments = data.appointments;
   }
 
   // ===================================================
@@ -1299,24 +1321,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       .join("");
   }
 
-  const CITAS_STORAGE_KEY = "wiiu_citas";
   const listaCitas = document.getElementById("lista-citas");
 
-  function renderAppointments() {
-    if (!listaCitas) return;
-
+  function obtenerCitasLocalesAnteriores() {
     try {
-      const citasGuardadas = JSON.parse(
-        localStorage.getItem(CITAS_STORAGE_KEY) || "[]",
-      );
+      const citasGuardadas = JSON.parse(localStorage.getItem("wiiu_citas") || "[]");
       if (!Array.isArray(citasGuardadas)) {
-        throw new Error("El registro de citas guardado no es válido.");
+        throw new Error("El registro local de citas no es válido.");
       }
 
-      const correoUsuario = String(state.profile.email || "")
-        .trim()
-        .toLowerCase();
-      const citasUsuario = citasGuardadas
+      const correoUsuario = String(state.profile.email || "").trim().toLowerCase();
+      return citasGuardadas
         .filter(
           (cita) =>
             cita &&
@@ -1324,71 +1339,126 @@ document.addEventListener("DOMContentLoaded", async () => {
             correoUsuario &&
             String(cita.correo || "").trim().toLowerCase() === correoUsuario,
         )
-        .sort((a, b) => String(a.fecha || "").localeCompare(String(b.fecha || "")));
+        .map((cita) => ({
+          id: cita.id,
+          equipment: cita.equipo,
+          phone: cita.telefono,
+          appointmentDate: cita.fecha,
+          serviceType: cita.servicio,
+          status: cita.estado || "SOLICITUD RECIBIDA",
+        }));
+    } catch (error) {
+      console.warn("No se pudieron recuperar citas locales anteriores:", error);
+      return [];
+    }
+  }
 
-      if (citasUsuario.length === 0) {
-        listaCitas.innerHTML =
-          '<p class="pedidos-mensaje">Aún no tienes citas agendadas.</p>';
-        return;
+  function renderAppointments() {
+    if (!listaCitas) return;
+
+    if (appointmentsLoading) {
+      listaCitas.innerHTML =
+        '<p class="pedidos-mensaje" role="status">Cargando tus citas...</p>';
+      return;
+    }
+    if (appointmentsLoadError) {
+      listaCitas.innerHTML =
+        '<p class="pedidos-mensaje" role="alert">' +
+        escapeHtml(appointmentsLoadError) +
+        "</p>";
+      return;
+    }
+    const citasUsuario = [
+      ...appointments,
+      ...obtenerCitasLocalesAnteriores(),
+    ].sort((a, b) =>
+      String(a.appointmentDate || "").localeCompare(
+        String(b.appointmentDate || ""),
+      ),
+    );
+    if (citasUsuario.length === 0) {
+      listaCitas.innerHTML =
+        '<p class="pedidos-mensaje">Aún no tienes citas agendadas.</p>';
+      return;
+    }
+
+    const servicios = {
+      MANTENIMIENTO: "Mantenimiento preventivo / Limpieza interna",
+      REPARACION: "Reparación técnica de componentes",
+    };
+    const estados = {
+      "SOLICITUD RECIBIDA": "Solicitud recibida",
+      CONFIRMADA: "Confirmada",
+      "EN PROCESO": "En proceso",
+      COMPLETADA: "Completada",
+      CANCELADA: "Cancelada",
+    };
+    const fragmento = document.createDocumentFragment();
+
+    citasUsuario.forEach((cita) => {
+      const tarjeta = document.createElement("article");
+      tarjeta.className = "cita-card";
+
+      const encabezado = document.createElement("div");
+      encabezado.className = "cita-card-encabezado";
+
+      const titulo = document.createElement("h2");
+      titulo.textContent =
+        servicios[cita.serviceType] || "Servicio técnico";
+
+      const estado = document.createElement("span");
+      const estadoCodigo = String(cita.status || "SOLICITUD RECIBIDA").toUpperCase();
+      const estadoTexto = estados[estadoCodigo] || estadoCodigo;
+      const estadoNormalizado = estadoTexto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase();
+      let claseEstado = "cita-estado-pendiente";
+      if (/confirmad|aceptad/.test(estadoNormalizado)) {
+        claseEstado = "cita-estado-confirmada";
+      } else if (/proceso/.test(estadoNormalizado)) {
+        claseEstado = "cita-estado-proceso";
+      } else if (/completad|finalizad/.test(estadoNormalizado)) {
+        claseEstado = "cita-estado-completada";
+      } else if (/cancelad|rechazad/.test(estadoNormalizado)) {
+        claseEstado = "cita-estado-cancelada";
       }
+      estado.className = `cita-estado ${claseEstado}`;
+      estado.textContent = estadoTexto;
+      estado.setAttribute("aria-label", `Estado de la cita: ${estado.textContent}`);
+      encabezado.append(titulo, estado);
 
-      const servicios = {
-        MANTENIMIENTO: "Mantenimiento preventivo / Limpieza interna",
-        REPARACION: "Reparación técnica de componentes",
-      };
-      const fragmento = document.createDocumentFragment();
+      const detalles = document.createElement("div");
+      detalles.className = "cita-detalles";
+      const fecha = new Date(`${cita.appointmentDate}T00:00:00`);
+      const fechaTexto = Number.isNaN(fecha.getTime())
+        ? "Fecha no disponible"
+        : new Intl.DateTimeFormat("es-CO", { dateStyle: "long" }).format(
+            fecha,
+          );
 
-      citasUsuario.forEach((cita) => {
-        const tarjeta = document.createElement("article");
-        tarjeta.className = "cita-card";
-
-        const encabezado = document.createElement("div");
-        encabezado.className = "cita-card-encabezado";
-
-        const titulo = document.createElement("h2");
-        titulo.textContent = Object.hasOwn(servicios, cita.servicio)
-          ? servicios[cita.servicio]
-          : "Servicio técnico";
-
-        const estado = document.createElement("span");
-        estado.className = "cita-estado";
-        estado.textContent = cita.estado || "Solicitud recibida";
-        encabezado.append(titulo, estado);
-
-        const detalles = document.createElement("div");
-        detalles.className = "cita-detalles";
-        const fecha = new Date(`${cita.fecha}T00:00:00`);
-        const fechaTexto = Number.isNaN(fecha.getTime())
-          ? "Fecha no disponible"
-          : new Intl.DateTimeFormat("es-CO", { dateStyle: "long" }).format(
-              fecha,
-            );
-
-        [
-          ["Fecha", fechaTexto],
-          ["Equipo", cita.equipo || "No especificado"],
-          ["Teléfono", cita.telefono || "No especificado"],
-        ].forEach(([etiqueta, valor]) => {
-          const detalle = document.createElement("div");
-          detalle.className = "cita-detalle";
-          const nombreDetalle = document.createElement("span");
-          nombreDetalle.textContent = etiqueta;
-          const valorDetalle = document.createElement("strong");
-          valorDetalle.textContent = valor;
-          detalle.append(nombreDetalle, valorDetalle);
-          detalles.appendChild(detalle);
-        });
-
-        tarjeta.append(encabezado, detalles);
-        fragmento.appendChild(tarjeta);
+      [
+        ["Referencia", `CIT-${cita.id}`],
+        ["Fecha", fechaTexto],
+        ["Equipo", cita.equipment || "No especificado"],
+        ["Descripción", cita.description || "No registrada"],
+        ["Teléfono", cita.phone || "No especificado"],
+      ].forEach(([etiqueta, valor]) => {
+        const detalle = document.createElement("div");
+        detalle.className = "cita-detalle";
+        const nombreDetalle = document.createElement("span");
+        nombreDetalle.textContent = etiqueta;
+        const valorDetalle = document.createElement("strong");
+        valorDetalle.textContent = valor;
+        detalle.append(nombreDetalle, valorDetalle);
+        detalles.appendChild(detalle);
       });
 
-      listaCitas.replaceChildren(fragmento);
-    } catch (error) {
-      console.error("No se pudieron cargar las citas:", error);
-      listaCitas.innerHTML =
-        '<p class="pedidos-mensaje" role="alert">No se pudieron cargar tus citas. Intenta actualizar la página.</p>';
-    }
+      tarjeta.append(encabezado, detalles);
+      fragmento.appendChild(tarjeta);
+    });
+
+    listaCitas.replaceChildren(fragmento);
   }
 
   const filtroBtns = document.querySelectorAll(".filtros-pedidos button");
@@ -1616,6 +1686,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     showToast(ordersLoadError, "error");
   } finally {
     ordersLoading = false;
+  }
+
+  try {
+    await loadAppointmentsFromDatabase();
+  } catch (error) {
+    appointmentsLoadError = error.message || "No se pudieron cargar tus citas.";
+    showToast(appointmentsLoadError, "error");
+  } finally {
+    appointmentsLoading = false;
   }
 
   // Inicializar interfaz completa

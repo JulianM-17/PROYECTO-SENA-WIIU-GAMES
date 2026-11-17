@@ -275,6 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
           return "Empleado/index.html";
         }
         if (r.includes("cliente")) {
+          if (returnTo === "cita.html") {
+            return returnTo;
+          }
           if (returnTo && returnTo.includes("garantias")) {
             return returnTo;
           }
