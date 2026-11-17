@@ -67,18 +67,16 @@
             <div class="info-card">
               <h4>HORARIOS:</h4>
               <p>
-                Lunes a viernes: 8:30 a.m. a 12:00 p.m, 2:30 p.m a 6:30 p.m.<br />
-                Sabado: 8:30 a.m a 12:30 p.m, 2:30 p.m a 6:30 p.m.<br />
-                Domingo: 10:00 a.m a 1:00 p.m
+                Lunes-Sabado: 8:00 a.m. – 12:30 p.m. 2:00–7:00 p.m.
               </p>
             </div>
             <div class="info-card">
               <h4>CORREO ELECTRÓNICO:</h4>
-              <p><span class="badge-correo">shop@email.com</span></p>
-            </div>
+              <a href="mailto:wiiugames2026@gmail.com" class= "correo-contactanos">wiiugames2026@gmail.com<a>
+            </div>  
           </div>
         </div>
-      `;
+      `;  
       document.body.appendChild(panel);
     }
 
