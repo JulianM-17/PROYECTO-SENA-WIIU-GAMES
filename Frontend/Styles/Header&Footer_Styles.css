@@ -39,6 +39,7 @@
 
 /*BARRA SUPERIOR*/
 .barra-superior {
+  position: relative;
   background: linear-gradient(135deg, #05090f 0%, #0a0e1a 100%);
   color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
@@ -64,6 +65,11 @@
 }
 
 .seccion-direccion {
+  position: absolute;
+  left: 50vw;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: calc(100vw - 480px);
   text-align: center;
   line-height: 1.5;
 }
@@ -116,6 +122,16 @@
 .red-social:hover {
   color: var(--yellow);
   transform: scale(1.15);
+}
+
+@media (max-width: 1100px) {
+  .seccion-direccion {
+    position: static;
+    flex-basis: 100%;
+    order: 1;
+    max-width: none;
+    transform: none;
+  }
 }
 
 /* =====================================================

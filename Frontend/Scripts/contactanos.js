@@ -72,7 +72,7 @@
             </div>
             <div class="info-card">
               <h4>CORREO ELECTRÓNICO:</h4>
-              <a href="mailto:wiiugames2026@gmail.com" class= "correo-contactanos">wiiugames2026@gmail.com<a>
+              <a href="mailto:wiiugames2026@gmail.com" class="correo-contactanos">wiiugames2026@gmail.com</a>
             </div>  
           </div>
         </div>
