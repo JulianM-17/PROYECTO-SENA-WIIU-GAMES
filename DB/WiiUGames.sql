@@ -312,6 +312,37 @@ CREATE TABLE backup (
     CONSTRAINT chk_peso CHECK (peso >= 0)
 );
 
+-- -------------------------- favorito ---------------------------
+
+CREATE TABLE favorito (
+    id_favorito INT AUTO_INCREMENT NOT NULL,
+    fecha_agregado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id_usuario , id_producto),
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    id_producto INT NOT NULL,
+    FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto)	
+);
+
+-- --------------------------Reseñas---------------------------------
+
+CREATE TABLE resenas (
+    id_resenas INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    id_producto INT NOT NULL,
+    FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto),
+    calificacion TINYINT NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
+    comentario VARCHAR(300),
+    compra_verificada BOOLEAN DEFAULT FALSE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_usuario_producto (usuario_id , producto_id)
+);
+
 -- ---------------- rol ----------------
 INSERT INTO rol (nombre_rol, descripcion_rol, estado) VALUES
 ('Cliente', 'Usuario que compra productos y solicita servicios', 'ACTIVO'),
