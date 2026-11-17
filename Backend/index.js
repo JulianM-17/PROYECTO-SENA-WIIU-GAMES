@@ -293,6 +293,102 @@ app.delete("/api/session", requireUserSession, (req, res) => {
   return res.json({ ok: true });
 });
 
+app.get("/api/my-appointments", requireUserSession, async (req, res) => {
+  try {
+    const [appointments] = await pool.query(
+      `SELECT
+         id_cita AS id,
+         equipo AS equipment,
+         descripcion AS description,
+         telefono AS phone,
+         DATE_FORMAT(fecha, '%Y-%m-%d') AS appointmentDate,
+         tipo_servicio AS serviceType,
+         estado AS status
+       FROM cita
+       WHERE id_usuario = ?
+       ORDER BY fecha ASC, fecha_creacion DESC`,
+      [req.userId],
+    );
+    return res.json({ ok: true, appointments });
+  } catch (error) {
+    console.error("Error al consultar las citas del usuario:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudieron cargar tus citas." });
+  }
+});
+
+app.post("/api/appointments", requireUserSession, async (req, res) => {
+  const equipment = String(req.body?.equipment || "").trim();
+  const description = String(req.body?.description || "").trim();
+  const phone = String(req.body?.phone || "").trim();
+  const appointmentDate = String(req.body?.date || "").trim();
+  const serviceType = String(req.body?.serviceType || "");
+  const validServiceTypes = ["MANTENIMIENTO", "REPARACION"];
+  const dateValue = new Date(`${appointmentDate}T00:00:00Z`);
+  const now = new Date();
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
+
+  if (
+    equipment.length < 2 ||
+    equipment.length > 100 ||
+    description.length < 10 ||
+    description.length > 1000 ||
+    !/^\d{10}$/.test(phone) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate) ||
+    Number.isNaN(dateValue.getTime()) ||
+    dateValue.toISOString().slice(0, 10) !== appointmentDate ||
+    appointmentDate < today ||
+    !validServiceTypes.includes(serviceType)
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa el equipo, descripción, teléfono, fecha y tipo de servicio.",
+    });
+  }
+
+  try {
+    const [userRows] = await pool.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [req.userId],
+    );
+    if (!userRows.length) {
+      return res.status(403).json({
+        ok: false,
+        message: "Solo una cuenta de cliente activa puede agendar citas.",
+      });
+    }
+
+    const [result] = await pool.query(
+      `INSERT INTO cita (id_usuario, equipo, descripcion, telefono, fecha, tipo_servicio)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+      [req.userId, equipment, description, phone, appointmentDate, serviceType],
+    );
+    return res.status(201).json({
+      ok: true,
+      message: "Tu cita quedó registrada correctamente.",
+      appointment: {
+        id: result.insertId,
+        equipment,
+        description,
+        phone,
+        appointmentDate,
+        serviceType,
+        status: "SOLICITUD RECIBIDA",
+      },
+    });
+  } catch (error) {
+    console.error("Error al registrar la cita:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo registrar la cita." });
+  }
+});
+
 async function obtenerSucursalInventarioAdmin(branchId) {
   const parsedBranchId = Number(branchId);
   if (!Number.isSafeInteger(parsedBranchId) || parsedBranchId < 1) return null;
@@ -436,6 +532,15 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        GROUP BY u.id_usuario, u.nombre, u.apellido, u.telefono, u.correo
        ORDER BY totalSpent DESC, u.nombre`,
     );
+    const [technicianRows] = await pool.query(
+      `SELECT
+         u.id_usuario AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS name
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE r.nombre_rol = 'Trabajador' AND u.estado = 'ACTIVO'
+       ORDER BY u.nombre, u.apellido`,
+    );
     const [warrantyRows] = await pool.query(
       `SELECT
          CONCAT('GAR-', g.id_garantia) AS id,
@@ -457,13 +562,16 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          s.id_servicio AS id,
          CONCAT('MNT-', s.id_servicio) AS maintenanceOrder,
          COALESCE(e.descripcion, e.tipo) AS equipment,
+         e.tipo AS equipmentType,
+         e.marca AS brand,
+         e.numero_serial AS serialNumber,
+         s.descripcion AS workRequested,
+         COALESCE(ds.details, 'Pendiente de diagnóstico') AS details,
          CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
+         s.id_encargado AS technicianId,
          CONCAT(uEncargado.nombre, ' ', uEncargado.apellido) AS tech,
-         CONCAT('$ ', FORMAT(CASE
-           WHEN s.id_servicio = 1 THEN 180000
-           WHEN s.id_servicio = 2 THEN 240000
-           ELSE 120000
-         END, 0)) AS cost,
+         COALESCE(ds.cost, 0) AS cost,
+         DATE_FORMAT(s.fecha_creacion, '%Y-%m-%d %H:%i') AS createdAt,
          s.estado AS statusCode,
          CASE
            WHEN s.estado = 'PENDIENTE' THEN 'En Taller'
@@ -476,6 +584,14 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        INNER JOIN equipo e ON e.id_equipo = s.id_equipo
        INNER JOIN usuario uCliente ON uCliente.id_usuario = s.id_usuario
        INNER JOIN usuario uEncargado ON uEncargado.id_usuario = s.id_encargado
+       LEFT JOIN (
+         SELECT
+           id_servicio,
+           SUM(subtotal) AS cost,
+           GROUP_CONCAT(DISTINCT NULLIF(descripcion, '') SEPARATOR ' · ') AS details
+         FROM detalle_servicio
+         GROUP BY id_servicio
+       ) ds ON ds.id_servicio = s.id_servicio
        WHERE ts.nombre = 'Mantenimiento preventivo' AND ts.estado = 'ACTIVO'
        ORDER BY s.fecha_creacion DESC
        LIMIT 10`,
@@ -485,9 +601,16 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          s.id_servicio AS id,
          CONCAT('REP-', s.id_servicio) AS ticket,
          COALESCE(e.descripcion, e.tipo) AS device,
+         e.tipo AS equipmentType,
+         e.marca AS brand,
+         e.numero_serial AS serialNumber,
          s.descripcion AS defect,
+         COALESCE(ds.details, 'Pendiente de diagnóstico') AS details,
          CONCAT(uCliente.nombre, ' ', uCliente.apellido) AS client,
-         CONCAT('$ ', FORMAT(CASE WHEN s.id_servicio % 2 = 0 THEN 75000 ELSE 60000 END, 0)) AS price,
+         s.id_encargado AS technicianId,
+         CONCAT(uEncargado.nombre, ' ', uEncargado.apellido) AS tech,
+         COALESCE(ds.cost, 0) AS price,
+         DATE_FORMAT(s.fecha_creacion, '%Y-%m-%d %H:%i') AS createdAt,
          s.estado AS statusCode,
          CASE
            WHEN s.estado = 'PENDIENTE' THEN 'En Taller'
@@ -499,9 +622,37 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
        INNER JOIN equipo e ON e.id_equipo = s.id_equipo
        INNER JOIN usuario uCliente ON uCliente.id_usuario = s.id_usuario
+       INNER JOIN usuario uEncargado ON uEncargado.id_usuario = s.id_encargado
+       LEFT JOIN (
+         SELECT
+           id_servicio,
+           SUM(subtotal) AS cost,
+           GROUP_CONCAT(DISTINCT NULLIF(descripcion, '') SEPARATOR ' · ') AS details
+         FROM detalle_servicio
+         GROUP BY id_servicio
+       ) ds ON ds.id_servicio = s.id_servicio
        WHERE ts.nombre = 'Reparacion'
        ORDER BY s.fecha_creacion DESC
        LIMIT 10`,
+    );
+    const [appointmentRows] = await pool.query(
+      `SELECT
+         c.id_cita AS id,
+         CONCAT('CIT-', c.id_cita) AS reference,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         c.id_tecnico AS technicianId,
+         CONCAT(uTecnico.nombre, ' ', uTecnico.apellido) AS tech,
+         c.equipo AS equipment,
+         c.descripcion AS description,
+         c.telefono AS phone,
+         DATE_FORMAT(c.fecha, '%Y-%m-%d') AS appointmentDate,
+         c.precio AS price,
+         c.tipo_servicio AS serviceType,
+         c.estado AS status
+       FROM cita c
+       INNER JOIN usuario u ON u.id_usuario = c.id_usuario
+       LEFT JOIN usuario uTecnico ON uTecnico.id_usuario = c.id_tecnico
+       ORDER BY c.fecha ASC, c.fecha_creacion DESC`,
     );
     const [discountRows] = await pool.query(
       `SELECT
@@ -549,9 +700,11 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       branches: branchRows,
       selectedBranchId,
       clients: clientsRows || [],
+      technicians: technicianRows || [],
       warranties: warrantyRows || [],
       maintenance: maintenanceRows || [],
       repairs: repairRows || [],
+      appointments: appointmentRows || [],
       discounts: discountRows || [],
       categories: categoryRows || [],
       brands: brandRows || [],
@@ -2196,165 +2349,176 @@ app.post("/api/admin/garantias", async (req, res) => {
 
 // ---------- MANTENIMIENTOS ----------
 
-app.post("/api/admin/mantenimientos", async (req, res) => {
+async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
+  const equipment = String(req.body?.equipment || "").trim();
+  const equipmentType = String(req.body?.equipmentType || "");
+  const brand = String(req.body?.brand || "").trim();
+  const serialNumber = String(req.body?.serialNumber || "").trim();
+  const serviceDescription = String(req.body?.serviceDescription || "").trim();
+  const diagnosis = String(req.body?.diagnosis || "").trim();
+  const clientId = Number(req.body?.clientId);
+  const technicianId = Number(req.body?.technicianId);
+  const cost = Number(req.body?.cost);
+  const validEquipmentTypes = ["Portatil", "Torre", "Consola", "Control", "All in one"];
+
+  if (
+    equipment.length < 3 ||
+    equipment.length > 100 ||
+    !validEquipmentTypes.includes(equipmentType) ||
+    brand.length < 1 ||
+    brand.length > 20 ||
+    serialNumber.length > 40 ||
+    serviceDescription.length < 3 ||
+    serviceDescription.length > 100 ||
+    diagnosis.length > 100 ||
+    !Number.isSafeInteger(clientId) ||
+    clientId <= 0 ||
+    !Number.isSafeInteger(technicianId) ||
+    technicianId <= 0 ||
+    !Number.isSafeInteger(cost) ||
+    cost <= 0 ||
+    cost > 99999999
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa los datos del equipo, cliente, técnico, detalle y presupuesto.",
+    });
+  }
+
+  let connection;
   try {
-    const { equipment, client, tech, cost, status } = req.body;
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
 
-    if (!equipment || String(equipment).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Equipo inválido." });
+    const [clientRows] = await connection.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [clientId],
+    );
+    if (!clientRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "No se encontró el cliente seleccionado." });
     }
-    if (!client || String(client).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Cliente inválido." });
+
+    const [technicianRows] = await connection.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Trabajador'
+       LIMIT 1`,
+      [technicianId],
+    );
+    if (!technicianRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "No se encontró el técnico seleccionado." });
     }
 
-    // Buscar cliente por nombre
-    const clientName = String(client).trim();
-    const [userRows] = await pool.query(
-      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
-      [clientName],
+    const [serviceTypeRows] = await connection.query(
+      "SELECT id_tipo_servicio FROM tipo_servicio WHERE nombre = ? AND estado = 'ACTIVO' LIMIT 1",
+      [nombreTipoServicio],
     );
-    const clientUserId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+    if (!serviceTypeRows.length) {
+      await connection.rollback();
+      return res.status(409).json({ ok: false, message: "El tipo de servicio no está disponible." });
+    }
 
-    // Buscar técnico (encargado) - usar trabajador por defecto
-    const [techRows] = await pool.query(
-      `SELECT u.id_usuario FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol
-       WHERE r.nombre_rol = 'Trabajador' AND u.estado = 'ACTIVO' LIMIT 1`,
-    );
-    const techId = techRows.length > 0 ? techRows[0].id_usuario : 5;
-
-    // Tipo servicio 1 = Mantenimiento preventivo
-    // Necesitamos un equipo asociado
-    const [equipoRows] = await pool.query(
-      `SELECT id_equipo FROM equipo WHERE id_usuario = ? AND estado = 'ACTIVO' LIMIT 1`,
-      [clientUserId],
-    );
-
-    let equipoId;
-    if (equipoRows.length > 0) {
-      equipoId = equipoRows[0].id_equipo;
-    } else {
-      // Crear equipo temporal
-      const [insertEquipo] = await pool.query(
-        `INSERT INTO equipo (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
-         VALUES (?, 1, 'Consola', 'WiiU', ?, ?, 'ACTIVO')`,
-        [clientUserId, `SN-MNT-${Date.now()}`, String(equipment).trim().substring(0, 100)],
+    const serial = serialNumber || `SN-${prefijo}-${crypto.randomBytes(10).toString("hex").toUpperCase()}`;
+    let existingEquipmentRows = [];
+    if (serialNumber) {
+      [existingEquipmentRows] = await connection.query(
+        "SELECT id_equipo, id_usuario FROM equipo WHERE numero_serial = ? LIMIT 1",
+        [serial],
       );
-      equipoId = insertEquipo.insertId;
+    }
+    let equipmentId;
+    if (existingEquipmentRows.length) {
+      if (Number(existingEquipmentRows[0].id_usuario) !== clientId) {
+        await connection.rollback();
+        return res.status(409).json({ ok: false, message: "El número de serie pertenece a otro cliente." });
+      }
+      equipmentId = existingEquipmentRows[0].id_equipo;
+      await connection.query(
+        `UPDATE equipo SET tipo = ?, marca = ?, descripcion = ?, estado = 'ACTIVO'
+         WHERE id_equipo = ?`,
+        [equipmentType, brand, equipment, equipmentId],
+      );
+    } else {
+      const [branchRows] = await connection.query(
+        "SELECT id_sucursal FROM sucursal WHERE estado = 'ACTIVO' ORDER BY id_sucursal LIMIT 1",
+      );
+      if (!branchRows.length) {
+        await connection.rollback();
+        return res.status(409).json({ ok: false, message: "No hay una sucursal activa para registrar el equipo." });
+      }
+      const [equipmentResult] = await connection.query(
+        `INSERT INTO equipo
+           (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
+         VALUES (?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+        [clientId, branchRows[0].id_sucursal, equipmentType, brand, serial, equipment],
+      );
+      equipmentId = equipmentResult.insertId;
     }
 
-    // Mapear status del frontend a ENUM de BD
-    const statusMap = {
-      "En Taller": "PENDIENTE",
-      "En Diagnóstico": "EN PROCESO",
-      "Listo para Entrega": "COMPLETO",
-      "Completado": "COMPLETO",
-    };
-    const dbStatus = statusMap[status] || "PENDIENTE";
-
-    const [result] = await pool.query(
-      `INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
-       VALUES (?, ?, ?, ?, 1, ?, ?)`,
+    const [serviceResult] = await connection.query(
+      `INSERT INTO servicio
+         (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
+       VALUES (?, ?, ?, ?, ?, ?, 'PENDIENTE')`,
       [
-        `Mantenimiento ${String(equipment).trim().substring(0, 60)}`,
-        `Mantenimiento técnico - ${String(equipment).trim().substring(0, 60)}`,
-        clientUserId,
-        techId,
-        equipoId,
-        dbStatus,
+        `${nombreTipoServicio}: ${equipment}`.substring(0, 100),
+        serviceDescription,
+        clientId,
+        technicianId,
+        serviceTypeRows[0].id_tipo_servicio,
+        equipmentId,
       ],
     );
+    await connection.query(
+      `INSERT INTO detalle_servicio
+         (id_servicio, id_producto, descripcion, cantidad, precio_unitario, estado)
+       VALUES (?, NULL, ?, 1, ?, 'PENDIENTE')`,
+      [serviceResult.insertId, diagnosis || "Pendiente de diagnóstico", cost],
+    );
+    await connection.commit();
 
     return res.status(201).json({
       ok: true,
-      message: "Mantenimiento registrado.",
-      maintenance: {
-        order: `MNT-${result.insertId}`,
-        equipment: String(equipment).trim(),
-        client: clientName,
-        tech: tech || "Técnico Asignado",
-        cost: `$ ${Number(cost || 0).toLocaleString("es-CO")}`,
-        status: status || "En Taller",
+      message: `${nombreTipoServicio} registrado correctamente.`,
+      order: {
+        id: serviceResult.insertId,
+        ticket: `${prefijo}-${serviceResult.insertId}`,
+        equipment,
+        serviceDescription,
+        diagnosis: diagnosis || "Pendiente de diagnóstico",
+        cost,
       },
     });
   } catch (error) {
-    console.error("Error al crear mantenimiento:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo registrar el mantenimiento." });
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error al revertir el registro del servicio:", rollbackError.message);
+      }
+    }
+    console.error(`Error al registrar ${nombreTipoServicio}:`, error.message);
+    return res.status(500).json({ ok: false, message: `No se pudo registrar ${nombreTipoServicio.toLowerCase()}.` });
+  } finally {
+    connection?.release();
   }
-});
+}
+
+app.post("/api/admin/mantenimientos", (req, res) =>
+  crearOrdenServicioAdmin(req, res, "Mantenimiento preventivo", "MNT"),
+);
 
 // ---------- REPARACIONES ----------
 
-app.post("/api/admin/reparaciones", async (req, res) => {
-  try {
-    const { device, defect, client, price } = req.body;
-
-    if (!device || String(device).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Dispositivo inválido." });
-    }
-    if (!defect || String(defect).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Falla inválida." });
-    }
-
-    const clientName = String(client || "Cliente Mostrador").trim();
-    const [userRows] = await pool.query(
-      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
-      [clientName],
-    );
-    const clientUserId = userRows.length > 0 ? userRows[0].id_usuario : 1;
-
-    const [techRows] = await pool.query(
-      `SELECT u.id_usuario FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol
-       WHERE r.nombre_rol = 'Trabajador' AND u.estado = 'ACTIVO' LIMIT 1`,
-    );
-    const techId = techRows.length > 0 ? techRows[0].id_usuario : 5;
-
-    const [equipoRows] = await pool.query(
-      `SELECT id_equipo FROM equipo WHERE id_usuario = ? AND estado = 'ACTIVO' LIMIT 1`,
-      [clientUserId],
-    );
-
-    let equipoId;
-    if (equipoRows.length > 0) {
-      equipoId = equipoRows[0].id_equipo;
-    } else {
-      const [insertEquipo] = await pool.query(
-        `INSERT INTO equipo (id_usuario, id_sucursal, tipo, marca, numero_serial, descripcion, estado)
-         VALUES (?, 1, 'Consola', 'WiiU', ?, ?, 'ACTIVO')`,
-        [clientUserId, `SN-REP-${Date.now()}`, String(device).trim().substring(0, 100)],
-      );
-      equipoId = insertEquipo.insertId;
-    }
-
-    // Tipo servicio 2 = Reparacion
-    const [result] = await pool.query(
-      `INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado)
-       VALUES (?, ?, ?, ?, 2, ?, 'PENDIENTE')`,
-      [
-        `Reparación ${String(device).trim().substring(0, 60)}`,
-        String(defect).trim().substring(0, 100),
-        clientUserId,
-        techId,
-        equipoId,
-      ],
-    );
-
-    return res.status(201).json({
-      ok: true,
-      message: "Reparación registrada.",
-      repair: {
-        ticket: `REP-${result.insertId}`,
-        device: String(device).trim(),
-        defect: String(defect).trim(),
-        client: clientName,
-        price: `$ ${Number(price || 60000).toLocaleString("es-CO")}`,
-        status: "Ingresado en Taller",
-      },
-    });
-  } catch (error) {
-    console.error("Error al crear reparación:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo registrar la reparación." });
-  }
-});
+app.post("/api/admin/reparaciones", (req, res) =>
+  crearOrdenServicioAdmin(req, res, "Reparacion", "REP"),
+);
 
 async function actualizarEstadoServicioAdmin(req, res, nombreTipoServicio) {
   const serviceId = Number(req.params.id);
@@ -2420,6 +2584,320 @@ app.patch(
   requireAdmin,
   (req, res) => actualizarEstadoServicioAdmin(req, res, "Reparacion"),
 );
+
+async function actualizarOrdenServicioAdmin(req, res, nombreTipoServicio) {
+  const serviceId = Number(req.params.id);
+  const serviceDescription = String(req.body?.serviceDescription || "").trim();
+  const diagnosis = String(req.body?.diagnosis || "").trim();
+  const technicianId = Number(req.body?.technicianId);
+  const cost = Number(req.body?.cost);
+  const status = String(req.body?.status || "");
+  const validStatuses = ["PENDIENTE", "EN PROCESO", "COMPLETO", "CANCELADO"];
+  if (
+    !Number.isSafeInteger(serviceId) ||
+    serviceId <= 0 ||
+    serviceDescription.length < 3 ||
+    serviceDescription.length > 100 ||
+    diagnosis.length < 1 ||
+    diagnosis.length > 100 ||
+    !Number.isSafeInteger(technicianId) ||
+    technicianId <= 0 ||
+    !Number.isFinite(cost) ||
+    cost < 0 ||
+    cost > 99999999.99 ||
+    !validStatuses.includes(status)
+  ) {
+    return res.status(400).json({ ok: false, message: "Revisa los datos de la orden." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [serviceRows] = await connection.query(
+      `SELECT s.id_servicio
+       FROM servicio s
+       INNER JOIN tipo_servicio ts ON ts.id_tipo_servicio = s.id_tipo_servicio
+       WHERE s.id_servicio = ? AND ts.nombre = ?
+       FOR UPDATE`,
+      [serviceId, nombreTipoServicio],
+    );
+    if (!serviceRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "No se encontró la orden solicitada." });
+    }
+
+    const [technicianRows] = await connection.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Trabajador'
+       LIMIT 1`,
+      [technicianId],
+    );
+    if (!technicianRows.length) {
+      await connection.rollback();
+      return res.status(400).json({ ok: false, message: "Selecciona un técnico activo registrado." });
+    }
+
+    const [detailRows] = await connection.query(
+      `SELECT id_detalle_servicio, id_producto, cantidad, subtotal
+       FROM detalle_servicio
+       WHERE id_servicio = ?
+       ORDER BY id_detalle_servicio
+       FOR UPDATE`,
+      [serviceId],
+    );
+    const primaryLaborRow = detailRows.find((row) => row.id_producto === null);
+    const fixedCost = detailRows.reduce((total, row) => {
+      return row.id_detalle_servicio === primaryLaborRow?.id_detalle_servicio
+        ? total
+        : total + Number(row.subtotal || 0);
+    }, 0);
+    const laborCost = Number((cost - fixedCost).toFixed(6));
+    if (laborCost < 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        ok: false,
+        message: "El precio no puede ser menor al valor de los repuestos registrados.",
+      });
+    }
+
+    await connection.query(
+      `UPDATE servicio
+       SET descripcion = ?, id_encargado = ?, estado = ?
+       WHERE id_servicio = ?`,
+      [serviceDescription, technicianId, status, serviceId],
+    );
+
+    if (primaryLaborRow) {
+      await connection.query(
+        `UPDATE detalle_servicio
+         SET descripcion = ?, cantidad = 1, precio_unitario = ?, estado = ?
+         WHERE id_detalle_servicio = ?`,
+        [diagnosis, laborCost, status, primaryLaborRow.id_detalle_servicio],
+      );
+    } else {
+      await connection.query(
+        `INSERT INTO detalle_servicio
+           (id_servicio, id_producto, descripcion, cantidad, precio_unitario, estado)
+         VALUES (?, NULL, ?, 1, ?, ?)`,
+        [serviceId, diagnosis, laborCost, status],
+      );
+    }
+    await connection.query(
+      "UPDATE detalle_servicio SET estado = ? WHERE id_servicio = ?",
+      [status, serviceId],
+    );
+    await connection.commit();
+    return res.json({ ok: true, message: "Orden actualizada correctamente." });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo la edición de la orden:", rollbackError.message);
+      }
+    }
+    console.error("Error al editar la orden:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar la orden." });
+  } finally {
+    connection?.release();
+  }
+}
+
+app.patch("/api/admin/mantenimientos/:id", requireAdmin, (req, res) =>
+  actualizarOrdenServicioAdmin(req, res, "Mantenimiento preventivo"),
+);
+app.patch("/api/admin/reparaciones/:id", requireAdmin, (req, res) =>
+  actualizarOrdenServicioAdmin(req, res, "Reparacion"),
+);
+
+app.patch("/api/admin/appointments/:id", requireAdmin, async (req, res) => {
+  const appointmentId = Number(req.params.id);
+  const equipment = String(req.body?.equipment || "").trim();
+  const description = String(req.body?.description || "").trim();
+  const phone = String(req.body?.phone || "").trim();
+  const appointmentDate = String(req.body?.appointmentDate || "").trim();
+  const requestedTechnicianId = req.body?.technicianId;
+  const technicianId =
+    requestedTechnicianId === null || requestedTechnicianId === ""
+      ? null
+      : Number(requestedTechnicianId);
+  const requestedPrice = req.body?.price;
+  const price =
+    requestedPrice === null || requestedPrice === ""
+      ? null
+      : Number(requestedPrice);
+  const status = String(req.body?.status || "");
+  const dateValue = new Date(`${appointmentDate}T00:00:00Z`);
+  const validStatuses = [
+    "SOLICITUD RECIBIDA",
+    "CONFIRMADA",
+    "EN PROCESO",
+    "COMPLETADA",
+    "CANCELADA",
+  ];
+
+  if (
+    !Number.isSafeInteger(appointmentId) ||
+    appointmentId <= 0 ||
+    equipment.length < 2 ||
+    equipment.length > 100 ||
+    description.length < 10 ||
+    description.length > 1000 ||
+    !/^\d{10}$/.test(phone) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate) ||
+    Number.isNaN(dateValue.getTime()) ||
+    dateValue.toISOString().slice(0, 10) !== appointmentDate ||
+    (technicianId !== null &&
+      (!Number.isSafeInteger(technicianId) || technicianId <= 0)) ||
+    (price !== null &&
+      (!Number.isFinite(price) || price < 0 || price > 999999999999.99)) ||
+    !validStatuses.includes(status)
+  ) {
+    return res.status(400).json({ ok: false, message: "Revisa los datos de la cita." });
+  }
+
+  try {
+    const [appointmentRows] = await pool.query(
+      "SELECT id_cita FROM cita WHERE id_cita = ?",
+      [appointmentId],
+    );
+    if (!appointmentRows.length) {
+      return res.status(404).json({ ok: false, message: "No se encontró la cita solicitada." });
+    }
+
+    if (technicianId !== null) {
+      const [technicianRows] = await pool.query(
+        `SELECT u.id_usuario
+         FROM usuario u
+         INNER JOIN rol r ON r.id_rol = u.id_rol
+         WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Trabajador'
+         LIMIT 1`,
+        [technicianId],
+      );
+      if (!technicianRows.length) {
+        return res.status(400).json({
+          ok: false,
+          message: "Selecciona un técnico activo registrado.",
+        });
+      }
+    }
+
+    await pool.query(
+      `UPDATE cita
+       SET equipo = ?, descripcion = ?, telefono = ?, fecha = ?,
+           id_tecnico = ?, precio = ?, estado = ?
+       WHERE id_cita = ?`,
+      [
+        equipment,
+        description,
+        phone,
+        appointmentDate,
+        technicianId,
+        price,
+        status,
+        appointmentId,
+      ],
+    );
+    return res.json({ ok: true, message: "Cita actualizada correctamente." });
+  } catch (error) {
+    console.error("Error al editar la cita:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar la cita." });
+  }
+});
+
+app.patch("/api/admin/appointments/:id/status", requireAdmin, async (req, res) => {
+  const appointmentId = Number(req.params.id);
+  const status = String(req.body?.status || "");
+  const validStatuses = [
+    "SOLICITUD RECIBIDA",
+    "CONFIRMADA",
+    "EN PROCESO",
+    "COMPLETADA",
+    "CANCELADA",
+  ];
+  if (
+    !Number.isSafeInteger(appointmentId) ||
+    appointmentId <= 0 ||
+    !validStatuses.includes(status)
+  ) {
+    return res.status(400).json({ ok: false, message: "El estado solicitado no es válido." });
+  }
+
+  try {
+    const [appointmentRows] = await pool.query(
+      "SELECT id_cita FROM cita WHERE id_cita = ?",
+      [appointmentId],
+    );
+    if (!appointmentRows.length) {
+      return res.status(404).json({ ok: false, message: "No se encontró la cita solicitada." });
+    }
+
+    await pool.query(
+      "UPDATE cita SET estado = ? WHERE id_cita = ?",
+      [status, appointmentId],
+    );
+    return res.json({ ok: true, message: "Estado de la cita actualizado." });
+  } catch (error) {
+    console.error("Error al actualizar el estado de la cita:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar el estado de la cita." });
+  }
+});
+
+app.patch("/api/admin/appointments/:id/technician", requireAdmin, async (req, res) => {
+  const appointmentId = Number(req.params.id);
+  const requestedTechnicianId = req.body?.technicianId;
+  const technicianId =
+    requestedTechnicianId === null || requestedTechnicianId === ""
+      ? null
+      : Number(requestedTechnicianId);
+  if (
+    !Number.isSafeInteger(appointmentId) ||
+    appointmentId <= 0 ||
+    (technicianId !== null &&
+      (!Number.isSafeInteger(technicianId) || technicianId <= 0))
+  ) {
+    return res.status(400).json({ ok: false, message: "El técnico o la cita no son válidos." });
+  }
+
+  try {
+    const [appointmentRows] = await pool.query(
+      "SELECT id_cita FROM cita WHERE id_cita = ?",
+      [appointmentId],
+    );
+    if (!appointmentRows.length) {
+      return res.status(404).json({ ok: false, message: "No se encontró la cita solicitada." });
+    }
+
+    if (technicianId !== null) {
+      const [technicianRows] = await pool.query(
+        `SELECT u.id_usuario
+         FROM usuario u
+         INNER JOIN rol r ON r.id_rol = u.id_rol
+         WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Trabajador'
+         LIMIT 1`,
+        [technicianId],
+      );
+      if (!technicianRows.length) {
+        return res.status(400).json({
+          ok: false,
+          message: "Selecciona un técnico activo registrado.",
+        });
+      }
+    }
+
+    await pool.query(
+      "UPDATE cita SET id_tecnico = ? WHERE id_cita = ?",
+      [technicianId, appointmentId],
+    );
+    return res.json({ ok: true, message: "Técnico asignado a la cita." });
+  } catch (error) {
+    console.error("Error al asignar técnico a la cita:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo asignar el técnico a la cita." });
+  }
+});
 
 // ---------- DESCUENTOS / PROMOCIONES ----------
 

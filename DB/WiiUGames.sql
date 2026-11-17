@@ -31,6 +31,25 @@ CREATE TABLE usuario (
     fecha_ingreso DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ---------------- Citas ----------------
+CREATE TABLE cita (
+    id_cita INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
+    id_tecnico INT NULL,
+    FOREIGN KEY (id_tecnico) REFERENCES usuario (id_usuario),
+    equipo VARCHAR(100) NOT NULL,
+    descripcion TEXT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    fecha DATE NOT NULL,
+    precio DECIMAL(14, 2) NULL,
+    tipo_servicio ENUM('MANTENIMIENTO', 'REPARACION') NOT NULL,
+    estado ENUM('SOLICITUD RECIBIDA','CONFIRMADA','EN PROCESO','COMPLETADA','CANCELADA') NOT NULL DEFAULT 'SOLICITUD RECIBIDA',
+    fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_cita_usuario_fecha (id_usuario, fecha),
+    INDEX idx_cita_tecnico (id_tecnico)
+);
+
 -- --------------Sucursal-----------------
 CREATE TABLE sucursal (
     id_sucursal INT AUTO_INCREMENT NOT NULL PRIMARY KEY,

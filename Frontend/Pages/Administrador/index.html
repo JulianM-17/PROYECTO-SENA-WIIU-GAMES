@@ -379,18 +379,19 @@
             <table class="tabla-panel">
             <thead>
               <tr>
-                <th>Orden</th>
+                <th>Ticket</th>
                 <th>Equipo</th>
                 <th>Cliente</th>
+                <th>Fecha</th>
+                <th>Precio</th>
                 <th>Técnico</th>
-                <th>Costo</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaMantenimientosBody">
               <tr>
-                <td colspan="7" class="texto-vacio">No hay órdenes de mantenimiento registradas en la base de datos</td>
+                <td colspan="8" class="texto-vacio">No hay órdenes de mantenimiento registradas en la base de datos</td>
               </tr>
             </tbody>
             </table>
@@ -486,16 +487,17 @@
               <tr>
                 <th>Ticket</th>
                 <th>Dispositivo</th>
-                <th>Falla Reportada</th>
                 <th>Cliente</th>
-                <th>Presupuesto</th>
+                <th>Fecha</th>
+                <th>Precio</th>
+                <th>Técnico</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaReparacionBody">
               <tr>
-                <td colspan="7" class="texto-vacio">No hay tickets de reparación registrados en la base de datos</td>
+                <td colspan="8" class="texto-vacio">No hay tickets de reparación registrados en la base de datos</td>
               </tr>
             </tbody>
             </table>
@@ -775,6 +777,23 @@
       </form>
     </div>
   </div>
+
+  <dialog class="modal-detalle-servicio" id="modalDetalleServicio" aria-labelledby="modalDetalleTitulo">
+    <div class="caja-modal-detalle">
+      <header class="cabecera-modal-detalle">
+        <div>
+          <p>Consulta y edición de reparaciones y mantenimientos</p>
+          <h2 id="modalDetalleTitulo">Detalle del servicio</h2>
+        </div>
+        <button type="button" class="btn-cerrar-detalle" id="btnCerrarDetalleServicio" aria-label="Cerrar ventana">&times;</button>
+      </header>
+      <div id="modalDetalleContenido" class="contenido-modal-detalle"></div>
+      <footer class="pie-modal-detalle">
+        <button type="submit" class="boton-amarillo" id="btnGuardarDetalleServicio" form="formEditarDetalleServicio">Guardar cambios</button>
+        <button type="button" class="boton-amarillo" id="btnCerrarDetalleServicioPie">Cerrar</button>
+      </footer>
+    </div>
+  </dialog>
 
 <div id="contenedor-toast" class="contenedor-toast"></div>
 
