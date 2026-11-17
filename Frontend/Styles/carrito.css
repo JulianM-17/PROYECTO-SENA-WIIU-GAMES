@@ -700,15 +700,9 @@ body {
     align-items: stretch;
   }
 
-  .btn-negro {
-    width: 100%;
-    text-align: center;
-  }
 }
 
 body.a11y-mode-dark-mode #btn-vaciar,
-body.a11y-mode-dark-mode #btn-actualizar,
-body.a11y-mode-dark-mode .btn-negro,
 body.a11y-mode-dark-mode .btn-negro-secundario {
   background: #f5c842 !important;
   background-image: none !important;
@@ -719,8 +713,6 @@ body.a11y-mode-dark-mode .btn-negro-secundario {
 }
 
 body.a11y-mode-dark-mode #btn-vaciar:hover,
-body.a11y-mode-dark-mode #btn-actualizar:hover,
-body.a11y-mode-dark-mode .btn-negro:hover,
 body.a11y-mode-dark-mode .btn-negro-secundario:hover {
   background: #ffd95a !important;
   background-image: none !important;

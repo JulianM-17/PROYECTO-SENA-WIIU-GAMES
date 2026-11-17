@@ -831,6 +831,9 @@ app.post("/api/login", async (req, res) => {
 app.post("/api/purchases", requireUserSession, async (req, res) => {
   const paymentMethods = {
     tarjeta: "TARJETA",
+    pse: "TRANSFERENCIA",
+    billetera: "TRANSFERENCIA",
+    efectivo: "EFECTIVO",
     transferencia: "TRANSFERENCIA",
   };
   const paymentMethod = Object.hasOwn(paymentMethods, req.body?.method)
@@ -970,12 +973,11 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     );
     const shipping = 25000;
     const taxes = Number((subtotal * 0.19).toFixed(2));
-    const serviceFee = Number((subtotal * 0.1).toFixed(2));
-    const total = Number((subtotal + shipping + taxes + serviceFee).toFixed(2));
+    const total = Number((subtotal + shipping + taxes).toFixed(2));
     const paymentReference = `DEMO-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
     const notes =
       `Compra web - pago de demostración. Subtotal ${subtotal}; envío ${shipping}; ` +
-      `IVA ${taxes}; servicio ${serviceFee}; total ${total} COP.`;
+      `IVA ${taxes}; total ${total} COP.`;
 
     const [saleResult] = await connection.query(
       `INSERT INTO venta
@@ -1051,7 +1053,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
           quantity,
           unitPrice,
         })),
-        totals: { subtotal, shipping, taxes, serviceFee, total },
+        totals: { subtotal, shipping, taxes, total },
       },
     });
   } catch (error) {

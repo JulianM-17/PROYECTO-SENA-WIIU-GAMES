@@ -57,13 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const shipping = cart.length ? 25000 : 0;
     const taxes = subtotal * 0.19;
-    const serviceFee = subtotal * 0.10;
     document.getElementById('resumen-subtotal').textContent = formatCOP(subtotal);
     document.getElementById('resumen-envio').textContent = formatCOP(shipping);
     document.getElementById('resumen-impuestos').textContent = formatCOP(taxes);
-    document.getElementById('resumen-tasa').textContent = formatCOP(serviceFee);
     document.getElementById('resumen-total').textContent = formatCOP(
-      subtotal + shipping + taxes + serviceFee,
+      subtotal + shipping + taxes,
     );
     window.WiiUGamesCart.updateCount(cart);
   }
@@ -89,7 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-vaciar')?.addEventListener('click', () => {
     window.WiiUGamesCart.clear();
   });
-  document.getElementById('btn-actualizar')?.addEventListener('click', renderCart);
   document.getElementById('btn-proceder-pago')?.addEventListener('click', (event) => {
     event.preventDefault();
 

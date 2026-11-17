@@ -15,11 +15,47 @@
     />
     <link
       rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn-uicons.flaticon.com/4.0.0/uicons-straight-rounded/css/uicons-straight-rounded.css"
     />
   </head>
   <body>
     <header>
+      <div class="barra-superior">
+        <div class="seccion-horario">
+          Lunes - Sábado: <b>8:00 a.m. –</b> <br />
+          <b>12:30 p.m. | 2:00 – 7:00 p.m.</b>
+        </div>
+        <div class="seccion-direccion">
+          Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso,
+          Boyacá
+          <a href="#" class="link-contacto">Contáctanos</a>
+        </div>
+        <div class="seccion-contacto">
+          Llámanos: <b>(00) 1234 5678</b>
+          <a
+            href="https://facebook.com/wiiugames"
+            target="_blank"
+            class="red-social"
+            aria-label="Facebook"
+            ><i class="fi fi-brands-facebook"></i
+          ></a>
+          <a
+            href="https://instagram.com/wiiugames"
+            target="_blank"
+            class="red-social"
+            aria-label="Instagram"
+            ><i class="fi fi-brands-instagram"></i
+          ></a>
+        </div>
+      </div>
       <div class="menu-principal">
         <div class="seccion-logo">
           <a href="../Index.html">
@@ -38,6 +74,9 @@
             <a href="Registro.html" class="btn-registrar">Registrarse</a>
           </div>
           <div class="iconos-usuario">
+            <a href="Catalog.html" style="color: inherit; text-decoration: none"
+              ><i class="fi fi-rr-search icono-menu" title="Buscar"></i
+            ></a>
             <a href="carrito.html" class="contenedor-carrito" title="Ver carrito">
               <i class="fi fi-rr-shopping-cart icono-menu"></i>
               <b class="burbuja-carrito" id="cart-count">0</b>
@@ -150,6 +189,187 @@
             </fieldset>
 
             <label class="opcion-metodo">
+              <input type="radio" name="metodo" value="pse" />
+              <span class="icono-metodo" aria-hidden="true">
+                <i class="fi fi-rr-bank"></i>
+              </span>
+              <span>
+                <strong>PSE (Pagos Seguros en Línea)</strong>
+                <small>Débito desde tu cuenta bancaria en línea</small>
+              </span>
+            </label>
+            <fieldset
+              id="datos-pse"
+              class="datos-metodo"
+              aria-label="Datos de PSE"
+              disabled
+              hidden
+            >
+              <div class="campo-pago campo-completo">
+                <label for="banco-pse">Banco</label>
+                <select
+                  id="banco-pse"
+                  name="bancoPSE"
+                  data-validation="select"
+                  autocomplete="organization"
+                  aria-describedby="error-banco-pse"
+                  required
+                >
+                  <option value="" selected disabled>Selecciona tu banco</option>
+                  <option>Alianza Fiduciaria</option>
+                  <option>Ban100</option>
+                  <option>Bancamía</option>
+                  <option>Banco Agrario de Colombia</option>
+                  <option>Banco AV Villas</option>
+                  <option>Banco Caja Social</option>
+                  <option>Banco Cooperativo Coopcentral</option>
+                  <option>Banco Davivienda</option>
+                  <option>Banco de Bogotá</option>
+                  <option>Banco de Occidente</option>
+                  <option>Banco Falabella</option>
+                  <option>Banco Finandina</option>
+                  <option>Banco GNB Sudameris</option>
+                  <option>Banco Itaú</option>
+                  <option>Banco Mundo Mujer</option>
+                  <option>Banco Pichincha</option>
+                  <option>Banco Popular</option>
+                  <option>Banco ProCredit</option>
+                  <option>Banco Santander Colombia</option>
+                  <option>Banco Serfinanza</option>
+                  <option>Banco Unión</option>
+                  <option>Bancolombia</option>
+                  <option>Bancoomeva</option>
+                  <option>BBVA Colombia</option>
+                  <option>Bold</option>
+                  <option>CFA (Cooperativa Financiera de Antioquia)</option>
+                  <option>Citibank</option>
+                  <option>Coltefinanciera</option>
+                  <option>Confiar Cooperativa Financiera</option>
+                  <option>Coofinep</option>
+                  <option>Cotrafa</option>
+                  <option>Crezcamos</option>
+                  <option>Dale!</option>
+                  <option>DAVIbank</option>
+                  <option>Daviplata</option>
+                  <option>Ding</option>
+                  <option>Iris</option>
+                  <option>J.P. Morgan</option>
+                  <option>JFK Cooperativa Financiera</option>
+                  <option>Lulo Bank</option>
+                  <option>Movii</option>
+                  <option>Nequi</option>
+                  <option>Nu Colombia</option>
+                  <option>RappiPay</option>
+                  <option>Ualá</option>
+                </select>
+                <small class="error-campo" id="error-banco-pse" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago campo-completo">
+                <label for="tipo-persona-pse">Tipo de persona</label>
+                <select
+                  id="tipo-persona-pse"
+                  name="tipoPersonaPSE"
+                  data-validation="select"
+                  autocomplete="off"
+                  aria-describedby="error-tipo-persona-pse"
+                  required
+                >
+                  <option value="" selected disabled>Selecciona una opción</option>
+                  <option value="Natural">Persona natural</option>
+                  <option value="Jurídica">Persona jurídica</option>
+                </select>
+                <small class="error-campo" id="error-tipo-persona-pse" aria-live="polite"></small>
+              </div>
+              <p class="aviso-transferencia campo-completo">
+                Modo demostración: la conexión con PSE se simula y no se realiza ningún cobro real.
+              </p>
+            </fieldset>
+
+            <label class="opcion-metodo">
+              <input type="radio" name="metodo" value="billetera" />
+              <span class="icono-metodo" aria-hidden="true">
+                <i class="fi fi-rr-mobile-button"></i>
+              </span>
+              <span>
+                <strong>Billeteras digitales</strong>
+                <small>Paga con Nequi, Daviplata o una billetera disponible</small>
+              </span>
+            </label>
+            <fieldset
+              id="datos-billetera"
+              class="datos-metodo"
+              aria-label="Datos de la billetera digital"
+              disabled
+              hidden
+            >
+              <div class="campo-pago">
+                <label for="proveedor-billetera">Billetera</label>
+                <select
+                  id="proveedor-billetera"
+                  name="proveedorBilletera"
+                  data-validation="select"
+                  autocomplete="off"
+                  aria-describedby="error-proveedor-billetera"
+                  required
+                >
+                  <option value="" selected disabled>Selecciona tu billetera</option>
+                  <option>Nequi</option>
+                  <option>Daviplata</option>
+                  <option>Movii</option>
+                  <option>Dale!</option>
+                  <option>DAVIbank</option>
+                  <option>Ding</option>
+                  <option>Lulo Bank</option>
+                  <option>RappiPay</option>
+                  <option>Bold</option>
+                  <option>Ualá</option>
+                </select>
+                <small class="error-campo" id="error-proveedor-billetera" aria-live="polite"></small>
+              </div>
+              <div class="campo-pago">
+                <label for="telefono-billetera">Número celular</label>
+                <input
+                  id="telefono-billetera"
+                  name="telefonoBilletera"
+                  type="tel"
+                  data-validation="phone"
+                  inputmode="numeric"
+                  autocomplete="tel"
+                  maxlength="10"
+                  placeholder="3001234567"
+                  aria-describedby="error-telefono-billetera"
+                  required
+                />
+                <small class="error-campo" id="error-telefono-billetera" aria-live="polite"></small>
+              </div>
+              <p class="aviso-transferencia campo-completo">
+                Modo demostración: no se enviará una solicitud real a tu billetera.
+              </p>
+            </fieldset>
+
+            <label class="opcion-metodo">
+              <input type="radio" name="metodo" value="efectivo" />
+              <span class="icono-metodo" aria-hidden="true">
+                <i class="fi fi-rr-money"></i>
+              </span>
+              <span>
+                <strong>Pago en efectivo</strong>
+                <small>Paga al recibir o retirar tu pedido</small>
+              </span>
+            </label>
+            <fieldset
+              id="datos-efectivo"
+              class="datos-metodo"
+              aria-label="Información del pago en efectivo"
+              disabled
+              hidden
+            >
+              <p class="aviso-transferencia campo-completo">
+                Modo demostración: el pedido se registrará como pagado, sin cobro real y sin datos adicionales.
+              </p>
+            </fieldset>
+
+            <label class="opcion-metodo">
               <input type="radio" name="metodo" value="transferencia" />
               <span class="icono-metodo" aria-hidden="true">
                 <i class="fi fi-rr-bank"></i>
@@ -247,10 +467,6 @@
             <span>Impuestos (IVA 19%)</span>
             <strong id="impuestos-pedido">$0 COP</strong>
           </div>
-          <div class="fila-resumen">
-            <span>Tasa de servicio (10%)</span>
-            <strong id="tasa-pedido">$0 COP</strong>
-          </div>
           <div class="fila-resumen total-pedido">
             <span>Total</span>
             <strong id="total-pedido">$0 COP</strong>
@@ -259,6 +475,111 @@
         </aside>
       </div>
     </main>
+
+    <section class="seccion-beneficios">
+      <div class="beneficio-tarjeta">
+        <div class="beneficio-icono amarillo">
+          <i class="fi fi-rr-headset"></i>
+        </div>
+        <h3>Soporte de producto</h3>
+        <p>Hasta 3 años de garantía disponible para tu tranquilidad.</p>
+      </div>
+
+      <div class="beneficio-tarjeta">
+        <div class="beneficio-icono amarillo">
+          <i class="fi fi-rr-user"></i>
+        </div>
+        <h3>Cuenta Personal</h3>
+        <p>
+          Con grandes descuentos, envío gratis y un especialista de soporte
+          dedicado.
+        </p>
+      </div>
+
+      <div class="beneficio-tarjeta">
+        <div class="beneficio-icono amarillo">
+          <i class="fi fi-rr-tags"></i>
+        </div>
+        <h3>Ahorros increíbles</h3>
+        <p>
+          Hasta un 70% de descuento en productos nuevos. Garantizamos el mejor
+          precio del mercado.
+        </p>
+      </div>
+    </section>
+
+    <footer class="sitio-footer">
+      <div class="seccion-boletin"></div>
+      <div class="cuadricula-footer">
+        <div class="columna-footer">
+          <h3>Información</h3>
+          <ul>
+            <li><a href="Catalog.html">Acerca de nosotros</a></li>
+            <li><a href="Catalog.html">Política de Privacidad</a></li>
+            <li><a href="Catalog.html">Buscar</a></li>
+            <li><a href="Catalog.html">Términos y Condiciones</a></li>
+            <li><a href="Catalog.html">Pedidos y devoluciones</a></li>
+            <li><a href="#" class="link-contacto">Contáctanos</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Componentes de PC</h3>
+          <ul>
+            <li><a href="Catalog.html">CPUs</a></li>
+            <li><a href="Catalog.html">Discos Duros</a></li>
+            <li><a href="Catalog.html">Tarjetas Gráficas</a></li>
+            <li><a href="Catalog.html">Teclados / Mouse</a></li>
+            <li><a href="Catalog.html">Gabinetes / Fuentes de Poder / Refrigeración</a></li>
+            <li><a href="Catalog.html">RAM (Memoria)</a></li>
+            <li><a href="Catalog.html">Software</a></li>
+            <li><a href="Catalog.html">Altavoces / Audífonos</a></li>
+            <li><a href="Catalog.html">Motherboards</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Computadores de escritorio</h3>
+          <ul>
+            <li><a href="Catalog.html">PC personalizados</a></li>
+            <li><a href="Catalog.html">Servidores</a></li>
+            <li><a href="Catalog.html">PCs todo en uno</a></li>
+            <li><a href="Catalog.html">HP/Compaq PCs</a></li>
+            <li><a href="Catalog.html">ASUS PCs</a></li>
+            <li><a href="Catalog.html">Tecs PCs</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer">
+          <h3>Portátiles</h3>
+          <ul>
+            <li><a href="Catalog.html">Portátiles para todos los días</a></li>
+            <li><a href="Catalog.html">Portátiles gaming</a></li>
+          </ul>
+        </div>
+        <div class="columna-footer columna-contacto">
+          <h3>Dirección</h3>
+          <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
+          <p>Teléfonos: <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a></p>
+          <p>
+            Correo electrónico:
+            <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado">wiiugames2026@gmail.com</a>
+          </p>
+          <p>Lunes - Sábado: 8:00 a.m. – 12:30 p.m. | 2:00 – 7:00 p.m.</p>
+        </div>
+      </div>
+      <div class="barra-inferior-footer">
+        <div class="redes-footer">
+          <a href="https://facebook.com/wiiugames" target="_blank" aria-label="Facebook"><i class="fi fi-brands-facebook"></i></a>
+          <a href="https://instagram.com/wiiugames" target="_blank" aria-label="Instagram"><i class="fi fi-brands-instagram"></i></a>
+        </div>
+        <div class="metodos-pago">
+          <span class="tarjeta-icono">PayPal</span>
+          <span class="tarjeta-icono">Visa</span>
+          <span class="tarjeta-icono">MasterCard</span>
+        </div>
+        <div class="copyright">
+          <p>Copyright © 2026 WiiU-Games.</p>
+        </div>
+      </div>
+    </footer>
 
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/metodos_pago.js" defer></script>
