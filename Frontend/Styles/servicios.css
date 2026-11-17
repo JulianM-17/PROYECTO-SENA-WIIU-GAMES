@@ -540,17 +540,6 @@ body {
     height: 320px;
   }
 
-  .barra-superior {
-    flex-direction: column;
-    text-align: center;
-    padding: 10px;
-  }
-
-  .seccion-horario,
-  .seccion-direccion {
-    text-align: center;
-  }
-
   .razon1-container,
   .razon2-container,
   .razon3-container {
@@ -567,21 +556,3 @@ body {
     align-items: center;
   }
 }
-
-@media (max-width: 768px) {
-  .menu-principal {
-    padding: 14px 20px;
-    flex-direction: column;
-  }
-
-  .contenido-menu {
-    flex-direction: column;
-    gap: 16px;
-    width: 100%;
-  }
-
-  .enlaces-nav {
-    flex-direction: column;
-    align-items: center;
-  }
-  

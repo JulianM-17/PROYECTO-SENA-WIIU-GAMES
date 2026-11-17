@@ -16,7 +16,6 @@ body {
 .panel-contenedor {
   display: flex;
   min-height: 100vh;
-  
 }
 
 .menu-lateral {
@@ -185,6 +184,9 @@ body {
 
 .contenido {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   padding: 30px 40px;
   overflow-y: auto;
 }
@@ -811,108 +813,6 @@ body {
   cursor: pointer;
 }
 
-.pie-pagina {
-  margin-top: 60px;
-  border-top: 1px solid #16223d;
-  padding-top: 40px;
-}
-
-.columnas-pie {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
-  margin-bottom: 35px;
-}
-
-.columna h4 {
-  font-size: 12px;
-  font-weight: 700;
-  color: #ffffff;
-  margin-bottom: 16px;
-  letter-spacing: 0.5px;
-}
-
-.columna a {
-  display: block;
-  color: #f5a623;
-  font-size: 11px;
-  text-decoration: none;
-  margin-bottom: 8px;
-  transition: opacity 0.2s;
-}
-
-.columna a:hover {
-  text-decoration: underline;
-  opacity: 0.85;
-}
-
-.columna.direccion p {
-  font-size: 11px;
-  color: #ffffff;
-  margin-bottom: 8px;
-  line-height: 1.5;
-}
-
-.texto-oro {
-  color: #f5a623;
-  font-weight: 600;
-}
-
-.barra-derechos {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.redes {
-  display: flex;
-  gap: 10px;
-}
-
-.icono-social {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  background-color: #080f1e;
-  border: 1px solid #16223d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #8a9bb5;
-  text-decoration: none;
-  font-size: 15px;
-  transition: 0.2s;
-}
-
-.icono-social:hover {
-  border-color: #f5a623;
-  color: #f5a623;
-}
-
-.pagos {
-  display: flex;
-  gap: 8px;
-}
-
-.badge-pago {
-  background-color: #080f1e;
-  border: 1px solid #16223d;
-  padding: 6px 14px;
-  border-radius: 6px;
-  color: #c3d0e5;
-  font-size: 11px;
-  font-weight: 500;
-}
-
-.copyright-texto {
-  font-size: 11px;
-  color: #8a9bb5;
-}
-
 .fondo-modal {
   position: fixed;
   top: 0;
@@ -1058,9 +958,6 @@ body {
   .fila-doble {
     grid-template-columns: 1fr;
   }
-  .columnas-pie {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
@@ -1139,9 +1036,6 @@ body {
     grid-template-columns: 1fr;
   }
   .lista-productos-top {
-    grid-template-columns: 1fr;
-  }
-  .columnas-pie {
     grid-template-columns: 1fr;
   }
   .tabla-panel {
