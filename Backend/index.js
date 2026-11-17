@@ -1496,6 +1496,50 @@ app.post("/api/employee/warranties", requireEmployee, async (req, res) => {
   }
 });
 
+app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
+  try {
+    const [sales] = await pool.query(
+      `SELECT
+         v.id_venta AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         v.estado AS status,
+         DATE_FORMAT(v.fecha, '%Y-%m-%d %H:%i:%s') AS createdAt,
+         COALESCE(SUM(dv.subtotal), 0) AS total
+       FROM (
+         SELECT id_venta, id_usuario, estado, fecha
+         FROM venta
+         ORDER BY fecha DESC, id_venta DESC
+         LIMIT 50
+       ) v
+       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       GROUP BY v.id_venta, u.nombre, u.apellido, v.estado, v.fecha
+       ORDER BY v.fecha DESC, v.id_venta DESC
+       LIMIT 10`,
+    );
+    const [appointments] = await pool.query(
+      `SELECT
+         c.id_cita AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         c.tipo_servicio AS serviceType,
+         c.estado AS status,
+         c.equipo AS equipment,
+         DATE_FORMAT(c.fecha_creacion, '%Y-%m-%d %H:%i:%s') AS createdAt
+       FROM cita c
+       INNER JOIN usuario u ON u.id_usuario = c.id_usuario
+       ORDER BY c.fecha_creacion DESC, c.id_cita DESC
+       LIMIT 50`,
+    );
+    return res.json({ ok: true, sales, appointments });
+  } catch (error) {
+    console.error("Error al consultar notificaciones del administrador:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron cargar las notificaciones.",
+    });
+  }
+});
+
 app.post("/api/employee/workshop-orders", requireEmployee, async (req, res) => {
   const customerId = Number(req.body?.customerId);
   const device = String(req.body?.device || "").trim();

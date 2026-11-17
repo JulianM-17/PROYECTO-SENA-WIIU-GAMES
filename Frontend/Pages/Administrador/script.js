@@ -207,46 +207,296 @@ function mostrarNotificaciones() {
   panel.hidden = !panel.hidden;
   boton.setAttribute('aria-expanded', String(!panel.hidden));
   if (!panel.hidden) {
-    var contador = document.getElementById('contadorNotificaciones');
-    if (contador) contador.hidden = true;
+    notificacionesActuales.forEach(function(notificacion) {
+      clavesNotificacionesLeidas.add(notificacion.key);
+    });
+    guardarClavesNotificaciones(
+      claveAlmacenamientoNotificacionesLeidas,
+      clavesNotificacionesLeidas,
+      'leídas',
+    );
+    notificacionesNoLeidas = 0;
+    actualizarContadorNotificaciones();
   }
 }
 
-function actualizarNotificaciones(pedidos, inventario) {
+var ventasNotificaciones = [];
+var citasNotificaciones = [];
+var inventarioNotificaciones = [];
+var clavesNotificacionesConocidas = new Set();
+var notificacionesActuales = [];
+var claveAlmacenamientoNotificacionesDescartadas = 'wiiugames_admin_notificaciones_descartadas';
+var claveAlmacenamientoNotificacionesLeidas = 'wiiugames_admin_notificaciones_leidas';
+var clavesNotificacionesDescartadas = cargarClavesNotificaciones(
+  claveAlmacenamientoNotificacionesDescartadas,
+  'limpiadas',
+);
+var clavesNotificacionesLeidas = cargarClavesNotificaciones(
+  claveAlmacenamientoNotificacionesLeidas,
+  'leídas',
+);
+var notificacionesInicializadas = false;
+var notificacionesNoLeidas = 0;
+var notificacionesSolicitudEnCurso = false;
+
+function cargarClavesNotificaciones(claveAlmacenamiento, descripcion) {
+  try {
+    var guardadas = JSON.parse(
+      localStorage.getItem(claveAlmacenamiento) || '[]',
+    );
+    return new Set(
+      Array.isArray(guardadas)
+        ? guardadas.filter(function(clave) { return typeof clave === 'string'; })
+        : [],
+    );
+  } catch (error) {
+    console.warn('No se pudieron cargar las notificaciones ' + descripcion + ':', error);
+    return new Set();
+  }
+}
+
+function guardarClavesNotificaciones(claveAlmacenamiento, conjunto, descripcion) {
+  try {
+    localStorage.setItem(
+      claveAlmacenamiento,
+      JSON.stringify(Array.from(conjunto).slice(-500)),
+    );
+  } catch (error) {
+    console.warn('No se pudieron guardar las notificaciones ' + descripcion + ':', error);
+  }
+}
+
+function fechaLocalParaNotificaciones(fecha) {
+  var valor = fecha || new Date();
+  var anio = valor.getFullYear();
+  var mes = String(valor.getMonth() + 1).padStart(2, '0');
+  var dia = String(valor.getDate()).padStart(2, '0');
+  var hora = String(valor.getHours()).padStart(2, '0');
+  var minuto = String(valor.getMinutes()).padStart(2, '0');
+  var segundo = String(valor.getSeconds()).padStart(2, '0');
+  return anio + '-' + mes + '-' + dia + 'T' + hora + ':' + minuto + ':' + segundo;
+}
+
+function etiquetaDiaNotificacion(fechaTexto) {
+  var fecha = new Date(String(fechaTexto || '').replace(' ', 'T'));
+  if (Number.isNaN(fecha.getTime())) return 'Fecha no disponible';
+
+  function claveDia(valor) {
+    return [
+      valor.getFullYear(),
+      String(valor.getMonth() + 1).padStart(2, '0'),
+      String(valor.getDate()).padStart(2, '0'),
+    ].join('-');
+  }
+
+  var hoy = new Date();
+  var ayer = new Date(hoy);
+  ayer.setDate(ayer.getDate() - 1);
+  var diaNotificacion = claveDia(fecha);
+  if (diaNotificacion === claveDia(hoy)) return 'Hoy';
+  if (diaNotificacion === claveDia(ayer)) return 'Ayer';
+  return new Intl.DateTimeFormat('es-CO', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(fecha);
+}
+
+function actualizarContadorNotificaciones() {
+  var contador = document.getElementById('contadorNotificaciones');
+  var boton = document.querySelector('.campana-alerta');
+  if (!contador || !boton) return;
+  var icono = boton.querySelector('i');
+  if (icono) {
+    icono.classList.toggle('fi-sr-bell', notificacionesNoLeidas > 0);
+    icono.classList.toggle('fi-rr-bell', notificacionesNoLeidas === 0);
+  }
+  contador.hidden = notificacionesNoLeidas === 0;
+  contador.setAttribute(
+    'aria-label',
+    notificacionesNoLeidas + ' notificaciones nuevas',
+  );
+  boton.setAttribute(
+    'aria-label',
+    notificacionesNoLeidas
+      ? 'Abrir notificaciones. ' + notificacionesNoLeidas + ' nuevas'
+      : 'Abrir notificaciones',
+  );
+}
+
+function actualizarNotificaciones(ventas, inventario, citas) {
+  if (Array.isArray(ventas)) ventasNotificaciones = ventas;
+  if (Array.isArray(inventario)) inventarioNotificaciones = inventario;
+  if (Array.isArray(citas)) citasNotificaciones = citas;
+
   var notificaciones = [];
-  (pedidos || []).forEach(function(pedido) {
-    if (pedido.estado !== 'PAGADA') {
-      notificaciones.push({
-        titulo: 'Pedido #' + escaparHtmlAdmin(pedido.id_venta),
-        detalle: escaparHtmlAdmin(pedido.nombre + ' ' + pedido.apellido) + ' · ' + escaparHtmlAdmin(pedido.estado || 'Pendiente')
-      });
+  var eventos = [];
+  ventasNotificaciones.forEach(function(venta) {
+    eventos.push({
+      key: 'venta:' + venta.id,
+      type: 'sale',
+      createdAt: venta.createdAt,
+      titulo: 'Nueva venta #' + escaparHtmlAdmin(venta.id),
+      detalle:
+        escaparHtmlAdmin(venta.client || 'Cliente') +
+        ' · ' +
+        escaparHtmlAdmin(venta.status || 'Registrada') +
+        ' · $ ' +
+        Number(venta.total || 0).toLocaleString('es-CO'),
+    });
+  });
+  citasNotificaciones.forEach(function(cita) {
+    var tipoServicio =
+      cita.serviceType === 'MANTENIMIENTO' ? 'Mantenimiento' : 'Reparación';
+    eventos.push({
+      key: 'cita:' + cita.id,
+      type: 'appointment',
+      createdAt: cita.createdAt,
+      titulo: 'Nueva cita CIT-' + escaparHtmlAdmin(cita.id),
+      detalle:
+        escaparHtmlAdmin(cita.client || 'Cliente') +
+        ' · ' +
+        tipoServicio +
+        ' · ' +
+        escaparHtmlAdmin(cita.equipment || 'Equipo') +
+        ' · ' +
+        escaparHtmlAdmin(cita.status || 'Solicitud recibida'),
+    });
+  });
+
+  var eventosNuevos = [];
+  eventos.forEach(function(evento) {
+    if (clavesNotificacionesConocidas.has(evento.key)) return;
+    clavesNotificacionesConocidas.add(evento.key);
+    if (
+      notificacionesInicializadas &&
+      !clavesNotificacionesDescartadas.has(evento.key) &&
+      !clavesNotificacionesLeidas.has(evento.key)
+    ) {
+      eventosNuevos.push(evento);
     }
   });
-  (inventario || []).forEach(function(producto) {
+  var alertasInventario = inventarioNotificaciones.filter(function(producto) {
+    return Number(producto.stock) <= Number(producto.minStock || 3);
+  });
+  if (notificacionesInicializadas) {
+    notificacionesNoLeidas += eventosNuevos.length;
+  } else {
+    notificacionesInicializadas = true;
+    notificacionesNoLeidas = alertasInventario.filter(function(producto) {
+      return !clavesNotificacionesDescartadas.has(
+        'stock:' + (producto.id || producto.name),
+      );
+    }).length;
+  }
+
+  eventosNuevos.forEach(function(evento) {
+    mostrarToast('info', evento.titulo + ' registrada.');
+  });
+
+  notificaciones.push.apply(notificaciones, eventos);
+  alertasInventario.forEach(function(producto) {
     var stock = Number(producto.stock);
-    if (stock <= Number(producto.minStock || 3)) {
-      notificaciones.push({
-        titulo: 'Stock bajo: ' + escaparHtmlAdmin(producto.name),
-        detalle: 'Quedan ' + stock + ' unidades disponibles.'
-      });
-    }
+    notificaciones.push({
+      key: 'stock:' + (producto.id || producto.name),
+      createdAt: fechaLocalParaNotificaciones(new Date()),
+      titulo: 'Stock bajo: ' + escaparHtmlAdmin(producto.name),
+      detalle: 'Quedan ' + stock + ' unidades disponibles.'
+    });
   });
+  notificaciones.sort(function(a, b) {
+    return String(b.createdAt || '').localeCompare(String(a.createdAt || ''));
+  });
+  notificacionesActuales = notificaciones.filter(function(notificacion) {
+    return !clavesNotificacionesDescartadas.has(notificacion.key);
+  });
+  notificacionesNoLeidas = notificacionesActuales.filter(function(notificacion) {
+    return !clavesNotificacionesLeidas.has(notificacion.key);
+  }).length;
 
   var lista = document.getElementById('listaNotificaciones');
-  var contador = document.getElementById('contadorNotificaciones');
-  if (!lista || !contador) return;
+  var botonLimpiar = document.getElementById('btnLimpiarNotificaciones');
+  if (botonLimpiar) botonLimpiar.disabled = notificacionesActuales.length === 0;
+  if (!lista) return;
 
-  if (notificaciones.length === 0) {
+  if (notificacionesActuales.length === 0) {
     lista.innerHTML = '<li class="notificacion-vacia">No hay notificaciones por ahora.</li>';
-    contador.hidden = true;
+    actualizarContadorNotificaciones();
     return;
   }
 
-  lista.innerHTML = notificaciones.map(function(notificacion) {
-    return '<li><strong>' + notificacion.titulo + '</strong><span>' + notificacion.detalle + '</span></li>';
+  var gruposPorDia = new Map();
+  notificacionesActuales.forEach(function(notificacion) {
+    var grupo = etiquetaDiaNotificacion(notificacion.createdAt);
+    if (!gruposPorDia.has(grupo)) gruposPorDia.set(grupo, []);
+    gruposPorDia.get(grupo).push(notificacion);
+  });
+  lista.innerHTML = Array.from(gruposPorDia.entries()).map(function(grupo) {
+    var avisosDelDia = grupo[1].map(function(notificacion) {
+      return '<li><strong>' + notificacion.titulo + '</strong><span>' +
+        notificacion.detalle + '</span></li>';
+    }).join('');
+    return '<li class="notificacion-grupo"><strong class="notificacion-dia">' +
+      escaparHtmlAdmin(grupo[0]) + '</strong><ul class="notificaciones-dia">' +
+      avisosDelDia + '</ul></li>';
   }).join('');
-  contador.hidden = false;
-  contador.setAttribute('aria-label', notificaciones.length + ' notificaciones pendientes');
+  actualizarContadorNotificaciones();
+}
+
+function limpiarNotificacionesAdmin() {
+  if (!notificacionesActuales.length) return;
+  if (!confirm('¿Quieres limpiar las notificaciones que aparecen en la lista?')) return;
+
+  notificacionesActuales.forEach(function(notificacion) {
+    clavesNotificacionesDescartadas.add(notificacion.key);
+  });
+  guardarClavesNotificaciones(
+    claveAlmacenamientoNotificacionesDescartadas,
+    clavesNotificacionesDescartadas,
+    'limpiadas',
+  );
+  notificacionesNoLeidas = 0;
+  actualizarNotificaciones(
+    ventasNotificaciones,
+    inventarioNotificaciones,
+    citasNotificaciones,
+  );
+}
+
+function cargarNotificacionesAdmin() {
+  if (notificacionesSolicitudEnCurso || !sessionToken) return;
+  notificacionesSolicitudEnCurso = true;
+  fetch(API_BASE + '/api/admin/notifications', {
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(response) {
+    if (!response.ok || !response.data.ok) {
+      throw new Error(response.data.message || 'No se pudieron cargar las notificaciones.');
+    }
+    actualizarNotificaciones(
+      response.data.sales,
+      null,
+      response.data.appointments,
+    );
+  })
+  .catch(function(error) {
+    console.error('Error al cargar las notificaciones:', error);
+    if (!notificacionesInicializadas) {
+      var lista = document.getElementById('listaNotificaciones');
+      if (lista) {
+        lista.innerHTML =
+          '<li class="notificacion-vacia">No se pudieron cargar las notificaciones.</li>';
+      }
+    }
+  })
+  .finally(function() {
+    notificacionesSolicitudEnCurso = false;
+  });
 }
 
 // Variables globales de datos auxiliares para los modales
@@ -1267,7 +1517,14 @@ function cargarDashboard() {
         return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + row.id_venta + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
     }
-    actualizarNotificaciones(data.recentOrders, data.inventory);
+    inventarioNotificaciones = data.inventory || [];
+    if (notificacionesInicializadas) {
+      actualizarNotificaciones(
+        ventasNotificaciones,
+        inventarioNotificaciones,
+        citasNotificaciones,
+      );
+    }
 
     // ---------- INVENTARIO ----------
     if (data.inventory) {
@@ -1914,5 +2171,12 @@ function eliminarFilaDB(boton, recurso, id) {
 // 9. CARGAR DATOS AL INICIAR LA PÁGINA
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
+  document
+    .getElementById('btnLimpiarNotificaciones')
+    ?.addEventListener('click', limpiarNotificacionesAdmin);
   cargarDashboard();
+  cargarNotificacionesAdmin();
+  window.setInterval(function() {
+    if (!document.hidden) cargarNotificacionesAdmin();
+  }, 15000);
 });
