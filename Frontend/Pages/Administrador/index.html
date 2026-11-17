@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-brands/css/uicons-brands.css">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
   <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css">
+  <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-rounded/css/uicons-solid-rounded.css">
 
 <link rel="stylesheet" href="../../Styles/accessibility.css">
 <link rel="stylesheet" href="../../Styles/PanelFooter.css">
@@ -118,7 +119,10 @@
               <span class="punto-amarillo" id="contadorNotificaciones" hidden></span>
             </button>
             <div class="panel-notificaciones" id="panelNotificaciones" role="region" aria-label="Notificaciones" hidden>
-              <h3>Notificaciones</h3>
+              <div class="cabecera-notificaciones">
+                <h3>Notificaciones</h3>
+                <button type="button" id="btnLimpiarNotificaciones" disabled>Limpiar</button>
+              </div>
               <ul id="listaNotificaciones">
                 <li class="notificacion-vacia">Cargando notificaciones...</li>
               </ul>

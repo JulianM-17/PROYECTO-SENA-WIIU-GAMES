@@ -22,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectMunicipio = document.getElementById('municipio');
   const inputTelefonoPrincipal = document.getElementById('telefono-principal');
   const inputTelefonoSecundario = document.getElementById('telefono-secundario');
+  const selectPrefijoPrincipal = document.getElementById('prefijo-telefono-principal');
+  const selectPrefijoSecundario = document.getElementById('prefijo-telefono-secundario');
   const inputCodigoPostal = document.getElementById('codigo-postal');
   const checkMismaDireccion = document.getElementById('misma-direccion');
   const checkTerminos = document.getElementById('aceptar-terminos');
@@ -33,6 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnCerrarTerminos = document.getElementById('btn-cerrar-terminos');
   const btnCancelarTerminos = document.getElementById('btn-cancelar-terminos');
   const btnAceptarTerminos = document.getElementById('btn-aceptar-terminos');
+
+  function formatearTelefono(input, selectPrefijo) {
+    const localDigits = String(input?.value || '').replace(/\D/g, '').replace(/^0+/, '');
+    const prefijo = selectPrefijo?.value || '+57';
+    return localDigits ? `${prefijo} ${localDigits}` : '';
+  }
 
   // -----------------------------------------------------
   // 1. DICCIONARIO DE DEPARTAMENTOS Y MUNICIPIOS DE COLOMBIA
@@ -159,7 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (inputFechaNacimiento) {
     const anioActual = new Date().getFullYear();
-    inputFechaNacimiento.max = `${anioActual - 10}-12-31`;
+    const fechaMaxima = new Date();
+    fechaMaxima.setFullYear(anioActual - 10);
+    inputFechaNacimiento.max = [
+      fechaMaxima.getFullYear(),
+      String(fechaMaxima.getMonth() + 1).padStart(2, '0'),
+      String(fechaMaxima.getDate()).padStart(2, '0')
+    ].join('-');
   }
 
   // -----------------------------------------------------
@@ -330,6 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (val.length < 2) {
       return mostrarError(inputNombre, 'error-nombre', 'Ingresa un nombre válido (mínimo 2 letras).');
     }
+    if (!/^[\p{L}][\p{L}\s'-]*$/u.test(val)) {
+      return mostrarError(inputNombre, 'error-nombre', 'El nombre solo puede contener letras, espacios, apóstrofes o guiones.');
+    }
+    if (val.length > 30) {
+      return mostrarError(inputNombre, 'error-nombre', 'El nombre no puede superar 30 caracteres.');
+    }
     return limpiarError(inputNombre, 'error-nombre');
   }
 
@@ -340,6 +360,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (val.length < 2) {
       return mostrarError(inputApellido, 'error-apellido', 'Ingresa un apellido válido (mínimo 2 letras).');
+    }
+    if (!/^[\p{L}][\p{L}\s'-]*$/u.test(val)) {
+      return mostrarError(inputApellido, 'error-apellido', 'El apellido solo puede contener letras, espacios, apóstrofes o guiones.');
+    }
+    if (val.length > 30) {
+      return mostrarError(inputApellido, 'error-apellido', 'El apellido no puede superar 30 caracteres.');
     }
     return limpiarError(inputApellido, 'error-apellido');
   }
@@ -362,6 +388,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!val) {
       return mostrarError(inputCorreo, 'error-correo', 'El correo electrónico es obligatorio.');
+    }
+    if (val.length > 120) {
+      return mostrarError(inputCorreo, 'error-correo', 'El correo no puede superar 120 caracteres.');
     }
     if (!regexEmail.test(val)) {
       return mostrarError(inputCorreo, 'error-correo', 'Ingresa un formato de correo válido (ej: nombre@dominio.com).');
@@ -388,6 +417,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (val.length < 8) {
       return mostrarError(inputContrasena, 'error-contrasena', 'La contraseña debe tener al menos 8 caracteres.');
     }
+    if (val.length > 128) {
+      return mostrarError(inputContrasena, 'error-contrasena', 'La contraseña no puede superar 128 caracteres.');
+    }
     return limpiarError(inputContrasena, 'error-contrasena');
   }
 
@@ -409,6 +441,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (val.length < 5) {
       return mostrarError(inputDireccion, 'error-direccion', 'Ingresa una dirección completa.');
+    }
+    if (val.length > 40) {
+      return mostrarError(inputDireccion, 'error-direccion', 'La dirección no puede superar 40 caracteres.');
     }
     return limpiarError(inputDireccion, 'error-direccion');
   }
@@ -432,11 +467,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!val) {
       return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'El teléfono principal es obligatorio.');
     }
+    if (!/^[\d()\s-]{7,16}$/.test(val)) {
+      return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'El teléfono contiene caracteres no válidos.');
+    }
     const cleanDigits = val.replace(/\D/g, '');
     if (cleanDigits.length < 7) {
       return mostrarError(inputTelefonoPrincipal, 'error-telefono', 'Ingresa un número telefónico válido (mínimo 7 dígitos).');
     }
     return limpiarError(inputTelefonoPrincipal, 'error-telefono');
+  }
+
+  function validarTelefonoSecundario() {
+    if (!inputTelefonoSecundario) return true;
+    const val = inputTelefonoSecundario.value.trim();
+    if (!val) return limpiarError(inputTelefonoSecundario, 'error-telefono-secundario');
+    if (!/^[\d()\s-]{7,16}$/.test(val) || val.replace(/\D/g, '').length < 7) {
+      return mostrarError(inputTelefonoSecundario, 'error-telefono-secundario', 'Ingresa un teléfono secundario válido.');
+    }
+    return limpiarError(inputTelefonoSecundario, 'error-telefono-secundario');
   }
 
   function validarTerminos() {
@@ -468,12 +516,18 @@ document.addEventListener('DOMContentLoaded', () => {
   // Asignar eventos de escucha en tiempo real
   if (inputNombre) {
     inputNombre.addEventListener('blur', validarNombre);
-    inputNombre.addEventListener('input', () => { if (inputNombre.classList.contains('input-error')) validarNombre(); });
+    inputNombre.addEventListener('input', () => {
+      inputNombre.value = inputNombre.value.replace(/[^\p{L}\s'-]/gu, '');
+      if (inputNombre.classList.contains('input-error')) validarNombre();
+    });
   }
 
   if (inputApellido) {
     inputApellido.addEventListener('blur', validarApellido);
-    inputApellido.addEventListener('input', () => { if (inputApellido.classList.contains('input-error')) validarApellido(); });
+    inputApellido.addEventListener('input', () => {
+      inputApellido.value = inputApellido.value.replace(/[^\p{L}\s'-]/gu, '');
+      if (inputApellido.classList.contains('input-error')) validarApellido();
+    });
   }
 
   if (inputFechaNacimiento) {
@@ -524,6 +578,13 @@ document.addEventListener('DOMContentLoaded', () => {
     inputTelefonoPrincipal.addEventListener('input', () => { if (inputTelefonoPrincipal.classList.contains('input-error')) validarTelefono(); });
   }
 
+  if (inputTelefonoSecundario) {
+    inputTelefonoSecundario.addEventListener('blur', validarTelefonoSecundario);
+    inputTelefonoSecundario.addEventListener('input', () => {
+      if (inputTelefonoSecundario.classList.contains('input-error')) validarTelefonoSecundario();
+    });
+  }
+
   if (checkTerminos) {
     checkTerminos.addEventListener('change', validarTerminos);
   }
@@ -546,10 +607,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const vDep = validarDepartamento();
       const vMun = validarMunicipio();
       const vTel = validarTelefono();
+      const vTelSecundario = validarTelefonoSecundario();
       const vTerm = validarTerminos();
 
       const esValido = vNombre && vApellido && vFecha && vCorreo && vConfCorreo &&
-                        vPass && vConfPass && vDir && vDep && vMun && vTel && vTerm;
+                        vPass && vConfPass && vDir && vDep && vMun && vTel &&
+                        vTelSecundario && vTerm;
 
       if (!esValido) {
         mostrarToast('Por favor completa y corrige todos los campos obligatorios.', 'error');
@@ -571,15 +634,20 @@ document.addEventListener('DOMContentLoaded', () => {
         nombre: inputNombre.value.trim(),
         apellido: inputApellido.value.trim(),
         email: inputCorreo.value.trim().toLowerCase(),
-        password: inputContrasena.value,
-        telefono: inputTelefonoPrincipal.value.trim(),
-        telefonoSecundario: inputTelefonoSecundario ? inputTelefonoSecundario.value.trim() : '',
+        telefono: formatearTelefono(inputTelefonoPrincipal, selectPrefijoPrincipal),
+        telefono_secundario: inputTelefonoSecundario
+          ? formatearTelefono(inputTelefonoSecundario, selectPrefijoSecundario)
+          : '',
         direccion: inputDireccion.value.trim(),
         departamento: selectDepartamento.value,
         ciudad: selectMunicipio.value,
         codigoPostal: inputCodigoPostal ? inputCodigoPostal.value.trim() : '',
-        nacimiento: inputFechaNacimiento.value.split('-').reverse().join('/'),
+        nacimiento: inputFechaNacimiento.value,
         rol: 'Cliente'
+      };
+      const datosRegistro = {
+        ...nuevoUsuario,
+        password: inputContrasena.value,
       };
 
       try {
@@ -589,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(nuevoUsuario),
+          body: JSON.stringify(datosRegistro),
         });
         const result = await response.json();
         if (!response.ok) {
