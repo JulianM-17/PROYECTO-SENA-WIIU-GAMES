@@ -316,6 +316,41 @@ app.get("/api/my-appointments", requireUserSession, async (req, res) => {
   }
 });
 
+app.patch("/api/my-appointments/:id/cancel", requireUserSession, async (req, res) => {
+  const appointmentId = Number(req.params.id);
+  if (!Number.isSafeInteger(appointmentId) || appointmentId <= 0) {
+    return res.status(400).json({ ok: false, message: "La cita solicitada no es válida." });
+  }
+
+  try {
+    const [result] = await pool.query(
+      `UPDATE cita
+       SET estado = 'CANCELADA'
+       WHERE id_cita = ? AND id_usuario = ?
+         AND estado IN ('SOLICITUD RECIBIDA', 'CONFIRMADA')`,
+      [appointmentId, req.userId],
+    );
+    if (!result.affectedRows) {
+      const [appointments] = await pool.query(
+        "SELECT estado FROM cita WHERE id_cita = ? AND id_usuario = ?",
+        [appointmentId, req.userId],
+      );
+      if (!appointments.length) {
+        return res.status(404).json({ ok: false, message: "No se encontró la cita solicitada." });
+      }
+      return res.status(409).json({
+        ok: false,
+        message: "La cita ya no se puede cancelar porque está en proceso o ya fue finalizada/cancelada.",
+      });
+    }
+
+    return res.json({ ok: true, message: "Tu cita fue cancelada correctamente." });
+  } catch (error) {
+    console.error("Error al cancelar la cita del usuario:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo cancelar la cita." });
+  }
+});
+
 app.post("/api/appointments", requireUserSession, async (req, res) => {
   const equipment = String(req.body?.equipment || "").trim();
   const description = String(req.body?.description || "").trim();
@@ -2593,21 +2628,32 @@ async function actualizarOrdenServicioAdmin(req, res, nombreTipoServicio) {
   const cost = Number(req.body?.cost);
   const status = String(req.body?.status || "");
   const validStatuses = ["PENDIENTE", "EN PROCESO", "COMPLETO", "CANCELADO"];
-  if (
-    !Number.isSafeInteger(serviceId) ||
-    serviceId <= 0 ||
-    serviceDescription.length < 3 ||
-    serviceDescription.length > 100 ||
-    diagnosis.length < 1 ||
-    diagnosis.length > 100 ||
-    !Number.isSafeInteger(technicianId) ||
-    technicianId <= 0 ||
-    !Number.isFinite(cost) ||
-    cost < 0 ||
-    cost > 99999999.99 ||
-    !validStatuses.includes(status)
-  ) {
-    return res.status(400).json({ ok: false, message: "Revisa los datos de la orden." });
+  if (!Number.isSafeInteger(serviceId) || serviceId <= 0) {
+    return res.status(400).json({ ok: false, message: "El número de la orden no es válido." });
+  }
+  if (serviceDescription.length < 3 || serviceDescription.length > 100) {
+    return res.status(400).json({
+      ok: false,
+      message: "La descripción del trabajo debe tener entre 3 y 100 caracteres.",
+    });
+  }
+  if (diagnosis.length < 1 || diagnosis.length > 100) {
+    return res.status(400).json({
+      ok: false,
+      message: "El diagnóstico u observación debe tener entre 1 y 100 caracteres.",
+    });
+  }
+  if (!Number.isSafeInteger(technicianId) || technicianId <= 0) {
+    return res.status(400).json({ ok: false, message: "Selecciona un técnico responsable." });
+  }
+  if (!Number.isFinite(cost) || cost < 0 || cost > 99999999.99) {
+    return res.status(400).json({
+      ok: false,
+      message: "El precio total debe ser un número entre 0 y 99.999.999,99.",
+    });
+  }
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ ok: false, message: "Selecciona un estado válido para la orden." });
   }
 
   let connection;
@@ -2700,7 +2746,24 @@ async function actualizarOrdenServicioAdmin(req, res, nombreTipoServicio) {
       }
     }
     console.error("Error al editar la orden:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo actualizar la orden." });
+    const mensajesError = {
+      ER_DATA_TOO_LONG: "Uno de los datos supera la longitud permitida.",
+      ER_TRUNCATED_WRONG_VALUE: "Uno de los datos tiene un formato que la base de datos no acepta.",
+      ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: "Uno de los datos tiene un formato que la base de datos no acepta.",
+      ER_NO_REFERENCED_ROW_2: "El técnico seleccionado ya no existe o no está disponible.",
+      ER_LOCK_DEADLOCK: "La orden está siendo modificada en este momento. Intenta nuevamente.",
+      ER_LOCK_WAIT_TIMEOUT: "La orden está tardando en actualizarse. Intenta nuevamente.",
+      ER_BAD_NULL_ERROR: "Falta un dato obligatorio para guardar la orden.",
+      ER_DUP_ENTRY: "Hay un dato duplicado que impide guardar la orden.",
+    };
+    const detalle = mensajesError[error.code] ||
+      (typeof error.message === "string" ? error.message.replace(/\s+/g, " ").trim().slice(0, 240) : "");
+    return res.status(500).json({
+      ok: false,
+      message: detalle
+        ? `No se pudo actualizar la orden. Motivo: ${detalle}`
+        : "No se pudo actualizar la orden por un error interno. Intenta nuevamente.",
+    });
   } finally {
     connection?.release();
   }
@@ -2739,24 +2802,48 @@ app.patch("/api/admin/appointments/:id", requireAdmin, async (req, res) => {
     "CANCELADA",
   ];
 
+  if (!Number.isSafeInteger(appointmentId) || appointmentId <= 0) {
+    return res.status(400).json({ ok: false, message: "El identificador de la cita no es válido." });
+  }
+
+  const validationErrors = {};
+  if (equipment.length < 2 || equipment.length > 100) {
+    validationErrors.equipment = "El equipo debe tener entre 2 y 100 caracteres.";
+  }
+  if (description.length < 10 || description.length > 1000) {
+    validationErrors.description = "La descripción debe tener entre 10 y 1000 caracteres.";
+  }
+  if (!/^\d{10}$/.test(phone)) {
+    validationErrors.phone = "El teléfono debe contener exactamente 10 dígitos.";
+  }
   if (
-    !Number.isSafeInteger(appointmentId) ||
-    appointmentId <= 0 ||
-    equipment.length < 2 ||
-    equipment.length > 100 ||
-    description.length < 10 ||
-    description.length > 1000 ||
-    !/^\d{10}$/.test(phone) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate) ||
     Number.isNaN(dateValue.getTime()) ||
-    dateValue.toISOString().slice(0, 10) !== appointmentDate ||
-    (technicianId !== null &&
-      (!Number.isSafeInteger(technicianId) || technicianId <= 0)) ||
-    (price !== null &&
-      (!Number.isFinite(price) || price < 0 || price > 999999999999.99)) ||
-    !validStatuses.includes(status)
+    dateValue.toISOString().slice(0, 10) !== appointmentDate
   ) {
-    return res.status(400).json({ ok: false, message: "Revisa los datos de la cita." });
+    validationErrors.appointmentDate = "Selecciona una fecha válida para la cita.";
+  }
+  if (
+    technicianId !== null &&
+    (!Number.isSafeInteger(technicianId) || technicianId <= 0)
+  ) {
+    validationErrors.technicianId = "Selecciona un técnico válido o deja la cita sin asignar.";
+  }
+  if (
+    price !== null &&
+    (!Number.isFinite(price) || price < 0 || price > 999999999999.99)
+  ) {
+    validationErrors.price = "El precio debe estar entre 0 y 999.999.999.999,99.";
+  }
+  if (!validStatuses.includes(status)) {
+    validationErrors.status = "Selecciona un estado válido.";
+  }
+  if (Object.keys(validationErrors).length) {
+    return res.status(400).json({
+      ok: false,
+      message: "Corrige los campos marcados para guardar la cita.",
+      errors: validationErrors,
+    });
   }
 
   try {
@@ -2780,7 +2867,10 @@ app.patch("/api/admin/appointments/:id", requireAdmin, async (req, res) => {
       if (!technicianRows.length) {
         return res.status(400).json({
           ok: false,
-          message: "Selecciona un técnico activo registrado.",
+          message: "Corrige el técnico seleccionado para guardar la cita.",
+          errors: {
+            technicianId: "El técnico seleccionado no está activo o no está registrado.",
+          },
         });
       }
     }

@@ -27,7 +27,9 @@ function mostrarToast(tipo, mensaje) {
   var toast = document.createElement('div');
   toast.className = 'toast toast-' + tipo;
   var icono = tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : 'ℹ️';
-  toast.innerHTML = '<span>' + icono + ' ' + mensaje + '</span>';
+  var contenido = document.createElement('span');
+  contenido.textContent = icono + ' ' + mensaje;
+  toast.appendChild(contenido);
   contenedor.appendChild(toast);
 
   setTimeout(function() {
@@ -701,11 +703,19 @@ function agregarCampoEdicionDetalleAdmin(form, nombre, etiquetaTexto, valor, tip
     control.value = valor ?? '';
     if (tipo === 'number') {
       control.min = '0';
+      if (nombre === 'price' || nombre === 'cost') {
+        control.max = nombre === 'price' ? '999999999999.99' : '99999999.99';
+      }
       control.step = '0.01';
     }
     if (tipo === 'textarea') {
       control.rows = 4;
       control.maxLength = nombre === 'description' ? 1000 : 100;
+    }
+    if (nombre === 'equipment') control.maxLength = 100;
+    if (nombre === 'phone') {
+      control.maxLength = 10;
+      control.inputMode = 'numeric';
     }
   }
 
@@ -740,6 +750,79 @@ function opcionesTecnicoDetalleAdmin(tecnicoId, permitirSinAsignar) {
   }));
 }
 
+function limpiarErrorCampoDetalleAdmin(form, campo) {
+  var control = form.elements.namedItem(campo);
+  if (control) {
+    control.classList.remove('campo-invalido');
+    control.removeAttribute('aria-invalid');
+    control.parentElement?.querySelector('.mensaje-error-campo')?.remove();
+  }
+}
+
+function mostrarErrorGeneralDetalleAdmin(form, mensaje) {
+  var resumen = form.querySelector('.mensaje-error-general');
+  if (!resumen) {
+    resumen = document.createElement('div');
+    resumen.className = 'mensaje-error-general';
+    resumen.setAttribute('role', 'alert');
+    form.prepend(resumen);
+  }
+  resumen.textContent = mensaje;
+}
+
+function marcarErroresCitaDetalleAdmin(form, errores) {
+  Object.keys(errores || {}).forEach(function(campo) {
+    var control = form.elements.namedItem(campo);
+    if (!control) return;
+    marcarErrorCampo(control, errores[campo]);
+    control.setAttribute('aria-invalid', 'true');
+  });
+}
+
+function validarCitaDetalleAdmin(form) {
+  var errores = {};
+  var equipo = form.elements.equipment.value.trim();
+  var descripcion = form.elements.description.value.trim();
+  var telefono = form.elements.phone.value.trim();
+  var fecha = form.elements.appointmentDate.value;
+  var precio = form.elements.price.value.trim();
+  var tecnico = form.elements.technicianId.value;
+  var estado = form.elements.status.value;
+  var fechaParseada = new Date(fecha + 'T00:00:00Z');
+
+  if (equipo.length < 2 || equipo.length > 100) {
+    errores.equipment = 'El equipo debe tener entre 2 y 100 caracteres.';
+  }
+  if (descripcion.length < 10 || descripcion.length > 1000) {
+    errores.description = 'La descripción debe tener entre 10 y 1000 caracteres.';
+  }
+  if (!/^\d{10}$/.test(telefono)) {
+    errores.phone = 'El teléfono debe contener exactamente 10 dígitos.';
+  }
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(fecha) ||
+    Number.isNaN(fechaParseada.getTime()) ||
+    fechaParseada.toISOString().slice(0, 10) !== fecha
+  ) {
+    errores.appointmentDate = 'Selecciona una fecha válida para la cita.';
+  }
+  if (
+    precio !== '' &&
+    (!Number.isFinite(Number(precio)) ||
+      Number(precio) < 0 ||
+      Number(precio) > 999999999999.99)
+  ) {
+    errores.price = 'El precio debe estar entre 0 y 999.999.999.999,99.';
+  }
+  if (tecnico !== '' && (!/^\d+$/.test(tecnico) || !Number.isSafeInteger(Number(tecnico)))) {
+    errores.technicianId = 'Selecciona un técnico válido o deja la cita sin asignar.';
+  }
+  if (!['SOLICITUD RECIBIDA', 'CONFIRMADA', 'EN PROCESO', 'COMPLETADA', 'CANCELADA'].includes(estado)) {
+    errores.status = 'Selecciona un estado válido.';
+  }
+  return errores;
+}
+
 function nombreEstadoCitaAdmin(status) {
   var estados = {
     'SOLICITUD RECIBIDA': 'Solicitud recibida',
@@ -767,7 +850,18 @@ function mostrarDetalleOrdenServicio(tipo, id, source) {
   var form = document.createElement('form');
   form.id = 'formEditarDetalleServicio';
   form.className = 'form-edicion-detalle';
+  form.noValidate = esCita;
   form.addEventListener('submit', guardarDetalleOrdenServicioAdmin);
+  form.addEventListener('input', function(evento) {
+    if (!evento.target?.name) return;
+    limpiarErrorCampoDetalleAdmin(form, evento.target.name);
+    form.querySelector('.mensaje-error-general')?.remove();
+  });
+  form.addEventListener('change', function(evento) {
+    if (!evento.target?.name) return;
+    limpiarErrorCampoDetalleAdmin(form, evento.target.name);
+    form.querySelector('.mensaje-error-general')?.remove();
+  });
   var datosLectura = document.createElement('dl');
   datosLectura.className = 'lista-detalle-servicio';
   agregarDatoLecturaDetalleAdmin(
@@ -863,6 +957,13 @@ function guardarDetalleOrdenServicioAdmin(evento) {
   if (!detalleOrdenAbiertaAdmin) return;
 
   var form = evento.currentTarget;
+  form.querySelectorAll('.campo-invalido').forEach(function(control) {
+    control.classList.remove('campo-invalido');
+    control.removeAttribute('aria-invalid');
+  });
+  form.querySelectorAll('.mensaje-error-campo, .mensaje-error-general').forEach(function(error) {
+    error.remove();
+  });
   var origen = detalleOrdenAbiertaAdmin.source;
   var tipo = detalleOrdenAbiertaAdmin.tipo;
   var id = detalleOrdenAbiertaAdmin.id;
@@ -883,6 +984,13 @@ function guardarDetalleOrdenServicioAdmin(evento) {
       status: form.elements.status.value
     };
     url = API_BASE + '/api/admin/appointments/' + encodeURIComponent(id);
+    var erroresCliente = validarCitaDetalleAdmin(form);
+    if (Object.keys(erroresCliente).length) {
+      marcarErroresCitaDetalleAdmin(form, erroresCliente);
+      mostrarErrorGeneralDetalleAdmin(form, 'Corrige los campos marcados para guardar la cita.');
+      form.querySelector('.campo-invalido')?.focus();
+      return;
+    }
   } else {
     payload = {
       serviceDescription: form.elements.serviceDescription.value.trim(),
@@ -909,16 +1017,22 @@ function guardarDetalleOrdenServicioAdmin(evento) {
   })
   .then(function(response) {
     if (!response.ok || !response.data.ok) {
-      mostrarToast('error', response.data.message || 'No se pudieron guardar los cambios.');
+      if (response.data.errors) {
+        marcarErroresCitaDetalleAdmin(form, response.data.errors);
+      }
+      mostrarErrorGeneralDetalleAdmin(
+        form,
+        response.data.message || 'No se pudieron guardar los cambios.',
+      );
       return;
     }
-    mostrarToast('success', response.data.message || 'Cambios guardados.');
     document.getElementById('modalDetalleServicio')?.close();
+    mostrarToast('success', response.data.message || 'Cambios guardados.');
     cargarDashboard();
   })
   .catch(function(error) {
     console.error('Error al guardar los detalles del servicio:', error);
-    mostrarToast('error', 'Error de conexión al guardar los cambios.');
+    mostrarErrorGeneralDetalleAdmin(form, 'Error de conexión al guardar los cambios.');
   });
 }
 

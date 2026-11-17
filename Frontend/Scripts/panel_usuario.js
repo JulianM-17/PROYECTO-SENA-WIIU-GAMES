@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   let appointments = [];
   let appointmentsLoading = true;
   let appointmentsLoadError = "";
+  const appointmentsCancelling = new Set();
   if (window.WiiUGamesCart) {
     state.cartCount = window.WiiUGamesCart.updateCount();
   }
@@ -150,7 +151,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       throw new Error(data.message || "No se pudieron cargar tus citas.");
     }
 
-    appointments = data.appointments;
+    appointments = data.appointments.map((appointment) => ({
+      ...appointment,
+      canCancel: true,
+    }));
   }
 
   // ===================================================
@@ -1455,11 +1459,72 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       tarjeta.append(encabezado, detalles);
+      const estadoActual = String(cita.status || "SOLICITUD RECIBIDA").toUpperCase();
+      const puedeCancelar =
+        cita.canCancel &&
+        ["SOLICITUD RECIBIDA", "CONFIRMADA"].includes(estadoActual);
+      if (puedeCancelar) {
+        const acciones = document.createElement("div");
+        acciones.className = "cita-acciones";
+        const botonCancelar = document.createElement("button");
+        botonCancelar.type = "button";
+        botonCancelar.className = "btn-cancelar-cita";
+        botonCancelar.dataset.citaId = String(cita.id);
+        botonCancelar.disabled = appointmentsCancelling.has(String(cita.id));
+        botonCancelar.textContent = botonCancelar.disabled
+          ? "Cancelando..."
+          : "Cancelar cita";
+        acciones.appendChild(botonCancelar);
+        tarjeta.appendChild(acciones);
+      }
       fragmento.appendChild(tarjeta);
     });
 
     listaCitas.replaceChildren(fragmento);
   }
+
+  listaCitas?.addEventListener("click", async (event) => {
+    if (!(event.target instanceof Element)) return;
+    const boton = event.target.closest(".btn-cancelar-cita");
+    if (!boton || appointmentsCancelling.has(boton.dataset.citaId)) return;
+    if (!confirm("¿Estás seguro de que deseas cancelar esta cita?")) return;
+
+    const appointmentId = boton.dataset.citaId;
+    appointmentsCancelling.add(appointmentId);
+    renderAppointments();
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/my-appointments/${encodeURIComponent(appointmentId)}/cancel`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${sessionUser.token}` },
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
+        window.location.replace("Login.html?returnTo=panel_usuario.html");
+        return;
+      }
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || "No se pudo cancelar la cita.");
+      }
+
+      appointments = appointments.map((appointment) =>
+        String(appointment.id) === appointmentId
+          ? { ...appointment, status: "CANCELADA" }
+          : appointment,
+      );
+      showToast(data.message || "Tu cita fue cancelada.", "success");
+    } catch (error) {
+      showToast(error.message || "No se pudo cancelar la cita.", "error");
+    } finally {
+      appointmentsCancelling.delete(appointmentId);
+      renderAppointments();
+    }
+  });
 
   const filtroBtns = document.querySelectorAll(".filtros-pedidos button");
   filtroBtns.forEach((btn) => {

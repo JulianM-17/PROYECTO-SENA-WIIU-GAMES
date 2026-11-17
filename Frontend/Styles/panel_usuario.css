@@ -1060,6 +1060,32 @@ a.btn-agregar {
   gap: 14px;
 }
 
+.cita-acciones {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-cancelar-cita {
+  padding: 8px 16px;
+  border: 1.5px solid #fee2e2;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #b42318;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-cancelar-cita:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.btn-cancelar-cita:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .cita-detalle {
   display: grid;
   gap: 4px;
