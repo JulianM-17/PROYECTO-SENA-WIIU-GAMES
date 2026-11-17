@@ -1,0 +1,124 @@
+body.pagina-inicio:not(.a11y-mode-dark-mode) main {
+  --black: #f3f5f9;
+  --white: #1e293b;
+  --gray-300: #334155;
+  --gray-400: #475569;
+  --gray-500: #64748b;
+  --gray-600: #64748b;
+  --dark-blue: #ffffff;
+  --dark-blue-2: #f8fafc;
+  --dark-surface: #ffffff;
+  --dark-card: #ffffff;
+  --dark-card-hover: #f8fafc;
+  --border-dark: rgba(15, 23, 42, 0.1);
+  --border-hover: rgba(180, 120, 0, 0.35);
+  background: #f3f5f9;
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .seccion-categorias-corsair,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .seccion-productos-corsair,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .seccion-porque {
+  background: #f3f5f9;
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-slider {
+  background: #080f20;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-title,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-subtitle,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-arrow,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-btn-secondary {
+  color: #ffffff;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-badge,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-btn-primary {
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .seccion-titulo-corsair,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .tarjeta-producto h3,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .titulo-producto {
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .enlace-ver-todos-corsair,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .descripcion,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .resenas {
+  color: #64748b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .tarjeta-producto {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .tarjeta-producto:hover {
+  background: #ffffff;
+  border-color: rgba(180, 120, 0, 0.4);
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.14);
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .precio {
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .precio-actual,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .calificacion {
+  color: #8a6400;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .flecha-carrusel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  color: #334155;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .banner-destacado {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .banner-destacado-titulo {
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .banner-destacado-desc {
+  color: #475569;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .banner-destacado-tag,
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .texto-acento {
+  color: #8a6400;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .banner-destacado
+  .hero-btn-secondary {
+  color: #334155;
+  border-color: #cbd5e1;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .porque-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .porque-card h3 {
+  color: #1e293b;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .porque-card p {
+  color: #475569;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .porque-icono {
+  background: rgba(245, 200, 66, 0.18);
+  color: #8a6400;
+}
