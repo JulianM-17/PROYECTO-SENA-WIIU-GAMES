@@ -239,6 +239,52 @@ app.put("/api/profile", requireUserSession, async (req, res) => {
   }
 });
 
+app.put("/api/profile/address", requireUserSession, async (req, res) => {
+  const direccion = String(req.body?.direccion || "").trim();
+  const departamento = String(req.body?.departamento || "").trim();
+  const ciudad = String(req.body?.ciudad || "").trim();
+
+  if (direccion && (direccion.length < 5 || direccion.length > 40)) {
+    return res.status(400).json({
+      ok: false,
+      message: "Ingresa una dirección válida.",
+    });
+  }
+  if (departamento && departamento.length > 30) {
+    return res.status(400).json({
+      ok: false,
+      message: "El departamento no puede superar 30 caracteres.",
+    });
+  }
+  if (ciudad && ciudad.length > 30) {
+    return res.status(400).json({
+      ok: false,
+      message: "La ciudad no puede superar 30 caracteres.",
+    });
+  }
+
+  try {
+    await pool.query(
+      `UPDATE usuario
+       SET direccion = ?, departamento = COALESCE(NULLIF(?, ''), departamento),
+           ciudad = COALESCE(NULLIF(?, ''), ciudad)
+       WHERE id_usuario = ? AND estado = 'ACTIVO'`,
+      [direccion || null, departamento, ciudad, req.userId],
+    );
+    const [rows] = await obtenerPerfil(req.userId);
+    if (!rows.length) {
+      return res.status(404).json({ ok: false, message: "Usuario no encontrado." });
+    }
+    return res.json({ ok: true, profile: rows[0] });
+  } catch (error) {
+    console.error("Error al actualizar dirección:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo guardar la dirección.",
+    });
+  }
+});
+
 app.put("/api/profile/password", requireUserSession, async (req, res) => {
   const currentPassword = String(req.body?.currentPassword || "");
   const newPassword = String(req.body?.newPassword || "");
@@ -831,6 +877,9 @@ app.post("/api/login", async (req, res) => {
 app.post("/api/purchases", requireUserSession, async (req, res) => {
   const paymentMethods = {
     tarjeta: "TARJETA",
+    pse: "TRANSFERENCIA",
+    billetera: "TRANSFERENCIA",
+    efectivo: "EFECTIVO",
     transferencia: "TRANSFERENCIA",
   };
   const paymentMethod = Object.hasOwn(paymentMethods, req.body?.method)
@@ -881,7 +930,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     await connection.beginTransaction();
 
     const [customerRows] = await connection.query(
-      `SELECT u.telefono
+      `SELECT u.telefono, u.departamento, u.ciudad, u.direccion
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
@@ -894,6 +943,13 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
       return res.status(403).json({
         ok: false,
         message: "Solo una cuenta de cliente activa puede realizar compras.",
+      });
+    }
+    if (!String(customerRows[0].direccion || "").trim()) {
+      await revertirTransaccionEmpleado(connection);
+      return res.status(409).json({
+        ok: false,
+        message: "Agrega una dirección de envío a tu perfil antes de realizar la compra.",
       });
     }
 
@@ -970,24 +1026,25 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     );
     const shipping = 25000;
     const taxes = Number((subtotal * 0.19).toFixed(2));
-    const serviceFee = Number((subtotal * 0.1).toFixed(2));
-    const total = Number((subtotal + shipping + taxes + serviceFee).toFixed(2));
+    const total = Number((subtotal + shipping + taxes).toFixed(2));
     const paymentReference = `DEMO-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
     const notes =
       `Compra web - pago de demostración. Subtotal ${subtotal}; envío ${shipping}; ` +
-      `IVA ${taxes}; servicio ${serviceFee}; total ${total} COP.`;
+      `IVA ${taxes}; total ${total} COP.`;
 
     const [saleResult] = await connection.query(
       `INSERT INTO venta
          (id_usuario, id_sucursal, metodo_pago, nro_pago, telefono,
-          tipo_venta, notas, estado)
-       VALUES (?, ?, ?, ?, ?, 'SUCURSAL', ?, 'PAGADA')`,
+          tipo_venta, ciudad, direccion_entrega, notas, estado)
+       VALUES (?, ?, ?, ?, ?, 'SUCURSAL', ?, ?, ?, 'PAGADA')`,
       [
         req.userId,
         branchRows[0].id_sucursal,
         paymentMethod,
         paymentReference,
         customerRows[0].telefono,
+        customerRows[0].ciudad,
+        customerRows[0].direccion,
         notes,
       ],
     );
@@ -1051,7 +1108,16 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
           quantity,
           unitPrice,
         })),
+<<<<<<< Updated upstream
+        totals: { subtotal, shipping, taxes, total },
+=======
         totals: { subtotal, shipping, taxes, serviceFee, total },
+        shippingAddress: {
+          address: customerRows[0].direccion,
+          city: customerRows[0].ciudad,
+          department: customerRows[0].departamento,
+        },
+>>>>>>> Stashed changes
       },
     });
   } catch (error) {
@@ -1347,6 +1413,13 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
     );
     if (!roleRows.length) {
       return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
+    }
+    const [emailRows] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE correo = ? LIMIT 1",
+      [email],
+    );
+    if (emailRows.length) {
+      return res.status(409).json({ ok: false, message: "El correo ya está registrado." });
     }
 
     const [result] = await pool.query(
@@ -2266,42 +2339,85 @@ app.delete("/api/admin/productos/:id", requireAdmin, async (req, res) => {
 // Registro de usuarios (público)
 app.post("/api/usuarios", async (req, res) => {
   try {
-    const {
-      nombre,
-      apellido,
-      email,
-      password,
-      telefono,
-      telefono_secundario,
-      direccion,
-      departamento,
-      ciudad,
-      nacimiento,
-    } = req.body;
+    const nombre = String(req.body?.nombre || "").trim();
+    const apellido = String(req.body?.apellido || "").trim();
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const password = String(req.body?.password || "");
+    const telefono = String(req.body?.telefono || "").trim();
+    const telefonoSecundario = String(req.body?.telefono_secundario || "").trim();
+    const direccion = String(req.body?.direccion || "").trim();
+    const departamento = String(req.body?.departamento || "").trim();
+    const ciudad = String(req.body?.ciudad || "").trim();
+    const nacimiento = String(req.body?.nacimiento || "").trim();
+
     if (!nombre || !apellido || !email || !password) {
       return res.status(400).json({ ok: false, message: "Datos obligatorios faltantes." });
     }
-    // Validar email
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    const nombreValido = /^[\p{L}][\p{L}\s'-]*$/u;
+    if (
+      nombre.length < 2 ||
+      nombre.length > 30 ||
+      apellido.length < 2 ||
+      apellido.length > 30 ||
+      !nombreValido.test(nombre) ||
+      !nombreValido.test(apellido)
+    ) {
+      return res.status(400).json({ ok: false, message: "Ingresa un nombre y apellido válidos." });
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) {
       return res.status(400).json({ ok: false, message: "Formato de correo inválido." });
     }
+    if (password.length < 8 || password.length > 128) {
+      return res.status(400).json({ ok: false, message: "La contraseña debe tener entre 8 y 128 caracteres." });
+    }
+    if (!/^[+\d()\s-]{7,20}$/.test(telefono) || !/\d{7,}/.test(telefono.replace(/\D/g, ""))) {
+      return res.status(400).json({ ok: false, message: "Ingresa un teléfono válido." });
+    }
+    if (telefonoSecundario && (!/^[+\d()\s-]{7,20}$/.test(telefonoSecundario) || !/\d{7,}/.test(telefonoSecundario.replace(/\D/g, "")))) {
+      return res.status(400).json({ ok: false, message: "Ingresa un teléfono secundario válido." });
+    }
+    if (direccion.length < 5 || direccion.length > 40) {
+      return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
+    }
+    if (!departamento || !ciudad || departamento.length > 30 || ciudad.length > 30) {
+      return res.status(400).json({ ok: false, message: "Selecciona departamento y municipio." });
+    }
+    const fechaNacimiento = new Date(`${nacimiento}T00:00:00Z`);
+    const fechaValida =
+      /^\d{4}-\d{2}-\d{2}$/.test(nacimiento) &&
+      !Number.isNaN(fechaNacimiento.getTime()) &&
+      fechaNacimiento.toISOString().slice(0, 10) === nacimiento &&
+      nacimiento >= "1940-01-01" &&
+      nacimiento <= new Date(new Date().setFullYear(new Date().getFullYear() - 10)).toISOString().slice(0, 10);
+    if (!fechaValida) {
+      return res.status(400).json({ ok: false, message: "Selecciona una fecha de nacimiento válida." });
+    }
+
+    const [roleRows] = await pool.query(
+      "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
+    );
+    if (!roleRows.length) {
+      return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
+    }
+
     // Generar documento (ID) único
     const numDoc = `CLI${Date.now().toString().slice(-8)}`;
     const passwordHash = await bcrypt.hash(password, 12);
     const [result] = await pool.query(
       `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario, departamento, ciudad, direccion, fecha_nacimiento, correo, contrasena_hash, estado)
-       VALUES (1, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
-        nombre.trim().substring(0, 30),
-        apellido.trim().substring(0, 30),
+        roleRows[0].id_rol,
+        nombre,
+        apellido,
         numDoc,
-        telefono?.trim().substring(0, 20) || null,
-        telefono_secundario?.trim().substring(0, 20) || null,
-        departamento?.trim() || null,
-        ciudad?.trim() || null,
-        direccion?.trim().substring(0, 255) || null,
+        telefono.substring(0, 20),
+        telefonoSecundario.substring(0, 20) || null,
+        departamento,
+        ciudad,
+        direccion,
         nacimiento || null,
-        email.trim().toLowerCase().substring(0, 120),
+        email,
         passwordHash,
       ],
     );

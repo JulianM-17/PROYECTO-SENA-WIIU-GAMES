@@ -109,8 +109,26 @@
   gap: 5px;
 }
 
-.fila-producto-confirmacion span {
-  color: var(--confirmacion-muted);
+.producto-confirmacion-info,
+.fila-producto-confirmacion > .producto-confirmacion-info {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.producto-confirmacion-info > div {
+  display: grid;
+  gap: 5px;
+}
+
+.imagen-producto-confirmacion {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f1f4f9;
 }
 
 .totales-confirmacion,
@@ -265,7 +283,13 @@ body.a11y-mode-dark-mode .estado-pendiente {
   }
 
   .fila-producto-confirmacion {
-    flex-direction: column;
+    align-items: flex-start;
     gap: 8px;
+  }
+
+  .imagen-producto-confirmacion {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
   }
 }

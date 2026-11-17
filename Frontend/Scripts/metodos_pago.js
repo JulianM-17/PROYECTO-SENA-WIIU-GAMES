@@ -27,12 +27,17 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const shipping = 25000;
   const taxes = subtotal * 0.19;
-  const serviceFee = subtotal * 0.1;
 
   document.getElementById("productos-resumen").innerHTML = cart
     .map(
       (item) => `
         <div class="producto-resumen">
+          <img
+            class="imagen-producto-resumen"
+            src="${escapeHtml(item.imageUrl || "../Assets/lenovolegion.webp")}"
+            alt=""
+            onerror="this.src='../Assets/lenovolegion.webp'"
+          />
           <span>${escapeHtml(item.name)} × ${Number(item.quantity)}</span>
           <strong>${formatCOP(Number(item.price) * Number(item.quantity))}</strong>
         </div>
@@ -42,15 +47,17 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("subtotal-pedido").textContent = formatCOP(subtotal);
   document.getElementById("envio-pedido").textContent = formatCOP(shipping);
   document.getElementById("impuestos-pedido").textContent = formatCOP(taxes);
-  document.getElementById("tasa-pedido").textContent = formatCOP(serviceFee);
   document.getElementById("total-pedido").textContent = formatCOP(
-    subtotal + shipping + taxes + serviceFee,
+    subtotal + shipping + taxes,
   );
 
   const formMetodoPago = document.getElementById("form-metodo-pago");
   const mensajeMetodo = document.getElementById("mensaje-metodo");
   const paymentDetails = {
     tarjeta: document.getElementById("datos-tarjeta"),
+    pse: document.getElementById("datos-pse"),
+    billetera: document.getElementById("datos-billetera"),
+    efectivo: document.getElementById("datos-efectivo"),
     transferencia: document.getElementById("datos-transferencia"),
   };
   let metodoSeleccionado = null;
@@ -122,6 +129,15 @@ document.addEventListener("DOMContentLoaded", () => {
           ? ""
           : "La fecha de transferencia no puede ser anterior a hoy.";
       }
+      case "select":
+        return value ? "" : "Selecciona una opción disponible.";
+      case "phone":
+        if (!/^\d+$/.test(value)) {
+          return "El celular solo puede contener números.";
+        }
+        return /^3\d{9}$/.test(value)
+          ? ""
+          : "Ingresa un celular colombiano de 10 dígitos que empiece por 3.";
       default:
         return "";
     }
@@ -141,11 +157,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function clearFieldState(fieldset) {
-    fieldset.querySelectorAll("input").forEach((input) => {
-      input.classList.remove("input-error", "input-valido");
-      input.removeAttribute("aria-invalid");
+    fieldset.querySelectorAll("input, select").forEach((field) => {
+      field.classList.remove("input-error", "input-valido");
+      field.removeAttribute("aria-invalid");
       const errorElement = document.getElementById(
-        input.getAttribute("aria-describedby"),
+        field.getAttribute("aria-describedby"),
       );
       if (errorElement) errorElement.textContent = "";
     });
@@ -155,8 +171,8 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.entries(paymentDetails).forEach(([key, fieldset]) => {
       const visible = key === method;
       if (!visible && key === metodoSeleccionado) {
-        fieldset.querySelectorAll("input").forEach((input) => {
-          input.value = "";
+        fieldset.querySelectorAll("input, select").forEach((field) => {
+          field.value = "";
         });
         clearFieldState(fieldset);
       }
@@ -188,11 +204,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
   Object.values(paymentDetails).forEach((fieldset) => {
-    fieldset.querySelectorAll("input[data-validation]").forEach((input) => {
-      input.addEventListener("input", () => validateField(input));
-      input.addEventListener("change", () => validateField(input));
-      input.addEventListener("blur", () => validateField(input));
-    });
+    fieldset
+      .querySelectorAll("input[data-validation], select[data-validation]")
+      .forEach((field) => {
+        field.addEventListener("input", () => validateField(field));
+        field.addEventListener("change", () => validateField(field));
+        field.addEventListener("blur", () => validateField(field));
+      });
   });
 
   const submitButton = formMetodoPago.querySelector('button[type="submit"]');
@@ -201,6 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const method = new FormData(formMetodoPago).get("metodo");
     const names = {
       tarjeta: "Tarjeta débito o crédito",
+      pse: "PSE",
+      billetera: "Billetera digital",
+      efectivo: "Pago en efectivo",
       transferencia: "Transferencia bancaria",
     };
 
@@ -210,7 +231,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const activeFields = paymentDetails[method].querySelectorAll(
-      "input[data-validation]",
+      "input[data-validation], select[data-validation]",
     );
     const invalidFields = [...activeFields].filter(
       (input) => !validateField(input),
@@ -263,6 +284,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const confirmation = {
         ...data.purchase,
+        items: data.purchase.items.map((purchaseItem) => {
+          const cartItem = cart.find((item) => item.name === purchaseItem.name);
+          return { ...purchaseItem, imageUrl: cartItem?.imageUrl || "../Assets/lenovolegion.webp" };
+        }),
         paymentDetails:
           method === "tarjeta"
             ? {
@@ -273,18 +298,36 @@ document.addEventListener("DOMContentLoaded", () => {
                   .slice(-4),
                 expiry: document.getElementById("vencimiento-tarjeta").value,
               }
-            : {
-                holder: document
-                  .getElementById("titular-transferencia")
-                  .value.trim(),
-                bank: document
-                  .getElementById("banco-transferencia")
-                  .value.trim(),
-                reference: document
-                  .getElementById("referencia-transferencia")
-                  .value.trim(),
-                date: document.getElementById("fecha-transferencia").value,
-              },
+            : method === "pse"
+              ? {
+                  bank: document.getElementById("banco-pse").value.trim(),
+                  personType: document
+                    .getElementById("tipo-persona-pse")
+                    .value.trim(),
+                }
+              : method === "billetera"
+                ? {
+                    provider: document
+                      .getElementById("proveedor-billetera")
+                      .value.trim(),
+                    phone: document
+                      .getElementById("telefono-billetera")
+                      .value.trim(),
+                  }
+                : method === "efectivo"
+                  ? { type: "Pago al recibir o retirar el pedido" }
+                  : {
+                      holder: document
+                        .getElementById("titular-transferencia")
+                        .value.trim(),
+                      bank: document
+                        .getElementById("banco-transferencia")
+                        .value.trim(),
+                      reference: document
+                        .getElementById("referencia-transferencia")
+                        .value.trim(),
+                      date: document.getElementById("fecha-transferencia").value,
+                    },
       };
       paymentDetails.tarjeta.querySelector("#numero-tarjeta").value = "";
       paymentDetails.tarjeta.querySelector("#cvv-tarjeta").value = "";

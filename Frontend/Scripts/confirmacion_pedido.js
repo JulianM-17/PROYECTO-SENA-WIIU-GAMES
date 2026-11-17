@@ -33,9 +33,17 @@ document.addEventListener("DOMContentLoaded", () => {
       .map(
         (item) => `
           <div class="fila-producto-confirmacion">
-            <div>
-              <strong>${escapeHtml(item.name)}</strong>
-              <span>${Number(item.quantity)} × ${formatCOP(item.unitPrice)}</span>
+            <div class="producto-confirmacion-info">
+              <img
+                class="imagen-producto-confirmacion"
+                src="${escapeHtml(item.imageUrl || "../Assets/lenovolegion.webp")}"
+                alt="${escapeHtml(item.name)}"
+                onerror="this.src='../Assets/lenovolegion.webp'"
+              />
+              <div>
+                <strong>${escapeHtml(item.name)}</strong>
+                <span>${Number(item.quantity)} × ${formatCOP(item.unitPrice)}</span>
+              </div>
             </div>
             <strong>${formatCOP(item.quantity * item.unitPrice)}</strong>
           </div>
@@ -46,7 +54,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setText("confirmacion-subtotal", formatCOP(confirmation.totals.subtotal));
   setText("confirmacion-envio", formatCOP(confirmation.totals.shipping));
   setText("confirmacion-impuestos", formatCOP(confirmation.totals.taxes));
-  setText("confirmacion-tasa", formatCOP(confirmation.totals.serviceFee));
   setText("confirmacion-total", formatCOP(confirmation.totals.total));
 
   const paymentDetails = confirmation.paymentDetails || {};
@@ -58,15 +65,32 @@ document.addEventListener("DOMContentLoaded", () => {
           ["Tarjeta", `•••• •••• •••• ${paymentDetails.lastFour}`],
           ["Vencimiento", paymentDetails.expiry],
         ]
-      : confirmation.method === "transferencia"
+      : confirmation.method === "pse"
         ? [
-            ["Método", "Transferencia bancaria"],
-            ["Titular", paymentDetails.holder],
-            ["Banco de origen", paymentDetails.bank],
-            ["Referencia", paymentDetails.reference],
-            ["Fecha de transferencia", paymentDetails.date],
+            ["Método", "PSE (Pagos Seguros en Línea)"],
+            ["Banco", paymentDetails.bank],
+            ["Tipo de persona", paymentDetails.personType],
           ]
-        : null;
+        : confirmation.method === "billetera"
+          ? [
+              ["Método", "Billetera digital"],
+              ["Billetera", paymentDetails.provider],
+              ["Número celular", paymentDetails.phone],
+            ]
+          : confirmation.method === "efectivo"
+            ? [
+                ["Método", "Pago en efectivo"],
+                ["Modalidad", paymentDetails.type],
+              ]
+            : confirmation.method === "transferencia"
+              ? [
+                  ["Método", "Transferencia bancaria"],
+                  ["Titular", paymentDetails.holder],
+                  ["Banco de origen", paymentDetails.bank],
+                  ["Referencia", paymentDetails.reference],
+                  ["Fecha de transferencia", paymentDetails.date],
+                ]
+              : null;
 
   if (!details) {
     window.location.replace("metodos_pago.html");
@@ -83,6 +107,18 @@ document.addEventListener("DOMContentLoaded", () => {
       `,
     )
     .join("");
+
+  const shippingAddress = confirmation.shippingAddress || {};
+  document.getElementById("detalle-envio").innerHTML = [
+    ["Dirección", shippingAddress.address],
+    ["Ciudad", shippingAddress.city],
+    ["Departamento", shippingAddress.department],
+  ].map(([label, value]) => `
+    <div>
+      <dt>${escapeHtml(label)}</dt>
+      <dd>${escapeHtml(value || "No registrada")}</dd>
+    </div>
+  `).join("");
 
   window.WiiUGamesCart.clear();
 });

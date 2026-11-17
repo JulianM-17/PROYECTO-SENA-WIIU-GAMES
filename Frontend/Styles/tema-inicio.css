@@ -122,3 +122,78 @@ body.pagina-inicio:not(.a11y-mode-dark-mode) main .porque-icono {
   background: rgba(245, 200, 66, 0.18);
   color: #8a6400;
 }
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im1.png"] {
+  background-image: url("../Assets/im1.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im2.png"] {
+  background-image: url("../Assets/im2.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im3.png"] {
+  background-image: url("../Assets/im3.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im4.png"] {
+  background-image: url("../Assets/im4.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im5.png"] {
+  background-image: url("../Assets/im5.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im6.png"] {
+  background-image: url("../Assets/im6.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im7.png"] {
+  background-image: url("../Assets/im7.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im8.png"] {
+  background-image: url("../Assets/im8.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-img[data-imagen-clara="im9.png"] {
+  background-image: url("../Assets/im9.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-overlay,
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card-overlay-otro {
+  background: transparent;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .categoria-card-nombre {
+  color: #1e293b;
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.95);
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .categoria-card:hover
+  .categoria-card-nombre {
+  color: #765400;
+}
