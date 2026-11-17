@@ -706,6 +706,15 @@ body {
   font-weight: 600;
 }
 
+.etiqueta-rojo {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .etiqueta-naranja {
   background-color: rgba(245, 166, 35, 0.15);
   color: #f5a623;

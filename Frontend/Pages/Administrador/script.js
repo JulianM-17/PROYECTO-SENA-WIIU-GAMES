@@ -1530,8 +1530,18 @@ function cargarDashboard() {
     if (data.inventory) {
       poblarTabla('tablaInventarioBody', data.inventory, function(row) {
         var stockTexto = row.stock + ' uds';
-        var estadoClase = row.stock > 0 ? 'etiqueta-verde' : 'etiqueta-rojo';
-        var estadoTexto = row.stock > 0 ? 'Disponible' : 'Agotado';
+        var stockActual = Number(row.stock);
+        var stockMinimo = Number(row.minStock || 3);
+        var estadoClase = stockActual <= 0
+          ? 'etiqueta-rojo'
+          : stockActual <= stockMinimo
+            ? 'etiqueta-naranja'
+            : 'etiqueta-verde';
+        var estadoTexto = stockActual <= 0
+          ? 'Agotado'
+          : stockActual <= stockMinimo
+            ? 'Stock bajo'
+            : 'Disponible';
         var productId = Number(row.id);
         return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td><button class="boton-icono" title="Editar" aria-label="Editar ' + escaparHtmlAdmin(row.name) + '" onclick="abrirModal(\'inventario\', ' + productId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'productos\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
