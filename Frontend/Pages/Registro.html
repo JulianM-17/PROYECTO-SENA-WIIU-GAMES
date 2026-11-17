@@ -117,6 +117,10 @@
                   id="nombre"
                   class="entrada-texto"
                   placeholder="Tu nombre"
+                  minlength="2"
+                  maxlength="30"
+                  pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s'\-]*"
+                  title="Ingresa solo letras, espacios, apóstrofes o guiones"
                   required
                 />
                 <span class="mensaje-error" id="error-nombre"></span>
@@ -130,6 +134,10 @@
                   id="apellido"
                   class="entrada-texto"
                   placeholder="Tu apellido"
+                  minlength="2"
+                  maxlength="30"
+                  pattern="[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s'\-]*"
+                  title="Ingresa solo letras, espacios, apóstrofes o guiones"
                   required
                 />
                 <span class="mensaje-error" id="error-apellido"></span>
@@ -193,6 +201,8 @@
                   id="contrasena"
                   class="entrada-texto"
                   placeholder="Mínimo 8 caracteres"
+                  minlength="8"
+                  maxlength="128"
                   required
                 />
                 <button
@@ -250,6 +260,7 @@
                 id="direccion"
                 class="entrada-texto"
                 placeholder="Ej: Carrera 11 # 14 - 14 Local 126"
+                maxlength="40"
                 required
               />
               <small class="texto-ayuda">Apartamento, torre, suite o conjunto (opcional)</small>
@@ -293,13 +304,28 @@
                 <label class="etiqueta" for="telefono-principal"
                   >Teléfono Principal <span class="obligatorio">*</span></label
                 >
-                <input
-                  type="tel"
-                  id="telefono-principal"
-                  class="entrada-texto"
-                  placeholder="Ej: 312 345 6789"
-                  required
-                />
+                <div class="entrada-telefono">
+                  <select id="prefijo-telefono-principal" class="entrada-seleccion prefijo-telefono" aria-label="País del teléfono principal">
+                    <option value="+57">🇨🇴 +57</option>
+                    <option value="+1">🇺🇸 +1</option>
+                    <option value="+52">🇲🇽 +52</option>
+                    <option value="+34">🇪🇸 +34</option>
+                    <option value="+54">🇦🇷 +54</option>
+                    <option value="+55">🇧🇷 +55</option>
+                    <option value="+56">🇨🇱 +56</option>
+                    <option value="+51">🇵🇪 +51</option>
+                    <option value="+593">🇪🇨 +593</option>
+                    <option value="+58">🇻🇪 +58</option>
+                  </select>
+                  <input
+                    type="tel"
+                    id="telefono-principal"
+                    class="entrada-texto"
+                    placeholder="Ej: 312 345 6789"
+                    maxlength="16"
+                    required
+                  />
+                </div>
                 <span class="mensaje-error" id="error-telefono"></span>
               </div>
             </div>
@@ -308,12 +334,28 @@
               <label class="etiqueta" for="telefono-secundario"
                 >Teléfono Secundario <span class="opcional">(Opcional)</span></label
               >
-              <input
-                type="tel"
-                id="telefono-secundario"
-                class="entrada-texto"
-                placeholder="Ej: (608) 770 1234 o número de respaldo"
-              />
+              <div class="entrada-telefono">
+                <select id="prefijo-telefono-secundario" class="entrada-seleccion prefijo-telefono" aria-label="País del teléfono secundario">
+                  <option value="+57">🇨🇴 +57</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+52">🇲🇽 +52</option>
+                  <option value="+34">🇪🇸 +34</option>
+                  <option value="+54">🇦🇷 +54</option>
+                  <option value="+55">🇧🇷 +55</option>
+                  <option value="+56">🇨🇱 +56</option>
+                  <option value="+51">🇵🇪 +51</option>
+                  <option value="+593">🇪🇨 +593</option>
+                  <option value="+58">🇻🇪 +58</option>
+                </select>
+                <input
+                  type="tel"
+                  id="telefono-secundario"
+                  class="entrada-texto"
+                  placeholder="Ej: 608 770 1234"
+                  maxlength="16"
+                />
+              </div>
+              <span class="mensaje-error" id="error-telefono-secundario"></span>
             </div>
 
             <div class="control-seleccion">

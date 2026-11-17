@@ -32,6 +32,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       telefono: "",
       nacimiento: "",
       documento: "",
+      departamento: "",
+      ciudad: "",
+      direccion: "",
     },
     addresses: [],
     cards: [],
@@ -109,7 +112,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       telefono: profile.telefono || "",
       nacimiento: profile.nacimiento || "",
       documento: profile.documento || "",
+      departamento: profile.departamento || "",
+      ciudad: profile.ciudad || "",
+      direccion: profile.direccion || "",
     };
+    if (state.profile.direccion) {
+      const principalAddress = state.addresses.find((address) => address.principal);
+      if (!principalAddress) {
+        state.addresses.unshift({
+          id: "dir-profile-primary",
+          tipo: "Casa",
+          nombre: `${state.profile.nombre} ${state.profile.apellidos}`.trim(),
+          detalle: [
+            state.profile.direccion,
+            state.profile.ciudad,
+            state.profile.departamento,
+          ].filter(Boolean).join(", "),
+          telefono: state.profile.telefono,
+          principal: true,
+          iconClass: "fi fi-rr-home",
+        });
+      } else if (principalAddress.id === "dir-profile-primary") {
+        principalAddress.nombre =
+          `${state.profile.nombre} ${state.profile.apellidos}`.trim();
+        principalAddress.detalle = [
+          state.profile.direccion,
+          state.profile.ciudad,
+          state.profile.departamento,
+        ].filter(Boolean).join(", ");
+        principalAddress.telefono = state.profile.telefono;
+      }
+    }
     sessionUser.nombre =
       `${state.profile.nombre} ${state.profile.apellidos}`.trim();
     sessionUser.correo = state.profile.email;
@@ -839,9 +872,40 @@ document.addEventListener("DOMContentLoaded", async () => {
     openModal("modal-direccion");
   }
 
+  async function persistProfileAddress(direccion) {
+    try {
+      const response = await fetch("http://localhost:3000/api/profile/address", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionUser.token}`,
+        },
+        body: JSON.stringify({
+          direccion,
+          departamento: state.profile.departamento,
+          ciudad: state.profile.ciudad,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || "No se pudo guardar la dirección.");
+      }
+      state.profile.direccion = data.profile.direccion || "";
+    } catch (error) {
+      showToast(error.message, "error");
+      return false;
+    }
+    return true;
+  }
+
   function deleteAddress(id) {
     if (confirm("¿Estás seguro de que deseas eliminar esta dirección?")) {
+      const deletedAddress = state.addresses.find((d) => d.id === id);
       state.addresses = state.addresses.filter((d) => d.id !== id);
+      if (deletedAddress?.principal) {
+        persistProfileAddress("");
+        state.profile.direccion = "";
+      }
       saveState();
       updateUI();
       showToast("Dirección eliminada correctamente.", "info");
@@ -849,7 +913,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   if (formDir) {
-    formDir.addEventListener("submit", (e) => {
+    formDir.addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!validateTypedFields(formDir)) return;
 
@@ -920,6 +984,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             tipo === "Trabajo" ? "fi fi-rr-briefcase" : "fi fi-rr-home",
         };
         state.addresses.push(newDir);
+      }
+
+      if (principal || (!id && state.addresses.length === 1)) {
+        const saved = await persistProfileAddress(detalle);
+        if (!saved) return;
       }
 
       saveState();

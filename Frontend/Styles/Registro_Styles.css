@@ -225,6 +225,24 @@
   box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.15);
 }
 
+.entrada-telefono {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.entrada-telefono .prefijo-telefono {
+  width: 116px;
+  min-width: 116px;
+  padding-left: 10px;
+  padding-right: 8px;
+}
+
+.entrada-telefono .entrada-texto {
+  flex: 1;
+  min-width: 0;
+}
+
 .entrada-texto::placeholder {
   color: #94a3b8;
   font-size: 13px;

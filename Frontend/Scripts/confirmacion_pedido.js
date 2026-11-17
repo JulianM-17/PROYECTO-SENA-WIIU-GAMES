@@ -108,6 +108,18 @@ document.addEventListener("DOMContentLoaded", () => {
     )
     .join("");
 
+  const shippingAddress = confirmation.shippingAddress || {};
+  document.getElementById("detalle-envio").innerHTML = [
+    ["Dirección", shippingAddress.address],
+    ["Ciudad", shippingAddress.city],
+    ["Departamento", shippingAddress.department],
+  ].map(([label, value]) => `
+    <div>
+      <dt>${escapeHtml(label)}</dt>
+      <dd>${escapeHtml(value || "No registrada")}</dd>
+    </div>
+  `).join("");
+
   window.WiiUGamesCart.clear();
 });
 
