@@ -78,6 +78,7 @@ function normalizeProduct(product) {
     images,
     description: product.description ?? product.descripcion,
     category: product.category ?? product.nombre_cat,
+    brand: product.brand ?? product.nombre_marca ?? product.marca,
     condition: product.condition ?? "Nuevo sellado",
     warranty: product.warranty ?? "12 meses",
     platform: product.platform ?? product.nombre_marca,
@@ -242,8 +243,40 @@ function renderProductSections(product, products) {
     product.description || "Consulta con nuestro equipo para conocer más detalles de este producto.",
   );
 
+  const category = normalizeRecommendationKey(product.category);
+  const brand = normalizeRecommendationKey(product.brand ?? product.platform);
+  const productPrice = Number(product.price);
   const recommendations = products
     .filter((item) => item.id && String(item.id) !== String(product.id))
+    .map((item, index) => {
+      const sameCategory =
+        category &&
+        normalizeRecommendationKey(item.category) === category;
+      const sameBrand =
+        brand &&
+        normalizeRecommendationKey(item.brand ?? item.platform) === brand;
+      const itemPrice = Number(item.price);
+      return {
+        item,
+        index,
+        relevance: Number(sameCategory) * 2 + Number(sameBrand),
+        priceDistance:
+          Number.isFinite(productPrice) &&
+          Number.isFinite(itemPrice) &&
+          productPrice > 0 &&
+          itemPrice > 0
+            ? Math.abs(itemPrice - productPrice) /
+              Math.max(productPrice, itemPrice)
+            : Number.POSITIVE_INFINITY,
+      };
+    })
+    .sort(
+      (left, right) =>
+        right.relevance - left.relevance ||
+        left.priceDistance - right.priceDistance ||
+        left.index - right.index,
+    )
+    .map(({ item }) => item)
     .slice(0, 4);
   const container = document.querySelector("#productos-sugeridos");
   if (!container) return;
@@ -278,6 +311,14 @@ function renderProductSections(product, products) {
       `;
     })
     .join("");
+}
+
+function normalizeRecommendationKey(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 }
 
 function configureCartButton(product) {
