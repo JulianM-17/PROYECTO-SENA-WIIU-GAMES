@@ -85,6 +85,116 @@ app.get("/api/profile", requireUserSession, async (req, res) => {
   }
 });
 
+async function obtenerFavoritosUsuario(userId) {
+  const [favorites] = await pool.query(
+    `SELECT
+       p.id_producto AS id,
+       p.nombre,
+       c.nombre_cat AS categoria,
+       p.precio,
+       p.imagen_prin AS img,
+       COALESCE(i.stock_total, 0) AS stock_total
+     FROM favorito f
+     INNER JOIN producto p ON p.id_producto = f.id_producto
+     INNER JOIN categoria c ON c.id_categoria = p.id_categoria
+     LEFT JOIN (
+       SELECT i.id_producto, SUM(i.stock) AS stock_total
+       FROM inventario i
+       INNER JOIN sucursal s
+         ON s.id_sucursal = i.id_sucursal
+        AND s.estado = 'ACTIVO'
+       WHERE i.estado = 'ACTIVO'
+       GROUP BY i.id_producto
+     ) i ON i.id_producto = p.id_producto
+     WHERE f.id_usuario = ?
+     ORDER BY f.fecha_agregado DESC, f.id_favorito DESC`,
+    [userId],
+  );
+  return favorites;
+}
+
+app.get("/api/my-favorites", requireUserSession, async (req, res) => {
+  try {
+    const favorites = await obtenerFavoritosUsuario(req.userId);
+    return res.json({ ok: true, favorites });
+  } catch (error) {
+    console.error("Error al consultar los favoritos:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudieron cargar tus favoritos." });
+  }
+});
+
+app.post("/api/my-favorites", requireUserSession, async (req, res) => {
+  const productId = Number(req.body?.productId);
+  if (!Number.isSafeInteger(productId) || productId <= 0) {
+    return res
+      .status(400)
+      .json({ ok: false, message: "El producto solicitado no es válido." });
+  }
+
+  try {
+    const [products] = await pool.query(
+      "SELECT id_producto FROM producto WHERE id_producto = ? AND estado = 'ACTIVO'",
+      [productId],
+    );
+    if (!products.length) {
+      return res
+        .status(404)
+        .json({ ok: false, message: "El producto no existe o no está disponible." });
+    }
+
+    await pool.query(
+      `INSERT INTO favorito (id_usuario, id_producto)
+       VALUES (?, ?)
+       ON DUPLICATE KEY UPDATE id_favorito = id_favorito`,
+      [req.userId, productId],
+    );
+    const favorites = await obtenerFavoritosUsuario(req.userId);
+    return res.json({ ok: true, favorites });
+  } catch (error) {
+    console.error("Error al guardar un favorito:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudo guardar el producto en favoritos." });
+  }
+});
+
+app.delete("/api/my-favorites/:productId", requireUserSession, async (req, res) => {
+  const productId = Number(req.params.productId);
+  if (!Number.isSafeInteger(productId) || productId <= 0) {
+    return res
+      .status(400)
+      .json({ ok: false, message: "El producto solicitado no es válido." });
+  }
+
+  try {
+    await pool.query(
+      "DELETE FROM favorito WHERE id_usuario = ? AND id_producto = ?",
+      [req.userId, productId],
+    );
+    const favorites = await obtenerFavoritosUsuario(req.userId);
+    return res.json({ ok: true, favorites });
+  } catch (error) {
+    console.error("Error al eliminar un favorito:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudo eliminar el producto de favoritos." });
+  }
+});
+
+app.delete("/api/my-favorites", requireUserSession, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM favorito WHERE id_usuario = ?", [req.userId]);
+    return res.json({ ok: true });
+  } catch (error) {
+    console.error("Error al eliminar los favoritos del usuario:", error.message);
+    return res
+      .status(500)
+      .json({ ok: false, message: "No se pudieron eliminar tus favoritos." });
+  }
+});
+
 app.get("/api/my-orders", requireUserSession, async (req, res) => {
   try {
     const [rows] = await pool.query(

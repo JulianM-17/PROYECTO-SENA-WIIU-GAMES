@@ -405,15 +405,16 @@
               </div>
               <div class="campo-pago">
                 <label for="banco-transferencia">Banco de origen</label>
-                <input
+                <select
                   id="banco-transferencia"
                   name="bancoTransferencia"
-                  type="text"
-                  data-validation="name"
-                  autocomplete="off"
+                  data-validation="bank"
+                  autocomplete="organization"
                   aria-describedby="error-banco-transferencia"
                   required
-                />
+                >
+                  <option value="" selected disabled>Selecciona tu banco</option>
+                </select>
                 <small class="error-campo" id="error-banco-transferencia" aria-live="polite"></small>
               </div>
               <div class="campo-pago">

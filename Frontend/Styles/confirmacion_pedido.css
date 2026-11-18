@@ -249,6 +249,15 @@ body.a11y-mode-dark-mode .estado-pedido {
   color: #fde68a !important;
 }
 
+body.a11y-mode-dark-mode .icono-confirmacion {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .icono-confirmacion i {
+  color: #080f20 !important;
+}
+
 body.a11y-mode-dark-mode .fila-producto-confirmacion,
 body.a11y-mode-dark-mode .totales-confirmacion .total-final {
   border-color: #334155 !important;
@@ -264,6 +273,19 @@ body.a11y-mode-dark-mode .enlace-carrito {
 body.a11y-mode-dark-mode .estado-pendiente {
   background: #292719 !important;
   color: #fde68a !important;
+}
+
+body.a11y-mode-dark-mode .acciones-confirmacion .btn-volver-catalogo,
+body.a11y-mode-dark-mode .acciones-confirmacion .btn-volver-catalogo:hover,
+body.a11y-mode-dark-mode .acciones-confirmacion .btn-volver-catalogo:focus-visible {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .acciones-confirmacion .enlace-carrito,
+body.a11y-mode-dark-mode .acciones-confirmacion .enlace-carrito:hover,
+body.a11y-mode-dark-mode .acciones-confirmacion .enlace-carrito:focus-visible {
+  color: #f8fafc !important;
 }
 
 @media (max-width: 760px) {

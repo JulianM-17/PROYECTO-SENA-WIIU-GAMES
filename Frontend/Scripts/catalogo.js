@@ -147,7 +147,7 @@ const PRODUCTOS_DEFAULT = [
   }
 ];
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const catUrl = urlParams.get('categoria');
   if (catUrl) {
@@ -155,7 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   configurarFiltros();
+  configurarFavoritos();
   configurarAgregarAlCarrito();
+  await cargarFavoritosDesdeServidor();
   cargarProductos();
   cargarCategorias();
   cargarMarcas();
@@ -305,6 +307,8 @@ function renderizarProductos() {
   if (botonAplicar) {
     botonAplicar.textContent = `Aplicar Filtros (${productosFiltrados.length})`;
   }
+
+  actualizarBotonesFavoritos();
 }
 
 function crearTarjetaProducto(prod) {
@@ -324,6 +328,15 @@ function crearTarjetaProducto(prod) {
         </div>
         <span class="cantidad-stock ${tieneStock ? '' : 'sin-stock'}">${stockDisponible} disponibles</span>
       </div>
+      <button
+        class="btn-favorito-producto"
+        type="button"
+        data-product-id="${escapeHtml(prod.id_producto ?? prod.id ?? prod.productId ?? prod.nombre)}"
+        data-product-name="${escapeHtml(prod.nombre || 'Producto')}"
+        aria-label="Agregar ${escapeHtml(prod.nombre)} a favoritos"
+        aria-pressed="false"
+        title="Agregar a favoritos"
+      ><i class="fi fi-rr-heart" aria-hidden="true"></i></button>
       <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
         <img
           src="${escapeHtml(prod.imagen_url || '../Assets/lenovolegion.webp')}"
@@ -359,6 +372,167 @@ function crearTarjetaProducto(prod) {
       <span class="mensaje-carrito" aria-live="polite"></span>
     </article>
   `;
+}
+
+function actualizarBotonesFavoritos() {
+  const grid = document.getElementById('grid-productos');
+  if (!grid) return;
+
+  const favorites = cargarFavoritos();
+  grid.querySelectorAll('.btn-favorito-producto').forEach(button => {
+    const isFavorite = favorites.some(
+      favorite => String(favorite.id) === String(button.dataset.productId)
+    );
+    button.classList.toggle('activo', isFavorite);
+    button.setAttribute('aria-pressed', String(isFavorite));
+    button.setAttribute(
+      'aria-label',
+      `${isFavorite ? 'Quitar' : 'Agregar'} ${button.dataset.productName} ${isFavorite ? 'de' : 'a'} favoritos`
+    );
+    button.title = isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos';
+  });
+}
+
+function cargarFavoritos() {
+  try {
+    const data = JSON.parse(localStorage.getItem('wiiu_user_panel_data') || '{}');
+    return data && Array.isArray(data.favorites) ? data.favorites : [];
+  } catch (error) {
+    console.error('No se pudieron cargar los favoritos:', error);
+    return [];
+  }
+}
+
+function guardarFavoritosEnPanel(favorites) {
+  const panelData =
+    JSON.parse(localStorage.getItem('wiiu_user_panel_data') || '{}') || {};
+  if (typeof panelData !== 'object' || Array.isArray(panelData)) {
+    throw new Error('Los datos del panel de usuario no tienen un formato válido.');
+  }
+
+  panelData.favorites = favorites.map(favorite => ({
+    id: String(favorite.id),
+    nombre: favorite.nombre || 'Producto',
+    categoria: favorite.categoria || 'Producto',
+    precio: Number(favorite.precio) || 0,
+    precioActual: new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    }).format(Number(favorite.precio) || 0),
+    img: favorite.img || '../Assets/lenovolegion.webp',
+    stock_total: Number(favorite.stock_total) || 0
+  }));
+  localStorage.setItem('wiiu_user_panel_data', JSON.stringify(panelData));
+}
+
+async function cargarFavoritosDesdeServidor() {
+  let sessionUser = null;
+  try {
+    sessionUser = JSON.parse(
+      sessionStorage.getItem('wiiu_usuario_activo') || 'null'
+    );
+  } catch (error) {
+    console.error('No se pudo validar la sesión para cargar favoritos:', error);
+  }
+  if (!sessionUser?.token) return;
+
+  try {
+    const response = await fetch(`${API_URL}/my-favorites`, {
+      headers: { Authorization: `Bearer ${sessionUser.token}` }
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sessionStorage.removeItem('wiiu_usuario_activo');
+      window.location.href = 'Login.html?returnTo=Catalog.html';
+      return;
+    }
+    if (!response.ok || !data.ok || !Array.isArray(data.favorites)) {
+      throw new Error(data.message || 'No se pudieron cargar tus favoritos.');
+    }
+
+    guardarFavoritosEnPanel(data.favorites);
+    actualizarBotonesFavoritos();
+  } catch (error) {
+    console.error('No se pudieron sincronizar los favoritos:', error);
+  }
+}
+
+function configurarFavoritos() {
+  const grid = document.getElementById('grid-productos');
+  if (!grid) return;
+
+  grid.addEventListener('click', async event => {
+    const button = event.target.closest('.btn-favorito-producto');
+    if (!button || !grid.contains(button)) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    let sessionUser = null;
+    try {
+      sessionUser = JSON.parse(
+        sessionStorage.getItem('wiiu_usuario_activo') || 'null'
+      );
+    } catch (error) {
+      console.error('No se pudo validar la sesión para guardar favoritos:', error);
+    }
+
+    if (!sessionUser?.token) {
+      window.location.href = 'Login.html?returnTo=Catalog.html';
+      return;
+    }
+
+    const productId = String(button.dataset.productId);
+    const product = productosCatalogo.find(
+      item => String(item.id_producto ?? item.id ?? item.productId ?? item.nombre) === productId
+    );
+    if (!product) {
+      console.error(`No se encontró el producto ${productId} para guardarlo en favoritos.`);
+      return;
+    }
+
+    button.disabled = true;
+    try {
+      const favorites = cargarFavoritos();
+      const favoriteIndex = favorites.findIndex(
+        favorite => String(favorite.id) === productId
+      );
+
+      const response = await fetch(
+        favoriteIndex >= 0
+          ? `${API_URL}/my-favorites/${encodeURIComponent(productId)}`
+          : `${API_URL}/my-favorites`,
+        {
+          method: favoriteIndex >= 0 ? 'DELETE' : 'POST',
+          headers: {
+            Authorization: `Bearer ${sessionUser.token}`,
+            ...(favoriteIndex >= 0 ? {} : { 'Content-Type': 'application/json' })
+          },
+          ...(favoriteIndex >= 0
+            ? {}
+            : { body: JSON.stringify({ productId }) })
+        }
+      );
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        sessionStorage.removeItem('wiiu_usuario_activo');
+        window.location.href = 'Login.html?returnTo=Catalog.html';
+        return;
+      }
+      if (!response.ok || !data.ok || !Array.isArray(data.favorites)) {
+        throw new Error(data.message || 'No se pudo actualizar tu lista de favoritos.');
+      }
+
+      guardarFavoritosEnPanel(data.favorites);
+      actualizarBotonesFavoritos();
+    } catch (error) {
+      console.error('No se pudo actualizar la lista de favoritos:', error);
+      window.alert(error.message || 'No se pudo actualizar tu lista de favoritos.');
+    } finally {
+      button.disabled = false;
+    }
+  });
 }
 
 function configurarAgregarAlCarrito() {

@@ -593,7 +593,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque),
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -976,6 +976,20 @@ body.a11y-mode-dark-mode textarea:not(.input-error):not(:user-invalid) {
   background-color: #070d1e !important;
   color: #f8fafc !important;
   border: 1.5px solid #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode select {
+  color-scheme: dark;
+}
+
+body.a11y-mode-dark-mode select option {
+  background-color: #0e1834 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode select option:checked {
+  background-color: #f5c842 !important;
+  color: #080f20 !important;
 }
 
 body.a11y-mode-dark-mode input::placeholder,

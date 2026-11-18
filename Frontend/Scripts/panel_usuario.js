@@ -91,6 +91,50 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  async function loadFavoritesFromDatabase() {
+    const response = await fetch("http://localhost:3000/api/my-favorites", {
+      headers: { Authorization: `Bearer ${sessionUser.token}` },
+    });
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sessionStorage.removeItem("wiiu_usuario_activo");
+      window.location.replace("Login.html?returnTo=panel_usuario.html");
+      return;
+    }
+    if (!response.ok || !data.ok || !Array.isArray(data.favorites)) {
+      throw new Error(data.message || "No se pudieron cargar tus favoritos.");
+    }
+
+    let cachedProducts = [];
+    try {
+      const savedProducts = JSON.parse(
+        localStorage.getItem("wiiu_products") || "[]",
+      );
+      if (Array.isArray(savedProducts)) cachedProducts = savedProducts;
+    } catch (error) {
+      console.warn("No se pudo leer el catálogo guardado para el stock:", error);
+    }
+
+    state.favorites = data.favorites.map((favorite) => {
+      const cachedProduct = cachedProducts.find(
+        (product) => String(product.id_producto) === String(favorite.id),
+      );
+      const stockValue =
+        favorite.stock_total ?? cachedProduct?.stock_total ?? null;
+      const stock = stockValue == null ? null : Number(stockValue);
+      return {
+        id: String(favorite.id),
+        nombre: favorite.nombre || "Producto",
+        categoria: favorite.categoria || "Producto",
+        precio: Number(favorite.precio),
+        precioActual: formatCOP(favorite.precio),
+        img: favorite.img || "../Assets/lenovolegion.webp",
+        stock_total: stock !== null && Number.isFinite(stock) ? stock : null,
+      };
+    });
+    saveState();
+  }
+
   async function loadProfileFromDatabase() {
     const response = await fetch("http://localhost:3000/api/profile", {
       headers: { Authorization: `Bearer ${sessionUser.token}` },
@@ -1221,31 +1265,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     state.favorites.forEach((fav) => {
       const card = document.createElement("div");
       card.className = "fav-card";
+      const favoriteId = escapeHtml(fav.id);
+      const favoriteName = escapeHtml(fav.nombre);
+      const favoriteCategory = escapeHtml(fav.categoria);
+      const favoriteImage = escapeHtml(fav.img);
       card.innerHTML = `
         ${
           fav.isEmojiHolder
             ? `
           <div class="fav-img-emoji">
-            <i class="${fav.iconClass}"></i>
-            <button class="btn-fav-quitar" data-id="${fav.id}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
+            <i class="${escapeHtml(fav.iconClass)}"></i>
+            <button class="btn-fav-quitar" data-id="${favoriteId}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
           </div>
         `
             : `
           <div class="fav-img-wrap">
-            <img src="${fav.img}" alt="${fav.nombre}" />
-            <button class="btn-fav-quitar" data-id="${fav.id}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
-            ${fav.badge ? `<span class="${fav.badgeClass || "insignia-descuento-favorito"}">${fav.badge}</span>` : ""}
+            <img src="${favoriteImage}" alt="${favoriteName}" />
+            <button class="btn-fav-quitar" data-id="${favoriteId}" title="Quitar de favoritos"><i class="fi fi-sr-heart"></i></button>
+            ${fav.badge ? `<span class="${escapeHtml(fav.badgeClass || "insignia-descuento-favorito")}">${escapeHtml(fav.badge)}</span>` : ""}
           </div>
         `
         }
         <div class="fav-body">
-          <p class="fav-categoria">${fav.categoria}</p>
-          <p class="fav-nombre">${fav.nombre}</p>
+          <p class="fav-categoria">${favoriteCategory}</p>
+          <p class="fav-nombre">${favoriteName}</p>
           <div class="fav-precios">
-            <p class="fav-precio-actual">${fav.precioActual}</p>
-            ${fav.precioTachado ? `<p class="fav-precio-tachado">${fav.precioTachado}</p>` : ""}
+            <p class="fav-precio-actual">${escapeHtml(fav.precioActual)}</p>
+            ${fav.precioTachado ? `<p class="fav-precio-tachado">${escapeHtml(fav.precioTachado)}</p>` : ""}
           </div>
-          <button class="btn-fav-carrito" data-name="${fav.nombre}">Agregar al carrito</button>
+          <button class="btn-fav-carrito" data-id="${favoriteId}" data-name="${favoriteName}">Agregar al carrito</button>
         </div>
       `;
       gridFavoritos.appendChild(card);
@@ -1263,7 +1311,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     gridFavoritos.querySelectorAll(".btn-fav-carrito").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         e.preventDefault();
-        state.cartCount = (state.cartCount || 0) + 1;
+        const favorite = state.favorites.find(
+          (item) => String(item.id) === String(btn.dataset.id),
+        );
+        if (!favorite || !window.WiiUGamesCart?.add) {
+          showToast("No se pudo agregar el producto al carrito.", "error");
+          return;
+        }
+
+        const priceValue =
+          favorite.precio ??
+          String(favorite.precioActual || "").replace(/[^\d]/g, "");
+        const result = window.WiiUGamesCart.add(
+          {
+            productId: favorite.id,
+            name: favorite.nombre,
+            price: Number(priceValue),
+            imageUrl: favorite.img,
+            stock:
+              favorite.stock_total == null
+                ? null
+                : Number(favorite.stock_total),
+          },
+          1,
+        );
+        if (!result.ok) {
+          const message =
+            result.reason === "stock"
+              ? `Solo hay ${result.stock} unidades disponibles.`
+              : result.reason === "unavailable"
+                ? "Este producto está agotado."
+                : "No se pudo agregar el producto al carrito.";
+          showToast(message, "error");
+          return;
+        }
+
+        state.cartCount = window.WiiUGamesCart.updateCount(result.cart);
         saveState();
         updateUI();
         showToast(`¡"${btn.dataset.name}" fue agregado al carrito!`, "success");
@@ -1271,19 +1354,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  function removeFavorite(id, cardElement) {
+  async function removeFavorite(id, cardElement) {
     if (cardElement) {
       cardElement.style.transition = "opacity 0.3s, transform 0.3s";
       cardElement.style.opacity = "0";
       cardElement.style.transform = "scale(0.9)";
     }
 
-    setTimeout(() => {
-      state.favorites = state.favorites.filter((f) => f.id !== id);
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/my-favorites/${encodeURIComponent(id)}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${sessionUser.token}` },
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        window.location.replace("Login.html?returnTo=panel_usuario.html");
+        return;
+      }
+      if (!response.ok || !data.ok) {
+        throw new Error(data.message || "No se pudo eliminar el favorito.");
+      }
+
+      state.favorites = state.favorites.filter(
+        (favorite) => String(favorite.id) !== String(id),
+      );
       saveState();
       updateUI();
       showToast("Producto eliminado de favoritos.", "info");
-    }, 300);
+    } catch (error) {
+      if (cardElement) {
+        cardElement.style.opacity = "";
+        cardElement.style.transform = "";
+      }
+      showToast(error.message || "No se pudo eliminar el favorito.", "error");
+    }
   }
 
   // ===================================================
@@ -1794,13 +1902,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     btnLogout.addEventListener("click", async (e) => {
       e.preventDefault();
       if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        try {
+          const favoritesResponse = await fetch(
+            "http://localhost:3000/api/my-favorites",
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${sessionUser.token}` },
+            },
+          );
+          const favoritesData = await favoritesResponse.json().catch(() => ({}));
+          if (!favoritesResponse.ok || !favoritesData.ok) {
+            throw new Error(
+              favoritesData.message || "No se pudieron eliminar tus favoritos.",
+            );
+          }
+          state.favorites = [];
+          saveState();
+          updateUI();
+        } catch (error) {
+          showToast(
+            error.message || "No se pudieron eliminar tus favoritos.",
+            "error",
+          );
+          return;
+        }
         showToast("Cerrando sesión...", "info");
         try {
           await fetch("http://localhost:3000/api/session", {
             method: "DELETE",
             headers: { Authorization: `Bearer ${sessionUser.token}` },
           });
-        } catch (error) {}
+        } catch (error) {
+          console.error("No se pudo invalidar la sesión en el servidor:", error);
+        }
         sessionStorage.removeItem("wiiu_usuario_activo");
         window.location.href = "Login.html";
       }
@@ -1829,6 +1963,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     showToast(appointmentsLoadError, "error");
   } finally {
     appointmentsLoading = false;
+  }
+
+  try {
+    await loadFavoritesFromDatabase();
+  } catch (error) {
+    showToast(error.message || "No se pudieron cargar tus favoritos.", "error");
   }
 
   // Inicializar interfaz completa

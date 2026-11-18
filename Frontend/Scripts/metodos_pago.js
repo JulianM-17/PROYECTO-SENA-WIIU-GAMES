@@ -73,6 +73,41 @@ document.addEventListener("DOMContentLoaded", () => {
   const transferDateInput = document.getElementById("fecha-transferencia");
   transferDateInput.min = getTodayLocalDate();
 
+  const transferBanks = [
+    "Alianza Fiduciaria",
+    "Banco Agrario de Colombia",
+    "Banco AV Villas",
+    "Banco Caja Social",
+    "Banco de Bogotá",
+    "Banco de Occidente",
+    "Banco Falabella",
+    "Banco Finandina",
+    "Banco GNB Sudameris",
+    "Banco Itaú",
+    "Banco Mundo Mujer",
+    "Banco Pichincha",
+    "Banco Popular",
+    "Banco Santander Colombia",
+    "Banco Serfinanza",
+    "Bancamía",
+    "Bancolombia",
+    "Bancoomeva",
+    "BBVA Colombia",
+    "Citibank",
+    "Coltefinanciera",
+    "Coopcentral",
+    "DAVIbank",
+    "Lulo Bank",
+    "Nu Colombia",
+  ];
+  const transferBankSelect = document.getElementById("banco-transferencia");
+  transferBanks.forEach((bank) => {
+    const option = document.createElement("option");
+    option.value = bank;
+    option.textContent = bank;
+    transferBankSelect.appendChild(option);
+  });
+
   function getValidationError(input) {
     const value = input.value.trim();
     if (!value) return "Este campo es obligatorio.";
@@ -130,7 +165,16 @@ document.addEventListener("DOMContentLoaded", () => {
           : "La fecha de transferencia no puede ser anterior a hoy.";
       }
       case "select":
-        return value ? "" : "Selecciona una opción disponible.";
+      case "bank": {
+        const selectedOption = input.options[input.selectedIndex];
+        if (!value || !selectedOption || selectedOption.disabled) {
+          return "Selecciona una opción disponible.";
+        }
+        return input.dataset.validation !== "bank" ||
+          transferBanks.includes(value)
+          ? ""
+          : "Selecciona un banco válido de la lista.";
+      }
       case "phone":
         if (!/^\d+$/.test(value)) {
           return "El celular solo puede contener números.";
