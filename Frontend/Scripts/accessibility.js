@@ -282,6 +282,7 @@
       destinations[user.rol] || destinations.Cliente,
       baseUrl,
     ).href;
+    const loginDestination = new URL("Pages/Login.html", baseUrl).href;
     const initials = String(user.nombre || "Usuario")
       .trim()
       .split(/\s+/)
@@ -289,17 +290,127 @@
       .map((part) => part.charAt(0).toUpperCase())
       .join("");
     const existingAvatar = document.querySelector(".foto-perfil");
-    const avatar = document.createElement("a");
+    const hasProfileMenu = ["Cliente", "Proveedor"].includes(user.rol);
+    const avatar = document.createElement(hasProfileMenu ? "button" : "a");
     avatar.className = existingAvatar
       ? `avatar-sesion ${existingAvatar.className}`
       : "avatar-sesion";
-    avatar.href = destination;
+    if (hasProfileMenu) {
+      avatar.type = "button";
+      avatar.setAttribute("aria-haspopup", "menu");
+      avatar.setAttribute("aria-expanded", "false");
+    } else {
+      avatar.href = destination;
+    }
     avatar.title = user.nombre || "Mi cuenta";
     avatar.setAttribute(
       "aria-label",
-      `Abrir cuenta de ${user.nombre || "usuario"}`,
+      hasProfileMenu
+        ? `Abrir opciones de perfil de ${user.nombre || "usuario"}`
+        : `Abrir cuenta de ${user.nombre || "usuario"}`,
     );
     avatar.textContent = initials || "U";
+
+    let profileMenu;
+    if (hasProfileMenu) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "menu-perfil-cliente";
+      wrapper.appendChild(avatar);
+
+      profileMenu = document.createElement("div");
+      profileMenu.id = "menu-perfil-cliente";
+      profileMenu.className = "desplegable-perfil-cliente";
+      profileMenu.setAttribute("role", "menu");
+      profileMenu.setAttribute("aria-hidden", "true");
+      avatar.setAttribute("aria-controls", profileMenu.id);
+
+      const panelLink = document.createElement("a");
+      panelLink.href = destination;
+      panelLink.setAttribute("role", "menuitem");
+      const panelIcon = document.createElement("i");
+      panelIcon.className = "fi fi-rr-user";
+      panelIcon.setAttribute("aria-hidden", "true");
+      const panelLabel = document.createElement("span");
+      panelLabel.textContent = "Ir al panel de usuario";
+      panelLink.append(panelIcon, panelLabel);
+
+      const separator = document.createElement("div");
+      separator.className = "separador-perfil-cliente";
+      separator.setAttribute("role", "separator");
+
+      const logoutButton = document.createElement("button");
+      logoutButton.type = "button";
+      logoutButton.setAttribute("role", "menuitem");
+      const logoutIcon = document.createElement("i");
+      logoutIcon.className = "fi fi-rr-sign-out-alt";
+      logoutIcon.setAttribute("aria-hidden", "true");
+      const logoutLabel = document.createElement("span");
+      logoutLabel.textContent = "Cerrar sesión";
+      logoutButton.append(logoutIcon, logoutLabel);
+
+      profileMenu.append(panelLink, separator, logoutButton);
+      wrapper.appendChild(profileMenu);
+
+      avatar.addEventListener("click", () => {
+        const isOpen = profileMenu.classList.toggle("abierto");
+        avatar.setAttribute("aria-expanded", String(isOpen));
+        profileMenu.setAttribute("aria-hidden", String(!isOpen));
+      });
+
+      document.addEventListener("click", (event) => {
+        if (!wrapper.contains(event.target)) {
+          profileMenu.classList.remove("abierto");
+          avatar.setAttribute("aria-expanded", "false");
+          profileMenu.setAttribute("aria-hidden", "true");
+        }
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          profileMenu.classList.remove("abierto");
+          avatar.setAttribute("aria-expanded", "false");
+          profileMenu.setAttribute("aria-hidden", "true");
+          avatar.focus();
+        }
+      });
+
+      logoutButton.addEventListener("click", async () => {
+        if (!window.confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+          return;
+        }
+
+        const token =
+          user.token ||
+          sessionStorage.getItem("sessionToken") ||
+          localStorage.getItem("sessionToken");
+        if (token) {
+          try {
+            const response = await fetch("http://localhost:3000/api/session", {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!response.ok && response.status !== 401) {
+              console.error("No se pudo invalidar la sesión en el servidor.");
+            }
+          } catch (error) {
+            console.error("No se pudo invalidar la sesión en el servidor:", error);
+          }
+        }
+
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
+        window.location.href = loginDestination;
+      });
+
+      if (existingAvatar) {
+        existingAvatar.replaceWith(wrapper);
+      } else {
+        const userIcons = document.querySelector(".iconos-usuario");
+        if (userIcons) userIcons.appendChild(wrapper);
+      }
+      return;
+    }
 
     if (existingAvatar) {
       existingAvatar.replaceWith(avatar);

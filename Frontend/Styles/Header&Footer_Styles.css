@@ -621,6 +621,86 @@ a.foto-perfil {
   text-decoration: none;
 }
 
+.menu-perfil-cliente {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.menu-perfil-cliente .avatar-sesion {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.desplegable-perfil-cliente {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 1002;
+  display: none;
+  min-width: 220px;
+  flex-direction: column;
+  padding: 8px;
+  border: 1px solid rgba(245, 200, 66, 0.2);
+  border-radius: 10px;
+  background: #0c1527;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.desplegable-perfil-cliente.abierto {
+  display: flex;
+}
+
+.desplegable-perfil-cliente a,
+.desplegable-perfil-cliente button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.desplegable-perfil-cliente a:hover,
+.desplegable-perfil-cliente button:hover {
+  background: rgba(245, 200, 66, 0.08);
+  color: var(--yellow);
+}
+
+.desplegable-perfil-cliente i {
+  width: 16px;
+  flex: 0 0 16px;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+}
+
+.desplegable-perfil-cliente span {
+  flex: 1;
+}
+
+.desplegable-perfil-cliente button {
+  color: #ef7777;
+}
+
+.separador-perfil-cliente {
+  height: 1px;
+  margin: 4px 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 /* =====================================================
    FOOTER
    ===================================================== */
