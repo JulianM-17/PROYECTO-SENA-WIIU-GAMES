@@ -2,6 +2,7 @@ const API_URL = 'http://localhost:3000/api';
 const filtrosCatalogo = {
   categoria: '',
   marca: '',
+  busqueda: '',
   precioMin: 0,
   precioMax: Infinity
 };
@@ -150,6 +151,16 @@ const PRODUCTOS_DEFAULT = [
 document.addEventListener('DOMContentLoaded', () => {
   const urlParams = new URLSearchParams(window.location.search);
   const catUrl = urlParams.get('categoria');
+  const inputBusqueda = document.getElementById('busqueda-catalogo');
+  const busquedaInicial = urlParams.get('q') || '';
+  filtrosCatalogo.busqueda = normalizarBusqueda(busquedaInicial);
+  if (inputBusqueda) inputBusqueda.value = busquedaInicial;
+
+  if (urlParams.get('buscar') === '1' && inputBusqueda) {
+    inputBusqueda.focus();
+    inputBusqueda.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   if (catUrl) {
     filtrosCatalogo.categoria = normalizar(catUrl);
   }
@@ -210,6 +221,12 @@ function configurarFiltros() {
   const botonLimpiar = document.querySelector('.btn-limpiar');
   const botonAplicar = document.querySelector('.btn-aplicar');
   const botonTodasMarcas = document.getElementById('btn-todas-marcas');
+  const inputBusqueda = document.getElementById('busqueda-catalogo');
+
+  inputBusqueda?.addEventListener('input', () => {
+    filtrosCatalogo.busqueda = normalizarBusqueda(inputBusqueda.value);
+    renderizarProductos();
+  });
 
   listaCategorias?.addEventListener('click', event => {
     const opcion = event.target.closest('li');
@@ -258,8 +275,10 @@ function configurarFiltros() {
   botonLimpiar?.addEventListener('click', () => {
     filtrosCatalogo.categoria = '';
     filtrosCatalogo.marca = '';
+    filtrosCatalogo.busqueda = '';
     filtrosCatalogo.precioMin = 0;
     filtrosCatalogo.precioMax = Infinity;
+    if (inputBusqueda) inputBusqueda.value = '';
     document.querySelectorAll(
       '#lista-categorias li.activo, #filtro-precio li.activo, #contenedor-marcas span.activo'
     ).forEach(item => item.classList.remove('activo'));
@@ -289,11 +308,20 @@ function renderizarProductos() {
     const coincideMarca =
       !filtrosCatalogo.marca ||
       normalizar(producto.nombre_marca) === filtrosCatalogo.marca;
+    const textoProducto = normalizarBusqueda([
+      producto.nombre,
+      producto.nombre_marca,
+      producto.nombre_cat,
+      producto.descripcion
+    ].join(' '));
+    const coincideBusqueda =
+      !filtrosCatalogo.busqueda ||
+      textoProducto.includes(filtrosCatalogo.busqueda);
     const precio = Number(producto.precio);
     const coincidePrecio =
       precio >= filtrosCatalogo.precioMin &&
       precio <= filtrosCatalogo.precioMax;
-    return coincideCategoria && coincideMarca && coincidePrecio;
+    return coincideCategoria && coincideMarca && coincideBusqueda && coincidePrecio;
   });
 
   if (productosCatalogo.length > 0 && productosFiltrados.length === 0) {
@@ -548,6 +576,14 @@ function escapeHtml(value) {
 
 function normalizar(value) {
   return String(value ?? '').trim().toLocaleLowerCase('es');
+}
+
+function normalizarBusqueda(value) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLocaleLowerCase('es');
 }
 
 
