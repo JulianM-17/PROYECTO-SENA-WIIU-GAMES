@@ -25,25 +25,49 @@ body {
   flex-direction: column;
   position: sticky;
   top: 0;
+  z-index: 20;
   height: 100vh;
   flex-shrink: 0;
 }
 
 .cabecera-menu-lateral {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .logo {
+  flex: 1;
+  min-width: 0;
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 0;
 }
 
 .boton-hamburguesa {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.boton-hamburguesa span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #f5a623;
+  border-radius: 2px;
 }
 
 .logo img {
-  max-width: 135px;
+  max-width: 110px;
   height: auto;
 }
 
@@ -52,6 +76,61 @@ body {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  margin-top: 12px;
+  overflow-y: auto;
+}
+
+.navegacion.abierto {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+@media (min-width: 769px) {
+  .barra-lateral {
+    transition: width 0.25s ease, padding 0.25s ease;
+  }
+
+  .panel-empleado.menu-colapsado .barra-lateral {
+    width: 76px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .panel-empleado.menu-colapsado .cabecera-menu-lateral {
+    justify-content: center;
+  }
+
+  .panel-empleado.menu-colapsado .logo {
+    display: none;
+  }
+
+  .panel-empleado.menu-colapsado .navegacion {
+    align-items: center;
+  }
+
+  .panel-empleado.menu-colapsado .boton-menu {
+    width: 48px;
+    justify-content: center;
+    gap: 0;
+    padding: 12px 0;
+  }
+
+  .panel-empleado.menu-colapsado .boton-menu span,
+  .panel-empleado.menu-colapsado .info-empleado,
+  .panel-empleado.menu-colapsado .flecha {
+    display: none;
+  }
+
+  .panel-empleado.menu-colapsado .perfil-empleado {
+    justify-content: center;
+  }
+
+  .panel-empleado.menu-colapsado .menu-desplegable-perfil {
+    right: auto;
+    left: 58px;
+    width: 200px;
+  }
 }
 
 .boton-menu {
@@ -93,6 +172,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid #e2e8f0;
   cursor: pointer;
@@ -185,7 +265,6 @@ body {
   min-height: 100vh;
   min-width: 0;
   padding: 30px 40px;
-  overflow-y: auto;
 }
 
 .barra-superior {

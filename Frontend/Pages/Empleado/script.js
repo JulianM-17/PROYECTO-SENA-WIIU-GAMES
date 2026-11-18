@@ -26,6 +26,11 @@ if (!employeeSession?.token || employeeSession.rol !== "Trabajador") {
 }
 
 function initializeEmployeePanel() {
+  configurarMenuLateral();
+  window.matchMedia("(max-width: 768px)").addEventListener(
+    "change",
+    configurarMenuLateral,
+  );
   const fullName = employeeSession.nombre || "Empleado";
   const initials = fullName
     .split(/\s+/)
@@ -108,11 +113,21 @@ function cambiarPestana(idVista, botonClickeado) {
   });
   const navegacion = document.getElementById("menuNavegacion");
   const botonHamburguesa = document.querySelector(".boton-hamburguesa");
-  navegacion.classList.remove("abierto");
-  botonHamburguesa.setAttribute("aria-expanded", "false");
+  const esMovil = window.matchMedia("(max-width: 768px)").matches;
+  const panel = document.querySelector(".panel-empleado");
+  if (esMovil) navegacion.classList.remove("abierto");
+  const colapsado = panel.classList.contains("menu-colapsado");
+  botonHamburguesa.setAttribute(
+    "aria-expanded",
+    String(!esMovil && !colapsado),
+  );
   botonHamburguesa.setAttribute(
     "aria-label",
-    "Abrir menú de navegación",
+    esMovil
+      ? "Abrir menú de navegación"
+      : colapsado
+        ? "Expandir menú de navegación"
+        : "Contraer menú de navegación",
   );
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -120,13 +135,64 @@ function cambiarPestana(idVista, botonClickeado) {
 function toggleMenuMovil() {
   const navegacion = document.getElementById("menuNavegacion");
   const botonHamburguesa = document.querySelector(".boton-hamburguesa");
-  const abierto = navegacion.classList.toggle("abierto");
+  if (window.matchMedia("(max-width: 768px)").matches) {
+    const abierto = navegacion.classList.toggle("abierto");
 
-  botonHamburguesa.setAttribute("aria-expanded", String(abierto));
+    botonHamburguesa.setAttribute("aria-expanded", String(abierto));
+    botonHamburguesa.setAttribute(
+      "aria-label",
+      abierto ? "Cerrar menú de navegación" : "Abrir menú de navegación",
+    );
+    return;
+  }
+
+  const panel = document.querySelector(".panel-empleado");
+  const colapsado = panel.classList.toggle("menu-colapsado");
+  botonHamburguesa.setAttribute("aria-expanded", String(!colapsado));
   botonHamburguesa.setAttribute(
     "aria-label",
-    abierto ? "Cerrar menú de navegación" : "Abrir menú de navegación",
+    colapsado ? "Expandir menú de navegación" : "Contraer menú de navegación",
   );
+  document.querySelectorAll("#menuNavegacion .boton-menu").forEach((button) => {
+    const label = button.querySelector("span")?.textContent.trim();
+    if (colapsado && label) {
+      button.title = label;
+      button.setAttribute("aria-label", label);
+    } else {
+      button.removeAttribute("title");
+      button.removeAttribute("aria-label");
+    }
+  });
+}
+
+function configurarMenuLateral() {
+  const panel = document.querySelector(".panel-empleado");
+  const navegacion = document.getElementById("menuNavegacion");
+  const botonHamburguesa = document.querySelector(".boton-hamburguesa");
+  if (!panel || !navegacion || !botonHamburguesa) return;
+
+  const esMovil = window.matchMedia("(max-width: 768px)").matches;
+  const colapsado = !esMovil && panel.classList.contains("menu-colapsado");
+  navegacion.classList.remove("abierto");
+  botonHamburguesa.setAttribute("aria-expanded", String(!esMovil && !colapsado));
+  botonHamburguesa.setAttribute(
+    "aria-label",
+    esMovil
+      ? "Abrir menú de navegación"
+      : colapsado
+        ? "Expandir menú de navegación"
+        : "Contraer menú de navegación",
+  );
+  document.querySelectorAll("#menuNavegacion .boton-menu").forEach((button) => {
+    const label = button.querySelector("span")?.textContent.trim();
+    if (colapsado && label) {
+      button.title = label;
+      button.setAttribute("aria-label", label);
+    } else {
+      button.removeAttribute("title");
+      button.removeAttribute("aria-label");
+    }
+  });
 }
 
 function toggleMenuPerfil() {
