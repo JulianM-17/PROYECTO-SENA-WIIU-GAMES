@@ -313,21 +313,19 @@ CREATE TABLE backup (
 );
 
 -- -------------------------- favorito ---------------------------
-
 CREATE TABLE favorito (
-    id_favorito INT AUTO_INCREMENT NOT NULL,
+    id_favorito INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     fecha_agregado DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_usuario , id_producto),
     id_usuario INT NOT NULL,
+    id_producto INT NOT NULL,
+    UNIQUE (id_usuario, id_producto),
     FOREIGN KEY (id_usuario)
         REFERENCES usuario (id_usuario),
-    id_producto INT NOT NULL,
     FOREIGN KEY (id_producto)
-        REFERENCES producto (id_producto)	
+        REFERENCES producto (id_producto)
 );
 
 -- --------------------------Reseñas---------------------------------
-
 CREATE TABLE resenas (
     id_resenas INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
@@ -340,7 +338,7 @@ CREATE TABLE resenas (
     comentario VARCHAR(300),
     compra_verificada BOOLEAN DEFAULT FALSE,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE KEY uk_usuario_producto (usuario_id , producto_id)
+    UNIQUE KEY uk_usuario_producto (id_usuario, id_producto)
 );
 
 -- ---------------- rol ----------------
