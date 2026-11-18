@@ -252,7 +252,7 @@ body.pagina-inicio:not(.a11y-mode-dark-mode)
 }
 
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .categoria-card-nombre {
-  color: #f5c842;
+  color: #ffffff;
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
@@ -260,5 +260,9 @@ body.pagina-inicio:not(.a11y-mode-dark-mode)
   main
   .categoria-card:hover
   .categoria-card-nombre {
-  color: #ffd95a;
+  color: #ffffff;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode) main .btn-agregar-carrito {
+  color: #000000;
 }
