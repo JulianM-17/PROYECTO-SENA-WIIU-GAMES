@@ -1108,16 +1108,12 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
           quantity,
           unitPrice,
         })),
-<<<<<<< Updated upstream
         totals: { subtotal, shipping, taxes, total },
-=======
-        totals: { subtotal, shipping, taxes, serviceFee, total },
         shippingAddress: {
           address: customerRows[0].direccion,
           city: customerRows[0].ciudad,
           department: customerRows[0].departamento,
         },
->>>>>>> Stashed changes
       },
     });
   } catch (error) {
