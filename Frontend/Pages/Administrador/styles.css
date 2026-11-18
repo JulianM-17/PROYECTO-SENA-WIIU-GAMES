@@ -27,25 +27,49 @@ body {
   flex-direction: column;
   position: sticky;
   top: 0;
+  z-index: 20;
   height: 100vh;
   flex-shrink: 0;
 }
 
 .cabecera-menu-lateral {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .logo {
+  flex: 1;
+  min-width: 0;
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .boton-hamburguesa {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid #16223d;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.boton-hamburguesa span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: #f5a623;
+  border-radius: 2px;
 }
 
 .logo img {
-  max-width: 140px;
+  max-width: 110px;
   height: auto;
 }
 
@@ -54,7 +78,111 @@ body {
   flex-direction: column;
   gap: 8px;
   flex: 1;
+  margin-top: 12px;
   overflow-y: auto;
+}
+
+.navegacion.abierto {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+@media (min-width: 769px) {
+  .menu-lateral {
+    transition: width 0.25s ease, padding 0.25s ease;
+  }
+
+  .menu-lateral .boton-hamburguesa {
+    position: absolute;
+    top: 50%;
+    right: -14px;
+    width: 28px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    background-color: #050814;
+    border-left: 0;
+    border-radius: 0 8px 8px 0;
+    transform: translateY(-50%);
+  }
+
+  .menu-lateral .boton-hamburguesa::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-bottom: 2px solid #f5a623;
+    border-left: 2px solid #f5a623;
+    transform: rotate(45deg);
+  }
+
+  .menu-lateral .boton-hamburguesa span {
+    display: none;
+  }
+
+  .panel-contenedor.menu-colapsado .menu-lateral {
+    width: 76px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa {
+    top: 24px;
+    right: auto;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #16223d;
+    border-radius: 8px;
+    transform: translateX(-50%);
+  }
+
+  .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa::before {
+    display: none;
+  }
+
+  .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa span {
+    display: block;
+  }
+
+  .panel-contenedor.menu-colapsado .cabecera-menu-lateral {
+    justify-content: center;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .panel-contenedor.menu-colapsado .logo {
+    display: none;
+  }
+
+  .panel-contenedor.menu-colapsado .navegacion {
+    align-items: center;
+  }
+
+  .panel-contenedor.menu-colapsado .boton-menu {
+    width: 48px;
+    justify-content: center;
+    gap: 0;
+    padding: 12px 0;
+  }
+
+  .panel-contenedor.menu-colapsado .boton-menu span,
+  .panel-contenedor.menu-colapsado .datos-usuario,
+  .panel-contenedor.menu-colapsado .flecha {
+    display: none;
+  }
+
+  .panel-contenedor.menu-colapsado .perfil-usuario {
+    justify-content: center;
+  }
+
+  .panel-contenedor.menu-colapsado .menu-desplegable-perfil {
+    right: auto;
+    left: 58px;
+    width: 200px;
+  }
 }
 
 .boton-menu {
@@ -97,6 +225,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid #16223d;
   cursor: pointer;
@@ -188,7 +317,6 @@ body {
   flex-direction: column;
   min-height: 100vh;
   padding: 30px 40px;
-  overflow-y: auto;
 }
 
 .barra-superior {
@@ -671,6 +799,39 @@ body {
   font-weight: 600;
   font-size: 11px;
   border-bottom: 1px solid #16223d;
+}
+
+#tablaUsuarios .boton-orden-tabla {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+#tablaUsuarios .boton-orden-tabla::after {
+  content: "\2195";
+  color: #52637a;
+}
+
+#tablaUsuarios th[aria-sort="ascending"] .boton-orden-tabla::after {
+  content: "\2191";
+  color: #f5a623;
+}
+
+#tablaUsuarios th[aria-sort="descending"] .boton-orden-tabla::after {
+  content: "\2193";
+  color: #f5a623;
+}
+
+#tablaUsuarios .boton-orden-tabla:hover,
+#tablaUsuarios .boton-orden-tabla:focus-visible {
+  color: #ffffff;
 }
 
 .tabla-panel td {

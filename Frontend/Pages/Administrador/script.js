@@ -66,9 +66,15 @@ function cambiarPestana(idSeccion, botonClickeado) {
   var navegacion = document.getElementById('menuNavegacion');
   var botonHamburguesa = document.querySelector('.boton-hamburguesa');
   if (navegacion && botonHamburguesa) {
-    navegacion.classList.remove('abierto');
-    botonHamburguesa.setAttribute('aria-expanded', 'false');
-    botonHamburguesa.setAttribute('aria-label', 'Abrir menú de navegación');
+    var esMovil = window.matchMedia('(max-width: 768px)').matches;
+    var panel = document.querySelector('.panel-contenedor');
+    if (esMovil) navegacion.classList.remove('abierto');
+    var colapsado = panel?.classList.contains('menu-colapsado') || false;
+    botonHamburguesa.setAttribute('aria-expanded', String(esMovil ? false : !colapsado));
+    botonHamburguesa.setAttribute(
+      'aria-label',
+      esMovil || colapsado ? 'Abrir menú de navegación' : 'Contraer menú de navegación'
+    );
   }
 
   // 4. Subir la vista al inicio del contenido
@@ -80,12 +86,60 @@ function toggleMenuMovil() {
   var botonHamburguesa = document.querySelector('.boton-hamburguesa');
   if (!navegacion || !botonHamburguesa) return;
 
-  var abierto = navegacion.classList.toggle('abierto');
-  botonHamburguesa.setAttribute('aria-expanded', String(abierto));
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    var abierto = navegacion.classList.toggle('abierto');
+    botonHamburguesa.setAttribute('aria-expanded', String(abierto));
+    botonHamburguesa.setAttribute(
+      'aria-label',
+      abierto ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'
+    );
+    return;
+  }
+
+  var panel = document.querySelector('.panel-contenedor');
+  if (!panel) return;
+  var colapsado = panel.classList.toggle('menu-colapsado');
+  botonHamburguesa.setAttribute('aria-expanded', String(!colapsado));
   botonHamburguesa.setAttribute(
     'aria-label',
-    abierto ? 'Cerrar menú de navegación' : 'Abrir menú de navegación'
+    colapsado ? 'Expandir menú de navegación' : 'Contraer menú de navegación'
   );
+  document.querySelectorAll('#menuNavegacion .boton-menu').forEach(function(boton) {
+    var etiqueta = boton.querySelector('span')?.textContent.trim();
+    if (colapsado && etiqueta) {
+      boton.title = etiqueta;
+      boton.setAttribute('aria-label', etiqueta);
+    } else {
+      boton.removeAttribute('title');
+      boton.removeAttribute('aria-label');
+    }
+  });
+}
+
+function configurarMenuLateral() {
+  var panel = document.querySelector('.panel-contenedor');
+  var navegacion = document.getElementById('menuNavegacion');
+  var botonHamburguesa = document.querySelector('.boton-hamburguesa');
+  if (!panel || !navegacion || !botonHamburguesa) return;
+
+  var esMovil = window.matchMedia('(max-width: 768px)').matches;
+  var colapsado = !esMovil && panel.classList.contains('menu-colapsado');
+  navegacion.classList.remove('abierto');
+  botonHamburguesa.setAttribute('aria-expanded', String(!esMovil && !colapsado));
+  botonHamburguesa.setAttribute(
+    'aria-label',
+    esMovil ? 'Abrir menú de navegación' : colapsado ? 'Expandir menú de navegación' : 'Contraer menú de navegación'
+  );
+  document.querySelectorAll('#menuNavegacion .boton-menu').forEach(function(boton) {
+    var etiqueta = boton.querySelector('span')?.textContent.trim();
+    if (colapsado && etiqueta) {
+      boton.title = etiqueta;
+      boton.setAttribute('aria-label', etiqueta);
+    } else {
+      boton.removeAttribute('title');
+      boton.removeAttribute('aria-label');
+    }
+  });
 }
 
 // ==========================================================================
@@ -503,6 +557,9 @@ function cargarNotificacionesAdmin() {
 var categoriasDisponibles = [];
 var marcasDisponibles = [];
 var clientesDisponibles = [];
+var usuariosDisponibles = [];
+var rolesDisponibles = [];
+var usuarioEdicion = null;
 var tecnicosDisponibles = [];
 var productosDisponibles = [];
 var productoInventarioEdicion = null;
@@ -515,12 +572,23 @@ var detalleOrdenAbiertaAdmin = null;
 function abrirModal(tipo, productoId) {
   tipoModalActual = tipo;
   productoInventarioEdicion = null;
+  usuarioEdicion = null;
   if (tipo === 'inventario' && productoId !== undefined) {
     productoInventarioEdicion = productosDisponibles.find(function(producto) {
       return String(producto.id) === String(productoId);
     });
     if (!productoInventarioEdicion) {
       mostrarToast('error', 'No se encontró el producto seleccionado.');
+      tipoModalActual = '';
+      return;
+    }
+  }
+  if (tipo === 'clientes' && productoId !== undefined) {
+    usuarioEdicion = usuariosDisponibles.find(function(usuario) {
+      return String(usuario.id) === String(productoId);
+    });
+    if (!usuarioEdicion) {
+      mostrarToast('error', 'No se encontró el usuario seleccionado.');
       tipoModalActual = '';
       return;
     }
@@ -803,20 +871,54 @@ function abrirModal(tipo, productoId) {
       </div>
     `;
   } else if (tipo === 'clientes') {
-    titulo.textContent = "Registrar Nuevo Cliente";
+    var nombreCompleto = usuarioEdicion ? usuarioEdicion.name : '';
+    var opcionesRoles = rolesDisponibles.map(function(rol) {
+      var selected = usuarioEdicion && Number(usuarioEdicion.roleId) === Number(rol.id)
+        ? ' selected'
+        : '';
+      return '<option value="' + escaparHtmlAdmin(rol.id) + '"' + selected + '>' +
+        escaparHtmlAdmin(rol.name) + '</option>';
+    }).join('');
+    if (usuarioEdicion && !rolesDisponibles.some(function(rol) {
+      return Number(rol.id) === Number(usuarioEdicion.roleId);
+    })) {
+      opcionesRoles =
+        '<option value="' + escaparHtmlAdmin(usuarioEdicion.roleId) + '" selected disabled>' +
+        escaparHtmlAdmin(usuarioEdicion.role) + ' (inactivo)</option>' + opcionesRoles;
+    }
+
+    titulo.textContent = usuarioEdicion ? "Editar Usuario" : "Registrar Nuevo Cliente";
     campos.innerHTML = `
       <div class="campo-grupo">
         <label>Nombre y Apellidos:</label>
-        <input type="text" id="campo1" required placeholder="Ej. Mario Alejandro Pérez">
+        <input type="text" id="campo1" required maxlength="60" value="${escaparHtmlAdmin(nombreCompleto)}" placeholder="Ej. Mario Alejandro Pérez">
       </div>
       <div class="campo-grupo">
         <label>Teléfono de Contacto (7 a 15 dígitos):</label>
-        <input type="tel" id="campo2" required placeholder="Ej. 3124567890">
+        <input type="tel" id="campo2" required maxlength="20" value="${escaparHtmlAdmin(usuarioEdicion ? usuarioEdicion.phone : '')}" placeholder="Ej. 3124567890">
       </div>
       <div class="campo-grupo">
         <label>Correo Electrónico:</label>
-        <input type="email" id="campo3" required placeholder="Ej. cliente@gmail.com">
+        <input type="email" id="campo3" required maxlength="120" value="${escaparHtmlAdmin(usuarioEdicion ? usuarioEdicion.email : '')}" placeholder="Ej. cliente@gmail.com">
       </div>
+      ${usuarioEdicion ? `
+        <div class="campo-grupo">
+          <label>Departamento:</label>
+          <input type="text" id="campo_departamento" required maxlength="30" value="${escaparHtmlAdmin(usuarioEdicion.department || '')}">
+        </div>
+        <div class="campo-grupo">
+          <label>Ciudad:</label>
+          <input type="text" id="campo_ciudad" maxlength="30" value="${escaparHtmlAdmin(usuarioEdicion.city || '')}">
+        </div>
+        <div class="campo-grupo">
+          <label>Dirección:</label>
+          <input type="text" id="campo_direccion" maxlength="40" value="${escaparHtmlAdmin(usuarioEdicion.address || '')}">
+        </div>
+        <div class="campo-grupo">
+          <label>Rol:</label>
+          <select id="campo_rol" required>${opcionesRoles}</select>
+        </div>
+      ` : ''}
     `;
   } else if (tipo === 'pedidos') {
     titulo.textContent = "Registrar Nuevo Pedido / Venta";
@@ -867,6 +969,7 @@ function cerrarModal() {
   }
   tipoModalActual = "";
   productoInventarioEdicion = null;
+  usuarioEdicion = null;
 }
 
 function escaparHtmlAdmin(valor) {
@@ -1471,6 +1574,8 @@ function cargarDashboard() {
     if (data.categories) categoriasDisponibles = data.categories;
     if (data.brands) marcasDisponibles = data.brands;
     if (data.clients) clientesDisponibles = data.clients;
+    if (data.users) usuariosDisponibles = data.users;
+    if (data.roles) rolesDisponibles = data.roles;
     if (data.technicians) tecnicosDisponibles = data.technicians;
     if (data.inventory) productosDisponibles = data.inventory;
     if (inventoryBranchSelect && data.branches) {
@@ -1633,16 +1738,48 @@ function cargarDashboard() {
       if (el) el.textContent = data.discounts.length;
     }
 
-    // ---------- CLIENTES ----------
-    if (data.clients) {
-      poblarTabla('tablaClientesBody', data.clients, function(row) {
-        var fechaVisita = row.lastVisit ? new Date(row.lastVisit).toISOString().split('T')[0] : 'N/A';
-        return '<td><strong>CLI-' + row.id + '</strong></td><td>' + row.name + '</td><td>' + (row.phone || 'N/A') + '</td><td>' + row.email + '</td><td>$ ' + Number(row.totalSpent).toLocaleString('es-CO') + '</td><td>' + fechaVisita + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'clientes\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
+    // ---------- USUARIOS ----------
+    if (data.users) {
+      poblarTabla('tablaClientesBody', data.users, function(row) {
+        var id = Number(row.id);
+        var activo = row.status === 'ACTIVO';
+        var esCuentaActual = id === Number(data.currentAdminId);
+        var fechaRegistro = row.createdAt || 'N/A';
+        var botonEstado = esCuentaActual
+          ? '<button class="boton-icono" type="button" disabled title="No puedes suspender tu propia cuenta"><i class="fi fi-rr-ban"></i></button>'
+          : '<button class="boton-icono ' + (activo ? 'rojo' : '') + '" type="button" title="' +
+            (activo ? 'Suspender usuario' : 'Reactivar usuario') +
+            '" aria-label="' + (activo ? 'Suspender usuario' : 'Reactivar usuario') +
+            '" onclick="cambiarEstadoUsuarioAdmin(' + id + ', \'' +
+            (activo ? 'INACTIVO' : 'ACTIVO') + '\')"><i class="fi ' +
+            (activo ? 'fi-rr-ban' : 'fi-rr-refresh') + '"></i></button>';
+        return '<td><strong>USR-' + id + '</strong></td>' +
+          '<td>' + escaparHtmlAdmin(row.name || '') + '</td>' +
+          '<td>' + escaparHtmlAdmin(row.phone || 'N/A') + '</td>' +
+          '<td>' + escaparHtmlAdmin(row.email || '') + '</td>' +
+          '<td>' + escaparHtmlAdmin(row.city || 'N/A') + '</td>' +
+          '<td>$ ' + Number(row.totalSpent || 0).toLocaleString('es-CO') + '</td>' +
+          '<td>' + escaparHtmlAdmin(row.role || 'Sin rol') + '</td>' +
+          '<td><span class="' + (activo ? 'etiqueta-verde' : 'etiqueta-rojo') + '">' +
+            (activo ? 'Activo' : 'Suspendido') + '</span></td>' +
+          '<td>' + escaparHtmlAdmin(fechaRegistro) + '</td>' +
+          '<td><button class="boton-icono" type="button" title="Editar usuario" aria-label="Editar usuario" onclick="abrirModal(\'clientes\', ' +
+            id + ')"><i class="fi fi-rr-edit"></i></button>' + botonEstado + '</td>';
       });
+
+      var usuariosActivos = data.users.filter(function(user) {
+        return user.status === 'ACTIVO';
+      }).length;
+      var mesActual = new Date().toISOString().slice(0, 7);
+      var usuariosNuevos = data.users.filter(function(user) {
+        return String(user.createdAt || '').slice(0, 7) === mesActual;
+      }).length;
       el = document.getElementById('cliTotal');
-      if (el) el.textContent = data.clients.length;
+      if (el) el.textContent = data.users.length;
       el = document.getElementById('cliActivos');
-      if (el) el.textContent = data.clients.length;
+      if (el) el.textContent = usuariosActivos;
+      el = document.getElementById('cliNuevos');
+      if (el) el.textContent = usuariosNuevos;
     }
 
     // ---------- RESEÑAS ----------
@@ -2030,12 +2167,56 @@ async function guardarDatos(evento) {
       return;
     }
 
-    url = API_BASE + '/api/admin/clientes';
-    payload = {
-      name: c1,
-      phone: c2,
-      email: c3
-    };
+    if (usuarioEdicion) {
+      var departamentoInput = document.getElementById('campo_departamento');
+      var ciudadInput = document.getElementById('campo_ciudad');
+      var direccionInput = document.getElementById('campo_direccion');
+      var rolInput = document.getElementById('campo_rol');
+      var departamento = departamentoInput ? departamentoInput.value.trim() : '';
+      var ciudad = ciudadInput ? ciudadInput.value.trim() : '';
+      var direccion = direccionInput ? direccionInput.value.trim() : '';
+      var rolId = Number(rolInput && rolInput.value);
+
+      if (!departamento || departamento.length > 30) {
+        marcarErrorCampo(departamentoInput, 'Ingresa un departamento de máximo 30 caracteres.');
+        hayErrores = true;
+      }
+      if (ciudad.length > 30) {
+        marcarErrorCampo(ciudadInput, 'La ciudad no puede superar 30 caracteres.');
+        hayErrores = true;
+      }
+      if (direccion.length > 40) {
+        marcarErrorCampo(direccionInput, 'La dirección no puede superar 40 caracteres.');
+        hayErrores = true;
+      }
+      if (!Number.isSafeInteger(rolId) || rolId < 1) {
+        marcarErrorCampo(rolInput, 'Selecciona un rol válido.');
+        hayErrores = true;
+      }
+      if (hayErrores) {
+        mostrarToast('error', 'Por favor corrige los datos del usuario');
+        return;
+      }
+
+      url = API_BASE + '/api/admin/usuarios/' + encodeURIComponent(usuarioEdicion.id);
+      metodo = 'PUT';
+      payload = {
+        name: c1,
+        phone: c2,
+        email: c3,
+        department: departamento,
+        city: ciudad,
+        address: direccion,
+        roleId: rolId
+      };
+    } else {
+      url = API_BASE + '/api/admin/clientes';
+      payload = {
+        name: c1,
+        phone: c2,
+        email: c3
+      };
+    }
 
   } else if (tipoModalActual === 'resenas') {
     if (!c1) {
@@ -2126,6 +2307,40 @@ async function guardarDatos(evento) {
 // ==========================================================================
 // 8. FUNCIONES AUXILIARES PARA MANIPULAR FILAS
 // ==========================================================================
+function cambiarEstadoUsuarioAdmin(id, status) {
+  var suspension = status === 'INACTIVO';
+  var pregunta = suspension
+    ? '¿Suspender este usuario? No podrá iniciar sesión mientras esté suspendido.'
+    : '¿Reactivar este usuario y permitirle iniciar sesión nuevamente?';
+  if (!confirm(pregunta)) return;
+
+  fetch(API_BASE + '/api/admin/usuarios/' + encodeURIComponent(id) + '/estado', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(response) {
+    if (!response.ok || !response.data.ok) {
+      mostrarToast('error', response.data.message || 'No se pudo cambiar el estado del usuario.');
+      return;
+    }
+    mostrarToast('success', response.data.message);
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al cambiar el estado del usuario:', error);
+    mostrarToast('error', 'No se pudo conectar con el servidor para cambiar el estado.');
+  });
+}
+
 function insertarFila(idTbody, contenidoHtml) {
   var tbody = document.getElementById(idTbody);
   if (!tbody) return;
@@ -2177,13 +2392,77 @@ function eliminarFilaDB(boton, recurso, id) {
   });
 }
 
+function configurarOrdenamientoUsuarios() {
+  var tabla = document.getElementById('tablaUsuarios');
+  var tbody = document.getElementById('tablaClientesBody');
+  if (!tabla || !tbody) return;
+
+  tabla.querySelectorAll('.boton-orden-tabla').forEach(function(boton) {
+    boton.addEventListener('click', function() {
+      var encabezado = boton.closest('th');
+      if (!encabezado) return;
+
+      var indiceColumna = Array.prototype.indexOf.call(
+        encabezado.parentElement.children,
+        encabezado
+      );
+      var descendente = encabezado.getAttribute('aria-sort') === 'ascending';
+      var direccion = descendente ? 'descending' : 'ascending';
+      var multiplicador = descendente ? -1 : 1;
+      var tipo = boton.dataset.sortType;
+      var filas = Array.from(tbody.querySelectorAll('tr')).filter(function(fila) {
+        return !fila.querySelector('.texto-vacio');
+      });
+      var comparadorTexto = new Intl.Collator('es', {
+        numeric: true,
+        sensitivity: 'base'
+      });
+
+      filas.sort(function(filaA, filaB) {
+        var valorA = filaA.cells[indiceColumna]?.textContent.trim() || '';
+        var valorB = filaB.cells[indiceColumna]?.textContent.trim() || '';
+
+        if (tipo === 'number') {
+          var numeroA = Number(valorA.replace(/\D/g, ''));
+          var numeroB = Number(valorB.replace(/\D/g, ''));
+          if (Number.isFinite(numeroA) && Number.isFinite(numeroB)) {
+            return (numeroA - numeroB) * multiplicador;
+          }
+        }
+
+        if (tipo === 'date') {
+          var fechaA = Date.parse(valorA);
+          var fechaB = Date.parse(valorB);
+          var fechaAValida = Number.isFinite(fechaA);
+          var fechaBValida = Number.isFinite(fechaB);
+          if (fechaAValida !== fechaBValida) return fechaAValida ? -1 : 1;
+          if (fechaAValida) return (fechaA - fechaB) * multiplicador;
+        }
+
+        return comparadorTexto.compare(valorA, valorB) * multiplicador;
+      });
+
+      tabla.querySelectorAll('thead th[aria-sort]').forEach(function(otroEncabezado) {
+        otroEncabezado.setAttribute('aria-sort', 'none');
+      });
+      encabezado.setAttribute('aria-sort', direccion);
+      filas.forEach(function(fila) {
+        tbody.appendChild(fila);
+      });
+    });
+  });
+}
+
 // ==========================================================================
 // 9. CARGAR DATOS AL INICIAR LA PÁGINA
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
+  configurarMenuLateral();
+  window.matchMedia('(max-width: 768px)').addEventListener('change', configurarMenuLateral);
   document
     .getElementById('btnLimpiarNotificaciones')
     ?.addEventListener('click', limpiarNotificacionesAdmin);
+  configurarOrdenamientoUsuarios();
   cargarDashboard();
   cargarNotificacionesAdmin();
   window.setInterval(function() {

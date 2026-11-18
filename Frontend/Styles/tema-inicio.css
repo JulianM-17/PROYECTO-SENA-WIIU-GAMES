@@ -27,6 +27,24 @@ body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-slider {
   background: #080f20;
 }
 
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .hero-slide[data-imagen-clara="c2.png"] {
+  background-image: url("../Assets/c2.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .hero-slide[data-imagen-clara="c1.png"] {
+  background-image: url("../Assets/c1.png") !important;
+}
+
+body.pagina-inicio:not(.a11y-mode-dark-mode)
+  main
+  .hero-slide[data-imagen-clara="c3.jpeg"] {
+  background-image: url("../Assets/c3.jpeg") !important;
+}
+
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-title,
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-subtitle,
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .hero-arrow,
@@ -183,17 +201,21 @@ body.pagina-inicio:not(.a11y-mode-dark-mode)
 body.pagina-inicio:not(.a11y-mode-dark-mode)
   main
   .categoria-card-overlay-otro {
-  background: transparent;
+  background: linear-gradient(
+    to bottom,
+    rgba(8, 15, 32, 0.08) 30%,
+    rgba(8, 15, 32, 0.78) 100%
+  );
 }
 
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .categoria-card-nombre {
-  color: #1e293b;
-  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.95);
+  color: #f5c842;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
 }
 
 body.pagina-inicio:not(.a11y-mode-dark-mode)
   main
   .categoria-card:hover
   .categoria-card-nombre {
-  color: #765400;
+  color: #ffd95a;
 }

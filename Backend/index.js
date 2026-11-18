@@ -47,6 +47,12 @@ function crearTokenSesion(userId) {
   return token;
 }
 
+function invalidarSesionesUsuario(userId) {
+  for (const [token, session] of sessions) {
+    if (session.userId === userId) sessions.delete(token);
+  }
+}
+
 function obtenerPerfil(userId) {
   return pool.query(
     `SELECT
@@ -723,6 +729,37 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        GROUP BY u.id_usuario, u.nombre, u.apellido, u.telefono, u.correo
        ORDER BY totalSpent DESC, u.nombre`,
     );
+    const [usersRows] = await pool.query(
+      `SELECT
+         u.id_usuario AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS name,
+         u.telefono AS phone,
+         u.correo AS email,
+         u.departamento AS department,
+         u.ciudad AS city,
+         u.direccion AS address,
+         DATE_FORMAT(u.fecha_ingreso, '%Y-%m-%d') AS createdAt,
+         u.estado AS status,
+         r.id_rol AS roleId,
+         r.nombre_rol AS role,
+         COALESCE(SUM(dv.subtotal), 0) AS totalSpent,
+         MAX(v.fecha) AS lastVisit
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       LEFT JOIN venta v ON v.id_usuario = u.id_usuario AND v.estado = 'PAGADA'
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       GROUP BY
+         u.id_usuario, u.nombre, u.apellido, u.telefono, u.correo,
+         u.departamento, u.ciudad, u.direccion, u.fecha_ingreso,
+         u.estado, r.id_rol, r.nombre_rol
+       ORDER BY u.nombre, u.apellido`,
+    );
+    const [roleRows] = await pool.query(
+      `SELECT id_rol AS id, nombre_rol AS name
+       FROM rol
+       WHERE estado = 'ACTIVO'
+       ORDER BY id_rol`,
+    );
     const [technicianRows] = await pool.query(
       `SELECT
          u.id_usuario AS id,
@@ -891,6 +928,9 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       branches: branchRows,
       selectedBranchId,
       clients: clientsRows || [],
+      users: usersRows || [],
+      roles: roleRows || [],
+      currentAdminId: req.userId,
       technicians: technicianRows || [],
       warranties: warrantyRows || [],
       maintenance: maintenanceRows || [],
@@ -2581,6 +2621,134 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
   }
 });
 
+app.put("/api/admin/usuarios/:id", requireAdmin, async (req, res) => {
+  const userId = Number(req.params.id);
+  const fullName = String(req.body?.name || "").trim();
+  const phone = String(req.body?.phone || "").trim();
+  const email = String(req.body?.email || "").trim().toLowerCase();
+  const department = String(req.body?.department || "").trim();
+  const city = String(req.body?.city || "").trim();
+  const address = String(req.body?.address || "").trim();
+  const roleId = Number(req.body?.roleId);
+  const nameParts = fullName.split(/\s+/);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ");
+
+  if (!Number.isSafeInteger(userId) || userId < 1) {
+    return res.status(400).json({ ok: false, message: "ID de usuario inválido." });
+  }
+  if (
+    !/^[\p{L}\s'-]{3,60}$/u.test(fullName) ||
+    firstName.length > 30 ||
+    lastName.length < 1 ||
+    lastName.length > 30
+  ) {
+    return res.status(400).json({ ok: false, message: "Ingresa un nombre y apellido válidos." });
+  }
+  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
+    return res.status(400).json({ ok: false, message: "Teléfono inválido." });
+  }
+  if (email.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ ok: false, message: "Correo inválido." });
+  }
+  if (!department || department.length > 30 || city.length > 30 || address.length > 40) {
+    return res.status(400).json({ ok: false, message: "Revisa los datos de ubicación del usuario." });
+  }
+  if (!Number.isSafeInteger(roleId) || roleId < 1) {
+    return res.status(400).json({ ok: false, message: "Selecciona un rol válido." });
+  }
+
+  try {
+    const [userRows] = await pool.query(
+      "SELECT id_rol FROM usuario WHERE id_usuario = ?",
+      [userId],
+    );
+    if (!userRows.length) {
+      return res.status(404).json({ ok: false, message: "El usuario no existe." });
+    }
+    if (userId === req.userId && Number(userRows[0].id_rol) !== roleId) {
+      return res.status(409).json({
+        ok: false,
+        message: "No puedes cambiar el rol de tu propia cuenta.",
+      });
+    }
+
+    const [roleRows] = await pool.query(
+      "SELECT id_rol FROM rol WHERE id_rol = ? AND estado = 'ACTIVO'",
+      [roleId],
+    );
+    if (!roleRows.length) {
+      return res.status(400).json({ ok: false, message: "El rol seleccionado no está disponible." });
+    }
+
+    await pool.query(
+      `UPDATE usuario
+       SET nombre = ?, apellido = ?, telefono = ?, correo = ?,
+           departamento = ?, ciudad = ?, direccion = ?, id_rol = ?
+       WHERE id_usuario = ?`,
+      [
+        firstName,
+        lastName,
+        phone,
+        email,
+        department,
+        city || null,
+        address || null,
+        roleId,
+        userId,
+      ],
+    );
+    if (Number(userRows[0].id_rol) !== roleId) {
+      invalidarSesionesUsuario(userId);
+    }
+    return res.json({ ok: true, message: "Datos del usuario actualizados correctamente." });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({ ok: false, message: "El correo ya está registrado por otro usuario." });
+    }
+    console.error("Error al actualizar usuario:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo actualizar el usuario." });
+  }
+});
+
+app.patch("/api/admin/usuarios/:id/estado", requireAdmin, async (req, res) => {
+  const userId = Number(req.params.id);
+  const status = String(req.body?.status || "");
+  if (!Number.isSafeInteger(userId) || userId < 1) {
+    return res.status(400).json({ ok: false, message: "ID de usuario inválido." });
+  }
+  if (!["ACTIVO", "INACTIVO"].includes(status)) {
+    return res.status(400).json({ ok: false, message: "Estado de usuario inválido." });
+  }
+  if (userId === req.userId && status === "INACTIVO") {
+    return res.status(409).json({ ok: false, message: "No puedes suspender tu propia cuenta." });
+  }
+
+  try {
+    const [userRows] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE id_usuario = ?",
+      [userId],
+    );
+    if (!userRows.length) {
+      return res.status(404).json({ ok: false, message: "El usuario no existe." });
+    }
+    await pool.query(
+      "UPDATE usuario SET estado = ? WHERE id_usuario = ?",
+      [status, userId],
+    );
+    if (status === "INACTIVO") {
+      invalidarSesionesUsuario(userId);
+    }
+    return res.json({
+      ok: true,
+      message: status === "INACTIVO" ? "Usuario suspendido correctamente." : "Usuario reactivado correctamente.",
+    });
+  } catch (error) {
+    console.error("Error al cambiar el estado del usuario:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo cambiar el estado del usuario." });
+  }
+});
+
 // ---------- GARANTÍAS ----------
 
 app.post("/api/admin/garantias", async (req, res) => {
@@ -3400,7 +3568,7 @@ app.post("/api/admin/pedidos", async (req, res) => {
 
 // ---------- ELIMINACIONES GENÉRICAS DEL PANEL ----------
 
-app.delete("/api/admin/:recurso/:id", async (req, res) => {
+app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
   try {
     const { recurso, id } = req.params;
     const numId = Number(id);
@@ -3416,7 +3584,18 @@ app.delete("/api/admin/:recurso/:id", async (req, res) => {
     } else if (recurso === "descuentos") {
       await pool.query("UPDATE promocion SET estado = 'INACTIVO' WHERE id_promocion = ?", [numId]);
     } else if (recurso === "clientes") {
+      if (numId === req.userId) {
+        return res.status(409).json({ ok: false, message: "No puedes suspender tu propia cuenta." });
+      }
+      const [userRows] = await pool.query(
+        "SELECT id_usuario FROM usuario WHERE id_usuario = ?",
+        [numId],
+      );
+      if (!userRows.length) {
+        return res.status(404).json({ ok: false, message: "El usuario no existe." });
+      }
       await pool.query("UPDATE usuario SET estado = 'INACTIVO' WHERE id_usuario = ?", [numId]);
+      invalidarSesionesUsuario(numId);
     } else if (recurso === "pedidos") {
       await pool.query("UPDATE venta SET estado = 'ANULADA' WHERE id_venta = ?", [numId]);
     } else if (recurso === "resenas") {
@@ -3425,7 +3604,12 @@ app.delete("/api/admin/:recurso/:id", async (req, res) => {
       await pool.query("UPDATE producto SET estado = 'INACTIVO' WHERE id_producto = ?", [numId]);
     }
 
-    return res.json({ ok: true, message: "Registro eliminado de la base de datos." });
+    return res.json({
+      ok: true,
+      message: recurso === "clientes"
+        ? "Usuario suspendido correctamente."
+        : "Registro eliminado de la base de datos.",
+    });
   } catch (error) {
     console.error("Error al eliminar registro:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo eliminar el registro." });
@@ -3435,7 +3619,10 @@ app.delete("/api/admin/:recurso/:id", async (req, res) => {
 // Helper to get user role
 function obtenerRol(userId) {
   return pool.query(
-    `SELECT r.nombre_rol FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'`,
+    `SELECT r.nombre_rol
+     FROM usuario u
+     INNER JOIN rol r ON r.id_rol = u.id_rol
+     WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.estado = 'ACTIVO'`,
     [userId]
   );
 }
@@ -3475,29 +3662,37 @@ async function requireEmployee(req, res, next) {
 
 // Middleware to ensure the user is an administrator
 async function requireAdmin(req, res, next) {
-  // Check if session token exists
   const token = req.get("authorization")?.replace(/^Bearer\s+/i, "");
   const session = token ? sessions.get(token) : null;
-  if (session) {
-    try {
-      const [rows] = await obtenerRol(session.userId);
-      const rol = rows[0]?.nombre_rol;
-      if (rol === "Administrador") {
-        req.userId = session.userId;
-        req.sessionToken = token;
-        req.userRol = rol;
-        return next();
-      }
-    } catch (err) {
-      console.error("Error verificando rol de administrador:", err.message);
-    }
+  if (!session || session.expiresAt <= Date.now()) {
+    if (token) sessions.delete(token);
+    return res.status(401).json({
+      ok: false,
+      message: "La sesión del administrador no es válida o venció.",
+    });
   }
 
-  // Fallback: Permitir acceso directo local al panel de administrador
-  // para desarrollo / pruebas académicas
-  req.userId = 1;
-  req.userRol = "Administrador";
-  return next();
+  try {
+    const [rows] = await obtenerRol(session.userId);
+    const rol = rows[0]?.nombre_rol;
+    if (rol !== "Administrador") {
+      return res.status(403).json({
+        ok: false,
+        message: "Esta operación está disponible solo para administradores.",
+      });
+    }
+
+    req.userId = session.userId;
+    req.sessionToken = token;
+    req.userRol = rol;
+    return next();
+  } catch (error) {
+    console.error("Error verificando rol de administrador:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo verificar el acceso del administrador.",
+    });
+  }
 }
 
 // Iniciar el servidor después de registrar todas las rutas.
