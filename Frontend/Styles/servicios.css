@@ -191,10 +191,14 @@ body {
 .oscuro h2 { color: var(--Yelow); }
 
 .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
   left: 50%;
   bottom: -23px;
   transform: translateX(-50%);
+  text-decoration: none;
   z-index: 2;
   padding: 16px 64px;
   border: 0;

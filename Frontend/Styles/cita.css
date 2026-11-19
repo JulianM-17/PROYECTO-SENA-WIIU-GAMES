@@ -164,12 +164,14 @@ body {
   border: 1px solid var(--border);
   border-radius: 14px;
   color: var(--text-main);
-  font-size: 14px;
+  font-size: 17px;
+  line-height: 1.5;
 }
 
 .aviso-cita-sesion a {
   justify-self: start;
   color: var(--dark-blue);
+  font-size: 17px;
   font-weight: 700;
 }
 
