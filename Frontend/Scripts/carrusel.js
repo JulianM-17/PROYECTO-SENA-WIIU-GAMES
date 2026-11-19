@@ -1,24 +1,109 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const productGrid = document.querySelector(".grid-productos");
-  const previousButton = document.querySelector(".flecha-izq");
-  const nextButton = document.querySelector(".flecha-der");
+  const carousel = document.querySelector(".productos-carrusel-wrapper");
+  const productGrid = carousel?.querySelector(".grid-productos");
+  const previousButton = carousel?.querySelector(".flecha-izq");
+  const nextButton = carousel?.querySelector(".flecha-der");
 
   if (!productGrid || !previousButton || !nextButton) return;
 
-  productGrid.setAttribute("aria-live", "polite");
-  productGrid.style.overflowX = "auto";
-  productGrid.style.scrollBehavior = "smooth";
-  productGrid.style.scrollbarWidth = "none";
-  loadProducts(productGrid);
+  productGrid.setAttribute("aria-live", "off");
+  productGrid.setAttribute("aria-label", "Productos nuevos");
+  productGrid.setAttribute("tabindex", "0");
 
-  const getScrollAmount = () => Math.max(productGrid.clientWidth * 0.85, 280);
+  const reduceMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+  const scrollBehavior = reduceMotion ? "auto" : "smooth";
+  let autoplayTimer;
 
-  previousButton.addEventListener("click", () => {
-    productGrid.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
+  const updateControls = () => {
+    const maxScrollLeft = productGrid.scrollWidth - productGrid.clientWidth;
+    const hasOverflow = maxScrollLeft > 1;
+
+    previousButton.disabled =
+      !hasOverflow || productGrid.scrollLeft <= 1;
+    nextButton.disabled =
+      !hasOverflow || productGrid.scrollLeft >= maxScrollLeft - 1;
+  };
+
+  const getScrollAmount = () => {
+    const firstCard = productGrid.querySelector(".tarjeta-producto");
+    if (!firstCard) return productGrid.clientWidth * 0.85;
+
+    const gap = Number.parseFloat(getComputedStyle(productGrid).columnGap) || 0;
+    return firstCard.getBoundingClientRect().width + gap;
+  };
+
+  const stopAutoplay = () => {
+    window.clearInterval(autoplayTimer);
+    autoplayTimer = undefined;
+  };
+
+  const canAutoplay = () =>
+    !reduceMotion &&
+    !document.hidden &&
+    !carousel.matches(":hover") &&
+    !carousel.contains(document.activeElement);
+
+  const startAutoplay = () => {
+    if (autoplayTimer || !canAutoplay()) return;
+
+    autoplayTimer = window.setInterval(() => {
+      const maxScrollLeft = productGrid.scrollWidth - productGrid.clientWidth;
+      if (maxScrollLeft <= 1) return;
+
+      if (productGrid.scrollLeft >= maxScrollLeft - 1) {
+        productGrid.scrollTo({ left: 0, behavior: scrollBehavior });
+      } else {
+        productGrid.scrollBy({
+          left: getScrollAmount(),
+          behavior: scrollBehavior,
+        });
+      }
+    }, 2000);
+  };
+
+  const scrollPrevious = () => {
+    productGrid.scrollBy({
+      left: -getScrollAmount(),
+      behavior: scrollBehavior,
+    });
+  };
+
+  const scrollNext = () => {
+    const maxScrollLeft = productGrid.scrollWidth - productGrid.clientWidth;
+    if (productGrid.scrollLeft >= maxScrollLeft - 1) {
+      productGrid.scrollTo({ left: 0, behavior: scrollBehavior });
+      return;
+    }
+    productGrid.scrollBy({
+      left: getScrollAmount(),
+      behavior: scrollBehavior,
+    });
+  };
+
+  loadProducts(productGrid).finally(() => {
+    updateControls();
+    startAutoplay();
   });
 
-  nextButton.addEventListener("click", () => {
-    productGrid.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
+  previousButton.addEventListener("click", scrollPrevious);
+  nextButton.addEventListener("click", scrollNext);
+
+  productGrid.addEventListener("scroll", updateControls, { passive: true });
+  window.addEventListener("resize", updateControls);
+  updateControls();
+
+  carousel.addEventListener("pointerenter", stopAutoplay);
+  carousel.addEventListener("pointerleave", startAutoplay);
+  carousel.addEventListener("focusin", stopAutoplay);
+  carousel.addEventListener("focusout", startAutoplay);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopAutoplay();
+    } else {
+      startAutoplay();
+    }
   });
 
   productGrid.addEventListener(
@@ -51,7 +136,7 @@ async function loadProducts(container) {
       return;
     }
 
-    renderProducts(container, products.slice(0, 6));
+    renderProducts(container, products);
   } catch (error) {
     console.error("No se pudieron cargar los productos de inicio:", error);
     renderStatus(container, "No se pudieron cargar los productos. Intenta de nuevo más tarde.");

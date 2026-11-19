@@ -677,6 +677,53 @@ body.a11y-mode-dark-mode .tarjeta-oscura .btn-accion:hover {
   box-shadow: 0 8px 26px rgba(245, 200, 66, 0.5) !important;
 }
 
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.oscuro {
+  background: #0e1834 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro {
+  background: #ffffff !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.oscuro {
+  border-left: 1px solid #1a2c5b;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado h2 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro h2,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro h3,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro p {
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado h3,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado p {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .btn {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -23px !important;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
+  z-index: 2;
+  background: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .btn span {
+  background: none !important;
+  color: #070d1e !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: #070d1e !important;
+}
+
 /* Sección ¿Por qué trabajar con nosotros? y Razones en Modo Oscuro */
 body.a11y-mode-dark-mode .porque {
   background: #070d1e !important;
