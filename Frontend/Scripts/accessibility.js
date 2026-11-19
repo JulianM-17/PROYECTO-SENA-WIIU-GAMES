@@ -385,6 +385,46 @@
           localStorage.getItem("sessionToken");
         if (token) {
           try {
+            const favoritesResponse = await fetch(
+              "http://localhost:3000/api/my-favorites",
+              {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token}` },
+              },
+            );
+            const favoritesData = await favoritesResponse
+              .json()
+              .catch(() => ({}));
+            if (!favoritesResponse.ok || !favoritesData.ok) {
+              throw new Error(
+                favoritesData.message || "No se pudieron eliminar tus favoritos.",
+              );
+            }
+
+            const panelData = JSON.parse(
+              localStorage.getItem("wiiu_user_panel_data") || "{}",
+            );
+            if (
+              !panelData ||
+              typeof panelData !== "object" ||
+              Array.isArray(panelData)
+            ) {
+              throw new Error("Los datos locales de favoritos no son válidos.");
+            }
+            panelData.favorites = [];
+            localStorage.setItem(
+              "wiiu_user_panel_data",
+              JSON.stringify(panelData),
+            );
+          } catch (error) {
+            console.error("No se pudieron eliminar los favoritos:", error);
+            window.alert(
+              error.message || "No se pudieron eliminar tus favoritos.",
+            );
+            return;
+          }
+
+          try {
             const response = await fetch("http://localhost:3000/api/session", {
               method: "DELETE",
               headers: { Authorization: `Bearer ${token}` },

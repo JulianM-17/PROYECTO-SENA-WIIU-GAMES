@@ -8,8 +8,6 @@
   }
 
   function ensureContactModal() {
-    if (document.body.dataset.contactModalReady === 'true') return;
-
     const href = getContactStylesheetPath();
     if (!document.querySelector(`link[href="${href}"]`)) {
       const cssLink = document.createElement('link');
@@ -122,4 +120,5 @@
   }
 
   document.addEventListener('DOMContentLoaded', ensureContactModal);
+  document.addEventListener('footer-normalized', ensureContactModal);
 })();

@@ -593,7 +593,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion),
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion):not(.hero-badge),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -632,6 +632,25 @@ body.a11y-mode-dark-mode .total-card {
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4) !important;
 }
 
+/* Stock y controles de compra en las tarjetas del catálogo */
+body.a11y-mode-dark-mode .cantidad-stock {
+  background: #fff1ad !important;
+  color: #5f4700 !important;
+  border: 1px solid rgba(245, 200, 66, 0.55) !important;
+}
+
+body.a11y-mode-dark-mode .cantidad-stock.sin-stock {
+  background: #3a1717 !important;
+  color: #fecaca !important;
+  border-color: #7f1d1d !important;
+}
+
+body.a11y-mode-dark-mode .cantidad-producto {
+  background: #070d1e !important;
+  color: #f8fafc !important;
+  border: 2px solid #f5c842 !important;
+}
+
 body.a11y-mode-dark-mode .tarjeta-servicios h2,
 body.a11y-mode-dark-mode .tarjeta-armatupc h2,
 body.a11y-mode-high-contrast .tarjeta-servicios h2,
@@ -656,6 +675,53 @@ body.a11y-mode-dark-mode .tarjeta-oscura .btn-accion:hover {
   background: linear-gradient(135deg, #ffcf4d 0%, #f5c842 100%) !important;
   color: #000000 !important;
   box-shadow: 0 8px 26px rgba(245, 200, 66, 0.5) !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.oscuro {
+  background: #0e1834 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro {
+  background: #ffffff !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.oscuro {
+  border-left: 1px solid #1a2c5b;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado h2 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro h2,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro h3,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado.claro p {
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado h3,
+body.a11y-mode-dark-mode .contenedor-servicios .card .lado p {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .btn {
+  position: absolute !important;
+  left: 50% !important;
+  bottom: -23px !important;
+  margin: 0 !important;
+  transform: translateX(-50%) !important;
+  z-index: 2;
+  background: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .contenedor-servicios .card .btn span {
+  background: none !important;
+  color: #070d1e !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  -webkit-text-fill-color: #070d1e !important;
 }
 
 /* Sección ¿Por qué trabajar con nosotros? y Razones en Modo Oscuro */
@@ -860,6 +926,10 @@ body.a11y-mode-dark-mode .btn-agendar-porque:hover {
 }
 
 /* Inicio: Botones del Carrusel Hero en Modo Oscuro */
+body.a11y-mode-dark-mode .hero-badge {
+  color: #000000 !important;
+}
+
 body.a11y-mode-dark-mode .hero-btn-primary,
 body.a11y-mode-dark-mode a.hero-btn-primary {
   background: #f5c842 !important;
@@ -2107,4 +2177,61 @@ body.a11y-mode-dark-mode .btn-primary:hover {
   border-color: #ffd95a !important;
   color: #000000 !important;
   box-shadow: 0 6px 20px rgba(245, 200, 66, 0.45) !important;
+}
+
+/* Catálogo: prioridad final para stock y controles de compra */
+body.a11y-mode-dark-mode .tarjeta-producto .resumen-stock,
+body.a11y-mode-dark-mode .tarjeta-producto .resumen-stock span {
+  opacity: 1 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto .cantidad-stock {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #070d1e !important;
+  color: #ffffff !important;
+  border: 1px solid #f5c842 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  padding: 4px 9px !important;
+  font-size: 9px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto .cantidad-stock.sin-stock {
+  background: #4c1d1d !important;
+  color: #fecaca !important;
+  border-color: #ef4444 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto .estado-stock.disponible {
+  color: #4ade80 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto .estado-stock.agotado {
+  color: #f87171 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto input.cantidad-producto,
+body.a11y-mode-dark-mode .tarjeta-producto input.cantidad-producto:not([type="submit"]):not([type="button"]) {
+  width: 48px !important;
+  height: 42px !important;
+  flex: 0 0 48px !important;
+  background: #070d1e !important;
+  background-color: #070d1e !important;
+  color: #f8fafc !important;
+  border: 2px solid #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-producto .btn-agregar-carrito {
+  min-height: 44px !important;
+  font-size: 12px !important;
+  background: #f5c842 !important;
+  background-image: none !important;
+  color: #080f20 !important;
+  border: 0 !important;
 }

@@ -182,18 +182,20 @@ body {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr; 
+  min-height: 320px;
   border-radius: 24px;
-  overflow: hidden;
+  overflow: visible;
 }
-.claro  { background: var(--white);    color: #0b1b3a; padding: 40px; }
-.oscuro { background: var(--DarkBlue); color: var(--White);    padding: 40px; }
+.claro  { background: var(--white);    color: #0b1b3a; padding: 40px; border-radius: 24px 0 0 24px; }
+.oscuro { background: var(--DarkBlue); color: var(--White);    padding: 40px; border-radius: 0 24px 24px 0; }
 .oscuro h2 { color: var(--Yelow); }
 
 .btn {
   position: absolute;
   left: 50%;
-  bottom: 32px;
+  bottom: -23px;
   transform: translateX(-50%);
+  z-index: 2;
   padding: 16px 64px;
   border: 0;
   border-radius: 16px;
