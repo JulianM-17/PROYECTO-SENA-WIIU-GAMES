@@ -10,7 +10,10 @@ var API_BASE = 'http://localhost:3000';
 var tipoModalActual = "";
 
 // Token de sesión (se obtiene del localStorage si existe)
-var sessionToken = localStorage.getItem('sessionToken') || '';
+var sessionToken =
+  localStorage.getItem('sessionToken') ||
+  sessionStorage.getItem('sessionToken') ||
+  '';
 
 // ==========================================================================
 // 0. SISTEMA DE NOTIFICACIONES TOAST
@@ -276,6 +279,7 @@ function mostrarNotificaciones() {
 
 var ventasNotificaciones = [];
 var citasNotificaciones = [];
+var garantiasNotificaciones = [];
 var inventarioNotificaciones = [];
 var clavesNotificacionesConocidas = new Set();
 var notificacionesActuales = [];
@@ -359,6 +363,7 @@ function etiquetaDiaNotificacion(fechaTexto) {
 function actualizarContadorNotificaciones() {
   var contador = document.getElementById('contadorNotificaciones');
   var boton = document.querySelector('.campana-alerta');
+  var resumen = document.getElementById('resumenNotificaciones');
   if (!contador || !boton) return;
   var icono = boton.querySelector('i');
   if (icono) {
@@ -366,6 +371,14 @@ function actualizarContadorNotificaciones() {
     icono.classList.toggle('fi-rr-bell', notificacionesNoLeidas === 0);
   }
   contador.hidden = notificacionesNoLeidas === 0;
+  contador.textContent =
+    notificacionesNoLeidas > 99 ? '99+' : String(notificacionesNoLeidas);
+  if (resumen) {
+    resumen.textContent =
+      notificacionesNoLeidas === 0
+        ? 'Todo al día'
+        : notificacionesNoLeidas + (notificacionesNoLeidas === 1 ? ' novedad nueva' : ' novedades nuevas');
+  }
   contador.setAttribute(
     'aria-label',
     notificacionesNoLeidas + ' notificaciones nuevas',
@@ -378,10 +391,11 @@ function actualizarContadorNotificaciones() {
   );
 }
 
-function actualizarNotificaciones(ventas, inventario, citas) {
+function actualizarNotificaciones(ventas, inventario, citas, garantias) {
   if (Array.isArray(ventas)) ventasNotificaciones = ventas;
   if (Array.isArray(inventario)) inventarioNotificaciones = inventario;
   if (Array.isArray(citas)) citasNotificaciones = citas;
+  if (Array.isArray(garantias)) garantiasNotificaciones = garantias;
 
   var notificaciones = [];
   var eventos = [];
@@ -390,7 +404,7 @@ function actualizarNotificaciones(ventas, inventario, citas) {
       key: 'venta:' + venta.id,
       type: 'sale',
       createdAt: venta.createdAt,
-      titulo: 'Nueva compra #' + escaparHtmlAdmin(venta.id),
+      titulo: 'Nueva compra ' + escaparHtmlAdmin(venta.orderNumber || ('#' + venta.id)),
       detalle:
         escaparHtmlAdmin(venta.client || 'Cliente') +
         ' · ' +
@@ -417,6 +431,22 @@ function actualizarNotificaciones(ventas, inventario, citas) {
         escaparHtmlAdmin(cita.status || 'Solicitud recibida'),
     });
   });
+  garantiasNotificaciones.forEach(function(solicitud) {
+    eventos.push({
+      key: 'garantia:' + solicitud.id,
+      type: 'warranty',
+      createdAt: solicitud.createdAt,
+      titulo: 'Nueva solicitud de garantía #' + escaparHtmlAdmin(solicitud.id),
+      detalle:
+        escaparHtmlAdmin(solicitud.client || 'Cliente') +
+        ' · ' +
+        escaparHtmlAdmin(solicitud.product || 'Producto') +
+        ' · Pedido ' +
+        escaparHtmlAdmin(solicitud.orderNumber || 'sin número') +
+        ' · ' +
+        escaparHtmlAdmin(solicitud.status || 'RECIBIDA'),
+    });
+  });
 
   var eventosNuevos = [];
   eventos.forEach(function(evento) {
@@ -433,15 +463,8 @@ function actualizarNotificaciones(ventas, inventario, citas) {
   var alertasInventario = inventarioNotificaciones.filter(function(producto) {
     return Number(producto.stock) <= Number(producto.minStock || 3);
   });
-  if (notificacionesInicializadas) {
-    notificacionesNoLeidas += eventosNuevos.length;
-  } else {
+  if (!notificacionesInicializadas) {
     notificacionesInicializadas = true;
-    notificacionesNoLeidas = alertasInventario.filter(function(producto) {
-      return !clavesNotificacionesDescartadas.has(
-        'stock:' + (producto.id || producto.name),
-      );
-    }).length;
   }
 
   eventosNuevos.forEach(function(evento) {
@@ -453,6 +476,7 @@ function actualizarNotificaciones(ventas, inventario, citas) {
     var stock = Number(producto.stock);
     notificaciones.push({
       key: 'stock:' + (producto.id || producto.name),
+      type: 'stock',
       createdAt: fechaLocalParaNotificaciones(new Date()),
       titulo: 'Stock bajo: ' + escaparHtmlAdmin(producto.name),
       detalle: 'Quedan ' + stock + ' unidades disponibles.'
@@ -487,8 +511,26 @@ function actualizarNotificaciones(ventas, inventario, citas) {
   });
   lista.innerHTML = Array.from(gruposPorDia.entries()).map(function(grupo) {
     var avisosDelDia = grupo[1].map(function(notificacion) {
-      return '<li><strong>' + notificacion.titulo + '</strong><span>' +
-        notificacion.detalle + '</span></li>';
+      var icono = notificacion.type === 'sale'
+        ? 'fi-rr-shopping-bag'
+        : notificacion.type === 'appointment'
+          ? 'fi-rr-calendar'
+          : notificacion.type === 'warranty'
+            ? 'fi-rr-shield-check'
+            : notificacion.type === 'stock'
+              ? 'fi-rr-box'
+              : 'fi-rr-bell';
+      var noLeida = !clavesNotificacionesLeidas.has(notificacion.key);
+      var hora = '';
+      var fecha = new Date(String(notificacion.createdAt || '').replace(' ', 'T'));
+      if (!Number.isNaN(fecha.getTime())) {
+        hora = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+      }
+      return '<li class="notificacion-item' + (noLeida ? ' no-leida' : '') + '">' +
+        '<span class="notificacion-icono"><i class="fi ' + icono + '"></i></span>' +
+        '<div class="notificacion-contenido"><strong>' + notificacion.titulo + '</strong>' +
+        '<span>' + notificacion.detalle + '</span></div>' +
+        (hora ? '<time>' + hora + '</time>' : '') + '</li>';
     }).join('');
     return '<li class="notificacion-grupo"><strong class="notificacion-dia">' +
       escaparHtmlAdmin(grupo[0]) + '</strong><ul class="notificaciones-dia">' +
@@ -499,21 +541,20 @@ function actualizarNotificaciones(ventas, inventario, citas) {
 
 function limpiarNotificacionesAdmin() {
   if (!notificacionesActuales.length) return;
-  if (!confirm('¿Quieres limpiar las notificaciones que aparecen en la lista?')) return;
-
   notificacionesActuales.forEach(function(notificacion) {
-    clavesNotificacionesDescartadas.add(notificacion.key);
+    clavesNotificacionesLeidas.add(notificacion.key);
   });
   guardarClavesNotificaciones(
-    claveAlmacenamientoNotificacionesDescartadas,
-    clavesNotificacionesDescartadas,
-    'limpiadas',
+    claveAlmacenamientoNotificacionesLeidas,
+    clavesNotificacionesLeidas,
+    'leídas',
   );
   notificacionesNoLeidas = 0;
   actualizarNotificaciones(
     ventasNotificaciones,
     inventarioNotificaciones,
     citasNotificaciones,
+    garantiasNotificaciones,
   );
 }
 
@@ -536,6 +577,7 @@ function cargarNotificacionesAdmin() {
       response.data.sales,
       null,
       response.data.appointments,
+      response.data.warrantyRequests,
     );
   })
   .catch(function(error) {
@@ -1072,7 +1114,7 @@ function configurarAccionesSolicitudesGarantia() {
   if (!tbody) return;
 
   tbody.addEventListener('change', function(event) {
-    var selector = event.target.closest('.selector-estado-solicitud');
+    var selector = event.target.closest('.select-estado-solicitud');
     if (!selector) return;
     var button = selector.closest('tr').querySelector('.boton-guardar-solicitud');
     button.disabled = selector.value === selector.dataset.savedStatus;
@@ -1083,7 +1125,7 @@ function configurarAccionesSolicitudesGarantia() {
     if (!button || button.disabled) return;
 
     var row = button.closest('tr');
-    var selector = row.querySelector('.selector-estado-solicitud');
+    var selector = row.querySelector('.select-estado-solicitud');
     var requestId = button.dataset.requestId;
     var nextStatus = selector.value;
     button.disabled = true;
@@ -1680,6 +1722,72 @@ function actualizarEstadoCitaAdmin(id) {
 // ==========================================================================
 // 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
 // ==========================================================================
+function renderizarGraficoVentas(puntos) {
+  var svg = document.getElementById('graficoVentas');
+  if (!svg) return;
+
+  var datos = Array.isArray(puntos) ? puntos.slice(-7) : [];
+  while (datos.length < 7) {
+    datos.unshift({ label: '', value: 0 });
+  }
+
+  var ancho = 700;
+  var alto = 180;
+  var margenIzquierdo = 58;
+  var margenDerecho = 12;
+  var margenSuperior = 12;
+  var margenInferior = 28;
+  var anchoGrafico = ancho - margenIzquierdo - margenDerecho;
+  var altoGrafico = alto - margenSuperior - margenInferior;
+  var valores = datos.map(function(punto) { return Number(punto.value || 0); });
+  var maximo = Math.max.apply(null, valores);
+  if (!Number.isFinite(maximo) || maximo <= 0) maximo = 1000;
+  var potencia = Math.pow(10, Math.max(0, String(Math.floor(maximo)).length - 1));
+  maximo = Math.ceil(maximo / potencia) * potencia;
+
+  var partes = [
+    '<rect x="0" y="0" width="' + ancho + '" height="' + alto + '" fill="transparent"/>'
+  ];
+  for (var linea = 0; linea <= 4; linea++) {
+    var y = margenSuperior + (altoGrafico * linea / 4);
+    var valorLinea = maximo - (maximo * linea / 4);
+    var etiqueta = valorLinea >= 1000000
+      ? (valorLinea / 1000000).toFixed(1) + 'M'
+      : valorLinea >= 1000
+        ? (valorLinea / 1000).toFixed(valorLinea % 1000 === 0 ? 0 : 1) + 'K'
+        : String(Math.round(valorLinea));
+    partes.push('<line x1="' + margenIzquierdo + '" y1="' + y + '" x2="' + ancho + '" y2="' + y + '" stroke="#16223d" stroke-width="1"/>');
+    partes.push('<text x="' + (margenIzquierdo - 8) + '" y="' + (y + 4) + '" fill="#52637a" font-size="10" text-anchor="end">' + etiqueta + '</text>');
+  }
+
+  var coordenadas = datos.map(function(punto, indice) {
+    var x = margenIzquierdo + (anchoGrafico * indice / Math.max(1, datos.length - 1));
+    var y = margenSuperior + altoGrafico - (Number(punto.value || 0) / maximo * altoGrafico);
+    return [x, y];
+  });
+
+  var linea = coordenadas.map(function(punto, indice) {
+    return (indice === 0 ? 'M' : 'L') + punto[0].toFixed(2) + ',' + punto[1].toFixed(2);
+  }).join(' ');
+  var area = linea + ' L' + coordenadas[coordenadas.length - 1][0].toFixed(2) + ',' +
+    (margenSuperior + altoGrafico) + ' L' + coordenadas[0][0].toFixed(2) + ',' +
+    (margenSuperior + altoGrafico) + ' Z';
+
+  partes.push('<defs><linearGradient id="ventasArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0077ff" stop-opacity=".35"/><stop offset="100%" stop-color="#0077ff" stop-opacity=".03"/></linearGradient></defs>');
+  partes.push('<path d="' + area + '" fill="url(#ventasArea)"/>');
+  partes.push('<path d="' + linea + '" fill="none" stroke="#0077ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>');
+
+  datos.forEach(function(punto, indice) {
+    var coordenada = coordenadas[indice];
+    var valor = Number(punto.value || 0).toLocaleString('es-CO');
+    partes.push('<g><circle cx="' + coordenada[0].toFixed(2) + '" cy="' + coordenada[1].toFixed(2) + '" r="4" fill="#080f1e" stroke="#0077ff" stroke-width="2"/><title>$ ' + valor + '</title></g>');
+    partes.push('<text x="' + coordenada[0].toFixed(2) + '" y="' + (alto - 7) + '" fill="#8a9bb5" font-size="10" text-anchor="middle">' + escaparHtmlAdmin(punto.label || '') + '</text>');
+  });
+
+  svg.innerHTML = partes.join('');
+  svg.setAttribute('aria-label', 'Ventas de los últimos siete días');
+}
+
 function cargarDashboard() {
   var inventoryBranchSelect = document.getElementById('filtroSucursalInventario');
   var selectedBranchId = inventoryBranchSelect && inventoryBranchSelect.value;
@@ -1739,6 +1847,8 @@ function cargarDashboard() {
 
     el = document.getElementById('homeClientesNuevos');
     if (el) el.textContent = data.summary.clientsCount || 0;
+
+    renderizarGraficoVentas(data.salesTrend);
 
     // ---------- HOME: Productos más vendidos ----------
     if (data.topProducts && data.topProducts.length > 0) {

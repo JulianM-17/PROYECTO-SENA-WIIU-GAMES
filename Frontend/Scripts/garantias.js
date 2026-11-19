@@ -352,7 +352,13 @@ document.addEventListener("DOMContentLoaded", () => {
       clearFieldError(descripcionInput, "error-consulta");
       renderProducts();
       await loadMyWarrantyRequests();
-      setFeedback(data.message, "success");
+      setFeedback(
+        `✓ ${
+          data.message ||
+          "Solicitud enviada correctamente. Nuestro equipo la revisará y podrás consultar el estado en esta sección."
+        }`,
+        "success",
+      );
     } catch (error) {
       setFeedback(error.message || "No se pudo registrar tu solicitud.", "error");
     } finally {

@@ -735,7 +735,7 @@ app.post("/api/my-warranty-requests", requireUserSession, async (req, res) => {
     await connection.commit();
     return res.status(201).json({
       ok: true,
-      message: "Tu solicitud de garantía quedó registrada.",
+      message: "Solicitud enviada correctamente. Nuestro equipo la revisará y podrás consultar el estado desde la sección Garantías.",
       request: {
         id: result.insertId,
         detailId,
@@ -1297,14 +1297,14 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a') AS day_name,
          COALESCE(SUM(dv.subtotal), 0) AS total
        FROM (
-         SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6
+         SELECT 6 AS n UNION ALL SELECT 5 UNION ALL SELECT 4 UNION ALL SELECT 3 UNION ALL SELECT 2 UNION ALL SELECT 1 UNION ALL SELECT 0
        ) n
        LEFT JOIN venta v
          ON DATE(v.fecha) = DATE_SUB(CURDATE(), INTERVAL n.n DAY)
         AND v.estado = 'PAGADA'
        LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
        GROUP BY n.n, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a')
-       ORDER BY n.n`,
+       ORDER BY n.n DESC`,
     );
     const [ordersRows] = await pool.query(
       `SELECT
@@ -2327,22 +2327,26 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
 app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
   try {
     await ensureLegacyAppointmentSchema();
+    await ensureWarrantyRequestSchema();
     const [sales] = await pool.query(
       `SELECT
          v.id_venta AS id,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
          CONCAT(u.nombre, ' ', u.apellido) AS client,
          v.estado AS status,
          DATE_FORMAT(v.fecha, '%Y-%m-%d %H:%i:%s') AS createdAt,
          COALESCE(SUM(dv.subtotal), 0) AS total
        FROM (
          SELECT id_venta, id_usuario, estado, fecha
+           , nro_pago
          FROM venta
+           WHERE estado = 'PAGADA'
          ORDER BY fecha DESC, id_venta DESC
          LIMIT 50
        ) v
        INNER JOIN usuario u ON u.id_usuario = v.id_usuario
        LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
-       GROUP BY v.id_venta, u.nombre, u.apellido, v.estado, v.fecha
+       GROUP BY v.id_venta, v.nro_pago, u.nombre, u.apellido, v.estado, v.fecha
        ORDER BY v.fecha DESC, v.id_venta DESC`,
     );
     const [appointments] = await pool.query(
@@ -2359,7 +2363,25 @@ app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
        ORDER BY c.fecha_creacion DESC, c.id_cita DESC
        LIMIT 50`,
     );
-    return res.json({ ok: true, sales, appointments });
+    const [warrantyRequests] = await pool.query(
+      `SELECT
+         sg.id_solicitud AS id,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         p.nombre AS product,
+         sg.descripcion AS description,
+         sg.estado AS status,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
+         DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i:%s') AS createdAt
+       FROM solicitud_garantia sg
+       INNER JOIN usuario u ON u.id_usuario = sg.id_usuario
+       INNER JOIN detalle_venta dv
+         ON dv.id_detalle_venta = sg.id_detalle_venta
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       ORDER BY sg.fecha_solicitud DESC, sg.id_solicitud DESC
+       LIMIT 50`,
+    );
+    return res.json({ ok: true, sales, appointments, warrantyRequests });
   } catch (error) {
     console.error("Error al consultar notificaciones del administrador:", error.message);
     return res.status(500).json({

@@ -1031,57 +1031,8 @@
                 <p class="tabla-th">Total</p>
                 <p class="tabla-th">Acción</p>
               </div>
-
-              <!-- Primer fila -->
-              <div class="tabla-fila">
-                <p class="factura-num">#FAC-2026-001</p>
-                <p class="factura-desc">MSI MEG Trident X PC Gamer</p>
-                <p class="factura-fecha">01/09/2026</p>
-                <p class="factura-total">$4,349.000</p>
-                <div class="factura-accion">
-                  <button class="btn-descargar-pdf">
-                    <i class="fi fi-rr-download"></i> PDF
-                  </button>
-                </div>
-              </div>
-
-              <!-- Segunda fila -->
-              <div class="tabla-fila">
-                <p class="factura-num">#FAC-2026-002</p>
-                <p class="factura-desc">ASUS ROG Zephyrus G14</p>
-                <p class="factura-fecha">12/09/2026</p>
-                <p class="factura-total">$6,850.000</p>
-                <div class="factura-accion">
-                  <button class="btn-descargar-pdf">
-                    <i class="fi fi-rr-download"></i> PDF
-                  </button>
-                </div>
-              </div>
-
-              <!-- Tercera fila -->
-              <div class="tabla-fila">
-                <p class="factura-num">#FAC-2026-003</p>
-                <p class="factura-desc">Logitech G Pro X Superlight 2 x2</p>
-                <p class="factura-fecha">15/08/2026</p>
-                <p class="factura-total">$580.000</p>
-                <div class="factura-accion">
-                  <button class="btn-descargar-pdf">
-                    <i class="fi fi-rr-download"></i> PDF
-                  </button>
-                </div>
-              </div>
-
-              <!-- Cuarta Fila -->
-              <div class="tabla-fila">
-                <p class="factura-num">#FAC-2025-021</p>
-                <p class="factura-desc">Keychron Q1 Pro Teclado Mecánico</p>
-                <p class="factura-fecha">08/12/2025</p>
-                <p class="factura-total">$680.000</p>
-                <div class="factura-accion">
-                  <button class="btn-descargar-pdf">
-                    <i class="fi fi-rr-download"></i> PDF
-                  </button>
-                </div>
+              <div id="lista-facturas" aria-live="polite">
+                <p class="pedidos-mensaje" role="status">Cargando tus facturas...</p>
               </div>
             </div>
 
@@ -1089,7 +1040,7 @@
             <div class="resumen-total">
               <div>
                 <p class="resumen-label">Total gastado en WiiU-Games</p>
-                <p class="resumen-monto">$12,459.000 <span>COP</span></p>
+                <p class="resumen-monto" id="total-facturado">$0 <span>COP</span></p>
               </div>
               <button class="btn-descargar-todas">
                 <i class="fi fi-rr-download"></i> Descargar todas

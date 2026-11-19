@@ -677,6 +677,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderCards();
     renderFavorites();
     renderOrders();
+    renderInvoices();
     renderAppointments();
   }
 
@@ -1556,6 +1557,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
+  let selectedInvoiceOrder = null;
 
   function formatWarrantyDate(value) {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
@@ -1688,6 +1690,151 @@ document.addEventListener("DOMContentLoaded", async () => {
           </article>`;
       })
       .join("");
+  }
+
+  function formatInvoiceDate(value) {
+    const date = value ? new Date(value) : null;
+    if (!date || Number.isNaN(date.getTime())) return "Fecha no disponible";
+    return new Intl.DateTimeFormat("es-CO", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(date);
+  }
+
+  function renderInvoices() {
+    const invoiceList = document.getElementById("lista-facturas");
+    const totalElement = document.getElementById("total-facturado");
+    if (!invoiceList) return;
+
+    if (ordersLoading) {
+      invoiceList.innerHTML =
+        '<p class="pedidos-mensaje" role="status">Cargando tus facturas...</p>';
+      return;
+    }
+    if (ordersLoadError) {
+      invoiceList.innerHTML =
+        `<p class="pedidos-mensaje" role="alert">${escapeHtml(ordersLoadError)}</p>`;
+      return;
+    }
+
+    const paidOrders = state.orders.filter((order) => order.status === "PAGADA");
+    const totalPaid = paidOrders.reduce(
+      (sum, order) => sum + (Number(order.total) || 0),
+      0,
+    );
+    if (totalElement) {
+      totalElement.innerHTML = `${formatCOP(totalPaid).replace(" COP", "")} <span>COP</span>`;
+    }
+
+    if (paidOrders.length === 0) {
+      invoiceList.innerHTML =
+        '<p class="pedidos-mensaje">No tienes facturas disponibles todavía.</p>';
+      return;
+    }
+
+    invoiceList.innerHTML = paidOrders
+      .map((order) => {
+        const description = order.items.length
+          ? order.items
+              .map((item) => `${item.name}${Number(item.quantity) > 1 ? ` x${item.quantity}` : ""}`)
+              .join(", ")
+          : "Pedido sin productos";
+        return `
+          <div class="tabla-fila" data-order-id="${escapeHtml(order.id)}">
+            <p class="factura-num">#${escapeHtml(order.number)}</p>
+            <p class="factura-desc">${escapeHtml(description)}</p>
+            <p class="factura-fecha">${formatInvoiceDate(order.createdAt)}</p>
+            <p class="factura-total">${formatCOP(order.total)}</p>
+            <div class="factura-accion">
+              <button class="btn-descargar-pdf" type="button" data-order-id="${escapeHtml(order.id)}">
+                <i class="fi fi-rr-download"></i> PDF
+              </button>
+            </div>
+          </div>`;
+      })
+      .join("");
+  }
+
+  function createInvoicePrintDocument(order) {
+    const profileName =
+      `${state.profile.nombre || ""} ${state.profile.apellidos || ""}`.trim() ||
+      sessionUser.nombre ||
+      "Cliente";
+    const address = [
+      state.profile.direccion,
+      state.profile.ciudad,
+      state.profile.departamento,
+    ].filter(Boolean).join(", ");
+    const items = order.items
+      .map(
+        (item) => `
+          <tr>
+            <td>${escapeHtml(item.name)}</td>
+            <td class="number">${Number(item.quantity)}</td>
+            <td class="number">${formatCOP(item.unitPrice)}</td>
+            <td class="number">${formatCOP(item.subtotal)}</td>
+          </tr>`,
+      )
+      .join("");
+
+    return `
+      <!doctype html>
+      <html lang="es">
+        <head>
+          <meta charset="utf-8">
+          <title>Factura ${escapeHtml(order.number)}</title>
+          <style>
+            body { font-family: Arial, sans-serif; color: #172033; margin: 32px; }
+            .header { display: flex; justify-content: space-between; border-bottom: 3px solid #0b1f3a; padding-bottom: 16px; }
+            h1 { margin: 0 0 6px; color: #0b1f3a; }
+            .invoice-number { color: #52606d; }
+            .customer { background: #f4f7fb; margin: 20px 0; padding: 14px; border-radius: 8px; }
+            table { width: 100%; border-collapse: collapse; }
+            th { background: #0b1f3a; color: white; text-align: left; padding: 10px; }
+            td { border-bottom: 1px solid #dfe5ec; padding: 10px; }
+            td.number { text-align: right; white-space: nowrap; }
+            .total { margin-top: 16px; text-align: right; font-size: 18px; }
+            .total strong { color: #0b1f3a; }
+            @media print { body { margin: 12mm; } }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div><h1>WiiU-Games</h1><small>Factura de compra</small></div>
+            <div><b>#${escapeHtml(order.number)}</b><br><small>${formatInvoiceDate(order.createdAt)}</small></div>
+          </div>
+          <div class="customer">
+            <b>Cliente:</b> ${escapeHtml(profileName)}<br>
+            <b>Documento:</b> ${escapeHtml(state.profile.documento || "No registrado")}<br>
+            <b>Correo:</b> ${escapeHtml(state.profile.email || sessionUser.correo || "")}<br>
+            <b>Dirección:</b> ${escapeHtml(address || "No registrada")}
+          </div>
+          <table>
+            <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>
+            <tbody>${items || '<tr><td colspan="4">Pedido sin productos</td></tr>'}</tbody>
+          </table>
+          <p class="total">TOTAL: <strong>${formatCOP(order.total)}</strong></p>
+          <p><small>Método de pago: ${escapeHtml(order.paymentMethod || "No registrado")}</small></p>
+        </body>
+      </html>`;
+  }
+
+  function imprimirFactura(order) {
+    if (!order) {
+      showToast("No se encontró la factura seleccionada.", "error");
+      return;
+    }
+    const printWindow = window.open("", "_blank", "width=900,height=700");
+    if (!printWindow) {
+      showToast("Permite las ventanas emergentes para imprimir la factura.", "error");
+      return;
+    }
+    printWindow.document.open();
+    printWindow.document.write(createInvoicePrintDocument(order));
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => printWindow.print(), 300);
   }
 
   const listaCitas = document.getElementById("lista-citas");
@@ -1914,6 +2061,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   function mostrarModalDetallePedido(order) {
+    selectedInvoiceOrder = order;
     document.getElementById("det-pedido-num").textContent = `#${order.number}`;
     const contenido = document.getElementById("det-pedido-contenido");
     const paymentMethods = {
@@ -1979,8 +2127,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnImprimirFactura = document.getElementById("btn-imprimir-factura");
   if (btnImprimirFactura) {
     btnImprimirFactura.addEventListener("click", () => {
-      showToast("Generando vista de impresión de la factura...", "info");
-      setTimeout(() => window.print(), 800);
+      if (selectedInvoiceOrder?.status !== "PAGADA") {
+        showToast("Solo puedes imprimir facturas de pedidos pagados.", "error");
+        return;
+      }
+      imprimirFactura(selectedInvoiceOrder);
     });
   }
 
@@ -2079,22 +2230,66 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ===================================================
   // 11. FACTURA — DESCARGAS PDF Y LOTES
   // ===================================================
-  const btnsDescargarPdf = document.querySelectorAll(".btn-descargar-pdf");
+  const listaFacturas = document.getElementById("lista-facturas");
   const btnDescargarTodas = document.querySelector(".btn-descargar-todas");
 
-  btnsDescargarPdf.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const fila = btn.closest(".tabla-fila");
-      const numFac = fila
-        ? fila.querySelector(".factura-num")?.textContent
-        : "#FAC-2026";
-      showToast(`Descargando factura ${numFac}.pdf...`, "success");
-    });
+  listaFacturas?.addEventListener("click", (event) => {
+    const button = event.target.closest(".btn-descargar-pdf");
+    if (!button) return;
+    const order = state.orders.find(
+      (item) => String(item.id) === String(button.dataset.orderId),
+    );
+    if (!order || order.status !== "PAGADA") {
+      showToast("Esta compra todavía no tiene una factura disponible.", "error");
+      return;
+    }
+    imprimirFactura(order);
   });
 
   if (btnDescargarTodas) {
     btnDescargarTodas.addEventListener("click", () => {
-      showToast("Generando archivo ZIP con todas tus facturas...", "success");
+      const paidOrders = state.orders.filter(
+        (order) => order.status === "PAGADA",
+      );
+      if (paidOrders.length === 0) {
+        showToast("No tienes facturas pagadas para descargar.", "error");
+        return;
+      }
+      if (paidOrders.length === 1) {
+        imprimirFactura(paidOrders[0]);
+        return;
+      }
+
+      const printWindow = window.open("", "_blank", "width=900,height=700");
+      if (!printWindow) {
+        showToast("Permite las ventanas emergentes para imprimir tus facturas.", "error");
+        return;
+      }
+      const combinedDocuments = paidOrders
+        .map((order, index) => {
+          const documentHtml = createInvoicePrintDocument(order);
+          const bodyMatch = documentHtml.match(/<body>([\s\S]*?)<\/body>/i);
+          return `<section${index > 0 ? ' style="page-break-before: always"' : ""}>${bodyMatch ? bodyMatch[1] : ""}</section>`;
+        })
+        .join("");
+      const invoiceStyleMatch = createInvoicePrintDocument(paidOrders[0]).match(
+        /<style>([\s\S]*?)<\/style>/i,
+      );
+      const invoiceStyle = invoiceStyleMatch ? invoiceStyleMatch[1] : `
+        body{font-family:Arial,sans-serif;color:#172033;margin:32px}
+        .header{display:flex;justify-content:space-between;border-bottom:3px solid #0b1f3a;padding-bottom:16px}
+        h1{margin:0 0 6px;color:#0b1f3a}.customer{background:#f4f7fb;margin:20px 0;padding:14px;border-radius:8px}
+        table{width:100%;border-collapse:collapse}th{background:#0b1f3a;color:white;text-align:left;padding:10px}
+        td{border-bottom:1px solid #dfe5ec;padding:10px}td.number{text-align:right;white-space:nowrap}
+        .total{margin-top:16px;text-align:right;font-size:18px}.total strong{color:#0b1f3a}
+      `;
+      printWindow.document.open();
+      printWindow.document.write(`
+        <!doctype html><html lang="es"><head><meta charset="utf-8"><title>Facturas WiiU-Games</title>
+        <style>${invoiceStyle}</style></head><body>${combinedDocuments}</body></html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 300);
     });
   }
 

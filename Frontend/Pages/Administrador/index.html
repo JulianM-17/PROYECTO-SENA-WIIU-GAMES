@@ -116,12 +116,15 @@
           <div class="campana-contenedor">
             <button class="campana-alerta" type="button" title="Notificaciones" aria-label="Abrir notificaciones" aria-expanded="false" aria-controls="panelNotificaciones" onclick="mostrarNotificaciones()">
               <i class="fi fi-rr-bell"></i>
-              <span class="punto-amarillo" id="contadorNotificaciones" hidden></span>
+              <span class="punto-amarillo" id="contadorNotificaciones" hidden>0</span>
             </button>
             <div class="panel-notificaciones" id="panelNotificaciones" role="region" aria-label="Notificaciones" hidden>
               <div class="cabecera-notificaciones">
-                <h3>Notificaciones</h3>
-                <button type="button" id="btnLimpiarNotificaciones" disabled>Limpiar</button>
+                <div>
+                  <h3>Notificaciones</h3>
+                  <span id="resumenNotificaciones" class="resumen-notificaciones">Sin novedades</span>
+                </div>
+                <button type="button" id="btnLimpiarNotificaciones" disabled>Marcar como leídas</button>
               </div>
               <ul id="listaNotificaciones">
                 <li class="notificacion-vacia">Cargando notificaciones...</li>
@@ -173,33 +176,7 @@
             </div>
 
             <div class="grafico-simple">
-              <div class="numeros-y">
-                <span>10K</span>
-                <span>8K</span>
-                <span>6K</span>
-                <span>4K</span>
-                <span>2K</span>
-                <span>0</span>
-              </div>
-              <div class="zona-grafico">
-                <div class="linea-guia"></div>
-                <div class="linea-guia"></div>
-                <div class="linea-guia"></div>
-                <div class="linea-guia"></div>
-                <div class="linea-guia"></div>
-                <div class="linea-grafica-azul">
-                  <span class="etiqueta-mar">$0<br><small>Mar</small></span>
-                </div>
-                <div class="dias-x">
-                  <span>Lun</span>
-                  <span>Dom</span>
-                  <span>Sáb</span>
-                  <span>Vie</span>
-                  <span>Jue</span>
-                  <span>Mié</span>
-                  <span>Mar</span>
-                </div>
-              </div>
+              <svg id="graficoVentas" viewBox="0 0 700 180" role="img" aria-label="Ventas de los últimos siete días"></svg>
             </div>
           </div>
 
