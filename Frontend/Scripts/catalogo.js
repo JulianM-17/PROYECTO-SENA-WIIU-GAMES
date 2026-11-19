@@ -356,15 +356,6 @@ function crearTarjetaProducto(prod) {
         </div>
         <span class="cantidad-stock ${tieneStock ? '' : 'sin-stock'}">${stockDisponible} disponibles</span>
       </div>
-      <button
-        class="btn-favorito-producto"
-        type="button"
-        data-product-id="${escapeHtml(prod.id_producto ?? prod.id ?? prod.productId ?? prod.nombre)}"
-        data-product-name="${escapeHtml(prod.nombre || 'Producto')}"
-        aria-label="Agregar ${escapeHtml(prod.nombre)} a favoritos"
-        aria-pressed="false"
-        title="Agregar a favoritos"
-      ><i class="fi fi-rr-heart" aria-hidden="true"></i></button>
       <a href="Product.html?id=${encodeURIComponent(prod.id_producto)}" class="enlace-producto">
         <img
           src="${escapeHtml(prod.imagen_url || '../Assets/lenovolegion.webp')}"
@@ -390,12 +381,23 @@ function crearTarjetaProducto(prod) {
           aria-label="Cantidad para ${escapeHtml(prod.nombre)}"
           ${tieneStock ? '' : 'disabled'}
         />
-        <button
-          class="btn-agregar-carrito"
-          type="button"
-          data-product-id="${escapeHtml(prod.id_producto)}"
-          ${tieneStock ? '' : 'disabled'}
-        >${tieneStock ? 'Agregar al carrito' : 'Agotado'}</button>
+        <div class="acciones-carrito-favorito">
+          <button
+            class="btn-agregar-carrito"
+            type="button"
+            data-product-id="${escapeHtml(prod.id_producto)}"
+            ${tieneStock ? '' : 'disabled'}
+          >${tieneStock ? 'Agregar al carrito' : 'Agotado'}</button>
+          <button
+            class="btn-favorito-producto"
+            type="button"
+            data-product-id="${escapeHtml(prod.id_producto ?? prod.id ?? prod.productId ?? prod.nombre)}"
+            data-product-name="${escapeHtml(prod.nombre || 'Producto')}"
+            aria-label="Agregar ${escapeHtml(prod.nombre)} a favoritos"
+            aria-pressed="false"
+            title="Agregar a favoritos"
+          ><i class="fi fi-rr-heart" aria-hidden="true"></i></button>
+        </div>
       </div>
       <span class="mensaje-carrito" aria-live="polite"></span>
     </article>

@@ -437,11 +437,8 @@ body {
 }
 
 .btn-favorito-producto {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 6;
   display: flex;
+  flex: 0 0 36px;
   width: 36px;
   height: 36px;
   align-items: center;
@@ -516,7 +513,6 @@ body {
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 16px;
-  padding-right: 38px;
 }
 
 .estado-stock {
@@ -631,9 +627,17 @@ body {
   margin-top: 14px;
 }
 
+.acciones-carrito-favorito {
+  display: flex;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
 .cantidad-producto {
-  flex: 0 0 58px;
-  width: 58px;
+  flex: 0 0 48px;
+  width: 48px;
   height: 42px;
   border: 2px solid var(--yellow);
   border-radius: 9px;
@@ -653,7 +657,7 @@ body {
 .btn-agregar-carrito {
   flex: 1 1 0;
   min-width: 0;
-  min-height: 42px;
+  min-height: 44px;
   margin-top: 0;
   padding: 8px 6px;
   border: 0;
@@ -661,7 +665,7 @@ body {
   background: var(--yellow);
   color: var(--dark-blue);
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.2;
   cursor: pointer;
@@ -850,6 +854,10 @@ body {
     margin-top: 10px;
   }
 
+  .acciones-carrito-favorito {
+    width: 100%;
+  }
+
   .cantidad-producto {
     flex: 0 0 34px;
     width: 100%;
@@ -858,7 +866,8 @@ body {
   }
 
   .btn-agregar-carrito {
-    width: 100%;
+    flex: 1 1 0;
+    width: auto;
     min-height: 36px;
     padding: 6px;
     font-size: 10px;
