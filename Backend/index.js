@@ -179,7 +179,8 @@ async function insertAutomaticWarrantyCoverage(connection, detailId) {
      WHERE dv.id_detalle_venta = ?
        AND v.estado = 'PAGADA'
        AND g.id_garantia IS NULL
-     ON DUPLICATE KEY UPDATE id_garantia = LAST_INSERT_ID(id_garantia)`,
+     ON DUPLICATE KEY UPDATE
+       id_garantia = LAST_INSERT_ID(garantia.id_garantia)`,
     [detailId],
   );
 }
@@ -228,7 +229,8 @@ function ensureAutomaticWarrantyCoverage() {
              ON g.id_detalle_venta = dv.id_detalle_venta
            WHERE v.estado = 'PAGADA'
              AND g.id_garantia IS NULL
-           ON DUPLICATE KEY UPDATE id_garantia = LAST_INSERT_ID(id_garantia)`,
+           ON DUPLICATE KEY UPDATE
+             id_garantia = LAST_INSERT_ID(garantia.id_garantia)`,
         );
         await connection.commit();
       } catch (error) {
