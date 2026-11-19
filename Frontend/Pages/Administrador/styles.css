@@ -595,6 +595,47 @@ body {
   font-weight: 700;
 }
 
+.solicitudes-garantia-admin .encabezado-caja p {
+  margin-top: 5px;
+  color: #8a9bb5;
+  font-size: 12px;
+}
+
+.solicitudes-garantia-admin {
+  margin-top: 20px;
+}
+
+.descripcion-solicitud-garantia {
+  max-width: 360px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.select-estado-solicitud {
+  min-width: 130px;
+  padding: 8px 10px;
+  border: 1px solid #263752;
+  border-radius: 7px;
+  background: #080f1e;
+  color: #ffffff;
+  font: inherit;
+}
+
+.select-estado-solicitud:focus-visible,
+.boton-guardar-solicitud:focus-visible {
+  outline: 2px solid #f5a623;
+  outline-offset: 2px;
+}
+
+.boton-guardar-solicitud {
+  white-space: nowrap;
+}
+
+.boton-guardar-solicitud:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .etiqueta-semana {
   font-size: 11px;
   color: #8a9bb5;
@@ -1117,13 +1158,25 @@ body {
   outline: none;
 }
 
+.nota-obligatorios {
+  margin: 0 0 14px;
+  color: #a9b7cf;
+  font-size: 12px;
+}
+
+.indicador-obligatorio {
+  color: #f87171;
+  font-weight: 700;
+}
+
 .campo-grupo input:focus, .campo-grupo select:focus, .campo-grupo textarea:focus {
   border-color: #f5a623;
 }
 
 .campo-grupo input.campo-invalido,
 .campo-grupo select.campo-invalido,
-.campo-grupo textarea.campo-invalido {
+.campo-grupo textarea.campo-invalido,
+.select-filtro.campo-invalido {
   border-color: #ef4444 !important;
   background-color: rgba(239, 68, 68, 0.08) !important;
   box-shadow: 0 0 6px rgba(239, 68, 68, 0.3) !important;

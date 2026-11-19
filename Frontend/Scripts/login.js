@@ -164,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
       limpiarErrores();
 
       const correo = inputCorreo ? inputCorreo.value.trim() : "";
-      const contrasena = inputContrasena ? inputContrasena.value.trim() : "";
+      const contrasena = inputContrasena ? inputContrasena.value : "";
       let esValido = true;
 
       // Validación de Correo

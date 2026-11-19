@@ -439,21 +439,47 @@
             </section>
 
             <!-- Cambio contraseña -->
-            <form id="form-perfil-seguridad" class="tarjeta-formulario">
+            <form
+              id="form-perfil-seguridad"
+              class="tarjeta-formulario"
+              novalidate
+            >
               <p class="titulo-tarjeta-formulario">Seguridad</p>
+              <p class="descripcion-seguridad">
+                Escribe tu contraseña actual para verificar tu identidad.
+                Después, ingresa una nueva contraseña de al menos 8 caracteres
+                y confírmala.
+              </p>
               <div class="cuadricula-formulario-2">
                 <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Contraseña actual</label>
-                  <input
-                    type="password"
-                    id="perfil-pass-actual"
-                    placeholder="••••••••"
-                    class="entrada-formulario"
-                  />
+                  <label class="etiqueta-formulario" for="perfil-pass-actual"
+                    >Contraseña actual</label
+                  >
+                  <div class="contenedor-password-actual">
+                    <input
+                      type="password"
+                      id="perfil-pass-actual"
+                      placeholder="••••••••"
+                      class="entrada-formulario"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      class="btn-ver-password-actual"
+                      id="toggle-perfil-pass-actual"
+                      aria-label="Mostrar contraseña actual"
+                      aria-pressed="false"
+                    >
+                      <i class="fi fi-rr-eye" aria-hidden="true"></i>
+                    </button>
+                  </div>
                 </div>
                 <div></div>
                 <div class="campo-formulario">
-                  <label class="etiqueta-formulario">Nueva contraseña</label>
+                  <label class="etiqueta-formulario" for="perfil-pass-nueva"
+                    >Nueva contraseña</label
+                  >
                   <input
                     type="password"
                     id="perfil-pass-nueva"
@@ -464,7 +490,7 @@
                   />
                 </div>
                 <div class="campo-formulario">
-                  <label class="etiqueta-formulario"
+                  <label class="etiqueta-formulario" for="perfil-pass-confirm"
                     >Confirmar nueva contraseña</label
                   >
                   <input
@@ -492,10 +518,19 @@
                 <h1>Gestión de Garantías</h1>
               </div>
               <p class="banner-subtitulo">
-                Registra una solicitud y describe el problema de tu producto.
+                Solicita garantía para productos de compras confirmadas dentro
+                de los 6 meses y describe el problema.
               </p>
             </div>
             <div class="garantias-panel">
+              <p
+                class="garantia-feedback"
+                id="garantia-feedback"
+                role="status"
+                aria-live="polite"
+              >
+                Cargando tus productos comprados...
+              </p>
               <form
                 action="#"
                 method="post"
@@ -503,59 +538,40 @@
                 id="form-garantia"
                 novalidate
               >
-                <div class="campo">
-                  <label for="id-pedido">Número de pedido / Factura*</label>
-                  <input
-                    type="text"
-                    inputmode="numeric"
-                    id="id-pedido"
-                    name="id-pedido"
-                    placeholder="Ej: 104582 (solo números)"
-                    maxlength="12"
-                    required
-                  />
-                  <span class="error-mensaje" id="error-id-pedido"></span>
-                </div>
-                <div class="campo">
-                  <label for="id-producto">Número de serie del producto*</label>
-                  <input
-                    type="text"
-                    id="id-producto"
-                    name="id-producto"
-                    placeholder="Ej: SN-9842104"
-                    maxlength="25"
-                    required
-                  />
-                  <span class="error-mensaje" id="error-id-producto"></span>
-                </div>
-                <div class="campo garantia-categoria">
-                  <label for="categoria-producto"
-                    >Categoría del producto*</label
-                  >
+                <div class="campo garantia-producto">
+                  <label for="producto-comprado">Producto comprado*</label>
                   <select
-                    id="categoria-producto"
-                    name="categoria-producto"
+                    id="producto-comprado"
+                    name="producto-comprado"
                     required
+                    disabled
                   >
-                    <option value="" disabled selected>
-                      Selecciona una categoría...
-                    </option>
-                    <option value="Portatiles">Portátiles / Laptops</option>
-                    <option value="PC Escritorio">Computador de Escritorio / PC Gamer</option>
-                    <option value="Tarjetas Graficas">Tarjetas Gráficas</option>
-                    <option value="Monitores">Monitores</option>
-                    <option value="Perifericos">Periféricos (Mouse, Teclados, Audífonos)</option>
-                    <option value="Almacenamiento">Almacenamiento (SSD / Discos Duros)</option>
-                    <option value="Memorias RAM">Memorias RAM</option>
-                    <option value="Motherboards">Motherboards / Placas Base</option>
-                    <option value="Procesadores">Procesadores</option>
-                    <option value="Consola">Consolas y Videojuegos</option>
-                    <option value="Sillas y Accesorios">Sillas y Accesorios</option>
+                    <option value="">Cargando productos...</option>
                   </select>
                   <span
                     class="error-mensaje"
-                    id="error-categoria-producto"
+                    id="error-producto-comprado"
                   ></span>
+                </div>
+                <div class="campo">
+                  <label for="id-pedido">Número de pedido / Factura</label>
+                  <input
+                    type="text"
+                    id="id-pedido"
+                    name="id-pedido"
+                    placeholder="Se completa al seleccionar una compra"
+                    readonly
+                  />
+                </div>
+                <div class="campo">
+                  <label for="categoria-producto">Categoría del producto</label>
+                  <input
+                    type="text"
+                    id="categoria-producto"
+                    name="categoria-producto"
+                    placeholder="Se completa al seleccionar una compra"
+                    readonly
+                  />
                 </div>
                 <div class="consulta">
                   <label for="consulta"
@@ -566,12 +582,13 @@
                     name="consulta"
                     placeholder="Describe la falla (mínimo 15 caracteres)..."
                     rows="4"
+                    maxlength="2000"
                     required
                   ></textarea>
                   <span class="error-mensaje" id="error-consulta"></span>
                 </div>
                 <button type="submit" class="btn-agendar">
-                  Agregar nueva garantía
+                  Enviar solicitud de garantía
                 </button>
               </form>
               <aside class="garantia-contacto">
@@ -588,10 +605,26 @@
                 <p><strong>Correo:</strong> wiiugames2026@gmail.com</p>
               </aside>
               <p class="garantia-aviso">
-                La solicitud se valida en esta página; el sistema actual no
-                cuenta con una tabla para guardar solicitudes de garantía.
+                Solo puedes solicitar garantía para productos de compras
+                confirmadas en tu cuenta y dentro de los 6 meses posteriores a
+                la compra. Tu solicitud quedará registrada para revisión.
               </p>
             </div>
+            <section class="garantia-solicitudes-panel">
+              <div class="garantia-solicitudes-encabezado">
+                <h2>Mis solicitudes de garantía</h2>
+                <p>Consulta el estado y la respuesta de cada solicitud.</p>
+              </div>
+              <div
+                id="lista-solicitudes-garantia"
+                class="garantia-solicitudes-lista"
+                aria-live="polite"
+              >
+                <p class="garantia-solicitudes-mensaje" role="status">
+                  Cargando tus solicitudes...
+                </p>
+              </div>
+            </section>
           </div>
 
           <!--Vista sobre las direcciones-->

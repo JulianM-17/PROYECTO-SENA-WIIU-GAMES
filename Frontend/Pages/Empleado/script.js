@@ -4,7 +4,6 @@ const employeeState = {
   products: [],
   clients: [],
   warranties: [],
-  warrantyPurchases: [],
   workshopOrders: [],
 };
 const cart = new Map();
@@ -234,7 +233,6 @@ async function cargarDatosPanel() {
     employeeState.products = data.products || [];
     employeeState.clients = data.clients || [];
     employeeState.warranties = data.warranties || [];
-    employeeState.warrantyPurchases = data.warrantyPurchases || [];
     employeeState.workshopOrders = data.workshopOrders || [];
 
     const subtitle = document.querySelector(".saludo p");
@@ -421,7 +419,11 @@ function renderWarranties() {
     row.append(
       createCell(`GAR-${warranty.id}`),
       createCell(warranty.client),
-      createCell(warranty.product),
+      createCell(
+        warranty.quantity > 1
+          ? `${warranty.product} (x${warranty.quantity})`
+          : warranty.product,
+      ),
       createCell(warranty.buyDate),
       createCell(warranty.expDate),
       createCell(warranty.status),
@@ -673,30 +675,7 @@ function abrirModalEmpleado(tipo) {
   fields.replaceChildren();
   form.reset();
 
-  if (tipo === "garantia") {
-    title.textContent = "Registrar Nueva Garantía";
-    const purchaseOptions = employeeState.warrantyPurchases.map((purchase) => ({
-      value: String(purchase.detailId),
-      label: `${purchase.client} — ${purchase.product} — ${purchase.buyDate}`,
-    }));
-    const purchaseSelect = createSelect(
-      "empCompra",
-      purchaseOptions.length ? "Selecciona una compra" : "No hay compras pendientes",
-      purchaseOptions,
-    );
-    purchaseSelect.disabled = !purchaseOptions.length;
-    const durationSelect = createSelect("empDuracion", "Duración de la garantía", [
-      { value: "3", label: "3 meses" },
-      { value: "6", label: "6 meses" },
-      { value: "12", label: "12 meses" },
-      { value: "24", label: "24 meses" },
-    ]);
-    fields.append(
-      createField("Compra del cliente", purchaseSelect),
-      createField("Duración", durationSelect),
-    );
-    form.querySelector('[type="submit"]').disabled = !purchaseOptions.length;
-  } else if (tipo === "taller") {
+  if (tipo === "taller") {
     title.textContent = "Ingresar Orden a Taller Técnico";
     const clients = getClientOptions();
     const clientSelect = createSelect("empCliente", "Selecciona un cliente", clients);
@@ -765,13 +744,7 @@ async function guardarRegistroEmpleado(event) {
   try {
     let path;
     let body;
-    if (tipoRegistroActual === "garantia") {
-      path = "/warranties";
-      body = {
-        detailId: document.getElementById("empCompra").value,
-        durationMonths: document.getElementById("empDuracion").value,
-      };
-    } else if (tipoRegistroActual === "taller") {
+    if (tipoRegistroActual === "taller") {
       path = "/workshop-orders";
       body = {
         customerId: document.getElementById("empCliente").value,

@@ -390,7 +390,7 @@ function actualizarNotificaciones(ventas, inventario, citas) {
       key: 'venta:' + venta.id,
       type: 'sale',
       createdAt: venta.createdAt,
-      titulo: 'Nueva venta #' + escaparHtmlAdmin(venta.id),
+      titulo: 'Nueva compra #' + escaparHtmlAdmin(venta.id),
       detalle:
         escaparHtmlAdmin(venta.client || 'Cliente') +
         ' · ' +
@@ -601,35 +601,7 @@ function abrirModal(tipo, productoId) {
   limpiarErroresModal();
   modal.classList.add('activo');
 
-  if (tipo === 'garantias') {
-    titulo.textContent = "Registrar Nueva Garantía";
-    var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
-    var optsProds = productosDisponibles.length > 0
-      ? productosDisponibles.map(function(p) { return '<option value="' + p.name + '">' + p.name + '</option>'; }).join('')
-      : '<option value="Mouse Logitech M185">Mouse Logitech M185</option><option value="SSD Kingston A400 480GB">SSD Kingston A400 480GB</option>';
-
-    campos.innerHTML = `
-      <div class="campo-grupo">
-        <label>Cliente:</label>
-        <select id="campo1" required>${optsClientes}</select>
-      </div>
-      <div class="campo-grupo">
-        <label>Producto Asociado:</label>
-        <select id="campo2" required>${optsProds}</select>
-      </div>
-      <div class="campo-grupo">
-        <label>Meses de Cobertura:</label>
-        <select id="campo3" required>
-          <option value="3">3 Meses</option>
-          <option value="6">6 Meses</option>
-          <option value="12" selected>12 Meses (1 Año)</option>
-          <option value="24">24 Meses (2 Años)</option>
-        </select>
-      </div>
-    `;
-  } else if (tipo === 'mantenimientos') {
+  if (tipo === 'mantenimientos') {
     titulo.textContent = "Nuevo Servicio de Mantenimiento";
     var optsClientes = clientesDisponibles.map(function(c) {
       return '<option value="' + escaparHtmlAdmin(c.id) + '">' + escaparHtmlAdmin(c.name) + '</option>';
@@ -701,11 +673,11 @@ function abrirModal(tipo, productoId) {
     if (producto && marcas.indexOf(producto.publisher) === -1) {
       marcas.unshift(producto.publisher);
     }
-    var optsCat = categorias.map(function(nombre) {
+    var optsCat = (producto ? '' : '<option value="" selected disabled>Selecciona una categoría...</option>') + categorias.map(function(nombre) {
       var selected = producto && nombre === producto.category ? ' selected' : '';
       return '<option value="' + escaparHtmlAdmin(nombre) + '"' + selected + '>' + escaparHtmlAdmin(nombre) + '</option>';
     }).join('');
-    var optsMarcas = marcas.map(function(nombre) {
+    var optsMarcas = (producto ? '' : '<option value="" selected disabled>Selecciona una marca...</option>') + marcas.map(function(nombre) {
       var selected = producto && nombre === producto.publisher ? ' selected' : '';
       return '<option value="' + escaparHtmlAdmin(nombre) + '"' + selected + '>' + escaparHtmlAdmin(nombre) + '</option>';
     }).join('');
@@ -732,11 +704,11 @@ function abrirModal(tipo, productoId) {
       </div>
       <div class="campo-grupo">
         <label>Precio de Venta ($):</label>
-        <input type="number" id="campo3" required min="1" step="1" value="${valorCampo(producto && producto.price)}" placeholder="Ej. 1450000">
+        <input type="number" id="campo3" required min="1" max="99999999" step="1" value="${valorCampo(producto && producto.price)}" placeholder="Ej. 1450000">
       </div>
       <div class="campo-grupo">
         <label>Unidades en la sucursal seleccionada:</label>
-        <input type="number" id="campo4" required min="0" step="1" value="${valorCampo(stockSucursal)}" placeholder="Ej. 10">
+        <input type="number" id="campo4" required min="0" max="2147483647" step="1" value="${valorCampo(stockSucursal)}" placeholder="Ej. 10">
       </div>
       <div class="campo-grupo">
         <label>Descripción:</label>
@@ -831,22 +803,24 @@ function abrirModal(tipo, productoId) {
     campos.innerHTML = `
       <div class="campo-grupo">
         <label>Código del Cupón:</label>
-        <input type="text" id="campo1" required placeholder="Ej. WIIU2026" style="text-transform: uppercase;">
+        <input type="text" id="campo1" required minlength="3" maxlength="20" placeholder="Ej. WIIU2026" style="text-transform: uppercase;">
       </div>
       <div class="campo-grupo">
         <label>Porcentaje de Descuento (%):</label>
-        <input type="number" id="campo2" required min="1" max="99" placeholder="Ej. 15">
+        <input type="number" id="campo2" required min="1" max="99" step="1" placeholder="Ej. 15">
       </div>
       <div class="campo-grupo">
         <label>Descripción / Nota del Cupón:</label>
-        <input type="text" id="campo3" required placeholder="Ej. Descuento de temporada navideña">
+        <input type="text" id="campo3" required minlength="3" maxlength="150" placeholder="Ej. Descuento de temporada navideña">
       </div>
     `;
   } else if (tipo === 'resenas') {
     titulo.textContent = "Moderar / Agregar Reseña";
     var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+      ? '<option value="" selected disabled>Selecciona un cliente...</option>' + clientesDisponibles.map(function(c) {
+          return '<option value="' + escaparHtmlAdmin(c.id) + '">' + escaparHtmlAdmin(c.name) + '</option>';
+        }).join('')
+      : '<option value="" selected disabled>No hay clientes activos</option>';
 
     campos.innerHTML = `
       <div class="campo-grupo">
@@ -855,11 +829,12 @@ function abrirModal(tipo, productoId) {
       </div>
       <div class="campo-grupo">
         <label>Producto o Servicio:</label>
-        <input type="text" id="campo2" required placeholder="Ej. Mantenimiento Preventivo o Compra">
+        <input type="text" id="campo2" required minlength="3" maxlength="100" placeholder="Ej. Mantenimiento Preventivo o Compra">
       </div>
       <div class="campo-grupo">
         <label>Calificación:</label>
         <select id="campo3" required>
+          <option value="" selected disabled>Selecciona una calificación...</option>
           <option value="5 estrellas">⭐⭐⭐⭐⭐ (5 Estrellas)</option>
           <option value="4 estrellas">⭐⭐⭐⭐ (4 Estrellas)</option>
           <option value="3 estrellas">⭐⭐⭐ (3 Estrellas)</option>
@@ -867,7 +842,7 @@ function abrirModal(tipo, productoId) {
       </div>
       <div class="campo-grupo">
         <label>Comentario u Opinión:</label>
-        <textarea id="campo4" rows="3" required placeholder="Escribe un comentario detallado (mínimo 5 caracteres)..."></textarea>
+        <textarea id="campo4" rows="3" required minlength="5" maxlength="300" placeholder="Escribe un comentario detallado (mínimo 5 caracteres)..."></textarea>
       </div>
     `;
   } else if (tipo === 'clientes') {
@@ -923,8 +898,10 @@ function abrirModal(tipo, productoId) {
   } else if (tipo === 'pedidos') {
     titulo.textContent = "Registrar Nuevo Pedido / Venta";
     var optsClientes = clientesDisponibles.length > 0
-      ? clientesDisponibles.map(function(c) { return '<option value="' + c.name + '">' + c.name + '</option>'; }).join('')
-      : '<option value="Carlos Ramirez">Carlos Ramirez</option><option value="Laura Gomez">Laura Gomez</option>';
+      ? '<option value="" selected disabled>Selecciona un cliente...</option>' + clientesDisponibles.map(function(c) {
+          return '<option value="' + escaparHtmlAdmin(c.id) + '">' + escaparHtmlAdmin(c.name) + '</option>';
+        }).join('')
+      : '<option value="" selected disabled>No hay clientes activos</option>';
 
     campos.innerHTML = `
       <div class="campo-grupo">
@@ -933,33 +910,138 @@ function abrirModal(tipo, productoId) {
       </div>
       <div class="campo-grupo">
         <label>Total de la Venta ($):</label>
-        <input type="number" id="campo2" required min="1000" step="500" placeholder="Ej. 180000">
+        <input type="number" id="campo2" required min="1000" max="99999999" step="500" placeholder="Ej. 180000">
       </div>
     `;
   }
+  aplicarIndicadoresCamposObligatorios(campos);
 }
 
 // Funciones para marcar y limpiar errores visuales en los campos
 function marcarErrorCampo(input, mensaje) {
   if (!input) return;
   input.classList.add('campo-invalido');
-  var padre = input.parentElement;
-  if (padre) {
-    var errorSpan = padre.querySelector('.mensaje-error-campo');
-    if (!errorSpan) {
-      errorSpan = document.createElement('span');
-      errorSpan.className = 'mensaje-error-campo';
-      padre.appendChild(errorSpan);
-    }
-    errorSpan.textContent = mensaje;
+  input.setAttribute('aria-invalid', 'true');
+  var errorSpan = input.nextElementSibling;
+  if (!errorSpan || !errorSpan.classList.contains('mensaje-error-campo')) {
+    errorSpan = document.createElement('span');
+    errorSpan.className = 'mensaje-error-campo';
+    errorSpan.id = 'error-' + (input.id || Math.random().toString(36).slice(2));
+    input.insertAdjacentElement('afterend', errorSpan);
   }
+  errorSpan.textContent = mensaje;
+  input.setAttribute('aria-describedby', errorSpan.id);
+}
+
+function aplicarIndicadoresCamposObligatorios(contenedor) {
+  contenedor.querySelectorAll('input[required], select[required], textarea[required]').forEach(function(input) {
+    var grupo = input.closest('.campo-grupo');
+    var etiqueta = grupo && grupo.querySelector('label');
+    if (!etiqueta || etiqueta.querySelector('.indicador-obligatorio')) return;
+    var indicador = document.createElement('span');
+    indicador.className = 'indicador-obligatorio';
+    indicador.setAttribute('aria-hidden', 'true');
+    indicador.textContent = ' *';
+    etiqueta.appendChild(indicador);
+  });
+}
+
+function validarCamposObligatorios(formulario) {
+  var valido = true;
+  formulario.querySelectorAll('input[required], select[required], textarea[required]').forEach(function(input) {
+    var vacio = input.type === 'checkbox'
+    ? !input.checked
+    : input.type === 'file'
+      ? !input.files || input.files.length === 0
+      : !String(input.value || '').trim();
+    if (!vacio) return;
+
+    var grupo = input.closest('.campo-grupo');
+    var etiqueta = grupo && grupo.querySelector('label');
+    var nombreCampo = etiqueta
+    ? etiqueta.textContent.replace(/\s*\*$/, '').replace(/\s*\(.*\)$/, '').trim()
+    : 'Este campo';
+    marcarErrorCampo(input, nombreCampo + ' es obligatorio.');
+    valido = false;
+  });
+  return valido;
+}
+
+function campoIdParaErrorBackend(campo) {
+  var camposPorFormulario = {
+    inventario: {
+    name: 'campo1', category: 'campo2', publisher: 'campo_marca',
+    price: 'campo3', stock: 'campo4', imageUrl: 'campo_imagen_principal',
+    imageUrl2: 'campo_imagen_2', imageUrl3: 'campo_imagen_3',
+    imageUrl4: 'campo_imagen_4', description: 'campo_descripcion',
+    branchId: 'filtroSucursalInventario'
+    },
+    mantenimientos: {
+    equipment: 'campo1', equipmentType: 'campo_tipo_equipo',
+    brand: 'campo_marca_equipo', serialNumber: 'campo_serie_equipo',
+    clientId: 'campo2', technicianId: 'campo3',
+    serviceDescription: 'campo_detalle', diagnosis: 'campo_diagnostico',
+    cost: 'campo4'
+    },
+    reparacion: {
+    equipment: 'campo1', equipmentType: 'campo_tipo_equipo',
+    brand: 'campo_marca_equipo', serialNumber: 'campo_serie_equipo',
+    serviceDescription: 'campo2', diagnosis: 'campo_diagnostico',
+    clientId: 'campo3', technicianId: 'campo_tecnico', cost: 'campo4'
+    },
+    descuentos: { code: 'campo1', percent: 'campo2', desc: 'campo3' },
+    clientes: {
+    name: 'campo1', phone: 'campo2', email: 'campo3',
+    department: 'campo_departamento', city: 'campo_ciudad',
+    address: 'campo_direccion', roleId: 'campo_rol'
+    },
+    resenas: {
+    clientId: 'campo1', productOrService: 'campo2',
+    rating: 'campo3', comment: 'campo4'
+    },
+    pedidos: { clientId: 'campo1', total: 'campo2' }
+  };
+  return camposPorFormulario[tipoModalActual]?.[campo] || campo;
+}
+
+function mostrarErroresRespuestaModal(data) {
+  var errores = data && data.errors;
+  if (errores && typeof errores === 'object' && !Array.isArray(errores)) {
+    Object.entries(errores).forEach(function([campo, mensaje]) {
+    var input = document.getElementById(campoIdParaErrorBackend(campo));
+    var texto = Array.isArray(mensaje) ? mensaje.join(' ') : String(mensaje || '');
+    if (input && texto) marcarErrorCampo(input, texto);
+    });
+  }
+  mostrarToast('error', data && data.message ? data.message : 'No se pudo guardar el registro.');
+  var primerCampoInvalido = document.querySelector('#formularioDinamico .campo-invalido');
+  var campoSucursal = document.getElementById('filtroSucursalInventario');
+  if (!primerCampoInvalido && campoSucursal?.classList.contains('campo-invalido')) {
+    primerCampoInvalido = campoSucursal;
+  }
+  primerCampoInvalido?.focus();
 }
 
 function limpiarErroresModal() {
-  var invalidos = document.querySelectorAll('.campo-invalido');
-  invalidos.forEach(function(el) { el.classList.remove('campo-invalido'); });
-  var mensajes = document.querySelectorAll('.mensaje-error-campo');
+  var formulario = document.getElementById('formularioDinamico');
+  if (!formulario) return;
+  var invalidos = formulario.querySelectorAll('.campo-invalido');
+  invalidos.forEach(function(el) {
+    el.classList.remove('campo-invalido');
+    el.removeAttribute('aria-invalid');
+    el.removeAttribute('aria-describedby');
+  });
+  var mensajes = formulario.querySelectorAll('.mensaje-error-campo');
   mensajes.forEach(function(m) { m.remove(); });
+  var sucursal = document.getElementById('filtroSucursalInventario');
+  if (sucursal) {
+    sucursal.classList.remove('campo-invalido');
+    sucursal.removeAttribute('aria-invalid');
+    sucursal.removeAttribute('aria-describedby');
+    if (sucursal.nextElementSibling?.classList.contains('mensaje-error-campo')) {
+      sucursal.nextElementSibling.remove();
+    }
+  }
 }
 
 function cerrarModal() {
@@ -982,6 +1064,61 @@ function escaparHtmlAdmin(valor) {
       "'": '&#39;'
     };
     return entidades[caracter];
+  });
+}
+
+function configurarAccionesSolicitudesGarantia() {
+  var tbody = document.getElementById('tablaSolicitudesGarantiaBody');
+  if (!tbody) return;
+
+  tbody.addEventListener('change', function(event) {
+    var selector = event.target.closest('.selector-estado-solicitud');
+    if (!selector) return;
+    var button = selector.closest('tr').querySelector('.boton-guardar-solicitud');
+    button.disabled = selector.value === selector.dataset.savedStatus;
+  });
+
+  tbody.addEventListener('click', function(event) {
+    var button = event.target.closest('.boton-guardar-solicitud');
+    if (!button || button.disabled) return;
+
+    var row = button.closest('tr');
+    var selector = row.querySelector('.selector-estado-solicitud');
+    var requestId = button.dataset.requestId;
+    var nextStatus = selector.value;
+    button.disabled = true;
+    selector.disabled = true;
+
+    fetch(API_BASE + '/api/admin/warranty-requests/' + encodeURIComponent(requestId) + '/status', {
+      method: 'PATCH',
+      headers: {
+        'Authorization': 'Bearer ' + sessionToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ status: nextStatus })
+    })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        return { status: response.status, data: data };
+      });
+    })
+    .then(function(result) {
+      if (result.status >= 400 || !result.data.ok) {
+        throw new Error(result.data.message || 'No se pudo actualizar la solicitud.');
+      }
+      selector.dataset.savedStatus = nextStatus;
+      mostrarToast('success', result.data.message || 'Estado actualizado.');
+      cargarDashboard();
+    })
+    .catch(function(error) {
+      selector.value = selector.dataset.savedStatus;
+      button.disabled = true;
+      mostrarToast('error', error.message || 'No se pudo actualizar la solicitud.');
+    })
+    .finally(function() {
+      selector.disabled = false;
+      button.disabled = selector.value === selector.dataset.savedStatus;
+    });
   });
 }
 
@@ -1615,12 +1752,17 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- HOME: Pedidos recientes ----------
-    if (data.recentOrders) {
-      poblarTabla('tablaPedidosBody', data.recentOrders, function(row) {
-        var estadoClase = row.estado === 'PAGADA' ? 'etiqueta-verde' : 'etiqueta-naranja';
-        return '<td><strong>#' + row.id_venta + '</strong></td><td>' + row.nombre + ' ' + row.apellido + '</td><td><span class="' + estadoClase + '">' + row.estado + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + row.id_venta + ')"><i class="fi fi-rr-trash"></i></button></td>';
-      });
+    // ---------- HOME: Pedidos registrados ----------
+    if (data.orders) {
+      if (data.orders.length) {
+        poblarTabla('tablaPedidosBody', data.orders, function(row) {
+          var estadoClase = row.estado === 'PAGADA' ? 'etiqueta-verde' : 'etiqueta-naranja';
+          return '<td><strong>#' + escaparHtmlAdmin(row.orderNumber || row.id_venta) + '</strong></td><td>' + escaparHtmlAdmin(row.nombre + ' ' + row.apellido) + '<small>Cliente #' + escaparHtmlAdmin(row.clientId) + '</small></td><td>' + escaparHtmlAdmin(row.date) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.estado) + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + Number(row.id_venta) + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        });
+      } else {
+        document.getElementById('tablaPedidosBody').innerHTML =
+          '<tr><td colspan="6" class="texto-vacio">No hay pedidos registrados en la base de datos</td></tr>';
+      }
     }
     inventarioNotificaciones = data.inventory || [];
     if (notificacionesInicializadas) {
@@ -1676,10 +1818,53 @@ function cargarDashboard() {
     // ---------- GARANTÍAS ----------
     if (data.warranties) {
       poblarTabla('tablaGarantiasBody', data.warranties, function(row) {
-        var estadoClase = row.status === 'Activa' ? 'etiqueta-verde' : 'etiqueta-naranja';
-        var rawId = String(row.id).replace('GAR-', '');
-        return '<td><strong>' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + String(row.buyDate).substring(0,10) + '</td><td>' + String(row.expDate).substring(0,10) + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'garantias\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var estadoClase = row.status === 'Activa'
+          ? 'etiqueta-verde'
+          : row.status === 'Anulada'
+            ? 'etiqueta-rojo'
+            : 'etiqueta-naranja';
+        var rawId = Number(String(row.id).replace('GAR-', ''));
+        var productLabel = row.quantity > 1
+          ? row.product + ' (x' + row.quantity + ')'
+          : row.product;
+        return '<td><strong>' + escaparHtmlAdmin(row.id) + '</strong></td>' +
+          '<td>' + escaparHtmlAdmin(row.client) + '</td>' +
+          '<td>' + escaparHtmlAdmin(productLabel) + '</td>' +
+          '<td>' + escaparHtmlAdmin(String(row.buyDate).substring(0, 10)) + '</td>' +
+          '<td>' + escaparHtmlAdmin(String(row.expDate).substring(0, 10)) + '</td>' +
+          '<td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td>' +
+          '<td><button class="boton-icono rojo" title="Anular cobertura" aria-label="Anular garantía ' + escaparHtmlAdmin(row.id) + '" onclick="eliminarFilaDB(this, \'garantias\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
       });
+    }
+    if (Array.isArray(data.warrantyRequests)) {
+      var requestsTbody = document.getElementById('tablaSolicitudesGarantiaBody');
+      if (requestsTbody && data.warrantyRequests.length === 0) {
+        requestsTbody.innerHTML = '<tr><td colspan="7" class="texto-vacio">Aún no hay solicitudes de garantía.</td></tr>';
+      } else {
+        var requestStatuses = [
+          ['RECIBIDA', 'Recibida'],
+          ['EN_REVISION', 'En revisión'],
+          ['APROBADA', 'Aprobada'],
+          ['RECHAZADA', 'Rechazada'],
+          ['CERRADA', 'Cerrada']
+        ];
+        poblarTabla('tablaSolicitudesGarantiaBody', data.warrantyRequests, function(row) {
+          var requestId = Number(row.id);
+          var status = requestStatuses.some(function(option) {
+            return option[0] === row.status;
+          }) ? row.status : 'RECIBIDA';
+          var statusOptions = requestStatuses.map(function(option) {
+            return '<option value="' + option[0] + '"' + (option[0] === status ? ' selected' : '') + '>' + option[1] + '</option>';
+          }).join('');
+          return '<td><strong>' + escaparHtmlAdmin(row.reference) + '</strong></td>' +
+            '<td>' + escaparHtmlAdmin(row.client) + '</td>' +
+            '<td><strong>' + escaparHtmlAdmin(row.orderNumber) + '</strong><br>' + escaparHtmlAdmin(row.product) + '</td>' +
+            '<td>' + escaparHtmlAdmin(row.requestedAt) + '<br><small>Vence: ' + escaparHtmlAdmin(row.warrantyExpiresAt) + '</small></td>' +
+            '<td class="descripcion-solicitud-garantia">' + escaparHtmlAdmin(row.description) + '</td>' +
+            '<td><select class="select-estado-solicitud" data-saved-status="' + status + '" aria-label="Estado de solicitud ' + requestId + '">' + statusOptions + '</select></td>' +
+            '<td><button type="button" class="boton-amarillo boton-guardar-solicitud" data-request-id="' + requestId + '" disabled>Guardar</button></td>';
+        });
+      }
     }
 
     // ---------- MANTENIMIENTOS ----------
@@ -1852,6 +2037,8 @@ async function guardarDatos(evento) {
   evento.preventDefault();
   if (tipoModalActual === 'inventario' && inventarioGuardando) return;
   limpiarErroresModal();
+  var formulario = document.getElementById('formularioDinamico');
+  var hayErrores = formulario ? !validarCamposObligatorios(formulario) : false;
 
   var c1Input = document.getElementById('campo1');
   var c2Input = document.getElementById('campo2');
@@ -1868,7 +2055,6 @@ async function guardarDatos(evento) {
   var url = '';
   var metodo = 'POST';
   var payload = {};
-  var hayErrores = false;
 
   // -------------------------------------------------------------
   // VALIDACIONES ESPECÍFICAS SEGÚN EL MÓDULO ACTUAL
@@ -1889,26 +2075,26 @@ async function guardarDatos(evento) {
     var descripcion = document.getElementById('campo_descripcion');
     var sucursalId = Number(document.getElementById('filtroSucursalInventario').value);
 
-    if (!c1 || c1.length < 3) {
-      marcarErrorCampo(c1Input, 'El nombre debe tener al menos 3 caracteres.');
+    if (!c1 || c1.length < 3 || c1.length > 100) {
+      marcarErrorCampo(c1Input, 'El nombre debe tener entre 3 y 100 caracteres.');
       hayErrores = true;
     }
-    if (!c2) {
+    if (!c2 || c2.length > 40) {
       marcarErrorCampo(c2Input, 'Selecciona una categoría válida.');
       hayErrores = true;
     }
-    if (!cMarca) {
+    if (!cMarca || cMarca.length > 20) {
       marcarErrorCampo(cMarcaInput, 'Selecciona una marca válida.');
       hayErrores = true;
     }
     var precioProd = Number(c3);
-    if (!c3 || isNaN(precioProd) || precioProd <= 0) {
-      marcarErrorCampo(c3Input, 'Ingresa un precio de venta mayor a 0.');
+    if (!Number.isFinite(precioProd) || precioProd <= 0 || precioProd > 99999999.999999) {
+      marcarErrorCampo(c3Input, 'Ingresa un precio mayor a 0 y dentro del límite permitido.');
       hayErrores = true;
     }
     var stockProd = Number(c4);
-    if (c4 === '' || isNaN(stockProd) || stockProd < 0 || !Number.isInteger(stockProd)) {
-      marcarErrorCampo(c4Input, 'Ingresa una cantidad de stock válida (entero >= 0).');
+    if (c4 === '' || !Number.isSafeInteger(stockProd) || stockProd < 0 || stockProd > 2147483647) {
+      marcarErrorCampo(c4Input, 'Ingresa una cantidad entera entre 0 y 2.147.483.647.');
       hayErrores = true;
     }
     if (!imagenPrincipal || !imagenPrincipal.value.trim()) {
@@ -1926,10 +2112,16 @@ async function guardarDatos(evento) {
         hayErrores = true;
       }
     });
-    if (!descripcion || descripcion.value.trim().length > 100) {
-      marcarErrorCampo(descripcion, 'La descripción no puede superar 100 caracteres.');
+    if (!descripcion || !descripcion.value.trim() || descripcion.value.trim().length > 100) {
+      marcarErrorCampo(descripcion, 'La descripción es obligatoria y debe tener máximo 100 caracteres.');
       hayErrores = true;
     }
+    [imagenPrincipal, imagen2, imagen3, imagen4].forEach(function(imagen) {
+      if (imagen && imagen.value.trim().length > 255) {
+        marcarErrorCampo(imagen, 'La ruta o URL no puede superar 255 caracteres.');
+        hayErrores = true;
+      }
+    });
     if (!Number.isSafeInteger(sucursalId) || sucursalId < 1) {
       marcarErrorCampo(document.getElementById('filtroSucursalInventario'), 'Selecciona una sucursal válida.');
       hayErrores = true;
@@ -1949,7 +2141,12 @@ async function guardarDatos(evento) {
       for (var imagenLocal of archivosImagenes) {
         var archivoLocal = imagenLocal.input.files && imagenLocal.input.files[0];
         if (archivoLocal) {
-          imagenLocal.campo.value = await subirImagenProducto(archivoLocal);
+          try {
+            imagenLocal.campo.value = await subirImagenProducto(archivoLocal);
+          } catch (error) {
+            marcarErrorCampo(imagenLocal.input, error.message || 'No se pudo subir esta imagen.');
+            throw error;
+          }
         }
       }
     } catch (error) {
@@ -1977,49 +2174,26 @@ async function guardarDatos(evento) {
       description: descripcion.value.trim()
     };
 
-  } else if (tipoModalActual === 'garantias') {
-    if (!c1) {
-      marcarErrorCampo(c1Input, 'Selecciona un cliente.');
-      hayErrores = true;
-    }
-    if (!c2) {
-      marcarErrorCampo(c2Input, 'Selecciona un producto asociado.');
-      hayErrores = true;
-    }
-    if (!c3) {
-      marcarErrorCampo(c3Input, 'Selecciona los meses de cobertura.');
-      hayErrores = true;
-    }
-
-    if (hayErrores) {
-      mostrarToast('error', 'Por favor completa todos los campos de la garantía');
-      return;
-    }
-
-    url = API_BASE + '/api/admin/garantias';
-    payload = {
-      client: c1,
-      product: c2,
-      buyDate: new Date().toISOString().split('T')[0],
-      duration: c3 + ' Meses'
-    };
-
   } else if (tipoModalActual === 'mantenimientos') {
     var tipoEquipoMntInput = document.getElementById('campo_tipo_equipo');
     var marcaEquipoMntInput = document.getElementById('campo_marca_equipo');
     var serialEquipoMntInput = document.getElementById('campo_serie_equipo');
     var trabajoMntInput = document.getElementById('campo_detalle');
     var diagnosticoMntInput = document.getElementById('campo_diagnostico');
-    if (!c1 || c1.length < 3) {
-      marcarErrorCampo(c1Input, 'Indica el equipo o consola (mínimo 3 caracteres).');
+    if (!c1 || c1.length < 3 || c1.length > 100) {
+      marcarErrorCampo(c1Input, 'Indica el equipo o consola (3 a 100 caracteres).');
       hayErrores = true;
     }
     if (!tipoEquipoMntInput.value) {
       marcarErrorCampo(tipoEquipoMntInput, 'Selecciona el tipo de equipo.');
       hayErrores = true;
     }
-    if (!marcaEquipoMntInput.value.trim()) {
-      marcarErrorCampo(marcaEquipoMntInput, 'Indica la marca del equipo.');
+    if (!marcaEquipoMntInput.value.trim() || marcaEquipoMntInput.value.trim().length > 20) {
+      marcarErrorCampo(marcaEquipoMntInput, 'La marca es obligatoria y debe tener máximo 20 caracteres.');
+      hayErrores = true;
+    }
+    if (serialMntInput.value.trim().length > 40) {
+      marcarErrorCampo(serialMntInput, 'El número de serie no puede superar 40 caracteres.');
       hayErrores = true;
     }
     if (!c2) {
@@ -2030,17 +2204,17 @@ async function guardarDatos(evento) {
       marcarErrorCampo(c3Input, 'Selecciona el técnico responsable.');
       hayErrores = true;
     }
-    if (!trabajoMntInput.value.trim() || trabajoMntInput.value.trim().length < 3) {
-      marcarErrorCampo(trabajoMntInput, 'Describe el trabajo de mantenimiento solicitado.');
+    if (!trabajoMntInput.value.trim() || trabajoMntInput.value.trim().length < 3 || trabajoMntInput.value.trim().length > 100) {
+      marcarErrorCampo(trabajoMntInput, 'Describe el trabajo solicitado (3 a 100 caracteres).');
       hayErrores = true;
     }
-    if (trabajoMntInput.value.trim().length > 100 || diagnosticoMntInput.value.trim().length > 100) {
-      marcarErrorCampo(trabajoMntInput, 'Los detalles no pueden superar 100 caracteres.');
+    if (diagnosticoMntInput.value.trim().length > 100) {
+      marcarErrorCampo(diagnosticoMntInput, 'El diagnóstico no puede superar 100 caracteres.');
       hayErrores = true;
     }
     var costoMnt = Number(c4);
-    if (!c4 || isNaN(costoMnt) || costoMnt <= 0) {
-      marcarErrorCampo(c4Input, 'Ingresa un costo de servicio válido mayor a 0.');
+    if (!Number.isSafeInteger(costoMnt) || costoMnt <= 0 || costoMnt > 99999999) {
+      marcarErrorCampo(c4Input, 'Ingresa un costo entero entre 1 y 99.999.999.');
       hayErrores = true;
     }
 
@@ -2068,20 +2242,28 @@ async function guardarDatos(evento) {
     var serialEquipoRepInput = document.getElementById('campo_serie_equipo');
     var diagnosticoRepInput = document.getElementById('campo_diagnostico');
     var tecnicoRepInput = document.getElementById('campo_tecnico');
-    if (!c1 || c1.length < 3) {
-      marcarErrorCampo(c1Input, 'Indica el dispositivo a reparar (mínimo 3 caracteres).');
+    if (!c1 || c1.length < 3 || c1.length > 100) {
+      marcarErrorCampo(c1Input, 'Indica el dispositivo a reparar (3 a 100 caracteres).');
       hayErrores = true;
     }
     if (!tipoEquipoRepInput.value) {
       marcarErrorCampo(tipoEquipoRepInput, 'Selecciona el tipo de equipo.');
       hayErrores = true;
     }
-    if (!marcaEquipoRepInput.value.trim()) {
-      marcarErrorCampo(marcaEquipoRepInput, 'Indica la marca del equipo.');
+    if (!marcaEquipoRepInput.value.trim() || marcaEquipoRepInput.value.trim().length > 20) {
+      marcarErrorCampo(marcaEquipoRepInput, 'La marca es obligatoria y debe tener máximo 20 caracteres.');
       hayErrores = true;
     }
-    if (!c2 || c2.length < 4) {
-      marcarErrorCampo(c2Input, 'Describe detalladamente la falla reportada (mínimo 4 caracteres).');
+    if (serialEquipoRepInput.value.trim().length > 40) {
+      marcarErrorCampo(serialEquipoRepInput, 'El número de serie no puede superar 40 caracteres.');
+      hayErrores = true;
+    }
+    if (!c2 || c2.length < 4 || c2.length > 100) {
+      marcarErrorCampo(c2Input, 'Describe la falla reportada (4 a 100 caracteres).');
+      hayErrores = true;
+    }
+    if (diagnosticoRepInput.value.trim().length > 100) {
+      marcarErrorCampo(diagnosticoRepInput, 'El diagnóstico no puede superar 100 caracteres.');
       hayErrores = true;
     }
     if (!c3) {
@@ -2093,8 +2275,8 @@ async function guardarDatos(evento) {
       hayErrores = true;
     }
     var precioRep = Number(c4);
-    if (!c4 || isNaN(precioRep) || precioRep <= 0) {
-      marcarErrorCampo(c4Input, 'Ingresa un presupuesto estimado mayor a 0.');
+    if (!Number.isSafeInteger(precioRep) || precioRep <= 0 || precioRep > 99999999) {
+      marcarErrorCampo(c4Input, 'Ingresa un presupuesto entero entre 1 y 99.999.999.');
       hayErrores = true;
     }
 
@@ -2122,13 +2304,13 @@ async function guardarDatos(evento) {
       marcarErrorCampo(c1Input, 'El código debe tener 3-20 caracteres alfanuméricos (sin espacios ni símbolos raros).');
       hayErrores = true;
     }
-    var numPercent = parseInt(c2);
-    if (isNaN(numPercent) || numPercent < 1 || numPercent > 99) {
+    var numPercent = Number(c2);
+    if (!Number.isInteger(numPercent) || numPercent < 1 || numPercent > 99) {
       marcarErrorCampo(c2Input, 'El porcentaje debe ser un valor entero entre 1 y 99.');
       hayErrores = true;
     }
-    if (!c3 || c3.length < 3) {
-      marcarErrorCampo(c3Input, 'Ingresa una descripción del cupón (mínimo 3 caracteres).');
+    if (!c3 || c3.length < 3 || c3.length > 150) {
+      marcarErrorCampo(c3Input, 'Ingresa una descripción del cupón (3 a 150 caracteres).');
       hayErrores = true;
     }
 
@@ -2146,19 +2328,20 @@ async function guardarDatos(evento) {
     };
 
   } else if (tipoModalActual === 'clientes') {
-    var regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s]{3,60}$/;
-    if (!c1 || !regexNombre.test(c1) || c1.split(/\s+/).length < 2) {
-      marcarErrorCampo(c1Input, 'Ingresa nombre y apellido completos (solo letras y espacios).');
+    var regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s'-]{3,60}$/;
+    if (!c1 || c1.length > 60 || !regexNombre.test(c1) || c1.split(/\s+/).filter(Boolean).length < 2) {
+      marcarErrorCampo(c1Input, 'Ingresa nombre y apellido completos (máximo 60 caracteres).');
       hayErrores = true;
     }
-    var regexTel = /^[0-9+\-\s()]{7,15}$/;
-    if (!c2 || !regexTel.test(c2)) {
-      marcarErrorCampo(c2Input, 'Ingresa un teléfono válido (entre 7 y 15 dígitos).');
+    var regexTel = /^[0-9+\-\s()]{7,20}$/;
+    var digitosTelefono = c2.replace(/\D/g, '');
+    if (!regexTel.test(c2) || digitosTelefono.length < 7 || digitosTelefono.length > 15) {
+      marcarErrorCampo(c2Input, 'Ingresa un teléfono válido con 7 a 15 dígitos.');
       hayErrores = true;
     }
     var regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!c3 || !regexEmail.test(c3)) {
-      marcarErrorCampo(c3Input, 'Ingresa un correo electrónico válido (ej. usuario@dominio.com).');
+    if (!c3 || c3.length > 120 || !regexEmail.test(c3)) {
+      marcarErrorCampo(c3Input, 'Ingresa un correo válido de máximo 120 caracteres (ej. usuario@dominio.com).');
       hayErrores = true;
     }
 
@@ -2219,20 +2402,21 @@ async function guardarDatos(evento) {
     }
 
   } else if (tipoModalActual === 'resenas') {
-    if (!c1) {
+    var reviewClientId = Number(c1);
+    if (!Number.isSafeInteger(reviewClientId) || reviewClientId <= 0) {
       marcarErrorCampo(c1Input, 'Selecciona el cliente que califica.');
       hayErrores = true;
     }
-    if (!c2 || c2.length < 3) {
-      marcarErrorCampo(c2Input, 'Indica el producto o servicio evaluado.');
+    if (!c2 || c2.trim().length < 3 || c2.trim().length > 100) {
+      marcarErrorCampo(c2Input, 'Indica el producto o servicio (3 a 100 caracteres).');
       hayErrores = true;
     }
-    if (!c3) {
+    if (!['5 estrellas', '4 estrellas', '3 estrellas'].includes(c3)) {
       marcarErrorCampo(c3Input, 'Selecciona la calificación.');
       hayErrores = true;
     }
-    if (!c4 || c4.length < 5) {
-      marcarErrorCampo(c4Input, 'El comentario debe contener al menos 5 caracteres.');
+    if (!c4 || c4.trim().length < 5 || c4.trim().length > 300) {
+      marcarErrorCampo(c4Input, 'El comentario debe tener entre 5 y 300 caracteres.');
       hayErrores = true;
     }
 
@@ -2243,18 +2427,21 @@ async function guardarDatos(evento) {
 
     url = API_BASE + '/api/admin/resenas';
     payload = {
-      client: c1,
-      comment: '[' + c3 + '] ' + c2 + ': ' + c4
+      clientId: reviewClientId,
+      productOrService: c2.trim(),
+      rating: c3,
+      comment: c4.trim()
     };
 
   } else if (tipoModalActual === 'pedidos') {
-    if (!c1) {
+    var clientId = Number(c1);
+    if (!Number.isSafeInteger(clientId) || clientId <= 0) {
       marcarErrorCampo(c1Input, 'Selecciona un cliente comprador.');
       hayErrores = true;
     }
     var totalPedido = Number(c2);
-    if (!c2 || isNaN(totalPedido) || totalPedido <= 0) {
-      marcarErrorCampo(c2Input, 'Ingresa un total de venta válido mayor a 0.');
+    if (!Number.isFinite(totalPedido) || totalPedido < 1000 || totalPedido > 99999999.999999 || totalPedido % 500 !== 0) {
+      marcarErrorCampo(c2Input, 'Ingresa un total desde $1.000, en incrementos de $500.');
       hayErrores = true;
     }
 
@@ -2265,7 +2452,7 @@ async function guardarDatos(evento) {
 
     url = API_BASE + '/api/admin/pedidos';
     payload = {
-      client: c1,
+      clientId: clientId,
       total: totalPedido
     };
   }
@@ -2285,19 +2472,24 @@ async function guardarDatos(evento) {
     },
     body: JSON.stringify(payload)
   })
-  .then(function(res) { return res.json(); })
-  .then(function(data) {
-    if (data.ok) {
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(response) {
+    var data = response.data;
+    if (response.ok && data.ok) {
       mostrarToast('success', '✅ ' + (data.message || 'Registro guardado exitosamente'));
       cerrarModal();
       cargarDashboard(); // Recargar datos frescos desde MySQL
     } else {
-      mostrarToast('error', data.message || 'Error al guardar');
+      mostrarErroresRespuestaModal(data);
     }
   })
   .catch(function(err) {
     console.error('Error al guardar en BD:', err);
-    mostrarToast('error', 'Error de conexión con el servidor');
+    mostrarToast('error', err.message || 'Error de conexión con el servidor');
   })
   .finally(function() {
     inventarioGuardando = false;
@@ -2463,9 +2655,11 @@ document.addEventListener('DOMContentLoaded', function() {
     .getElementById('btnLimpiarNotificaciones')
     ?.addEventListener('click', limpiarNotificacionesAdmin);
   configurarOrdenamientoUsuarios();
+  configurarAccionesSolicitudesGarantia();
   cargarDashboard();
   cargarNotificacionesAdmin();
-  window.setInterval(function() {
+  window.setInterval(cargarNotificacionesAdmin, 15000);
+  document.addEventListener('visibilitychange', function() {
     if (!document.hidden) cargarNotificacionesAdmin();
-  }, 15000);
+  });
 });

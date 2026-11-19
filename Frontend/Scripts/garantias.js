@@ -1,368 +1,388 @@
-/**
- * Validación y Manejo del Formulario de Garantías
- * WiiU-Games
- */
 document.addEventListener("DOMContentLoaded", () => {
-  const form =
-    document.getElementById("form-garantia") ||
-    document.querySelector(".formulario");
+  const form = document.getElementById("form-garantia");
   if (!form) return;
 
-  const idPedidoInput = document.getElementById("id-pedido");
-  const idProductoInput = document.getElementById("id-producto");
-  const categoriaSelect = document.getElementById("categoria-producto");
-  const consultaTextarea = document.getElementById("consulta");
+  const productoSelect = document.getElementById("producto-comprado");
+  const pedidoInput = document.getElementById("id-pedido");
+  const categoriaInput = document.getElementById("categoria-producto");
+  const descripcionInput = document.getElementById("consulta");
+  const feedback = document.getElementById("garantia-feedback");
+  const submitButton = form.querySelector('[type="submit"]');
+  let products = [];
+  let isSubmitting = false;
 
-  /**
-   * Muestra mensaje de error en un campo
-   */
-  function mostrarError(input, mensaje) {
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.add("campo-invalido");
-    contenedor.classList.remove("campo-valido");
-
-    let errorSpan = contenedor.querySelector(".error-mensaje");
-    if (!errorSpan) {
-      errorSpan = document.createElement("span");
-      errorSpan.className = "error-mensaje";
-      contenedor.appendChild(errorSpan);
-    }
-    errorSpan.textContent = mensaje;
+  function setFeedback(message, type = "") {
+    feedback.textContent = message;
+    feedback.className = `garantia-feedback${type ? ` ${type}` : ""}`;
   }
 
-  /**
-   * Limpia mensaje de error en un campo
-   */
-  function limpiarError(input) {
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.remove("campo-invalido");
-    const errorSpan = contenedor.querySelector(".error-mensaje");
-    if (errorSpan) {
-      errorSpan.textContent = "";
-    }
-  }
-
-  /**
-   * Marca campo como válido
-   */
-  function marcarValido(input) {
-    const contenedor = input.closest(".campo") || input.closest(".consulta");
-    if (!contenedor) return;
-    contenedor.classList.remove("campo-invalido");
-    contenedor.classList.add("campo-valido");
-    const errorSpan = contenedor.querySelector(".error-mensaje");
-    if (errorSpan) {
-      errorSpan.textContent = "";
-    }
-  }
-
-  // ============================================================
-  // 1. NÚMERO DE PEDIDO / FACTURA: SOLO DÍGITOS
-  // ============================================================
-  if (idPedidoInput) {
-    // Bloquear teclas no numéricas
-    idPedidoInput.addEventListener("keypress", (e) => {
-      if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
-      if (!/^\d$/.test(e.key)) {
-        e.preventDefault();
-        mostrarError(
-          idPedidoInput,
-          "El número de pedido solo puede contener números.",
-        );
-        setTimeout(() => limpiarError(idPedidoInput), 1800);
-      }
-    });
-
-    idPedidoInput.addEventListener("input", () => {
-      const soloNumeros = idPedidoInput.value.replace(/\D/g, "").slice(0, 12);
-      if (idPedidoInput.value !== soloNumeros) {
-        idPedidoInput.value = soloNumeros;
-        mostrarError(idPedidoInput, "Solo se admiten números.");
-      } else if (soloNumeros.length >= 1) {
-        marcarValido(idPedidoInput);
-      } else {
-        limpiarError(idPedidoInput);
-      }
-    });
-
-    idPedidoInput.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const pegado = (e.clipboardData || window.clipboardData).getData("text");
-      const soloNums = pegado.replace(/\D/g, "").slice(0, 12);
-      idPedidoInput.value = soloNums;
-      if (soloNums.length >= 1) {
-        marcarValido(idPedidoInput);
-      } else {
-        mostrarError(idPedidoInput, "Ingresa un número de pedido válido.");
-      }
-    });
-
-    idPedidoInput.addEventListener("blur", () => {
-      const val = idPedidoInput.value.trim();
-      if (!val) {
-        mostrarError(
-          idPedidoInput,
-          "El número de pedido o factura es obligatorio.",
-        );
-      } else if (!/^\d+$/.test(val)) {
-        mostrarError(idPedidoInput, "Solo se permiten números.");
-      } else {
-        marcarValido(idPedidoInput);
-      }
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (character) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      };
+      return entities[character];
     });
   }
 
-  // ============================================================
-  // 2. NÚMERO DE SERIE DEL PRODUCTO: ALFANUMÉRICO Y GUIONES
-  // ============================================================
-  if (idProductoInput) {
-    idProductoInput.addEventListener("keypress", (e) => {
-      if (e.ctrlKey || e.altKey || e.metaKey || e.key.length > 1) return;
-      if (!/^[a-zA-Z0-9-]$/.test(e.key)) {
-        e.preventDefault();
-        mostrarError(
-          idProductoInput,
-          "El serial solo admite letras, números y guiones (sin espacios).",
-        );
-        setTimeout(() => limpiarError(idProductoInput), 1800);
-      }
-    });
+  function renderWarrantyRequests(requests) {
+    const container = document.getElementById("lista-solicitudes-garantia");
+    if (!container) return;
 
-    idProductoInput.addEventListener("input", () => {
-      const limpio = idProductoInput.value
-        .toUpperCase()
-        .replace(/[^A-Z0-9-]/g, "")
-        .slice(0, 25);
-      if (idProductoInput.value !== limpio) {
-        idProductoInput.value = limpio;
-      }
-      if (limpio.length >= 5) {
-        marcarValido(idProductoInput);
-      } else {
-        limpiarError(idProductoInput);
-      }
-    });
-
-    idProductoInput.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const pegado = (e.clipboardData || window.clipboardData).getData("text");
-      const limpio = pegado
-        .toUpperCase()
-        .replace(/[^A-Z0-9-]/g, "")
-        .slice(0, 25);
-      idProductoInput.value = limpio;
-      if (limpio.length >= 5) {
-        marcarValido(idProductoInput);
-      } else {
-        mostrarError(
-          idProductoInput,
-          "El serial debe tener al menos 5 caracteres alfanuméricos.",
-        );
-      }
-    });
-
-    idProductoInput.addEventListener("blur", () => {
-      const val = idProductoInput.value.trim();
-      if (!val) {
-        mostrarError(idProductoInput, "El número de serie es obligatorio.");
-      } else if (val.length < 5) {
-        mostrarError(
-          idProductoInput,
-          "El número de serie debe tener al menos 5 caracteres.",
-        );
-      } else {
-        marcarValido(idProductoInput);
-      }
-    });
-  }
-
-  // ============================================================
-  // 3. CATEGORÍA DEL PRODUCTO
-  // ============================================================
-  if (categoriaSelect) {
-    categoriaSelect.addEventListener("change", () => {
-      if (!categoriaSelect.value || categoriaSelect.value === "") {
-        mostrarError(
-          categoriaSelect,
-          "Debes seleccionar una categoría válida.",
-        );
-      } else {
-        marcarValido(categoriaSelect);
-      }
-    });
-
-    categoriaSelect.addEventListener("blur", () => {
-      if (!categoriaSelect.value || categoriaSelect.value === "") {
-        mostrarError(
-          categoriaSelect,
-          "Debes seleccionar una categoría válida.",
-        );
-      } else {
-        marcarValido(categoriaSelect);
-      }
-    });
-  }
-
-  // ============================================================
-  // 4. DESCRIPCIÓN DEL PROBLEMA: MÍNIMO 15 CARACTERES
-  // ============================================================
-  if (consultaTextarea) {
-    consultaTextarea.addEventListener("input", () => {
-      const val = consultaTextarea.value.trim();
-      if (val.length >= 15) {
-        marcarValido(consultaTextarea);
-      } else {
-        limpiarError(consultaTextarea);
-      }
-    });
-
-    consultaTextarea.addEventListener("blur", () => {
-      const val = consultaTextarea.value.trim();
-      if (!val) {
-        mostrarError(consultaTextarea, "Debes detallar la falla del producto.");
-      } else if (val.length < 15) {
-        mostrarError(
-          consultaTextarea,
-          `Descripción muy corta (${val.length}/15 caracteres requeridos).`,
-        );
-      } else {
-        marcarValido(consultaTextarea);
-      }
-    });
-  }
-
-  // ============================================================
-  // ENVÍO DEL FORMULARIO DE GARANTÍAS
-  // ============================================================
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    let esValido = true;
-
-    // Validar Número de Pedido
-    const pedido = idPedidoInput ? idPedidoInput.value.trim() : "";
-    if (!pedido) {
-      mostrarError(idPedidoInput, "El número de pedido es obligatorio.");
-      esValido = false;
-    } else if (!/^\d+$/.test(pedido)) {
-      mostrarError(
-        idPedidoInput,
-        "El número de pedido solo debe contener dígitos.",
-      );
-      esValido = false;
-    }
-
-    // Validar Serial
-    const serial = idProductoInput ? idProductoInput.value.trim() : "";
-    if (!serial) {
-      mostrarError(idProductoInput, "El número de serie es obligatorio.");
-      esValido = false;
-    } else if (serial.length < 5) {
-      mostrarError(
-        idProductoInput,
-        "El serial debe contener al menos 5 caracteres.",
-      );
-      esValido = false;
-    }
-
-    // Validar Categoría
-    if (!categoriaSelect || !categoriaSelect.value) {
-      mostrarError(
-        categoriaSelect,
-        "Debes seleccionar una categoría de producto.",
-      );
-      esValido = false;
-    }
-
-    // Validar Descripción
-    const consulta = consultaTextarea ? consultaTextarea.value.trim() : "";
-    if (!consulta) {
-      mostrarError(
-        consultaTextarea,
-        "La descripción del problema es obligatoria.",
-      );
-      esValido = false;
-    } else if (consulta.length < 15) {
-      mostrarError(
-        consultaTextarea,
-        "Por favor describe el problema con al menos 15 caracteres.",
-      );
-      esValido = false;
-    }
-
-    if (!esValido) {
-      const primerError = form.querySelector(
-        ".campo-invalido input, .campo-invalido select, .campo-invalido textarea",
-      );
-      if (primerError) primerError.focus();
+    if (requests.length === 0) {
+      container.innerHTML =
+        '<p class="garantia-solicitudes-mensaje">Aún no has enviado solicitudes de garantía.</p>';
       return;
     }
 
-    // Generar Ticket de Garantía ficticio
-    const ticketId = "GAR-" + Math.floor(100000 + Math.random() * 900000);
+    const labels = {
+      RECIBIDA: "Recibida",
+      EN_REVISION: "En revisión",
+      APROBADA: "Aprobada",
+      RECHAZADA: "Rechazada",
+      CERRADA: "Cerrada",
+    };
+    container.innerHTML = requests
+      .map((request) => {
+        const status = labels[request.status] ? request.status : "RECIBIDA";
+        return `
+          <article class="garantia-solicitud-card">
+            <header class="garantia-solicitud-cabecera">
+              <div>
+                <h3>${escapeHtml(request.productName)}</h3>
+                <p class="garantia-solicitud-referencia">
+                  Pedido ${escapeHtml(request.orderNumber)} · Solicitud #${escapeHtml(request.id)}
+                </p>
+              </div>
+              <span class="garantia-solicitud-estado estado-${status.toLowerCase()}">
+                ${labels[status]}
+              </span>
+            </header>
+            <p class="garantia-solicitud-fecha">
+              <strong>Enviada:</strong> ${escapeHtml(request.requestedAt)}
+              · <strong>Garantía:</strong> desde ${escapeHtml(request.warrantyStartsAt)}
+              hasta ${escapeHtml(request.warrantyExpiresAt)}
+            </p>
+            <p class="garantia-solicitud-descripcion">${escapeHtml(request.description)}</p>
+          </article>`;
+      })
+      .join("");
+  }
 
-    mostrarModalExitoGarantia({
-      ticket: ticketId,
-      pedido,
-      serial,
-      categoria: categoriaSelect.value,
-      descripcion: consulta,
-    });
+  async function loadMyWarrantyRequests() {
+    const container = document.getElementById("lista-solicitudes-garantia");
+    if (!container) return;
 
-    form.reset();
-    document
-      .querySelectorAll(".campo-valido")
-      .forEach((c) => c.classList.remove("campo-valido"));
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/my-warranty-requests",
+        {
+          headers: { Authorization: `Bearer ${sessionUser.token}` },
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !Array.isArray(data.requests)) {
+        throw new Error(
+          data.message || "No se pudieron cargar tus solicitudes de garantía.",
+        );
+      }
+      renderWarrantyRequests(data.requests);
+    } catch (error) {
+      const message = document.createElement("p");
+      message.className = "garantia-solicitudes-mensaje";
+      message.textContent =
+        error.message || "No se pudieron cargar tus solicitudes de garantía.";
+      container.replaceChildren(message);
+    }
+  }
+
+  function showFieldError(input, errorId, message) {
+    const error = document.getElementById(errorId);
+    input.closest(".campo, .consulta")?.classList.add("campo-invalido");
+    input.setAttribute("aria-invalid", "true");
+    if (error) error.textContent = message;
+  }
+
+  function clearFieldError(input, errorId) {
+    const error = document.getElementById(errorId);
+    input.closest(".campo, .consulta")?.classList.remove("campo-invalido");
+    input.removeAttribute("aria-invalid");
+    if (error) error.textContent = "";
+  }
+
+  function selectedProduct() {
+    return products.find(
+      (product) => String(product.detailId) === productoSelect.value,
+    );
+  }
+
+  function updateSelectedProduct() {
+    const product = selectedProduct();
+    pedidoInput.value = product?.orderNumber || "";
+    categoriaInput.value = product?.category || "";
+    if (product?.hasRequest) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        "Ya existe una solicitud de garantía para este producto.",
+      );
+    } else if (product && !product.warrantyActive) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        `El plazo de garantía venció el ${product.warrantyExpiresAt}.`,
+      );
+    } else {
+      clearFieldError(productoSelect, "error-producto-comprado");
+    }
+  }
+
+  function renderProducts() {
+    const selectedId = productoSelect.value;
+    productoSelect.replaceChildren();
+
+    const placeholder = document.createElement("option");
+    placeholder.value = "";
+    placeholder.textContent = "Selecciona un producto comprado...";
+    productoSelect.append(placeholder);
+
+    for (const product of products) {
+      const option = document.createElement("option");
+      option.value = String(product.detailId);
+      option.textContent = [
+        product.productName,
+        `Cantidad ${product.quantity}`,
+        `Pedido ${product.orderNumber}`,
+        `Garantía desde ${product.warrantyStartsAt}`,
+        product.warrantyActive
+          ? `Garantía hasta ${product.warrantyExpiresAt}`
+          : `Garantía vencida ${product.warrantyExpiresAt}`,
+        product.hasRequest
+          ? `Solicitud ${product.requestStatus.toLowerCase()}`
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" · ");
+      option.disabled = product.hasRequest || !product.warrantyActive;
+      productoSelect.append(option);
+    }
+
+    const currentProduct = products.find(
+      (product) =>
+        String(product.detailId) === selectedId &&
+        !product.hasRequest &&
+        product.warrantyActive,
+    );
+    productoSelect.value = currentProduct ? selectedId : "";
+    productoSelect.disabled = products.length === 0;
+    submitButton.disabled =
+      isSubmitting ||
+      !products.some(
+        (product) => !product.hasRequest && product.warrantyActive,
+      );
+    updateSelectedProduct();
+  }
+
+  async function loadPurchasedProducts() {
+    setFeedback("Cargando tus productos comprados...");
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/my-warranty-products",
+        {
+          headers: { Authorization: `Bearer ${sessionUser.token}` },
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !Array.isArray(data.products)) {
+        throw new Error(
+          data.message || "No se pudieron cargar tus productos comprados.",
+        );
+      }
+
+      products = data.products;
+      renderProducts();
+      if (products.length === 0) {
+        setFeedback(
+          "Aún no tienes compras confirmadas disponibles para solicitar garantía.",
+        );
+      } else if (
+        products.every(
+          (product) => product.hasRequest || !product.warrantyActive,
+        )
+      ) {
+        setFeedback(
+          "No hay productos disponibles: el plazo venció o ya tienen una solicitud registrada.",
+        );
+      } else {
+        setFeedback("Selecciona el producto comprado para iniciar tu solicitud.");
+      }
+      return true;
+    } catch (error) {
+      setFeedback(error.message, "error");
+      return false;
+    }
+  }
+
+  function validateDescription() {
+    const length = descripcionInput.value.trim().length;
+    let message = "";
+    if (length < 15) {
+      message = "Describe la falla con al menos 15 caracteres.";
+    } else if (length > 2000) {
+      message = "La descripción no puede superar los 2000 caracteres.";
+    }
+    if (message) {
+      showFieldError(descripcionInput, "error-consulta", message);
+      return false;
+    }
+    clearFieldError(descripcionInput, "error-consulta");
+    return true;
+  }
+
+  function validateForm() {
+    const product = selectedProduct();
+    if (!product) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        "Selecciona uno de tus productos comprados.",
+      );
+    } else if (product.hasRequest) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        "Ya existe una solicitud de garantía para este producto.",
+      );
+    } else if (!product.warrantyActive) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        `El plazo de garantía venció el ${product.warrantyExpiresAt}.`,
+      );
+    } else {
+      clearFieldError(productoSelect, "error-producto-comprado");
+    }
+
+    const descriptionIsValid = validateDescription();
+    const valid =
+      Boolean(
+        product && !product.hasRequest && product.warrantyActive,
+      ) && descriptionIsValid;
+    if (!valid) {
+      form
+        .querySelector('[aria-invalid="true"]')
+        ?.focus();
+    }
+    return valid;
+  }
+
+  function handleRequestError(data) {
+    if (
+      data.code === "INVALID_PURCHASE" ||
+      data.code === "REQUEST_ALREADY_EXISTS" ||
+      data.code === "WARRANTY_EXPIRED" ||
+      data.code === "WARRANTY_INACTIVE"
+    ) {
+      showFieldError(
+        productoSelect,
+        "error-producto-comprado",
+        data.message,
+      );
+      productoSelect.focus();
+      return true;
+    }
+    if (data.code === "INVALID_DESCRIPTION") {
+      showFieldError(descripcionInput, "error-consulta", data.message);
+      descripcionInput.focus();
+      return true;
+    }
+    return false;
+  }
+
+  productoSelect.addEventListener("change", updateSelectedProduct);
+  descripcionInput.addEventListener("input", () => {
+    if (descripcionInput.getAttribute("aria-invalid") === "true") {
+      validateDescription();
+    }
   });
 
-  /**
-   * Modal de confirmación para garantía
-   */
-  function mostrarModalExitoGarantia(datos) {
-    const modalExistente = document.getElementById(
-      "modal-confirmacion-garantia",
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (isSubmitting || !validateForm()) return;
+
+    const product = selectedProduct();
+    isSubmitting = true;
+    submitButton.disabled = true;
+    submitButton.textContent = "Enviando solicitud...";
+    setFeedback("Registrando tu solicitud...");
+
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/my-warranty-requests",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionUser.token}`,
+          },
+          body: JSON.stringify({
+            detailId: product.detailId,
+            description: descripcionInput.value.trim(),
+          }),
+        },
+      );
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok) {
+        if (!handleRequestError(data)) {
+          setFeedback(
+            data.message || "No se pudo registrar tu solicitud.",
+            "error",
+          );
+        }
+        return;
+      }
+
+      product.hasRequest = true;
+      product.requestStatus = data.request.status;
+      descripcionInput.value = "";
+      clearFieldError(descripcionInput, "error-consulta");
+      renderProducts();
+      await loadMyWarrantyRequests();
+      setFeedback(data.message, "success");
+    } catch (error) {
+      setFeedback(error.message || "No se pudo registrar tu solicitud.", "error");
+    } finally {
+      isSubmitting = false;
+      submitButton.textContent = "Enviar solicitud de garantía";
+      submitButton.disabled = !products.some(
+        (purchase) => !purchase.hasRequest && purchase.warrantyActive,
+      );
+    }
+  });
+
+  let sessionUser = null;
+  try {
+    sessionUser = JSON.parse(
+      sessionStorage.getItem("wiiu_usuario_activo") || "null",
     );
-    if (modalExistente) modalExistente.remove();
-
-    const overlay = document.createElement("div");
-    overlay.id = "modal-confirmacion-garantia";
-    overlay.className = "modal-overlay-a11y";
-    overlay.innerHTML = `
-      <div class="modal-tarjeta-exito">
-        <div class="icono-check-exito">🛡️</div>
-        <h2>Solicitud validada</h2>
-        <p>Los datos son válidos, pero el sistema aún no guarda solicitudes de garantía en la base de datos.</p>
-        <div class="detalles-resumen-cita">
-          <div><strong>Referencia temporal:</strong> <span style="color:#0077FF; font-weight:800;">${datos.ticket}</span></div>
-          <div><strong>Pedido/Factura:</strong> ${escapeHTML(datos.pedido)}</div>
-          <div><strong>Serial Producto:</strong> ${escapeHTML(datos.serial)}</div>
-          <div><strong>Categoría:</strong> ${escapeHTML(datos.categoria)}</div>
-          <div><strong>Estado:</strong> En proceso de revisión</div>
-        </div>
-        <button type="button" class="btn-cerrar-modal" id="btnCerrarModalGarantia">Aceptar</button>
-      </div>
-    `;
-
-    document.body.appendChild(overlay);
-
-    overlay
-      .querySelector("#btnCerrarModalGarantia")
-      .addEventListener("click", () => {
-        overlay.remove();
-      });
-
-    overlay.addEventListener("click", (e) => {
-      if (e.target === overlay) overlay.remove();
-    });
+  } catch (error) {
+    setFeedback("No se pudo validar tu sesión.", "error");
   }
 
-  function escapeHTML(str) {
-    return String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+  if (!sessionUser?.token) {
+    productoSelect.disabled = true;
+    submitButton.disabled = true;
+    setFeedback("Inicia sesión para consultar tus productos comprados.", "error");
+    return;
   }
+
+  document
+    .getElementById("nav-garantias")
+    ?.addEventListener("click", loadMyWarrantyRequests);
+  loadPurchasedProducts();
+  loadMyWarrantyRequests();
 });

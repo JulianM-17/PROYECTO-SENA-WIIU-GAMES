@@ -212,7 +212,92 @@ document.addEventListener("DOMContentLoaded", async () => {
     state.orders = data.orders;
   }
 
+  async function importarCitasLocalesAnteriores() {
+    const savedAppointments = JSON.parse(
+      localStorage.getItem("wiiu_citas") || "[]",
+    );
+    if (!Array.isArray(savedAppointments)) {
+      throw new Error("El registro local de citas no es válido.");
+    }
+
+    const email = String(state.profile.email || "").trim().toLowerCase();
+    const userAppointments = savedAppointments.filter(
+      (appointment) =>
+        appointment &&
+        typeof appointment === "object" &&
+        email &&
+        String(appointment.correo || "").trim().toLowerCase() === email,
+    );
+    if (!userAppointments.length) return;
+
+    const response = await fetch(
+      "http://localhost:3000/api/my-appointments/import-legacy",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionUser.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ appointments: userAppointments }),
+      },
+    );
+    const data = await response.json().catch(() => ({}));
+    if (response.status === 401) {
+      sessionStorage.removeItem("wiiu_usuario_activo");
+      sessionStorage.removeItem("sessionToken");
+      localStorage.removeItem("sessionToken");
+      window.location.replace("Login.html?returnTo=panel_usuario.html");
+      throw new Error("Tu sesión venció. Inicia sesión nuevamente.");
+    }
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || "No se pudieron sincronizar tus citas antiguas.");
+    }
+
+    const resolvedIds = new Set(
+      Array.isArray(data.resolvedIds) ? data.resolvedIds.map(String) : [],
+    );
+    if (resolvedIds.size) {
+      localStorage.setItem(
+        "wiiu_citas",
+        JSON.stringify(
+          savedAppointments.filter((appointment) => {
+            const belongsToUser =
+              appointment &&
+              typeof appointment === "object" &&
+              email &&
+              String(appointment.correo || "").trim().toLowerCase() === email;
+            return !belongsToUser || !resolvedIds.has(String(appointment.id ?? ""));
+          }),
+        ),
+      );
+    }
+
+    if (data.importedCount) {
+      showToast(
+        `${data.importedCount} cita(s) antigua(s) se sincronizaron con tu cuenta.`,
+        "success",
+      );
+    }
+    if (Array.isArray(data.errors) && data.errors.length) {
+      console.warn("Algunas citas antiguas no se pudieron importar:", data.errors);
+      showToast(
+        `${data.errors.length} cita(s) antigua(s) siguen pendientes de sincronización.`,
+        "error",
+      );
+    }
+  }
+
   async function loadAppointmentsFromDatabase() {
+    try {
+      await importarCitasLocalesAnteriores();
+    } catch (error) {
+      console.error("No se pudieron sincronizar citas antiguas:", error);
+      showToast(
+        error.message || "No se pudieron sincronizar tus citas antiguas.",
+        "error",
+      );
+    }
+
     const response = await fetch("http://localhost:3000/api/my-appointments", {
       headers: { Authorization: `Bearer ${sessionUser.token}` },
     });
@@ -603,6 +688,61 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
   const formPerfilSeguridad = document.getElementById("form-perfil-seguridad");
 
+  const inputPasswordActual = document.getElementById("perfil-pass-actual");
+  const togglePasswordActual = document.getElementById(
+    "toggle-perfil-pass-actual",
+  );
+  togglePasswordActual?.addEventListener("click", () => {
+    if (!inputPasswordActual) return;
+    const mostrar = inputPasswordActual.type === "password";
+    inputPasswordActual.type = mostrar ? "text" : "password";
+    togglePasswordActual.setAttribute("aria-pressed", String(mostrar));
+    togglePasswordActual.setAttribute(
+      "aria-label",
+      mostrar ? "Ocultar contraseña actual" : "Mostrar contraseña actual",
+    );
+    const icono = togglePasswordActual.querySelector("i");
+    icono?.classList.toggle("fi-rr-eye", !mostrar);
+    icono?.classList.toggle("fi-rr-eye-crossed", mostrar);
+  });
+
+  const inputPasswordNueva = document.getElementById("perfil-pass-nueva");
+  const inputPasswordConfirm = document.getElementById("perfil-pass-confirm");
+  const passwordErrorIsVisible = (input) =>
+    input?.classList.contains("input-error") ||
+    input?.closest(".campo-formulario")?.querySelector(".error-mensaje-campo");
+  const refreshPasswordErrors = () => {
+    if (passwordErrorIsVisible(inputPasswordActual)) {
+      setTypedFieldError(
+        inputPasswordActual,
+        inputPasswordActual.value ? "" : "Ingresa tu contraseña actual.",
+      );
+    }
+    if (passwordErrorIsVisible(inputPasswordNueva)) {
+      setTypedFieldError(
+        inputPasswordNueva,
+        inputPasswordNueva.value.length < 8
+          ? "La nueva contraseña debe tener al menos 8 caracteres."
+          : "",
+      );
+    }
+    if (passwordErrorIsVisible(inputPasswordConfirm)) {
+      const message = !inputPasswordConfirm.value
+        ? "Confirma la nueva contraseña."
+        : inputPasswordConfirm.value !== inputPasswordNueva.value
+          ? "Las contraseñas no coinciden."
+          : "";
+      setTypedFieldError(inputPasswordConfirm, message);
+    }
+  };
+  [
+    inputPasswordActual,
+    inputPasswordNueva,
+    inputPasswordConfirm,
+  ].forEach((input) =>
+    input?.addEventListener("input", refreshPasswordErrors),
+  );
+
   btnEditarPerfil?.addEventListener("click", () => {
     formPerfilDatos
       ?.querySelectorAll("[data-validation]")
@@ -767,39 +907,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       const nueva = inputNueva?.value;
       const confirm = inputConfirm?.value;
 
-      let valido = true;
-      if (!actual) {
-        if (inputActual) inputActual.classList.add("input-error");
-        valido = false;
-      } else if (inputActual) {
-        inputActual.classList.remove("input-error");
-      }
+      const errorActual = !actual ? "Ingresa tu contraseña actual." : "";
+      const errorNueva =
+        !nueva || nueva.length < 8
+          ? "La nueva contraseña debe tener al menos 8 caracteres."
+          : "";
+      const errorConfirm = !confirm
+        ? "Confirma la nueva contraseña."
+        : nueva !== confirm
+          ? "Las contraseñas no coinciden."
+          : "";
 
-      if (!nueva || nueva.length < 8) {
-        if (inputNueva) inputNueva.classList.add("input-error");
-        valido = false;
-      } else if (inputNueva) {
-        inputNueva.classList.remove("input-error");
-      }
+      setTypedFieldError(inputActual, errorActual);
+      setTypedFieldError(inputNueva, errorNueva);
+      setTypedFieldError(inputConfirm, errorConfirm);
 
-      if (!confirm || nueva !== confirm) {
-        if (inputConfirm) inputConfirm.classList.add("input-error");
-        valido = false;
-      } else if (inputConfirm) {
-        inputConfirm.classList.remove("input-error");
-      }
-
-      if (!valido) {
-        if (!actual) {
-          showToast("Ingresa tu contraseña actual.", "error");
-        } else if (!nueva || nueva.length < 8) {
-          showToast(
-            "La nueva contraseña debe tener al menos 8 caracteres.",
-            "error",
-          );
-        } else {
-          showToast("Las contraseñas no coinciden.", "error");
-        }
+      if (errorActual || errorNueva || errorConfirm) {
         const primerError = formPerfilSeguridad.querySelector(".input-error");
         if (primerError) primerError.focus();
         return;
@@ -824,6 +947,19 @@ document.addEventListener("DOMContentLoaded", async () => {
         );
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.ok) {
+          if (data.message === "La contraseña actual no es correcta.") {
+            setTypedFieldError(inputActual, data.message);
+            inputActual?.focus();
+            return;
+          }
+          if (
+            data.message ===
+            "La nueva contraseña debe tener entre 8 y 72 bytes."
+          ) {
+            setTypedFieldError(inputNueva, data.message);
+            inputNueva?.focus();
+            return;
+          }
           throw new Error(
             data.message || "No se pudo actualizar la contraseña.",
           );
@@ -831,6 +967,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (inputActual) inputActual.value = "";
         if (inputNueva) inputNueva.value = "";
         if (inputConfirm) inputConfirm.value = "";
+        setTypedFieldError(inputActual, "");
+        setTypedFieldError(inputNueva, "");
+        setTypedFieldError(inputConfirm, "");
+        if (inputActual) inputActual.type = "password";
+        togglePasswordActual?.setAttribute("aria-pressed", "false");
+        togglePasswordActual?.setAttribute(
+          "aria-label",
+          "Mostrar contraseña actual",
+        );
+        const icono = togglePasswordActual?.querySelector("i");
+        icono?.classList.add("fi-rr-eye");
+        icono?.classList.remove("fi-rr-eye-crossed");
         showToast("¡Contraseña actualizada con éxito!", "success");
       } catch (error) {
         showToast(error.message, "error");
@@ -1409,6 +1557,40 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
+  function formatWarrantyDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+    if (!match) return "fecha no disponible";
+    const [, year, month, day] = match;
+    return new Intl.DateTimeFormat("es-CO", {
+      dateStyle: "long",
+      timeZone: "UTC",
+    }).format(
+      new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))),
+    );
+  }
+
+  function warrantyStatusLabel(order, item) {
+    const startDate = formatWarrantyDate(item.warrantyStartsAt);
+    const expirationDate = formatWarrantyDate(item.warrantyExpiresAt);
+    const daysRemaining =
+      item.warrantyDaysRemaining == null
+        ? Number.NaN
+        : Number(item.warrantyDaysRemaining);
+    if (order.status !== "PAGADA") {
+      return "No disponible: el pedido no está confirmado.";
+    }
+    if (!Number.isFinite(daysRemaining)) {
+      return "No hay información del plazo de garantía.";
+    }
+    if (daysRemaining < 0) {
+      return `Vencida; inició el ${startDate} y terminó el ${expirationDate}.`;
+    }
+    if (daysRemaining === 0) {
+      return `Vigente desde ${startDate}; vence hoy, ${expirationDate}.`;
+    }
+    return `Vigente desde ${startDate}; quedan ${daysRemaining} días (hasta ${expirationDate}).`;
+  }
+
   function renderOrders() {
     if (!listaPedidos) return;
     if (ordersLoading) {
@@ -1752,12 +1934,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         </thead>
         <tbody>${order.items
           .map(
-            (item) => `
+            (item) => {
+              const daysRemaining =
+                item.warrantyDaysRemaining == null
+                  ? Number.NaN
+                  : Number(item.warrantyDaysRemaining);
+              const warrantyIsActive =
+                order.status === "PAGADA" &&
+                Number.isFinite(daysRemaining) &&
+                daysRemaining >= 0;
+              return `
               <tr style="border-bottom: 1px solid var(--border);">
-                <td style="padding: 12px 8px 12px 0;">${escapeHtml(item.name)}</td>
+                <td style="padding: 12px 8px 12px 0;">
+                  ${escapeHtml(item.name)}
+                  <small style="display: block; margin-top: 4px; color: ${warrantyIsActive ? "#047857" : "#b42318"};">
+                    Garantía: ${escapeHtml(warrantyStatusLabel(order, item))}
+                  </small>
+                </td>
                 <td style="padding: 12px 0; text-align: right;">${Number(item.quantity)}</td>
                 <td style="padding: 12px 0 12px 8px; text-align: right; font-weight: 700;">${formatCOP(item.subtotal)}</td>
-              </tr>`,
+              </tr>`;
+            },
           )
           .join("")}</tbody>
         <tfoot>

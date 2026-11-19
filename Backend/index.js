@@ -19,6 +19,175 @@ app.use(express.static(path.join(__dirname, "..")));
 const PORT = process.env.PORT || 3000;
 const SESSION_TTL = 8 * 60 * 60 * 1000;
 const sessions = new Map();
+let warrantyRequestSchemaPromise;
+let automaticWarrantyCoveragePromise;
+let legacyAppointmentSchemaPromise;
+
+function ensureWarrantyRequestSchema() {
+  if (!warrantyRequestSchemaPromise) {
+    warrantyRequestSchemaPromise = pool
+      .query(
+        `CREATE TABLE IF NOT EXISTS solicitud_garantia (
+           id_solicitud INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+           id_usuario INT NOT NULL,
+           id_detalle_venta INT NOT NULL,
+           descripcion TEXT NOT NULL,
+           estado ENUM(
+             'RECIBIDA',
+             'EN_REVISION',
+             'APROBADA',
+             'RECHAZADA',
+             'CERRADA'
+           ) NOT NULL DEFAULT 'RECIBIDA',
+           fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+           CONSTRAINT fk_solicitud_garantia_usuario
+             FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
+           CONSTRAINT fk_solicitud_garantia_detalle
+             FOREIGN KEY (id_detalle_venta)
+             REFERENCES detalle_venta (id_detalle_venta),
+           INDEX idx_solicitud_garantia_usuario_fecha
+             (id_usuario, fecha_solicitud)
+         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+      )
+      .then(async () => {
+        const [legacySerialColumns] = await pool.query(
+          "SHOW COLUMNS FROM solicitud_garantia LIKE 'numero_serie'",
+        );
+        if (
+          legacySerialColumns.length &&
+          legacySerialColumns[0].Null !== "YES"
+        ) {
+          await pool.query(
+            "ALTER TABLE solicitud_garantia MODIFY numero_serie VARCHAR(25) NULL",
+          );
+        }
+      })
+      .catch((error) => {
+        warrantyRequestSchemaPromise = null;
+        throw error;
+      });
+  }
+  return warrantyRequestSchemaPromise;
+}
+
+function ensureLegacyAppointmentSchema() {
+  if (!legacyAppointmentSchemaPromise) {
+    legacyAppointmentSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        "SHOW COLUMNS FROM cita LIKE 'id_cita_local'",
+      );
+      if (!columns.length) {
+        await pool.query(
+          "ALTER TABLE cita ADD COLUMN id_cita_local VARCHAR(80) NULL",
+        );
+      }
+
+      const [indexes] = await pool.query(
+        "SHOW INDEX FROM cita WHERE Key_name = 'uq_cita_usuario_local'",
+      );
+      if (!indexes.length) {
+        await pool.query(
+          "ALTER TABLE cita ADD UNIQUE KEY uq_cita_usuario_local (id_usuario, id_cita_local)",
+        );
+      }
+    })().catch((error) => {
+      legacyAppointmentSchemaPromise = null;
+      throw error;
+    });
+  }
+  return legacyAppointmentSchemaPromise;
+}
+
+async function insertAutomaticWarrantyCoverage(connection, detailId) {
+  await connection.query(
+    `INSERT INTO garantia
+       (id_detalle_venta, fecha_inicio, fecha_fin, estado)
+     SELECT
+       dv.id_detalle_venta,
+       DATE(v.fecha),
+       DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+       CASE
+         WHEN DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH) >= CURRENT_DATE()
+           THEN 'VIGENTE'
+         ELSE 'VENCIDA'
+       END
+     FROM detalle_venta dv
+     INNER JOIN venta v ON v.id_venta = dv.id_venta
+     LEFT JOIN garantia g
+       ON g.id_detalle_venta = dv.id_detalle_venta
+     WHERE dv.id_detalle_venta = ?
+       AND v.estado = 'PAGADA'
+       AND g.id_garantia IS NULL`,
+    [detailId],
+  );
+}
+
+function ensureAutomaticWarrantyCoverage() {
+  if (!automaticWarrantyCoveragePromise) {
+    automaticWarrantyCoveragePromise = (async () => {
+      let connection;
+      try {
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+        await connection.query(
+          `UPDATE garantia g
+           INNER JOIN detalle_venta dv
+             ON dv.id_detalle_venta = g.id_detalle_venta
+           INNER JOIN venta v ON v.id_venta = dv.id_venta
+           SET g.fecha_inicio = DATE(v.fecha),
+               g.fecha_fin = DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+               g.estado = CASE
+                 WHEN DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH)
+                      >= CURRENT_DATE()
+                   THEN 'VIGENTE'
+                 ELSE 'VENCIDA'
+               END
+           WHERE v.estado = 'PAGADA'
+             AND g.estado <> 'ANULADA'`,
+        );
+        await connection.query(
+          `INSERT INTO garantia
+             (id_detalle_venta, fecha_inicio, fecha_fin, estado)
+           SELECT
+             dv.id_detalle_venta,
+             DATE(v.fecha),
+             DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+             CASE
+               WHEN DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH)
+                    >= CURRENT_DATE()
+                 THEN 'VIGENTE'
+               ELSE 'VENCIDA'
+             END
+           FROM detalle_venta dv
+           INNER JOIN venta v ON v.id_venta = dv.id_venta
+           LEFT JOIN garantia g
+             ON g.id_detalle_venta = dv.id_detalle_venta
+           WHERE v.estado = 'PAGADA'
+             AND g.id_garantia IS NULL`,
+        );
+        await connection.commit();
+      } catch (error) {
+        if (connection) {
+          try {
+            await connection.rollback();
+          } catch (rollbackError) {
+            console.error(
+              "Error revirtiendo la sincronización de garantías:",
+              rollbackError.message,
+            );
+          }
+        }
+        throw error;
+      } finally {
+        connection?.release();
+      }
+    })().catch((error) => {
+      automaticWarrantyCoveragePromise = null;
+      throw error;
+    });
+  }
+  return automaticWarrantyCoveragePromise;
+}
 
 function requireUserSession(req, res, next) {
   const token = req.get("authorization")?.replace(/^Bearer\s+/i, "");
@@ -201,77 +370,100 @@ app.delete("/api/my-favorites", requireUserSession, async (req, res) => {
   }
 });
 
-app.get("/api/my-orders", requireUserSession, async (req, res) => {
-  try {
-    const [rows] = await pool.query(
-      `SELECT
-         v.id_venta AS id,
-         DATE_FORMAT(v.fecha, '%Y-%m-%dT%H:%i:%s') AS createdAt,
-         v.metodo_pago AS paymentMethod,
-         v.nro_pago AS paymentReference,
-         v.numero_guia AS trackingNumber,
-         v.estado AS status,
-         v.notas AS notes,
-         dv.id_detalle_venta AS detailId,
-         dv.id_producto AS productId,
-         p.nombre AS productName,
-         p.imagen_prin AS imageUrl,
-         dv.cantidad AS quantity,
-         dv.precio_unitario AS unitPrice,
-         dv.subtotal AS lineSubtotal
-       FROM venta v
-       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
-       LEFT JOIN producto p ON p.id_producto = dv.id_producto
-       WHERE v.id_usuario = ?
-       ORDER BY v.fecha DESC, v.id_venta DESC, dv.id_detalle_venta`,
-      [req.userId],
-    );
+async function obtenerPedidosCliente(userId) {
+  const [rows] = await pool.query(
+    `SELECT
+       v.id_venta AS id,
+       DATE_FORMAT(v.fecha, '%Y-%m-%dT%H:%i:%s') AS createdAt,
+       v.metodo_pago AS paymentMethod,
+       v.nro_pago AS paymentReference,
+       v.numero_guia AS trackingNumber,
+       v.estado AS status,
+       v.notas AS notes,
+       DATE_FORMAT(DATE(v.fecha), '%Y-%m-%d') AS warrantyStartsAt,
+       DATE_FORMAT(
+         DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+         '%Y-%m-%d'
+       ) AS warrantyExpiresAt,
+       DATEDIFF(
+         DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+         CURRENT_DATE()
+       ) AS warrantyDaysRemaining,
+       dv.id_detalle_venta AS detailId,
+       dv.id_producto AS productId,
+       p.nombre AS productName,
+       p.imagen_prin AS imageUrl,
+       c.nombre_cat AS category,
+       dv.cantidad AS quantity,
+       dv.precio_unitario AS unitPrice,
+       dv.subtotal AS lineSubtotal
+     FROM venta v
+     LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+     LEFT JOIN producto p ON p.id_producto = dv.id_producto
+     LEFT JOIN categoria c ON c.id_categoria = p.id_categoria
+     WHERE v.id_usuario = ?
+     ORDER BY v.fecha DESC, v.id_venta DESC, dv.id_detalle_venta`,
+    [userId],
+  );
 
-    const ordersById = new Map();
-    for (const row of rows) {
-      let order = ordersById.get(row.id);
-      if (!order) {
-        const totalMatch = String(row.notes || "").match(
-          /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
-        );
-        const recordedTotal = totalMatch ? Number(totalMatch[1]) : null;
-        order = {
-          id: row.id,
-          number: row.paymentReference || `WG-${row.id}`,
-          createdAt: row.createdAt,
-          paymentMethod: row.paymentMethod,
-          trackingNumber: row.trackingNumber,
-          status: row.status,
-          itemCount: 0,
-          subtotal: 0,
-          total: Number.isFinite(recordedTotal) ? recordedTotal : null,
-          items: [],
-        };
-        ordersById.set(row.id, order);
-      }
-
-      if (row.detailId !== null) {
-        const quantity = Number(row.quantity);
-        const unitPrice = Number(row.unitPrice);
-        const lineSubtotal = Number(row.lineSubtotal);
-        order.itemCount += quantity;
-        order.subtotal += lineSubtotal;
-        order.items.push({
-          productId: row.productId,
-          name: row.productName || "Producto no disponible",
-          imageUrl: row.imageUrl,
-          quantity,
-          unitPrice,
-          subtotal: lineSubtotal,
-        });
-      }
+  const ordersById = new Map();
+  for (const row of rows) {
+    let order = ordersById.get(row.id);
+    if (!order) {
+      const totalMatch = String(row.notes || "").match(
+        /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
+      );
+      const recordedTotal = totalMatch ? Number(totalMatch[1]) : null;
+      order = {
+        id: row.id,
+        number: row.paymentReference || `WG-${row.id}`,
+        createdAt: row.createdAt,
+        paymentMethod: row.paymentMethod,
+        trackingNumber: row.trackingNumber,
+        status: row.status,
+        itemCount: 0,
+        subtotal: 0,
+        total: Number.isFinite(recordedTotal) ? recordedTotal : null,
+        items: [],
+      };
+      ordersById.set(row.id, order);
     }
 
-    const orders = [...ordersById.values()].map((order) => ({
-      ...order,
-      subtotal: Number(order.subtotal.toFixed(2)),
-      total: order.total ?? Number(order.subtotal.toFixed(2)),
-    }));
+    if (row.detailId !== null) {
+      const quantity = Number(row.quantity);
+      const unitPrice = Number(row.unitPrice);
+      const lineSubtotal = Number(row.lineSubtotal);
+      order.itemCount += quantity;
+      order.subtotal += lineSubtotal;
+      order.items.push({
+        detailId: row.detailId,
+        productId: row.productId,
+        name: row.productName || "Producto no disponible",
+        imageUrl: row.imageUrl,
+        category: row.category || "Sin categoría",
+        warrantyStartsAt: row.warrantyStartsAt,
+        warrantyExpiresAt: row.warrantyExpiresAt,
+        warrantyDaysRemaining: Number(row.warrantyDaysRemaining),
+        warrantyActive:
+          row.status === "PAGADA" &&
+          Number(row.warrantyDaysRemaining) >= 0,
+        quantity,
+        unitPrice,
+        subtotal: lineSubtotal,
+      });
+    }
+  }
+
+  return [...ordersById.values()].map((order) => ({
+    ...order,
+    subtotal: Number(order.subtotal.toFixed(2)),
+    total: order.total ?? Number(order.subtotal.toFixed(2)),
+  }));
+}
+
+app.get("/api/my-orders", requireUserSession, async (req, res) => {
+  try {
+    const orders = await obtenerPedidosCliente(req.userId);
     return res.json({ ok: true, orders });
   } catch (error) {
     console.error("Error consultando pedidos del cliente:", error.message);
@@ -279,6 +471,217 @@ app.get("/api/my-orders", requireUserSession, async (req, res) => {
       ok: false,
       message: "No se pudieron cargar tus pedidos.",
     });
+  }
+});
+
+app.get("/api/my-warranty-products", requireUserSession, async (req, res) => {
+  try {
+    await ensureWarrantyRequestSchema();
+    await ensureAutomaticWarrantyCoverage();
+    const orders = await obtenerPedidosCliente(req.userId);
+    const purchaseRows = orders
+      .filter((order) => order.status === "PAGADA")
+      .flatMap((order) =>
+        order.items.map((item) => ({
+          detailId: item.detailId,
+          saleId: order.id,
+          orderNumber: order.number,
+          purchasedAt: order.createdAt?.slice(0, 10) || "",
+          quantity: item.quantity,
+          productName: item.name,
+          imageUrl: item.imageUrl,
+          category: item.category,
+          warrantyStartsAt: item.warrantyStartsAt,
+          warrantyExpiresAt: item.warrantyExpiresAt,
+          warrantyDaysRemaining: item.warrantyDaysRemaining,
+          warrantyActive: item.warrantyActive,
+        })),
+      );
+    const [requestRows] = await pool.query(
+      `SELECT
+         id_solicitud AS id,
+         id_detalle_venta AS detailId,
+         estado AS status,
+         DATE_FORMAT(fecha_solicitud, '%Y-%m-%dT%H:%i:%s') AS requestedAt
+       FROM solicitud_garantia
+       WHERE id_usuario = ?
+       ORDER BY fecha_solicitud DESC, id_solicitud DESC`,
+      [req.userId],
+    );
+    const requestsByDetail = new Map();
+    for (const request of requestRows) {
+      const requests = requestsByDetail.get(request.detailId) || [];
+      requests.push(request);
+      requestsByDetail.set(request.detailId, requests);
+    }
+
+    const products = purchaseRows.map((purchase) => {
+      const requests = requestsByDetail.get(purchase.detailId) || [];
+      return {
+        ...purchase,
+        hasRequest: requests.length > 0,
+        requestStatus: requests[0]?.status || "",
+      };
+    });
+    return res.json({ ok: true, products });
+  } catch (error) {
+    console.error("Error consultando productos para garantía:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron cargar tus productos comprados.",
+    });
+  }
+});
+
+app.get("/api/my-warranty-requests", requireUserSession, async (req, res) => {
+  try {
+    await ensureWarrantyRequestSchema();
+    const [requests] = await pool.query(
+      `SELECT
+         sg.id_solicitud AS id,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
+         p.nombre AS productName,
+         DATE_FORMAT(DATE(v.fecha), '%Y-%m-%d') AS warrantyStartsAt,
+         DATE_FORMAT(
+           DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+           '%Y-%m-%d'
+         ) AS warrantyExpiresAt,
+         DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i') AS requestedAt,
+         sg.descripcion AS description,
+         sg.estado AS status
+       FROM solicitud_garantia sg
+       INNER JOIN detalle_venta dv
+         ON dv.id_detalle_venta = sg.id_detalle_venta
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE sg.id_usuario = ?
+       ORDER BY sg.fecha_solicitud DESC, sg.id_solicitud DESC`,
+      [req.userId],
+    );
+    return res.json({ ok: true, requests });
+  } catch (error) {
+    console.error("Error consultando solicitudes de garantía:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron cargar tus solicitudes de garantía.",
+    });
+  }
+});
+
+app.post("/api/my-warranty-requests", requireUserSession, async (req, res) => {
+  const detailId = Number(req.body?.detailId);
+  const description = String(req.body?.description || "").trim();
+
+  if (!Number.isSafeInteger(detailId) || detailId <= 0) {
+    return res.status(400).json({
+      ok: false,
+      code: "INVALID_PURCHASE",
+      message: "Selecciona un producto de una compra confirmada.",
+    });
+  }
+  if (description.length < 15 || description.length > 2000) {
+    return res.status(400).json({
+      ok: false,
+      code: "INVALID_DESCRIPTION",
+      message: "Describe el problema con entre 15 y 2000 caracteres.",
+    });
+  }
+
+  let connection;
+  try {
+    await ensureWarrantyRequestSchema();
+    await ensureAutomaticWarrantyCoverage();
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const [purchaseRows] = await connection.query(
+      `SELECT
+         DATE_FORMAT(DATE(g.fecha_fin), '%Y-%m-%d') AS warrantyExpiresAt,
+         DATEDIFF(DATE(g.fecha_fin), CURRENT_DATE()) AS warrantyDaysRemaining,
+         g.estado AS warrantyStatus
+       FROM detalle_venta dv
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN garantia g
+         ON g.id_detalle_venta = dv.id_detalle_venta
+       WHERE dv.id_detalle_venta = ?
+         AND v.id_usuario = ?
+         AND v.estado = 'PAGADA'
+       FOR UPDATE`,
+      [detailId, req.userId],
+    );
+    if (!purchaseRows.length) {
+      await connection.rollback();
+      return res.status(404).json({
+        ok: false,
+        code: "INVALID_PURCHASE",
+        message: "No encontramos esa compra confirmada en tu cuenta.",
+      });
+    }
+    if (Number(purchaseRows[0].warrantyDaysRemaining) < 0) {
+      await connection.rollback();
+      return res.status(409).json({
+        ok: false,
+        code: "WARRANTY_EXPIRED",
+        message: `El plazo de garantía de 6 meses venció el ${purchaseRows[0].warrantyExpiresAt}.`,
+      });
+    }
+    if (purchaseRows[0].warrantyStatus !== "VIGENTE") {
+      await connection.rollback();
+      return res.status(409).json({
+        ok: false,
+        code: "WARRANTY_INACTIVE",
+        message: "La garantía de esta compra no está activa para recibir solicitudes.",
+      });
+    }
+
+    const [requestRows] = await connection.query(
+      `SELECT id_solicitud
+       FROM solicitud_garantia
+       WHERE id_detalle_venta = ?
+       FOR UPDATE`,
+      [detailId],
+    );
+    if (requestRows.length > 0) {
+      await connection.rollback();
+      return res.status(409).json({
+        ok: false,
+        code: "REQUEST_ALREADY_EXISTS",
+        message: "Ya existe una solicitud de garantía para este producto.",
+      });
+    }
+
+    const [result] = await connection.query(
+      `INSERT INTO solicitud_garantia
+         (id_usuario, id_detalle_venta, descripcion)
+       VALUES (?, ?, ?)`,
+      [req.userId, detailId, description],
+    );
+    await connection.commit();
+    return res.status(201).json({
+      ok: true,
+      message: "Tu solicitud de garantía quedó registrada.",
+      request: {
+        id: result.insertId,
+        detailId,
+        status: "RECIBIDA",
+      },
+    });
+  } catch (error) {
+    if (connection) await connection.rollback();
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        ok: false,
+        code: "REQUEST_ALREADY_EXISTS",
+        message: "Ya existe una solicitud de garantía para este producto.",
+      });
+    }
+    console.error("Error registrando solicitud de garantía:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo registrar tu solicitud de garantía.",
+    });
+  } finally {
+    connection?.release();
   }
 });
 
@@ -478,6 +881,192 @@ app.get("/api/my-appointments", requireUserSession, async (req, res) => {
   }
 });
 
+app.post("/api/my-appointments/import-legacy", requireUserSession, async (req, res) => {
+  const legacyAppointments = req.body?.appointments;
+  if (!Array.isArray(legacyAppointments) || legacyAppointments.length > 100) {
+    return res.status(400).json({
+      ok: false,
+      message: "La lista de citas antiguas no es válida.",
+    });
+  }
+
+  const normalizeValue = (value) =>
+    String(value || "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toUpperCase()
+      .replace(/\s+/g, " ")
+      .trim();
+  const validStatuses = new Map([
+    ["SOLICITUD RECIBIDA", "SOLICITUD RECIBIDA"],
+    ["PENDIENTE", "SOLICITUD RECIBIDA"],
+    ["CONFIRMADA", "CONFIRMADA"],
+    ["EN PROCESO", "EN PROCESO"],
+    ["COMPLETADA", "COMPLETADA"],
+    ["COMPLETADO", "COMPLETADA"],
+    ["FINALIZADA", "COMPLETADA"],
+    ["FINALIZADO", "COMPLETADA"],
+    ["CANCELADA", "CANCELADA"],
+    ["CANCELADO", "CANCELADA"],
+  ]);
+  const validAppointments = [];
+  const errors = [];
+
+  legacyAppointments.forEach((legacyAppointment, index) => {
+    const appointment =
+      legacyAppointment && typeof legacyAppointment === "object"
+        ? legacyAppointment
+        : {};
+    const localId = String(appointment.id ?? "").trim();
+    const equipment = String(appointment.equipo || appointment.equipment || "").trim();
+    const description = String(
+      appointment.descripcion || appointment.description || "",
+    ).trim();
+    const phone = String(appointment.telefono || appointment.phone || "").trim();
+    const appointmentDate = String(
+      appointment.fecha || appointment.appointmentDate || "",
+    ).trim();
+    const serviceValue = normalizeValue(
+      appointment.servicio || appointment.serviceType,
+    );
+    const statusValue = normalizeValue(
+      appointment.estado || appointment.status || "SOLICITUD RECIBIDA",
+    );
+    const serviceType = serviceValue.includes("MANTENIMIENTO")
+      ? "MANTENIMIENTO"
+      : serviceValue.includes("REPARACION")
+        ? "REPARACION"
+        : null;
+    const dateValue = new Date(`${appointmentDate}T00:00:00Z`);
+    const status = validStatuses.get(statusValue);
+
+    const validationErrors = [];
+    if (!localId || localId.length > 80) {
+      validationErrors.push("No tiene un identificador local válido.");
+    }
+    if (equipment.length < 2 || equipment.length > 100) {
+      validationErrors.push("El equipo debe tener entre 2 y 100 caracteres.");
+    }
+    if (description.length > 1000) {
+      validationErrors.push("La descripción supera los 1000 caracteres.");
+    }
+    if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
+      validationErrors.push("El teléfono no tiene un formato válido.");
+    }
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(appointmentDate) ||
+      Number.isNaN(dateValue.getTime()) ||
+      dateValue.toISOString().slice(0, 10) !== appointmentDate
+    ) {
+      validationErrors.push("La fecha no es válida.");
+    }
+    if (!serviceType) {
+      validationErrors.push("El tipo de servicio no es válido.");
+    }
+    if (!status) {
+      validationErrors.push("El estado no es compatible.");
+    }
+
+    if (validationErrors.length) {
+      errors.push({ index: index + 1, localId, messages: validationErrors });
+      return;
+    }
+
+    validAppointments.push({
+      localId,
+      equipment,
+      description: description || null,
+      phone,
+      appointmentDate,
+      serviceType,
+      status,
+    });
+  });
+
+  if (!validAppointments.length) {
+    return res.json({
+      ok: true,
+      importedCount: 0,
+      resolvedIds: [],
+      errors,
+    });
+  }
+
+  let connection;
+  try {
+    await ensureLegacyAppointmentSchema();
+    const [userRows] = await pool.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [req.userId],
+    );
+    if (!userRows.length) {
+      return res.status(403).json({
+        ok: false,
+        message: "Solo una cuenta de cliente activa puede importar citas antiguas.",
+      });
+    }
+
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const resolvedIds = [];
+    let importedCount = 0;
+    for (const appointment of validAppointments) {
+      const [existingRows] = await connection.query(
+        `SELECT id_cita
+         FROM cita
+         WHERE id_usuario = ? AND id_cita_local = ?
+         LIMIT 1`,
+        [req.userId, appointment.localId],
+      );
+      if (!existingRows.length) {
+        await connection.query(
+          `INSERT INTO cita
+             (id_usuario, equipo, descripcion, telefono, fecha, tipo_servicio, estado, id_cita_local)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            req.userId,
+            appointment.equipment,
+            appointment.description,
+            appointment.phone,
+            appointment.appointmentDate,
+            appointment.serviceType,
+            appointment.status,
+            appointment.localId,
+          ],
+        );
+        importedCount += 1;
+      }
+      resolvedIds.push(appointment.localId);
+    }
+    await connection.commit();
+    return res.json({
+      ok: true,
+      importedCount,
+      resolvedIds,
+      errors,
+    });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo importación de citas antiguas:", rollbackError.message);
+      }
+    }
+    console.error("Error importando citas antiguas:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron importar las citas antiguas.",
+    });
+  } finally {
+    connection?.release();
+  }
+});
+
 app.patch("/api/my-appointments/:id/cancel", requireUserSession, async (req, res) => {
   const appointmentId = Number(req.params.id);
   if (!Number.isSafeInteger(appointmentId) || appointmentId <= 0) {
@@ -599,6 +1188,8 @@ async function obtenerSucursalInventarioAdmin(branchId) {
 
 app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
   try {
+    await ensureWarrantyRequestSchema();
+    await ensureAutomaticWarrantyCoverage();
     const [productsCountRows] = await pool.query(
       "SELECT COUNT(*) AS total FROM producto WHERE estado = 'ACTIVO'",
     );
@@ -639,14 +1230,23 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        GROUP BY n.n, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a')
        ORDER BY n.n`,
     );
-    const [recentOrdersRows] = await pool.query(
-      `SELECT v.id_venta, u.nombre, u.apellido, v.fecha, v.estado, COALESCE(SUM(dv.subtotal), 0) AS total
+    const [ordersRows] = await pool.query(
+      `SELECT
+         v.id_venta,
+         v.id_usuario AS clientId,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
+         u.nombre,
+         u.apellido,
+         DATE_FORMAT(v.fecha, '%Y-%m-%d %H:%i') AS orderDate,
+         v.estado,
+         COALESCE(SUM(dv.subtotal), 0) AS subtotal,
+         MAX(v.notas) AS notes
        FROM venta v
        INNER JOIN usuario u ON u.id_usuario = v.id_usuario
        LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
-       GROUP BY v.id_venta, u.nombre, u.apellido, v.fecha, v.estado
-       ORDER BY v.fecha DESC
-       LIMIT 5`,
+       GROUP BY
+         v.id_venta, v.id_usuario, v.nro_pago, u.nombre, u.apellido, v.fecha, v.estado
+       ORDER BY v.fecha DESC, v.id_venta DESC`,
     );
     const [branchRows] = await pool.query(
       `SELECT id_sucursal AS id, nombre_suc AS name
@@ -774,16 +1374,44 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          CONCAT('GAR-', g.id_garantia) AS id,
          CONCAT(u.nombre, ' ', u.apellido) AS client,
          p.nombre AS product,
+         dv.cantidad AS quantity,
          DATE(v.fecha) AS buyDate,
          DATE(g.fecha_fin) AS expDate,
-         CASE WHEN g.estado = 'VIGENTE' THEN 'Activa' ELSE 'En Revisión' END AS status
+         CASE
+           WHEN g.estado = 'ANULADA' THEN 'Anulada'
+           WHEN g.estado = 'VIGENTE'
+             AND DATE(g.fecha_fin) >= CURRENT_DATE() THEN 'Activa'
+           ELSE 'Vencida'
+         END AS status
        FROM garantia g
        INNER JOIN detalle_venta dv ON dv.id_detalle_venta = g.id_detalle_venta
        INNER JOIN producto p ON p.id_producto = dv.id_producto
        INNER JOIN venta v ON v.id_venta = dv.id_venta
        INNER JOIN usuario u ON u.id_usuario = v.id_usuario
-       ORDER BY g.fecha_fin DESC
-       LIMIT 10`,
+       WHERE v.estado = 'PAGADA'
+       ORDER BY v.fecha DESC, g.id_garantia DESC`,
+    );
+    const [warrantyRequestRows] = await pool.query(
+      `SELECT
+         sg.id_solicitud AS id,
+         CONCAT('SOL-', sg.id_solicitud) AS reference,
+         CONCAT(u.nombre, ' ', u.apellido) AS client,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
+         p.nombre AS product,
+         DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i') AS requestedAt,
+         DATE_FORMAT(
+           DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+           '%Y-%m-%d'
+         ) AS warrantyExpiresAt,
+         sg.descripcion AS description,
+         sg.estado AS status
+       FROM solicitud_garantia sg
+       INNER JOIN usuario u ON u.id_usuario = sg.id_usuario
+       INNER JOIN detalle_venta dv
+         ON dv.id_detalle_venta = sg.id_detalle_venta
+       INNER JOIN venta v ON v.id_venta = dv.id_venta
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       ORDER BY sg.fecha_solicitud DESC, sg.id_solicitud DESC`,
     );
     const [maintenanceRows] = await pool.query(
       `SELECT
@@ -910,6 +1538,25 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        LIMIT 10`
     );
 
+    const orders = (ordersRows || []).map((row) => {
+      const totalMatch = String(row.notes || "").match(
+        /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
+      );
+      const recordedTotal = totalMatch ? Number(totalMatch[1]) : null;
+      return {
+        id_venta: row.id_venta,
+        clientId: row.clientId,
+        orderNumber: row.orderNumber,
+        nombre: row.nombre,
+        apellido: row.apellido,
+        date: row.orderDate,
+        estado: row.estado,
+        total: Number.isFinite(recordedTotal)
+          ? recordedTotal
+          : Number(row.subtotal || 0),
+      };
+    });
+
     res.json({
       ok: true,
       summary: {
@@ -923,7 +1570,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
         label: String(point.day_name || "").slice(0, 3),
         value: Number(point.total || 0),
       })),
-      recentOrders: recentOrdersRows || [],
+      orders,
       inventory: inventoryRows || [],
       branches: branchRows,
       selectedBranchId,
@@ -933,6 +1580,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       currentAdminId: req.userId,
       technicians: technicianRows || [],
       warranties: warrantyRows || [],
+      warrantyRequests: warrantyRequestRows || [],
       maintenance: maintenanceRows || [],
       repairs: repairRows || [],
       appointments: appointmentRows || [],
@@ -965,7 +1613,7 @@ function obtenerRutasPorRol(rol) {
 app.post("/api/login", async (req, res) => {
   try {
     const email = (req.body?.email || "").trim().toLowerCase();
-    const password = String(req.body?.password || "").trim();
+    const password = String(req.body?.password || "");
 
     if (!email || !password) {
       return res
@@ -1200,7 +1848,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     );
 
     for (const line of saleLines) {
-      await connection.query(
+      const [detailResult] = await connection.query(
         `INSERT INTO detalle_venta
            (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
          VALUES (?, ?, ?, ?, ?, 'Compra web de demostración')`,
@@ -1211,6 +1859,10 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
           line.unitPrice,
           line.subtotal,
         ],
+      );
+      await insertAutomaticWarrantyCoverage(
+        connection,
+        detailResult.insertId,
       );
 
       let remainingQuantity = line.quantity;
@@ -1366,6 +2018,7 @@ async function revertirTransaccionEmpleado(connection) {
 
 app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
   try {
+    await ensureAutomaticWarrantyCoverage();
     const branch = await obtenerSucursalEmpleado(req.userId);
     if (!branch) {
       return res.status(409).json({
@@ -1374,8 +2027,7 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
       });
     }
 
-    const [products, clients, warranties, warrantyPurchases, workshopOrders] =
-      await Promise.all([
+    const [products, clients, warranties, workshopOrders] = await Promise.all([
         pool.query(
           `SELECT
              p.id_producto AS id,
@@ -1424,6 +2076,7 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
              g.id_garantia AS id,
              CONCAT(u.nombre, ' ', u.apellido) AS client,
              p.nombre AS product,
+             dv.cantidad AS quantity,
              DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate,
              DATE_FORMAT(g.fecha_fin, '%Y-%m-%d') AS expDate,
              CASE
@@ -1436,26 +2089,8 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
            INNER JOIN venta v ON v.id_venta = dv.id_venta
            INNER JOIN usuario u ON u.id_usuario = v.id_usuario
            INNER JOIN producto p ON p.id_producto = dv.id_producto
-           WHERE v.id_sucursal = ?
+           WHERE v.id_sucursal = ? AND v.estado = 'PAGADA'
            ORDER BY g.fecha_inicio DESC`,
-          [branch.id_sucursal],
-        ),
-        pool.query(
-          `SELECT
-             dv.id_detalle_venta AS detailId,
-             u.id_usuario AS clientId,
-             CONCAT(u.nombre, ' ', u.apellido) AS client,
-             p.nombre AS product,
-             DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate
-           FROM detalle_venta dv
-           INNER JOIN venta v ON v.id_venta = dv.id_venta
-           INNER JOIN usuario u ON u.id_usuario = v.id_usuario
-           INNER JOIN producto p ON p.id_producto = dv.id_producto
-           LEFT JOIN garantia g ON g.id_detalle_venta = dv.id_detalle_venta
-           WHERE v.id_sucursal = ?
-             AND v.estado = 'PAGADA'
-             AND g.id_garantia IS NULL
-           ORDER BY v.fecha DESC`,
           [branch.id_sucursal],
         ),
         pool.query(
@@ -1502,7 +2137,6 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
       products: products[0],
       clients: clients[0],
       warranties: warranties[0],
-      warrantyPurchases: warrantyPurchases[0],
       workshopOrders: workshopOrders[0],
     });
   } catch (error) {
@@ -1612,111 +2246,9 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
   }
 });
 
-app.post("/api/employee/warranties", requireEmployee, async (req, res) => {
-  const detailId = Number(req.body?.detailId);
-  const durationMonths = Number(req.body?.durationMonths);
-  if (
-    !Number.isSafeInteger(detailId) ||
-    detailId <= 0 ||
-    ![3, 6, 12, 24].includes(durationMonths)
-  ) {
-    return res.status(400).json({ ok: false, message: "La compra o duración de garantía no es válida." });
-  }
-
-  let connection;
-  try {
-    connection = await pool.getConnection();
-    await connection.beginTransaction();
-    const branch = await obtenerSucursalEmpleado(req.userId, connection);
-    if (!branch) {
-      await revertirTransaccionEmpleado(connection);
-      return res.status(409).json({
-        ok: false,
-        message: "No hay una sucursal activa asignada a este empleado.",
-      });
-    }
-
-    const [purchaseRows] = await connection.query(
-      `SELECT
-         dv.id_detalle_venta AS detailId,
-         CONCAT(u.nombre, ' ', u.apellido) AS client,
-         p.nombre AS product,
-         DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate
-       FROM detalle_venta dv
-       INNER JOIN venta v ON v.id_venta = dv.id_venta
-       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
-       INNER JOIN producto p ON p.id_producto = dv.id_producto
-       WHERE dv.id_detalle_venta = ?
-         AND v.id_sucursal = ?
-         AND v.estado = 'PAGADA'
-       FOR UPDATE`,
-      [detailId, branch.id_sucursal],
-    );
-    if (!purchaseRows.length) {
-      await revertirTransaccionEmpleado(connection);
-      return res.status(404).json({
-        ok: false,
-        message: "No se encontró una compra válida en esta sucursal.",
-      });
-    }
-
-    const [existingRows] = await connection.query(
-      "SELECT id_garantia FROM garantia WHERE id_detalle_venta = ? LIMIT 1",
-      [detailId],
-    );
-    if (existingRows.length) {
-      await revertirTransaccionEmpleado(connection);
-      return res.status(409).json({
-        ok: false,
-        message: "Esta compra ya tiene una garantía registrada.",
-      });
-    }
-
-    const buyDate = purchaseRows[0].buyDate;
-    const endDate = new Date(`${buyDate}T00:00:00`);
-    const dayOfMonth = endDate.getDate();
-    endDate.setDate(1);
-    endDate.setMonth(endDate.getMonth() + durationMonths);
-    const lastDay = new Date(
-      endDate.getFullYear(),
-      endDate.getMonth() + 1,
-      0,
-    ).getDate();
-    endDate.setDate(Math.min(dayOfMonth, lastDay));
-    const expDate = [
-      endDate.getFullYear(),
-      String(endDate.getMonth() + 1).padStart(2, "0"),
-      String(endDate.getDate()).padStart(2, "0"),
-    ].join("-");
-
-    const [result] = await connection.query(
-      `INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado)
-       VALUES (?, ?, ?, 'VIGENTE')`,
-      [detailId, `${buyDate} 00:00:00`, `${expDate} 00:00:00`],
-    );
-    await connection.commit();
-
-    return res.status(201).json({
-      ok: true,
-      message: "Garantía registrada.",
-      warranty: {
-        id: result.insertId,
-        ...purchaseRows[0],
-        expDate,
-        status: "Activa",
-      },
-    });
-  } catch (error) {
-    if (connection) await revertirTransaccionEmpleado(connection);
-    console.error("Error registrando garantía desde panel de empleado:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo registrar la garantía." });
-  } finally {
-    connection?.release();
-  }
-});
-
 app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
   try {
+    await ensureLegacyAppointmentSchema();
     const [sales] = await pool.query(
       `SELECT
          v.id_venta AS id,
@@ -1733,8 +2265,7 @@ app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
        INNER JOIN usuario u ON u.id_usuario = v.id_usuario
        LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
        GROUP BY v.id_venta, u.nombre, u.apellido, v.estado, v.fecha
-       ORDER BY v.fecha DESC, v.id_venta DESC
-       LIMIT 10`,
+       ORDER BY v.fecha DESC, v.id_venta DESC`,
     );
     const [appointments] = await pool.query(
       `SELECT
@@ -1746,6 +2277,7 @@ app.get("/api/admin/notifications", requireAdmin, async (req, res) => {
          DATE_FORMAT(c.fecha_creacion, '%Y-%m-%d %H:%i:%s') AS createdAt
        FROM cita c
        INNER JOIN usuario u ON u.id_usuario = c.id_usuario
+       WHERE c.id_cita_local IS NULL
        ORDER BY c.fecha_creacion DESC, c.id_cita DESC
        LIMIT 50`,
     );
@@ -2105,7 +2637,7 @@ app.post("/api/employee/sales", requireEmployee, async (req, res) => {
     );
 
     for (const line of saleLines) {
-      await connection.query(
+      const [detailResult] = await connection.query(
         `INSERT INTO detalle_venta
            (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
          VALUES (?, ?, ?, ?, ?, 'Venta desde POS de empleado')`,
@@ -2116,6 +2648,10 @@ app.post("/api/employee/sales", requireEmployee, async (req, res) => {
           line.unitPrice,
           line.subtotal,
         ],
+      );
+      await insertAutomaticWarrantyCoverage(
+        connection,
+        detailResult.insertId,
       );
       let remainingQuantity = line.quantity;
       for (const inventory of line.inventoryRows) {
@@ -2241,21 +2777,54 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
       return res.status(400).json({
         ok: false,
         message: "Selecciona una sucursal activa para el inventario.",
+        errors: { branchId: "Selecciona una sucursal activa." },
       });
     }
 
-    if (!name || String(name).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
+    const nameValue = String(name || "").trim();
+    const categoryValue = String(category || "").trim();
+    const publisherValue = String(publisher || "").trim();
+    const priceValue = Number(price);
+    const stockValue = Number(stock);
+    const imageValue = String(imageUrl || "").trim();
+    const descriptionValue = String(description || "").trim();
+    const errors = {};
+    if (nameValue.length < 3 || nameValue.length > 100) {
+      errors.name = "El nombre debe tener entre 3 y 100 caracteres.";
     }
-    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
-      return res.status(400).json({ ok: false, message: "Precio inválido." });
+    if (!categoryValue || categoryValue.length > 40) {
+      errors.category = "Selecciona una categoría de máximo 40 caracteres.";
     }
-    if (!Number.isInteger(Number(stock)) || Number(stock) < 0) {
-      return res.status(400).json({ ok: false, message: "Stock inválido." });
+    if (!publisherValue || publisherValue.length > 20) {
+      errors.publisher = "Selecciona una marca de máximo 20 caracteres.";
+    }
+    if (!Number.isFinite(priceValue) || priceValue <= 0 || priceValue > 99999999.999999) {
+      errors.price = "Ingresa un precio mayor a 0 y dentro del límite permitido.";
+    }
+    if (!Number.isSafeInteger(stockValue) || stockValue < 0 || stockValue > 2147483647) {
+      errors.stock = "Ingresa una cantidad entera entre 0 y 2.147.483.647.";
+    }
+    if (!imageValue || imageValue.length > 255) {
+      errors.imageUrl = "La imagen principal es obligatoria y no puede superar 255 caracteres.";
+    }
+    for (const field of ["imageUrl2", "imageUrl3", "imageUrl4"]) {
+      if (String(req.body?.[field] || "").trim().length > 255) {
+        errors[field] = "La ruta o URL no puede superar 255 caracteres.";
+      }
+    }
+    if (!descriptionValue || descriptionValue.length > 100) {
+      errors.description = "La descripción es obligatoria y debe tener máximo 100 caracteres.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los campos obligatorios del producto.",
+        errors,
+      });
     }
 
     // Buscar o crear marca
-    const publisherName = String(publisher || "General").trim();
+    const publisherName = publisherValue;
     let [marcaRows] = await pool.query(
       "SELECT id_marca FROM marca WHERE nombre_marca = ? AND estado = 'ACTIVO'",
       [publisherName],
@@ -2272,7 +2841,7 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
     }
 
     // Buscar o crear categoría
-    const categoryName = String(category || "General").trim();
+    const categoryName = categoryValue;
     let [catRows] = await pool.query(
       "SELECT id_categoria FROM categoria WHERE nombre_cat = ? AND estado = 'ACTIVO'",
       [categoryName],
@@ -2295,20 +2864,20 @@ app.post("/api/admin/productos", requireAdmin, async (req, res) => {
       [
         marcaId,
         catId,
-        String(name).trim().substring(0, 100),
-        String(imageUrl || "../Assets/lenovolegion.webp").trim().substring(0, 255),
+        nameValue.substring(0, 100),
+        imageValue.substring(0, 255),
         String(imageUrl2 || "").trim().substring(0, 255) || null,
         String(imageUrl3 || "").trim().substring(0, 255) || null,
         String(imageUrl4 || "").trim().substring(0, 255) || null,
-        String(description || "").trim().substring(0, 100),
-        Number(price),
+        descriptionValue.substring(0, 100),
+        priceValue,
       ],
     );
 
     const productId = insertProduct.insertId;
 
     // Agregar el stock inicial a la sucursal seleccionada.
-    const stockVal = Math.max(0, Math.floor(Number(stock) || 0));
+    const stockVal = stockValue;
     if (stockVal > 0) {
       await pool.query(
         `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
@@ -2350,20 +2919,53 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
       return res.status(400).json({
         ok: false,
         message: "Selecciona una sucursal activa para el inventario.",
+        errors: { branchId: "Selecciona una sucursal activa." },
       });
     }
 
     if (!Number.isSafeInteger(productId) || productId < 1) {
       return res.status(400).json({ ok: false, message: "Producto inválido." });
     }
-    if (!name || String(name).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Nombre de producto inválido." });
+    const nameValue = String(name || "").trim();
+    const categoryValue = String(category || "").trim();
+    const publisherValue = String(publisher || "").trim();
+    const priceValue = Number(price);
+    const stockValue = Number(stock);
+    const imageValue = String(imageUrl || "").trim();
+    const descriptionValue = String(description || "").trim();
+    const errors = {};
+    if (nameValue.length < 3 || nameValue.length > 100) {
+      errors.name = "El nombre debe tener entre 3 y 100 caracteres.";
     }
-    if (!Number.isFinite(Number(price)) || Number(price) <= 0) {
-      return res.status(400).json({ ok: false, message: "Precio inválido." });
+    if (!categoryValue || categoryValue.length > 40) {
+      errors.category = "Selecciona una categoría de máximo 40 caracteres.";
     }
-    if (!Number.isInteger(Number(stock)) || Number(stock) < 0) {
-      return res.status(400).json({ ok: false, message: "Stock inválido." });
+    if (!publisherValue || publisherValue.length > 20) {
+      errors.publisher = "Selecciona una marca de máximo 20 caracteres.";
+    }
+    if (!Number.isFinite(priceValue) || priceValue <= 0 || priceValue > 99999999.999999) {
+      errors.price = "Ingresa un precio mayor a 0 y dentro del límite permitido.";
+    }
+    if (!Number.isSafeInteger(stockValue) || stockValue < 0 || stockValue > 2147483647) {
+      errors.stock = "Ingresa una cantidad entera entre 0 y 2.147.483.647.";
+    }
+    if (!imageValue || imageValue.length > 255) {
+      errors.imageUrl = "La imagen principal es obligatoria y no puede superar 255 caracteres.";
+    }
+    for (const field of ["imageUrl2", "imageUrl3", "imageUrl4"]) {
+      if (String(req.body?.[field] || "").trim().length > 255) {
+        errors[field] = "La ruta o URL no puede superar 255 caracteres.";
+      }
+    }
+    if (!descriptionValue || descriptionValue.length > 100) {
+      errors.description = "La descripción es obligatoria y debe tener máximo 100 caracteres.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los campos obligatorios del producto.",
+        errors,
+      });
     }
 
     const [existingProductRows] = await pool.query(
@@ -2412,9 +3014,9 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
 
     const updates = ["nombre = ?", "precio = ?", "descripcion = ?"];
     const updateValues = [
-      String(name).trim().substring(0, 100),
-      Number(price),
-      String(description || "").trim().substring(0, 100),
+      nameValue.substring(0, 100),
+      priceValue,
+      descriptionValue.substring(0, 100),
     ];
     const imageFields = [
       ["imageUrl", "imagen_prin"],
@@ -2424,7 +3026,7 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
     ];
     imageFields.forEach(([bodyField, column]) => {
       if (!Object.prototype.hasOwnProperty.call(req.body, bodyField)) return;
-      const imagePath = String(req.body[bodyField] || "").trim().substring(0, 255);
+      const imagePath = String(req.body[bodyField] || "").trim();
       if (column === "imagen_prin" && !imagePath) return;
       updates.push(`${column} = ?`);
       updateValues.push(imagePath || null);
@@ -2446,7 +3048,7 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
     );
 
     // Actualizar el stock de la sucursal seleccionada.
-    const stockVal = Number(stock);
+    const stockVal = stockValue;
     await pool.query(
       `INSERT INTO inventario (id_sucursal, id_producto, stock, estado)
        VALUES (?, ?, ?, 'ACTIVO')
@@ -2586,15 +3188,34 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
     const apellido = parts.slice(1).join(" ") || "Nuevo";
     const correo = String(email || "").trim().toLowerCase();
     const telefono = String(phone || "").trim();
+    const errors = {};
 
-    if (fullName.length < 3) {
-      return res.status(400).json({ ok: false, message: "Nombre inválido." });
+    if (
+      fullName.length > 60 ||
+      !/^[\p{L}\s'-]{3,60}$/u.test(fullName) ||
+      parts.length < 2 ||
+      nombre.length > 30 ||
+      apellido.length > 30
+    ) {
+      errors.name = "Ingresa nombre y apellido válidos (máximo 30 caracteres cada uno).";
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-      return res.status(400).json({ ok: false, message: "Correo inválido." });
+    if (correo.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+      errors.email = "Ingresa un correo electrónico válido (máximo 120 caracteres).";
     }
-    if (!/^[0-9\+\-\s\(\)]{7,20}$/.test(telefono)) {
-      return res.status(400).json({ ok: false, message: "Teléfono inválido." });
+    const phoneDigits = telefono.replace(/\D/g, "");
+    if (
+      !/^[0-9+\-\s()]{7,20}$/.test(telefono) ||
+      phoneDigits.length < 7 ||
+      phoneDigits.length > 15
+    ) {
+      errors.phone = "Ingresa un teléfono válido con 7 a 15 dígitos.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los datos obligatorios del cliente.",
+        errors,
+      });
     }
 
     // Rol 1 = Cliente
@@ -2614,7 +3235,11 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
     });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      return res.status(409).json({ ok: false, message: "El correo o documento ya está registrado." });
+      return res.status(409).json({
+        ok: false,
+        message: "El correo o documento ya está registrado.",
+        errors: { email: "Ya existe un usuario registrado con este correo." },
+      });
     }
     console.error("Error al crear cliente:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo registrar el cliente." });
@@ -2643,19 +3268,48 @@ app.put("/api/admin/usuarios/:id", requireAdmin, async (req, res) => {
     lastName.length < 1 ||
     lastName.length > 30
   ) {
-    return res.status(400).json({ ok: false, message: "Ingresa un nombre y apellido válidos." });
+    return res.status(400).json({
+      ok: false,
+      message: "Ingresa un nombre y apellido válidos.",
+      errors: { name: "Ingresa nombre y apellido válidos (máximo 30 caracteres cada uno)." },
+    });
   }
-  if (!/^[0-9+\-\s()]{7,20}$/.test(phone)) {
-    return res.status(400).json({ ok: false, message: "Teléfono inválido." });
+  const phoneDigits = phone.replace(/\D/g, "");
+  if (
+    !/^[0-9+\-\s()]{7,20}$/.test(phone) ||
+    phoneDigits.length < 7 ||
+    phoneDigits.length > 15
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "Teléfono inválido.",
+      errors: { phone: "Ingresa un teléfono válido con 7 a 15 dígitos." },
+    });
   }
   if (email.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return res.status(400).json({ ok: false, message: "Correo inválido." });
+    return res.status(400).json({
+      ok: false,
+      message: "Correo inválido.",
+      errors: { email: "Ingresa un correo electrónico válido (máximo 120 caracteres)." },
+    });
   }
   if (!department || department.length > 30 || city.length > 30 || address.length > 40) {
-    return res.status(400).json({ ok: false, message: "Revisa los datos de ubicación del usuario." });
+    const errors = {};
+    if (!department || department.length > 30) errors.department = "El departamento es obligatorio y debe tener máximo 30 caracteres.";
+    if (city.length > 30) errors.city = "La ciudad no puede superar 30 caracteres.";
+    if (address.length > 40) errors.address = "La dirección no puede superar 40 caracteres.";
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa los datos de ubicación del usuario.",
+      errors,
+    });
   }
   if (!Number.isSafeInteger(roleId) || roleId < 1) {
-    return res.status(400).json({ ok: false, message: "Selecciona un rol válido." });
+    return res.status(400).json({
+      ok: false,
+      message: "Selecciona un rol válido.",
+      errors: { roleId: "Selecciona un rol válido." },
+    });
   }
 
   try {
@@ -2678,7 +3332,11 @@ app.put("/api/admin/usuarios/:id", requireAdmin, async (req, res) => {
       [roleId],
     );
     if (!roleRows.length) {
-      return res.status(400).json({ ok: false, message: "El rol seleccionado no está disponible." });
+      return res.status(400).json({
+        ok: false,
+        message: "El rol seleccionado no está disponible.",
+        errors: { roleId: "El rol seleccionado ya no está disponible." },
+      });
     }
 
     await pool.query(
@@ -2704,7 +3362,11 @@ app.put("/api/admin/usuarios/:id", requireAdmin, async (req, res) => {
     return res.json({ ok: true, message: "Datos del usuario actualizados correctamente." });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
-      return res.status(409).json({ ok: false, message: "El correo ya está registrado por otro usuario." });
+      return res.status(409).json({
+        ok: false,
+        message: "El correo ya está registrado por otro usuario.",
+        errors: { email: "Este correo ya está registrado por otro usuario." },
+      });
     }
     console.error("Error al actualizar usuario:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo actualizar el usuario." });
@@ -2751,70 +3413,69 @@ app.patch("/api/admin/usuarios/:id/estado", requireAdmin, async (req, res) => {
 
 // ---------- GARANTÍAS ----------
 
-app.post("/api/admin/garantias", async (req, res) => {
-  try {
-    const { client, product, buyDate, duration } = req.body;
+app.patch(
+  "/api/admin/warranty-requests/:id/status",
+  requireAdmin,
+  async (req, res) => {
+    const requestId = Number(req.params.id);
+    const status = String(req.body?.status || "");
+    const allowedStatuses = [
+      "RECIBIDA",
+      "EN_REVISION",
+      "APROBADA",
+      "RECHAZADA",
+      "CERRADA",
+    ];
 
-    if (!client || String(client).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Cliente inválido." });
+    if (!Number.isSafeInteger(requestId) || requestId <= 0) {
+      return res.status(400).json({
+        ok: false,
+        message: "La solicitud de garantía seleccionada no es válida.",
+      });
     }
-    if (!product || String(product).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Producto inválido." });
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Selecciona un estado válido para la solicitud.",
+      });
     }
 
-    // Calcular fecha fin según duración
-    const fechaInicio = buyDate ? new Date(buyDate) : new Date();
-    const fechaFin = new Date(fechaInicio);
-    const dur = String(duration || "3 Meses");
-    if (dur.includes("1 Mes")) fechaFin.setMonth(fechaFin.getMonth() + 1);
-    else if (dur.includes("6 Meses")) fechaFin.setMonth(fechaFin.getMonth() + 6);
-    else if (dur.includes("1 Año") || dur.includes("12")) fechaFin.setFullYear(fechaFin.getFullYear() + 1);
-    else fechaFin.setMonth(fechaFin.getMonth() + 3);
-
-    // Buscar detalle_venta más reciente del producto para asociar la garantía
-    const [dvRows] = await pool.query(
-      `SELECT dv.id_detalle_venta
-       FROM detalle_venta dv
-       INNER JOIN producto p ON p.id_producto = dv.id_producto
-       WHERE p.nombre LIKE CONCAT('%', ?, '%')
-       ORDER BY dv.id_detalle_venta DESC
-       LIMIT 1`,
-      [String(product).trim().substring(0, 50)],
-    );
-
-    let garantiaId;
-    if (dvRows.length > 0) {
-      const [result] = await pool.query(
-        `INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado)
-         VALUES (?, ?, ?, 'VIGENTE')`,
-        [dvRows[0].id_detalle_venta, fechaInicio, fechaFin],
+    try {
+      await ensureWarrantyRequestSchema();
+      const [existingRows] = await pool.query(
+        `SELECT id_solicitud
+         FROM solicitud_garantia
+         WHERE id_solicitud = ?`,
+        [requestId],
       );
-      garantiaId = result.insertId;
-    } else {
-      // Sin detalle_venta asociable – retornar garantía "virtual" solo en frontend
-      garantiaId = null;
-    }
+      if (!existingRows.length) {
+        return res.status(404).json({
+          ok: false,
+          message: "No encontramos la solicitud de garantía.",
+        });
+      }
 
-    return res.status(201).json({
-      ok: true,
-      message: garantiaId
-        ? "Garantía registrada en la base de datos."
-        : "Garantía registrada (sin venta asociada en BD).",
-      garantiaId,
-      warranty: {
-        id: garantiaId ? `GAR-${garantiaId}` : `GAR-${Date.now().toString().slice(-4)}`,
-        client: String(client).trim(),
-        product: String(product).trim(),
-        buyDate: fechaInicio.toISOString().split("T")[0],
-        expDate: fechaFin.toISOString().split("T")[0],
-        status: "Activa",
-      },
-    });
-  } catch (error) {
-    console.error("Error al crear garantía:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo registrar la garantía." });
-  }
-});
+      await pool.query(
+        `UPDATE solicitud_garantia
+         SET estado = ?
+         WHERE id_solicitud = ?`,
+        [status, requestId],
+      );
+
+      return res.json({
+        ok: true,
+        message: "El estado de la solicitud se actualizó correctamente.",
+        request: { id: requestId, status },
+      });
+    } catch (error) {
+      console.error("Error actualizando solicitud de garantía:", error.message);
+      return res.status(500).json({
+        ok: false,
+        message: "No se pudo actualizar el estado de la solicitud.",
+      });
+    }
+  },
+);
 
 // ---------- MANTENIMIENTOS ----------
 
@@ -2829,28 +3490,40 @@ async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
   const technicianId = Number(req.body?.technicianId);
   const cost = Number(req.body?.cost);
   const validEquipmentTypes = ["Portatil", "Torre", "Consola", "Control", "All in one"];
+  const errors = {};
 
-  if (
-    equipment.length < 3 ||
-    equipment.length > 100 ||
-    !validEquipmentTypes.includes(equipmentType) ||
-    brand.length < 1 ||
-    brand.length > 20 ||
-    serialNumber.length > 40 ||
-    serviceDescription.length < 3 ||
-    serviceDescription.length > 100 ||
-    diagnosis.length > 100 ||
-    !Number.isSafeInteger(clientId) ||
-    clientId <= 0 ||
-    !Number.isSafeInteger(technicianId) ||
-    technicianId <= 0 ||
-    !Number.isSafeInteger(cost) ||
-    cost <= 0 ||
-    cost > 99999999
-  ) {
+  if (equipment.length < 3 || equipment.length > 100) {
+    errors.equipment = "El equipo debe tener entre 3 y 100 caracteres.";
+  }
+  if (!validEquipmentTypes.includes(equipmentType)) {
+    errors.equipmentType = "Selecciona un tipo de equipo válido.";
+  }
+  if (brand.length < 1 || brand.length > 20) {
+    errors.brand = "La marca es obligatoria y debe tener máximo 20 caracteres.";
+  }
+  if (serialNumber.length > 40) {
+    errors.serialNumber = "El número de serie no puede superar 40 caracteres.";
+  }
+  if (serviceDescription.length < 3 || serviceDescription.length > 100) {
+    errors.serviceDescription = "El detalle debe tener entre 3 y 100 caracteres.";
+  }
+  if (diagnosis.length > 100) {
+    errors.diagnosis = "El diagnóstico no puede superar 100 caracteres.";
+  }
+  if (!Number.isSafeInteger(clientId) || clientId <= 0) {
+    errors.clientId = "Selecciona un cliente válido.";
+  }
+  if (!Number.isSafeInteger(technicianId) || technicianId <= 0) {
+    errors.technicianId = "Selecciona un técnico válido.";
+  }
+  if (!Number.isSafeInteger(cost) || cost <= 0 || cost > 99999999) {
+    errors.cost = "Ingresa un costo entero entre 1 y 99.999.999.";
+  }
+  if (Object.keys(errors).length) {
     return res.status(400).json({
       ok: false,
       message: "Revisa los datos del equipo, cliente, técnico, detalle y presupuesto.",
+      errors,
     });
   }
 
@@ -2869,7 +3542,11 @@ async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
     );
     if (!clientRows.length) {
       await connection.rollback();
-      return res.status(404).json({ ok: false, message: "No se encontró el cliente seleccionado." });
+      return res.status(404).json({
+        ok: false,
+        message: "No se encontró el cliente seleccionado.",
+        errors: { clientId: "El cliente seleccionado no está activo o ya no existe." },
+      });
     }
 
     const [technicianRows] = await connection.query(
@@ -2882,7 +3559,11 @@ async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
     );
     if (!technicianRows.length) {
       await connection.rollback();
-      return res.status(404).json({ ok: false, message: "No se encontró el técnico seleccionado." });
+      return res.status(404).json({
+        ok: false,
+        message: "No se encontró el técnico seleccionado.",
+        errors: { technicianId: "El técnico seleccionado no está activo o ya no existe." },
+      });
     }
 
     const [serviceTypeRows] = await connection.query(
@@ -2906,7 +3587,11 @@ async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
     if (existingEquipmentRows.length) {
       if (Number(existingEquipmentRows[0].id_usuario) !== clientId) {
         await connection.rollback();
-        return res.status(409).json({ ok: false, message: "El número de serie pertenece a otro cliente." });
+        return res.status(409).json({
+          ok: false,
+          message: "El número de serie pertenece a otro cliente.",
+          errors: { serialNumber: "Este número de serie ya está asociado a otro cliente." },
+        });
       }
       equipmentId = existingEquipmentRows[0].id_equipo;
       await connection.query(
@@ -2920,7 +3605,10 @@ async function crearOrdenServicioAdmin(req, res, nombreTipoServicio, prefijo) {
       );
       if (!branchRows.length) {
         await connection.rollback();
-        return res.status(409).json({ ok: false, message: "No hay una sucursal activa para registrar el equipo." });
+        return res.status(409).json({
+          ok: false,
+          message: "No hay una sucursal activa para registrar el equipo.",
+        });
       }
       const [equipmentResult] = await connection.query(
         `INSERT INTO equipo
@@ -3428,13 +4116,26 @@ app.patch("/api/admin/appointments/:id/technician", requireAdmin, async (req, re
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
     const { code, percent, limit: useLimit, desc } = req.body;
+    const codeValue = String(code || "").trim();
+    const percentValue = Number(percent);
+    const descriptionValue = String(desc || "").trim();
+    const errors = {};
 
-    if (!code || String(code).trim().length < 3) {
-      return res.status(400).json({ ok: false, message: "Código de cupón inválido." });
+    if (!/^[A-Za-z0-9_-]{3,20}$/.test(codeValue)) {
+      errors.code = "El código debe tener entre 3 y 20 caracteres alfanuméricos.";
     }
-    const percentVal = parseInt(percent);
-    if (isNaN(percentVal) || percentVal < 1 || percentVal > 100) {
-      return res.status(400).json({ ok: false, message: "Porcentaje inválido." });
+    if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
+      errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
+    }
+    if (descriptionValue.length < 3 || descriptionValue.length > 150) {
+      errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los datos obligatorios del descuento.",
+        errors,
+      });
     }
 
     // Obtener primer producto activo para asociar la promoción
@@ -3442,12 +4143,15 @@ app.post("/api/admin/descuentos", async (req, res) => {
       "SELECT id_producto, precio FROM producto WHERE estado = 'ACTIVO' ORDER BY id_producto LIMIT 1",
     );
     if (!prodRows.length) {
-      return res.status(400).json({ ok: false, message: "No hay productos activos para asociar." });
+      return res.status(400).json({
+        ok: false,
+        message: "No hay productos activos para asociar el descuento.",
+      });
     }
 
     const productId = prodRows[0].id_producto;
     const originalPrice = Number(prodRows[0].precio);
-    const discountedPrice = originalPrice * (1 - percentVal / 100);
+    const discountedPrice = originalPrice * (1 - percentValue / 100);
 
     // Obtener admin (encargado)
     const [adminRows] = await pool.query(
@@ -3467,7 +4171,7 @@ app.post("/api/admin/descuentos", async (req, res) => {
         productId,
         adminId,
         discountedPrice,
-        String(desc || `Cupón ${code}`).trim().substring(0, 150),
+        descriptionValue.substring(0, 150),
         now,
         fechaFin,
       ],
@@ -3477,9 +4181,9 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: String(code).toUpperCase().trim(),
-        desc: String(desc || `Cupón ${code}`).trim(),
-        percent: `${percentVal}%`,
+        code: codeValue.toUpperCase(),
+        desc: descriptionValue,
+        percent: `${percentValue}%`,
         expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
         uses: `0 / ${useLimit || 100}`,
         status: "Activo",
@@ -3495,19 +4199,52 @@ app.post("/api/admin/descuentos", async (req, res) => {
 
 app.post("/api/admin/resenas", async (req, res) => {
   try {
-    const { client, comment } = req.body;
-    const clientName = String(client || "Cliente").trim();
-    const mensaje = String(comment || "Excelente servicio").trim();
+    const clientId = Number(req.body?.clientId);
+    const productOrService = String(req.body?.productOrService || "").trim();
+    const rating = String(req.body?.rating || "").trim();
+    const comment = String(req.body?.comment || "").trim();
+    const validRatings = ["5 estrellas", "4 estrellas", "3 estrellas"];
+    const errors = {};
+    if (!Number.isSafeInteger(clientId) || clientId <= 0) {
+      errors.clientId = "Selecciona un cliente válido.";
+    }
+    if (productOrService.length < 3 || productOrService.length > 100) {
+      errors.productOrService = "El producto o servicio debe tener entre 3 y 100 caracteres.";
+    }
+    if (!validRatings.includes(rating)) {
+      errors.rating = "Selecciona una calificación válida.";
+    }
+    if (comment.length < 5 || comment.length > 300) {
+      errors.comment = "El comentario debe tener entre 5 y 300 caracteres.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los datos obligatorios de la reseña.",
+        errors,
+      });
+    }
 
     const [userRows] = await pool.query(
-      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
-      [clientName]
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [clientId],
     );
-    const userId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+    if (!userRows.length) {
+      return res.status(404).json({
+        ok: false,
+        message: "El cliente seleccionado no está activo o ya no existe.",
+        errors: { clientId: "Selecciona un cliente activo." },
+      });
+    }
+    const mensaje = `[${rating}] ${productOrService}: ${comment}`;
 
     const [result] = await pool.query(
       `INSERT INTO sugerencia (mensaje, id_usuario, fecha_envio) VALUES (?, ?, NOW())`,
-      [mensaje, userId]
+      [mensaje, userRows[0].id_usuario],
     );
 
     return res.status(201).json({
@@ -3523,37 +4260,75 @@ app.post("/api/admin/resenas", async (req, res) => {
 
 // ---------- PEDIDOS / VENTAS ----------
 
-app.post("/api/admin/pedidos", async (req, res) => {
+app.post("/api/admin/pedidos", requireAdmin, async (req, res) => {
+  let connection;
   try {
-    const { client, total } = req.body;
-    const clientName = String(client || "Cliente").trim();
-    const totalVal = Number(total || 0);
+    const clientId = Number(req.body?.clientId);
+    const totalVal = Number(req.body?.total);
+    if (!Number.isSafeInteger(clientId) || clientId <= 0) {
+      return res.status(400).json({
+        ok: false,
+        message: "Selecciona un cliente válido para el pedido.",
+        errors: { clientId: "Selecciona un cliente válido." },
+      });
+    }
+    if (
+      !Number.isFinite(totalVal) ||
+      totalVal < 1000 ||
+      totalVal > 99999999.999999 ||
+      totalVal % 500 !== 0
+    ) {
+      return res.status(400).json({
+        ok: false,
+        message: "Ingresa un total desde $1.000, en incrementos de $500.",
+        errors: { total: "El total debe ser desde $1.000 y avanzar en incrementos de $500." },
+      });
+    }
 
-    const [userRows] = await pool.query(
-      `SELECT id_usuario FROM usuario WHERE CONCAT(nombre, ' ', apellido) LIKE CONCAT('%', ?, '%') AND estado = 'ACTIVO' LIMIT 1`,
-      [clientName]
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [userRows] = await connection.query(
+      `SELECT u.id_usuario
+       FROM usuario u
+       INNER JOIN rol r ON r.id_rol = u.id_rol
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       LIMIT 1`,
+      [clientId],
     );
-    const userId = userRows.length > 0 ? userRows[0].id_usuario : 1;
+    if (!userRows.length) {
+      await connection.rollback();
+      return res.status(400).json({
+        ok: false,
+        message: "El cliente seleccionado no está activo o no existe.",
+        errors: { clientId: "Selecciona un cliente activo." },
+      });
+    }
 
-    // Crear venta
-    const [resultVenta] = await pool.query(
+    const [prodRows] = await connection.query(
+      "SELECT id_producto, precio FROM producto WHERE estado = 'ACTIVO' ORDER BY id_producto LIMIT 1"
+    );
+    if (!prodRows.length) {
+      await connection.rollback();
+      return res.status(409).json({
+        ok: false,
+        message: "No hay productos activos para registrar el pedido.",
+      });
+    }
+
+    const [resultVenta] = await connection.query(
       `INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, tipo_venta, ciudad, direccion_entrega, estado)
        VALUES (?, 5, 1, NOW(), 'EFECTIVO', 'SUCURSAL', 'Sogamoso', 'Tienda WiiU', 'PAGADA')`,
-      [userId]
+      [clientId]
     );
     const ventaId = resultVenta.insertId;
 
-    // Asociar a un detalle de venta para que sume a ventas
-    const [prodRows] = await pool.query(
-      "SELECT id_producto, precio FROM producto WHERE estado = 'ACTIVO' ORDER BY id_producto LIMIT 1"
+    const [detailResult] = await connection.query(
+      `INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+       VALUES (?, ?, 1, ?, ?, 'Venta manual desde panel')`,
+      [ventaId, prodRows[0].id_producto, totalVal, totalVal]
     );
-    if (prodRows.length > 0) {
-      await pool.query(
-        `INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
-         VALUES (?, ?, 1, ?, ?, 'Venta manual desde panel')`,
-        [ventaId, prodRows[0].id_producto, totalVal, totalVal]
-      );
-    }
+    await insertAutomaticWarrantyCoverage(connection, detailResult.insertId);
+    await connection.commit();
 
     return res.status(201).json({
       ok: true,
@@ -3561,8 +4336,17 @@ app.post("/api/admin/pedidos", async (req, res) => {
       orderId: ventaId,
     });
   } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo pedido manual:", rollbackError.message);
+      }
+    }
     console.error("Error al crear pedido:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo registrar el pedido." });
+  } finally {
+    connection?.release();
   }
 });
 

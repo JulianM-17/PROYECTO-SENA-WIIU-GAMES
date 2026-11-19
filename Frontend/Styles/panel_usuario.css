@@ -698,6 +698,17 @@ body {
   border-bottom: 1px solid var(--border);
 }
 
+#form-perfil-seguridad .titulo-tarjeta-formulario {
+  margin-bottom: 12px;
+}
+
+.descripcion-seguridad {
+  margin: 0 0 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .encabezado-formulario-perfil {
   display: flex;
   align-items: flex-start;
@@ -765,6 +776,36 @@ body {
 
 .entrada-formulario:focus {
   border-color: var(--yellow);
+}
+
+.contenedor-password-actual {
+  position: relative;
+}
+
+.contenedor-password-actual .entrada-formulario {
+  width: 100%;
+  padding-right: 46px;
+}
+
+.btn-ver-password-actual {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+.btn-ver-password-actual:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .acciones-formulario {
@@ -2011,6 +2052,21 @@ a.btn-agregar {
   border-radius: 12px;
 }
 
+.garantia-feedback {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.garantia-feedback.error {
+  color: #b42318;
+}
+
+.garantia-feedback.success {
+  color: #047857;
+}
+
 .garantia-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2044,15 +2100,158 @@ a.btn-agregar {
   font: inherit;
 }
 
+.garantia-form input:read-only {
+  background: #f8fafc;
+  color: var(--text-muted);
+}
+
 .garantia-form textarea {
   min-height: 120px;
   resize: vertical;
 }
 
-.garantia-categoria,
+.garantia-producto,
 .garantia-form .consulta,
 .garantia-form .btn-agendar {
   grid-column: 1 / -1;
+}
+
+.garantia-form .btn-agendar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 13px 22px;
+  border: 0;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--yellow), var(--yellow-hover));
+  box-shadow: 0 4px 14px rgba(245, 200, 66, 0.28);
+  color: var(--dark-blue);
+  font: 700 14px "Poppins", sans-serif;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.garantia-form .btn-agendar:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 7px 18px rgba(245, 200, 66, 0.38);
+}
+
+.garantia-form .btn-agendar:focus-visible {
+  outline: 3px solid rgba(8, 15, 32, 0.35);
+  outline-offset: 3px;
+}
+
+.garantia-form .btn-agendar:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: none;
+}
+
+.garantia-solicitudes-panel {
+  margin-top: 24px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.garantia-solicitudes-encabezado {
+  margin-bottom: 18px;
+}
+
+.garantia-solicitudes-encabezado h2 {
+  margin: 0 0 4px;
+  color: var(--text-main);
+  font-size: 17px;
+}
+
+.garantia-solicitudes-encabezado p,
+.garantia-solicitudes-mensaje {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.garantia-solicitudes-lista {
+  display: grid;
+  gap: 12px;
+}
+
+.garantia-solicitud-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #f8fafc;
+}
+
+.garantia-solicitud-cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.garantia-solicitud-cabecera h3 {
+  margin: 0 0 4px;
+  color: var(--text-main);
+  font-size: 14px;
+}
+
+.garantia-solicitud-referencia,
+.garantia-solicitud-fecha,
+.garantia-solicitud-descripcion {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.garantia-solicitud-descripcion {
+  margin-top: 8px;
+  color: var(--text-main);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.garantia-solicitud-estado {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.garantia-solicitud-estado.estado-recibida {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.garantia-solicitud-estado.estado-en_revision {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.garantia-solicitud-estado.estado-aprobada {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.garantia-solicitud-estado.estado-rechazada {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.garantia-solicitud-estado.estado-cerrada {
+  background: #e2e8f0;
+  color: #475569;
 }
 
 .garantia-form .error-mensaje {
@@ -2127,6 +2326,12 @@ a.btn-agregar {
 @media (max-width: 600px) {
   .garantias-panel {
     padding: 18px;
+  }
+  .garantia-solicitudes-panel {
+    padding: 18px;
+  }
+  .garantia-solicitud-cabecera {
+    flex-direction: column;
   }
   .garantia-form {
     grid-template-columns: 1fr;

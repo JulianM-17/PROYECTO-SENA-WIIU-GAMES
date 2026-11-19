@@ -46,6 +46,8 @@ CREATE TABLE cita (
     tipo_servicio ENUM('MANTENIMIENTO', 'REPARACION') NOT NULL,
     estado ENUM('SOLICITUD RECIBIDA','CONFIRMADA','EN PROCESO','COMPLETADA','CANCELADA') NOT NULL DEFAULT 'SOLICITUD RECIBIDA',
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_cita_local VARCHAR(80) NULL,
+    UNIQUE KEY uq_cita_usuario_local (id_usuario, id_cita_local),
     INDEX idx_cita_usuario_fecha (id_usuario, fecha),
     INDEX idx_cita_tecnico (id_tecnico)
 );
@@ -217,6 +219,25 @@ CREATE TABLE garantia (
     fecha_fin DATETIME NOT NULL,
     estado ENUM('VIGENTE','VENCIDA', 'ANULADA') NOT NULL DEFAULT 'VIGENTE',
     CONSTRAINT chk_fechas_garantia CHECK (fecha_fin > fecha_inicio)
+);
+
+-- ---------------------- Solicitud de garantia ----------------------
+CREATE TABLE solicitud_garantia (
+    id_solicitud INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario (id_usuario),
+    id_detalle_venta INT NOT NULL,
+    FOREIGN KEY (id_detalle_venta) REFERENCES detalle_venta (id_detalle_venta),
+    descripcion TEXT NOT NULL,
+    estado ENUM(
+        'RECIBIDA',
+        'EN_REVISION',
+        'APROBADA',
+        'RECHAZADA',
+        'CERRADA'
+    ) NOT NULL DEFAULT 'RECIBIDA',
+    fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_solicitud_garantia_usuario_fecha (id_usuario, fecha_solicitud)
 );
 
 -- --------------- Compra -------------------------
@@ -418,36 +439,6 @@ INSERT INTO tipo_servicio (nombre, descripcion, estado) VALUES
 ('Reparacion', 'Diagnostico y reparacion de fallas de hardware', 'ACTIVO'),
 ('Instalacion de software', 'Formateo e instalacion de sistema operativo y programas', 'ACTIVO');
 
--- ---------------- servicio ----------------
-INSERT INTO servicio (nombre, descripcion, id_usuario, id_encargado, id_tipo_servicio, id_equipo, estado) VALUES
-('Cambio de bateria portatil HP', 'Reemplazo de bateria defectuosa', 1, 5, 2, 1, 'PENDIENTE'),
-('Revision consola PS5', 'Diagnostico de falla de encendido', 2, 6, 2, 2, 'EN PROCESO'),
-('Mantenimiento torre gamer', 'Limpieza y cambio de pasta termica', 1, 5, 1, 3, 'PENDIENTE');
-
--- ---------------- detalle_servicio (SIN incluir subtotal) ----------------
-INSERT INTO detalle_servicio (id_servicio, id_producto, descripcion, cantidad, precio_unitario, estado) VALUES
-(1, NULL, 'Diagnostico inicial de la bateria', 1, 50000.000000, 'COMPLETO'),
-(2, NULL, 'Revision de fuente de poder y puerto HDMI', 1, 80000.000000, 'EN PROCESO'),
-(3, 3, 'Se instala SSD adicional durante el mantenimiento', 1, 180000.000000, 'PENDIENTE');
-
--- ---------------- venta ----------------------
-INSERT INTO venta (id_usuario, id_empleado, id_sucursal, fecha, metodo_pago, nro_pago, comprobante, telefono, tipo_venta, ciudad, direccion_entrega, numero_guia, notas, estado) VALUES
-(1, 5, 1, '2026-09-10 10:30:00', 'TARJETA', 'PAGO-0001', 'comprobante_0001.pdf', '3101234567', 'SUCURSAL', NULL, NULL, NULL, 'Compra en mostrador', 'PAGADA'),
-(2, 6, 3, '2026-09-12 15:45:00', 'TRANSFERENCIA', 'PAGO-0002', 'comprobante_0002.pdf', '3209876543', 'DOMICILIO', 'Medellin', 'Calle 50 # 45-10 Apto 301', 'GUIA-123456', 'Entregar en horario de la tarde', 'PAGADA'),
-(1, 5, 2, '2026-09-15 09:15:00', 'EFECTIVO', 'PAGO-0003', 'comprobante_0003.pdf', '3101234567', 'SUCURSAL', NULL, NULL, NULL, NULL, 'PAGADA');
-
--- ---------------- detalle_venta ----------------
-INSERT INTO detalle_venta (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas) VALUES
-(1, 1, 1, 2200000.000000, 2200000.000000, NULL),
-(2, 2, 2, 45000.000000, 90000.000000, 'Dos unidades'),
-(3, 3, 1, 180000.000000, 180000.000000, NULL);
-
--- ---------------- garantia ----------------
-INSERT INTO garantia (id_detalle_venta, fecha_inicio, fecha_fin, estado) VALUES
-(1, '2026-09-10 10:30:00', '2027-09-10 10:30:00', 'VIGENTE'),
-(2, '2026-09-12 15:45:00', '2027-03-12 15:45:00', 'VIGENTE'),
-(3, '2026-09-15 09:15:00', '2027-09-15 09:15:00', 'VIGENTE');
-
 -- ---------------- compra ----------------
 INSERT INTO compra (id_admin, id_proveedor, id_sucursal, fecha, metodo_pago, notas, estado) VALUES
 (3, 4, 1, '2026-08-20 11:00:00', 'TRANSFERENCIA', 'Reposicion de portatiles', 'PAGADA'),
@@ -462,15 +453,11 @@ INSERT INTO detalle_compra (id_compra, id_producto, cantidad, precio_unitario, s
 
 -- ---------------- cotizacion ----------------
 INSERT INTO cotizacion (id_usuario, id_servicio, fecha, validez, total, estado) VALUES
-(1, 1, '2026-09-01 09:00:00', 15, 230000.000000, 'ACEPTADA'),
-(2, 2, '2026-09-03 10:30:00', 15, 350000.000000, 'PENDIENTE'),
 (1, NULL, '2026-09-05 12:00:00', 30, 2200000.000000, 'RECHAZADA');
 
 -- ---------------- detalle_cotizacion ----------------
 INSERT INTO detalle_cotizacion (id_cotizacion, id_producto, cantidad, precio_unitario, subtotal) VALUES
-(1, 3, 1, 180000.000000, 180000.000000),
-(2, 2, 1, 45000.000000, 45000.000000),
-(3, 1, 1, 2200000.000000, 2200000.000000);
+(1, 1, 1, 2200000.000000, 2200000.000000);
 
 -- -----------------------Promociones----------------------------
 INSERT INTO promocion (id_producto, id_encargado, precio, descripcion, fecha_inicio, fecha_fin, estado) VALUES

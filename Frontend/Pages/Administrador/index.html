@@ -249,8 +249,12 @@
 
 <div class="caja-panel">
             <div class="encabezado-caja">
-              <h3>Pedidos recientes</h3>
+              <h3>Pedidos registrados</h3>
               <button class="btn-texto" onclick="abrirModal('pedidos')">+ Nuevo Pedido</button>
+            </div>
+
+            <div class="barra-filtros">
+              <input type="text" class="input-filtro" placeholder="Buscar por pedido o cliente..." oninput="filtrarTabla('tablaPedidosBody', this.value)">
             </div>
 
             <div class="tabla-responsive">
@@ -259,6 +263,7 @@
                 <tr>
                   <th>Pedido</th>
                   <th>Cliente</th>
+                  <th>Fecha</th>
                   <th>Estado</th>
                   <th>Total</th>
                   <th>Acciones</th>
@@ -266,7 +271,7 @@
               </thead>
               <tbody id="tablaPedidosBody">
                 <tr>
-                  <td colspan="5" class="texto-vacio">No hay pedidos registrados en la base de datos</td>
+                  <td colspan="6" class="texto-vacio">No hay pedidos registrados en la base de datos</td>
                 </tr>
               </tbody>
               </table>
@@ -327,18 +332,19 @@
         <div class="cabecera-modulo">
           <div>
             <h2>Gestión de Garantías</h2>
-            <p>Supervisa reclamaciones, estados de cobertura y términos de garantías para clientes.</p>
+            <p>Las compras pagadas registran automáticamente una garantía de seis meses por producto.</p>
           </div>
-          <button class="boton-amarillo" onclick="abrirModal('garantias')">+ Registrar Garantía</button>
+          <span class="etiqueta-azul">Cobertura automática · 6 meses</span>
         </div>
 
         <div class="caja-panel">
           <div class="barra-filtros">
-            <input type="text" class="input-filtro" placeholder="Buscar por cliente, serial o producto..." oninput="filtrarTabla('tablaGarantiasBody', this.value)">
+            <input type="text" class="input-filtro" placeholder="Buscar por cliente o producto..." oninput="filtrarTabla('tablaGarantiasBody', this.value)">
             <select class="select-filtro" onchange="filtrarEstadoTabla('tablaGarantiasBody', this.value, 5)">
               <option value="">Todos los estados</option>
               <option value="Activa">Activa</option>
               <option value="Vencida">Vencida</option>
+              <option value="Anulada">Anulada</option>
             </select>
           </div>
 
@@ -348,7 +354,7 @@
               <tr>
                 <th>ID Garantía</th>
                 <th>Cliente</th>
-                <th>Producto / Serial</th>
+                <th>Producto</th>
                 <th>Fecha Compra</th>
                 <th>Vencimiento</th>
                 <th>Estado</th>
@@ -357,9 +363,48 @@
             </thead>
             <tbody id="tablaGarantiasBody">
               <tr>
-                <td colspan="7" class="texto-vacio">No hay garantías registradas en la base de datos</td>
+                <td colspan="7" class="texto-vacio">Las garantías aparecerán aquí al confirmarse las compras.</td>
               </tr>
             </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="caja-panel solicitudes-garantia-admin">
+          <div class="encabezado-caja">
+            <div>
+              <h3>Solicitudes de garantía</h3>
+              <p>Revisa los casos enviados por los clientes y actualiza su estado.</p>
+            </div>
+          </div>
+          <div class="barra-filtros">
+            <input
+              type="search"
+              class="input-filtro"
+              placeholder="Buscar solicitud, cliente, pedido o producto..."
+              oninput="filtrarTabla('tablaSolicitudesGarantiaBody', this.value)"
+            >
+          </div>
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
+              <thead>
+                <tr>
+                  <th>Solicitud</th>
+                  <th>Cliente</th>
+                  <th>Pedido / Producto</th>
+                  <th>Fecha de solicitud</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="tablaSolicitudesGarantiaBody">
+                <tr>
+                  <td colspan="7" class="texto-vacio">
+                    Cargando solicitudes de garantía...
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -767,7 +812,8 @@
         <button class="btn-cerrar-modal" onclick="cerrarModal()">&times;</button>
       </div>
 
-      <form id="formularioDinamico" onsubmit="guardarDatos(event)">
+      <form id="formularioDinamico" novalidate onsubmit="guardarDatos(event)">
+        <p class="nota-obligatorios">Los campos marcados con <strong>*</strong> son obligatorios.</p>
         <div class="cuerpo-modal" id="modalCampos">
           
         </div>
