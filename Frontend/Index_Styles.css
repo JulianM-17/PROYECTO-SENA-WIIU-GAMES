@@ -472,13 +472,18 @@ main {
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+  min-width: 0;
 }
 
 .grid-productos {
   display: flex;
+  flex: 1 1 0;
+  min-width: 0;
   gap: 16px;
   overflow-x: auto;
   scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
   scrollbar-width: none;
   width: 100%;
   padding: 10px 0;
@@ -503,6 +508,7 @@ main {
 .tarjeta-producto {
   flex: 0 0 230px;
   width: 230px;
+  scroll-snap-align: start;
   background: var(--dark-card);
   border-radius: 6px;
   padding: 20px;
@@ -723,6 +729,24 @@ main {
   border-color: var(--yellow);
   color: var(--black);
   box-shadow: 0 4px 20px rgba(245, 200, 66, 0.35);
+}
+
+.flecha-carrusel:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.flecha-carrusel:disabled:hover {
+  background: rgba(17, 24, 39, 0.9);
+  border-color: var(--border-dark);
+  color: var(--gray-400);
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid-productos {
+    scroll-behavior: auto;
+  }
 }
 
 .flecha-izq {
