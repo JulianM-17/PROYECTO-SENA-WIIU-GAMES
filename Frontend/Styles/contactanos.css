@@ -88,6 +88,90 @@
   padding: 40px 50px;
 }
 
+#terminos-panel .panel-body {
+  padding: 34px 50px 48px;
+}
+
+.terminos-contenido {
+  display: grid;
+  gap: 14px;
+  counter-reset: terminos;
+}
+
+.termino-item {
+  position: relative;
+  padding: 20px 24px 20px 70px;
+  background: linear-gradient(135deg, #ffffff 0%, #fbfcfe 100%);
+  border: 1px solid #e5eaf2;
+  border-left: 3px solid #f5c842;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(8, 15, 32, 0.045);
+  counter-increment: terminos;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.termino-item::before {
+  content: "0" counter(terminos);
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 10px;
+  background: rgba(245, 200, 66, 0.18);
+  color: #745a08;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.termino-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(245, 200, 66, 0.7);
+  box-shadow: 0 10px 24px rgba(8, 15, 32, 0.09);
+}
+
+.termino-item h3 {
+  color: #101a2e;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0 0 7px;
+}
+
+.termino-item p {
+  color: #647084;
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 0;
+}
+
+.terminos-acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-aceptar-terminos-panel {
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 8px;
+  background: #f5c842;
+  color: #101a2e;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.btn-aceptar-terminos-panel:hover {
+  background: #e8b830;
+  transform: translateY(-1px);
+}
+
 .formulario-contacto {
   flex: 2;
   background: white;
@@ -167,8 +251,22 @@
 @media (max-width: 700px) {
   #contacto-panel .panel-body { flex-direction: column; padding: 20px; }
   #contacto-panel { width: 100%; }
+  #terminos-panel .panel-body { padding: 20px; }
+  #terminos-panel { width: 100%; }
+  .termino-item { padding: 18px 18px 18px 62px; }
+  .termino-item::before { top: 18px; left: 16px; }
   .hero-slider {
     height: 70vh;
     min-height: 450px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .termino-item {
+    transition: none;
+  }
+
+  .termino-item:hover {
+    transform: none;
   }
 }

@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="../../Assets/LogoSinFondo.png">
   <title>Panel de Administrador - WiiU-Games</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,7 +76,7 @@
 
         <button class="boton-menu" onclick="cambiarPestana('seccion-clientes', this)">
           <i class="fi fi-rr-users-alt"></i>
-          <span>Usuarios</span>
+          <span>Clientes</span>
         </button>
       </nav>
 
@@ -681,19 +680,19 @@
         
         <div class="cabecera-modulo">
           <div>
-            <h2>Directorio de Usuarios</h2>
-            <p>Administra los datos, roles y estado de las cuentas registradas.</p>
+            <h2>Directorio de Clientes</h2>
+            <p>Administra los datos de contacto, historial y compras de los clientes registrados.</p>
           </div>
           <button class="boton-amarillo" onclick="abrirModal('clientes')">+ Nuevo Cliente</button>
         </div>
 
 <div class="fila-tarjetas">
           <div class="tarjeta-resumen">
-            <span>Total de Usuarios</span>
+            <span>Total de Clientes</span>
             <h2 id="cliTotal">0</h2>
           </div>
           <div class="tarjeta-resumen">
-            <span>Usuarios Activos</span>
+            <span>Clientes Activos</span>
             <h2 id="cliActivos">0</h2>
           </div>
           <div class="tarjeta-resumen">
@@ -708,24 +707,21 @@
           </div>
 
           <div class="tabla-responsive">
-            <table class="tabla-panel" id="tablaUsuarios">
+            <table class="tabla-panel">
             <thead>
               <tr>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="number">ID</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Nombre Completo</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Teléfono</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Correo Electrónico</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Ciudad</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="number">Total Comprado</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Rol</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="text">Estado</button></th>
-                <th scope="col" aria-sort="none"><button class="boton-orden-tabla" type="button" data-sort-type="date">Fecha Registro</button></th>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Teléfono</th>
+                <th>Correo Electrónico</th>
+                <th>Ciudad</th>
+                <th>Fecha Registro</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tablaClientesBody">
               <tr>
-                <td colspan="10" class="texto-vacio">No hay usuarios registrados en la base de datos</td>
+                <td colspan="7" class="texto-vacio">No hay clientes registrados en la base de datos</td>
               </tr>
             </tbody>
             </table>
@@ -739,12 +735,12 @@
           <div class="columna-footer">
             <h3>Información</h3>
             <ul>
-              <li><a href="../servicios.html">Acerca de nosotros</a></li>
+              <li><a href="../Catalog.html">Acerca de nosotros</a></li>
               <li><a href="../Catalog.html">Política de Privacidad</a></li>
               <li><a href="../Catalog.html">Buscar</a></li>
               <li><a href="../Catalog.html">Términos y Condiciones</a></li>
               <li><a href="../Catalog.html">Pedidos y devoluciones</a></li>
-              <li><a href="#" class="link-contacto">Contáctanos</a></li>
+              <li><a href="../contactanos.html">Contáctanos</a></li>
             </ul>
           </div>
           <div class="columna-footer">
@@ -849,7 +845,6 @@
   
   <script src="../../Scripts/accessibility.js" defer></script>
   <script src="../../Scripts/contactanos.js" defer></script>
-  <script src="../../Scripts/footer.js" defer></script>
 
 </body>
 </html>

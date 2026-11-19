@@ -37,7 +37,7 @@
           <li><a href="${servicesPage()}">Acerca de nosotros</a></li>
           <li><a href="${indexPage()}#categoriasGrid">Política de Privacidad</a></li>
           <li><a href="${catalogPage("?buscar=1")}">Buscar</a></li>
-          <li><a href="${indexPage()}#categoriasGrid">Términos y Condiciones</a></li>
+          <li><a href="#" class="link-terminos">Términos y Condiciones</a></li>
           <li><a href="${cartPage()}">Pedidos y devoluciones</a></li>
           <li><a href="#" class="link-contacto">Contáctanos</a></li>
         </ul>

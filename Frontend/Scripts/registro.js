@@ -29,13 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkTerminos = document.getElementById('aceptar-terminos');
   const btnRegistro = document.getElementById('btn-registro');
 
-  // Modal Términos y Condiciones
-  const enlaceTerminos = document.getElementById('abrir-terminos');
-  const modalTerminos = document.getElementById('modal-terminos');
-  const btnCerrarTerminos = document.getElementById('btn-cerrar-terminos');
-  const btnCancelarTerminos = document.getElementById('btn-cancelar-terminos');
-  const btnAceptarTerminos = document.getElementById('btn-aceptar-terminos');
-
   function formatearTelefono(input, selectPrefijo) {
     const localDigits = String(input?.value || '').replace(/\D/g, '').replace(/^0+/, '');
     const prefijo = selectPrefijo?.value || '+57';
@@ -239,46 +232,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 5. MODAL DE TÉRMINOS Y CONDICIONES
-  // -----------------------------------------------------
-  function abrirModalTerminos(e) {
-    if (e) e.preventDefault();
-    if (modalTerminos) modalTerminos.classList.add('activo');
-  }
-
-  function cerrarModalTerminos() {
-    if (modalTerminos) modalTerminos.classList.remove('activo');
-  }
-
-  if (enlaceTerminos) {
-    enlaceTerminos.addEventListener('click', abrirModalTerminos);
-  }
-
-  if (btnCerrarTerminos) {
-    btnCerrarTerminos.addEventListener('click', cerrarModalTerminos);
-  }
-
-  if (btnCancelarTerminos) {
-    btnCancelarTerminos.addEventListener('click', cerrarModalTerminos);
-  }
-
-  if (btnAceptarTerminos) {
-    btnAceptarTerminos.addEventListener('click', () => {
-      if (checkTerminos) {
-        checkTerminos.checked = true;
-        validarTerminos();
-      }
-      cerrarModalTerminos();
-      mostrarToast('Has aceptado los términos y condiciones de WiiU-Games.', 'exito');
-    });
-  }
-
-  if (modalTerminos) {
-    modalTerminos.addEventListener('click', (e) => {
-      if (e.target === modalTerminos) cerrarModalTerminos();
-    });
-  }
+  document.addEventListener('click', (event) => {
+    if (!event.target?.closest?.('#aceptar-terminos-panel')) return;
+    if (checkTerminos) {
+      checkTerminos.checked = true;
+      validarTerminos();
+    }
+    document.getElementById('cerrar-panel-terminos')?.click();
+    mostrarToast('Has aceptado los términos y condiciones de WiiU-Games.', 'exito');
+  });
 
   // -----------------------------------------------------
   // 6. TOAST NOTIFICACIONES
