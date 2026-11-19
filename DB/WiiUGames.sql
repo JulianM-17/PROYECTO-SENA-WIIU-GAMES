@@ -218,6 +218,7 @@ CREATE TABLE garantia (
     fecha_inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_fin DATETIME NOT NULL,
     estado ENUM('VIGENTE','VENCIDA', 'ANULADA') NOT NULL DEFAULT 'VIGENTE',
+    UNIQUE KEY uq_garantia_detalle_venta (id_detalle_venta),
     CONSTRAINT chk_fechas_garantia CHECK (fecha_fin > fecha_inicio)
 );
 
@@ -237,7 +238,8 @@ CREATE TABLE solicitud_garantia (
         'CERRADA'
     ) NOT NULL DEFAULT 'RECIBIDA',
     fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_solicitud_garantia_usuario_fecha (id_usuario, fecha_solicitud)
+    INDEX idx_solicitud_garantia_usuario_fecha (id_usuario, fecha_solicitud),
+    UNIQUE KEY uq_solicitud_garantia_detalle_venta (id_detalle_venta)
 );
 
 -- --------------- Compra -------------------------

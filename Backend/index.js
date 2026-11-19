@@ -20,8 +20,68 @@ const PORT = process.env.PORT || 3000;
 const SESSION_TTL = 8 * 60 * 60 * 1000;
 const sessions = new Map();
 let warrantyRequestSchemaPromise;
+let warrantyDetailIndexSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
+
+function ensureWarrantyDetailIndexes() {
+  if (!warrantyDetailIndexSchemaPromise) {
+    warrantyDetailIndexSchemaPromise = (async () => {
+      for (const [table, indexName] of [
+        ["garantia", "uq_garantia_detalle_venta"],
+        ["solicitud_garantia", "uq_solicitud_garantia_detalle_venta"],
+      ]) {
+        const [indexRows] = await pool.query(
+          `SHOW INDEX FROM ${table}
+           WHERE Column_name = 'id_detalle_venta' AND Non_unique = 0`,
+        );
+        if (indexRows.length) continue;
+
+        const [duplicateRows] = await pool.query(
+          `SELECT id_detalle_venta
+           FROM ${table}
+           GROUP BY id_detalle_venta
+           HAVING COUNT(*) > 1
+           LIMIT 1`,
+        );
+        if (duplicateRows.length) {
+          console.warn(
+            `No se agregó ${indexName}: hay registros duplicados en ${table}.`,
+          );
+          continue;
+        }
+
+        try {
+          await pool.query(
+            `ALTER TABLE ${table} ADD UNIQUE KEY ${indexName} (id_detalle_venta)`,
+          );
+        } catch (error) {
+          if (error.code === "ER_DUP_KEYNAME") continue;
+          if (error.code === "ER_DUP_ENTRY") {
+            const [newDuplicates] = await pool.query(
+              `SELECT id_detalle_venta
+               FROM ${table}
+               GROUP BY id_detalle_venta
+               HAVING COUNT(*) > 1
+               LIMIT 1`,
+            );
+            if (newDuplicates.length) {
+              console.warn(
+                `No se agregó ${indexName}: hay registros duplicados en ${table}.`,
+              );
+              continue;
+            }
+          }
+          throw error;
+        }
+      }
+    })().catch((error) => {
+      warrantyDetailIndexSchemaPromise = null;
+      throw error;
+    });
+  }
+  return warrantyDetailIndexSchemaPromise;
+}
 
 function ensureWarrantyRequestSchema() {
   if (!warrantyRequestSchemaPromise) {
@@ -61,6 +121,7 @@ function ensureWarrantyRequestSchema() {
             "ALTER TABLE solicitud_garantia MODIFY numero_serie VARCHAR(25) NULL",
           );
         }
+        await ensureWarrantyDetailIndexes();
       })
       .catch((error) => {
         warrantyRequestSchemaPromise = null;
@@ -117,7 +178,8 @@ async function insertAutomaticWarrantyCoverage(connection, detailId) {
        ON g.id_detalle_venta = dv.id_detalle_venta
      WHERE dv.id_detalle_venta = ?
        AND v.estado = 'PAGADA'
-       AND g.id_garantia IS NULL`,
+       AND g.id_garantia IS NULL
+     ON DUPLICATE KEY UPDATE id_garantia = LAST_INSERT_ID(id_garantia)`,
     [detailId],
   );
 }
@@ -127,6 +189,8 @@ function ensureAutomaticWarrantyCoverage() {
     automaticWarrantyCoveragePromise = (async () => {
       let connection;
       try {
+        await ensureWarrantyRequestSchema();
+        await ensureWarrantyDetailIndexes();
         connection = await pool.getConnection();
         await connection.beginTransaction();
         await connection.query(
@@ -163,7 +227,8 @@ function ensureAutomaticWarrantyCoverage() {
            LEFT JOIN garantia g
              ON g.id_detalle_venta = dv.id_detalle_venta
            WHERE v.estado = 'PAGADA'
-             AND g.id_garantia IS NULL`,
+             AND g.id_garantia IS NULL
+           ON DUPLICATE KEY UPDATE id_garantia = LAST_INSERT_ID(id_garantia)`,
         );
         await connection.commit();
       } catch (error) {
@@ -380,15 +445,16 @@ async function obtenerPedidosCliente(userId) {
        v.numero_guia AS trackingNumber,
        v.estado AS status,
        v.notas AS notes,
-       DATE_FORMAT(DATE(v.fecha), '%Y-%m-%d') AS warrantyStartsAt,
+       DATE_FORMAT(DATE(g.fecha_inicio), '%Y-%m-%d') AS warrantyStartsAt,
        DATE_FORMAT(
-         DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+         DATE(g.fecha_fin),
          '%Y-%m-%d'
        ) AS warrantyExpiresAt,
        DATEDIFF(
-         DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+         DATE(g.fecha_fin),
          CURRENT_DATE()
        ) AS warrantyDaysRemaining,
+       g.estado AS warrantyStatus,
        dv.id_detalle_venta AS detailId,
        dv.id_producto AS productId,
        p.nombre AS productName,
@@ -399,6 +465,7 @@ async function obtenerPedidosCliente(userId) {
        dv.subtotal AS lineSubtotal
      FROM venta v
      LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+     LEFT JOIN garantia g ON g.id_detalle_venta = dv.id_detalle_venta
      LEFT JOIN producto p ON p.id_producto = dv.id_producto
      LEFT JOIN categoria c ON c.id_categoria = p.id_categoria
      WHERE v.id_usuario = ?
@@ -443,9 +510,15 @@ async function obtenerPedidosCliente(userId) {
         category: row.category || "Sin categoría",
         warrantyStartsAt: row.warrantyStartsAt,
         warrantyExpiresAt: row.warrantyExpiresAt,
-        warrantyDaysRemaining: Number(row.warrantyDaysRemaining),
+        warrantyDaysRemaining:
+          row.warrantyDaysRemaining === null
+            ? null
+            : Number(row.warrantyDaysRemaining),
+        warrantyStatus: row.warrantyStatus,
         warrantyActive:
           row.status === "PAGADA" &&
+          row.warrantyStatus === "VIGENTE" &&
+          row.warrantyDaysRemaining !== null &&
           Number(row.warrantyDaysRemaining) >= 0,
         quantity,
         unitPrice,
@@ -463,6 +536,7 @@ async function obtenerPedidosCliente(userId) {
 
 app.get("/api/my-orders", requireUserSession, async (req, res) => {
   try {
+    await ensureAutomaticWarrantyCoverage();
     const orders = await obtenerPedidosCliente(req.userId);
     return res.json({ ok: true, orders });
   } catch (error) {
@@ -1724,6 +1798,8 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
 
   let connection;
   try {
+    await ensureWarrantyRequestSchema();
+    await ensureWarrantyDetailIndexes();
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
@@ -2497,6 +2573,8 @@ app.post("/api/employee/sales", requireEmployee, async (req, res) => {
 
   let connection;
   try {
+    await ensureWarrantyRequestSchema();
+    await ensureWarrantyDetailIndexes();
     connection = await pool.getConnection();
     await connection.beginTransaction();
     const branch = await obtenerSucursalEmpleado(req.userId, connection);
@@ -4285,6 +4363,8 @@ app.post("/api/admin/pedidos", requireAdmin, async (req, res) => {
       });
     }
 
+    await ensureWarrantyRequestSchema();
+    await ensureWarrantyDetailIndexes();
     connection = await pool.getConnection();
     await connection.beginTransaction();
     const [userRows] = await connection.query(

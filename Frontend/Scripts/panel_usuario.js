@@ -1585,6 +1585,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (daysRemaining < 0) {
       return `Vencida; inició el ${startDate} y terminó el ${expirationDate}.`;
     }
+    if (item.warrantyStatus === "ANULADA") {
+      return `Anulada; la cobertura terminó el ${expirationDate}.`;
+    }
+    if (!item.warrantyActive) {
+      return "No disponible: la cobertura de esta compra no está activa.";
+    }
     if (daysRemaining === 0) {
       return `Vigente desde ${startDate}; vence hoy, ${expirationDate}.`;
     }
@@ -1941,6 +1947,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                   : Number(item.warrantyDaysRemaining);
               const warrantyIsActive =
                 order.status === "PAGADA" &&
+                item.warrantyActive === true &&
                 Number.isFinite(daysRemaining) &&
                 daysRemaining >= 0;
               return `
