@@ -930,6 +930,11 @@ body.a11y-mode-dark-mode .hero-badge {
   color: #000000 !important;
 }
 
+body.a11y-mode-dark-mode
+  .banner-destacado-foto[data-imagen-clara="c2.png"] {
+  background-image: url("../Assets/x1.png") !important;
+}
+
 body.a11y-mode-dark-mode .hero-btn-primary,
 body.a11y-mode-dark-mode a.hero-btn-primary {
   background: #f5c842 !important;

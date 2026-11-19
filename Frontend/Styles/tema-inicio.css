@@ -266,3 +266,10 @@ body.pagina-inicio:not(.a11y-mode-dark-mode)
 body.pagina-inicio:not(.a11y-mode-dark-mode) main .btn-agregar-carrito {
   color: #000000;
 }
+
+body.pagina-inicio.a11y-mode-dark-mode
+  main
+  .banner-destacado-foto[data-imagen-clara="c1.png"] {
+  background-image: url("../Assets/x2.png") !important;
+}
+
