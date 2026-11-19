@@ -593,7 +593,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion),
+body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion):not(.hero-badge),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -926,6 +926,10 @@ body.a11y-mode-dark-mode .btn-agendar-porque:hover {
 }
 
 /* Inicio: Botones del Carrusel Hero en Modo Oscuro */
+body.a11y-mode-dark-mode .hero-badge {
+  color: #000000 !important;
+}
+
 body.a11y-mode-dark-mode .hero-btn-primary,
 body.a11y-mode-dark-mode a.hero-btn-primary {
   background: #f5c842 !important;
