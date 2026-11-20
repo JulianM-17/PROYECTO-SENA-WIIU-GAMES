@@ -12,6 +12,24 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
 // Servir archivos estáticos del frontend
+app.use((req, res, next) => {
+  let requestPath;
+  try {
+    requestPath = req.path;
+    while (/%[0-9a-f]{2}/i.test(requestPath)) {
+      requestPath = decodeURIComponent(requestPath);
+      if (/^\/backend\/backups(?:\/|$)/i.test(requestPath.replace(/\\/g, "/"))) {
+        return res.sendStatus(404);
+      }
+    }
+  } catch (error) {
+    return res.sendStatus(400);
+  }
+  if (/^\/backend\/backups(?:\/|$)/i.test(requestPath.replace(/\\/g, "/"))) {
+    return res.sendStatus(404);
+  }
+  return next();
+});
 app.use(express.static(path.join(__dirname, "..", "Frontend")));
 app.use(express.static(path.join(__dirname, "..", "Frontend", "Pages")));
 app.use("/Administrador", express.static(path.join(__dirname, "..", "Frontend", "Pages", "Administrador")));
@@ -23,6 +41,253 @@ let warrantyRequestSchemaPromise;
 let warrantyDetailIndexSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
+const BACKUP_DIR = path.join(__dirname, "backups");
+
+async function ensureBackupDir() {
+  await fs.mkdir(BACKUP_DIR, { recursive: true });
+}
+
+function isSafeBackupFilename(filename) {
+  return /^[A-Za-z0-9_-]+\.json$/.test(filename);
+}
+
+function quoteIdentifier(identifier) {
+  return "`" + String(identifier).replace(/`/g, "``") + "`";
+}
+
+function normalizeMysqlDate(value) {
+  if (typeof value !== "string") return value;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  if (!/^\d{4}-\d{2}-\d{2}T/.test(value)) return value;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  const pad = (number) => String(number).padStart(2, "0");
+  return (
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  );
+}
+
+function serializeBackupValue(key, value) {
+  const originalValue = this && key ? this[key] : value;
+  if (Buffer.isBuffer(originalValue)) {
+    return { $type: "Buffer", data: originalValue.toString("base64") };
+  }
+  if (originalValue instanceof Date) {
+    return { $type: "Date", data: originalValue.toISOString() };
+  }
+  if (typeof value === "bigint") {
+    return { $type: "BigInt", data: value.toString() };
+  }
+  return value;
+}
+
+function deserializeBackupValue(key, value) {
+  if (
+    value &&
+    typeof value === "object" &&
+    value.$type === "Buffer" &&
+    typeof value.data === "string"
+  ) {
+    return Buffer.from(value.data, "base64");
+  }
+  if (
+    value &&
+    typeof value === "object" &&
+    value.$type === "Date" &&
+    typeof value.data === "string"
+  ) {
+    return normalizeMysqlDate(value.data);
+  }
+  if (
+    value &&
+    typeof value === "object" &&
+    value.$type === "BigInt" &&
+    typeof value.data === "string"
+  ) {
+    return BigInt(value.data);
+  }
+  return value;
+}
+
+function validateBackup(backup) {
+  const invalidBackup = () => {
+    const error = new Error("El archivo de respaldo no es válido.");
+    error.statusCode = 400;
+    return error;
+  };
+  if (
+    !backup ||
+    backup.version !== 1 ||
+    !Array.isArray(backup.tables) ||
+    !backup.tables.length
+  ) {
+    throw invalidBackup();
+  }
+
+  const tableNames = new Set();
+  for (const table of backup.tables) {
+    if (
+      !table ||
+      typeof table.name !== "string" ||
+      !/^[A-Za-z0-9_$]+$/.test(table.name) ||
+      tableNames.has(table.name) ||
+      typeof table.createSql !== "string" ||
+      !new RegExp(
+        "^CREATE TABLE\\s+" +
+          quoteIdentifier(table.name).replace(/\$/g, "\\$") +
+          "\\s*\\(",
+        "i",
+      ).test(table.createSql.trim()) ||
+      !Array.isArray(table.rows)
+    ) {
+      throw invalidBackup();
+    }
+    tableNames.add(table.name);
+
+    let expectedColumns = null;
+    for (const row of table.rows) {
+      if (!row || typeof row !== "object" || Array.isArray(row)) throw invalidBackup();
+      const columns = Object.keys(row);
+      if (
+        !columns.length ||
+        columns.some((column) => !/^[A-Za-z0-9_$]+$/.test(column)) ||
+        (expectedColumns && columns.join("\0") !== expectedColumns.join("\0"))
+      ) {
+        throw invalidBackup();
+      }
+      expectedColumns = columns;
+    }
+  }
+}
+
+async function readBackupTables(connection) {
+  const [tableRows] = await connection.query("SHOW TABLES");
+  if (!tableRows.length) {
+    throw new Error("La base de datos no tiene tablas para respaldar.");
+  }
+
+  const tableKey = Object.keys(tableRows[0])[0];
+  const tables = [];
+  for (const tableRow of tableRows) {
+    const tableName = tableRow[tableKey];
+    if (typeof tableName !== "string" || !/^[A-Za-z0-9_$]+$/.test(tableName)) {
+      throw new Error("Hay una tabla con un nombre que no se puede respaldar.");
+    }
+
+    const [createRows] = await connection.query(`SHOW CREATE TABLE ${quoteIdentifier(tableName)}`);
+    const createKey = Object.keys(createRows[0] || {}).find((key) =>
+      /Create Table/i.test(key),
+    );
+    if (!createKey || typeof createRows[0][createKey] !== "string") {
+      throw new Error(`No se pudo obtener la definición de la tabla ${tableName}.`);
+    }
+    const [dataRows] = await connection.query({
+      sql: `SELECT * FROM ${quoteIdentifier(tableName)}`,
+      dateStrings: true,
+    });
+    tables.push({
+      name: tableName,
+      createSql: createRows[0][createKey],
+      rows: dataRows,
+    });
+  }
+  return tables;
+}
+
+async function writeBackupFile(tables, prefix) {
+  await ensureBackupDir();
+  const stamp = new Date().toISOString().replace(/[-:.TZ]/g, "").slice(0, 14);
+  const randomSuffix = crypto.randomBytes(6).toString("hex");
+  const filename = `${prefix}_${stamp}_${randomSuffix}.json`;
+  const filePath = path.join(BACKUP_DIR, filename);
+  const temporaryPath = path.join(BACKUP_DIR, `.${filename}.tmp`);
+  const backup = {
+    version: 1,
+    database: process.env.DB_NAME || "",
+    createdAt: new Date().toISOString(),
+    tables,
+  };
+
+  try {
+    await fs.writeFile(
+      temporaryPath,
+      JSON.stringify(backup, serializeBackupValue, 2),
+      { encoding: "utf8", flag: "wx" },
+    );
+    await fs.rename(temporaryPath, filePath);
+  } catch (error) {
+    try {
+      await fs.unlink(temporaryPath);
+    } catch (cleanupError) {
+      if (cleanupError.code !== "ENOENT") {
+        console.error("Error eliminando archivo temporal de respaldo:", cleanupError);
+      }
+    }
+    throw error;
+  }
+
+  const stats = await fs.stat(filePath);
+  return {
+    backup,
+    filename,
+    size: stats.size,
+    createdAt: stats.birthtime.toISOString(),
+  };
+}
+
+async function createConsistentBackup(prefix) {
+  const connection = await pool.getConnection();
+  let transactionOpen = false;
+  try {
+    await connection.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
+    await connection.query("START TRANSACTION WITH CONSISTENT SNAPSHOT");
+    transactionOpen = true;
+    const tables = await readBackupTables(connection);
+    await connection.commit();
+    transactionOpen = false;
+    return await writeBackupFile(tables, prefix);
+  } catch (error) {
+    if (transactionOpen) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error cerrando la transacción del respaldo:", rollbackError);
+      }
+    }
+    throw error;
+  } finally {
+    connection.release();
+  }
+}
+
+async function applyBackup(connection, backup) {
+  await connection.query("SET FOREIGN_KEY_CHECKS = 0");
+  try {
+    for (const table of backup.tables) {
+      const tableIdentifier = quoteIdentifier(table.name);
+      await connection.query(`DROP TABLE IF EXISTS ${tableIdentifier}`);
+      await connection.query(table.createSql);
+
+      for (let index = 0; index < table.rows.length; index += 100) {
+        const rows = table.rows.slice(index, index + 100);
+        const columns = Object.keys(rows[0]);
+        const columnIdentifiers = columns.map(quoteIdentifier).join(", ");
+        const placeholders = `(${columns.map(() => "?").join(", ")})`;
+        const values = rows.flatMap((row) =>
+          columns.map((column) => normalizeMysqlDate(row[column])),
+        );
+        const insertPlaceholders = rows.map(() => placeholders).join(", ");
+        await connection.query(
+          `INSERT INTO ${tableIdentifier} (${columnIdentifiers}) VALUES ${insertPlaceholders}`,
+          values,
+        );
+      }
+    }
+  } finally {
+    await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+  }
+}
 
 function ensureWarrantyDetailIndexes() {
   if (!warrantyDetailIndexSchemaPromise) {
@@ -1268,6 +1533,13 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
   try {
     await ensureWarrantyRequestSchema();
     await ensureAutomaticWarrantyCoverage();
+    const salesPeriod = req.query.period === undefined ? 7 : Number(req.query.period);
+    if (![7, 15, 30].includes(salesPeriod)) {
+      return res.status(400).json({
+        ok: false,
+        message: "El rango de ventas debe ser de 7, 15 o 30 días.",
+      });
+    }
     const [productsCountRows] = await pool.query(
       "SELECT COUNT(*) AS total FROM producto WHERE estado = 'ACTIVO'",
     );
@@ -1296,17 +1568,24 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [salesTrendRows] = await pool.query(
       `SELECT
-         DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a') AS day_name,
+         DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%Y-%m-%d') AS sale_date,
          COALESCE(SUM(dv.subtotal), 0) AS total
        FROM (
-         SELECT 6 AS n UNION ALL SELECT 5 UNION ALL SELECT 4 UNION ALL SELECT 3 UNION ALL SELECT 2 UNION ALL SELECT 1 UNION ALL SELECT 0
+         SELECT 0 AS n UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4
+         UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9
+         UNION ALL SELECT 10 UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14
+         UNION ALL SELECT 15 UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19
+         UNION ALL SELECT 20 UNION ALL SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24
+         UNION ALL SELECT 25 UNION ALL SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29
        ) n
        LEFT JOIN venta v
          ON DATE(v.fecha) = DATE_SUB(CURDATE(), INTERVAL n.n DAY)
         AND v.estado = 'PAGADA'
        LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
-       GROUP BY n.n, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%a')
-       ORDER BY n.n DESC`,
+       WHERE n.n < ?
+       GROUP BY n.n, DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n.n DAY), '%Y-%m-%d')
+       ORDER BY n.n`,
+      [salesPeriod],
     );
     const [ordersRows] = await pool.query(
       `SELECT
@@ -1645,7 +1924,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       },
       topProducts: topProductsRows || [],
       salesTrend: (salesTrendRows || []).map((point) => ({
-        label: String(point.day_name || "").slice(0, 3),
+        date: point.sale_date,
         value: Number(point.total || 0),
       })),
       orders,
@@ -4549,6 +4828,156 @@ async function requireEmployee(req, res, next) {
     });
   }
 }
+
+app.get("/api/admin/backups", requireAdmin, async (req, res) => {
+  try {
+    await ensureBackupDir();
+    const entries = await fs.readdir(BACKUP_DIR, { withFileTypes: true });
+    const backups = [];
+    for (const entry of entries) {
+      if (!entry.isFile() || !isSafeBackupFilename(entry.name)) continue;
+      const filePath = path.join(BACKUP_DIR, entry.name);
+      const stats = await fs.stat(filePath);
+      backups.push({
+        filename: entry.name,
+        size: stats.size,
+        createdAt: stats.birthtime.toISOString(),
+      });
+    }
+    backups.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    return res.json({ ok: true, backups });
+  } catch (error) {
+    console.error("Error listando respaldos:", error);
+    return res.status(500).json({ ok: false, message: "No se pudieron listar los respaldos." });
+  }
+});
+
+app.post("/api/admin/backups", requireAdmin, async (req, res) => {
+  try {
+    const backup = await createConsistentBackup("backup_wiiu");
+    return res.status(201).json({
+      ok: true,
+      message: "Copia de seguridad creada correctamente.",
+      backup: {
+        filename: backup.filename,
+        size: backup.size,
+        createdAt: backup.createdAt,
+      },
+    });
+  } catch (error) {
+    console.error("Error creando respaldo:", error);
+    return res.status(500).json({ ok: false, message: "No se pudo crear el respaldo." });
+  }
+});
+
+app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) => {
+  const filename = req.params.filename;
+  if (!isSafeBackupFilename(filename)) {
+    return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
+  }
+  const filePath = path.join(BACKUP_DIR, filename);
+  try {
+    await fs.access(filePath);
+    return res.download(filePath, filename);
+  } catch (error) {
+    return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+  }
+});
+
+app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) => {
+  const filename = req.params.filename;
+  if (!isSafeBackupFilename(filename)) {
+    return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
+  }
+  const filePath = path.join(BACKUP_DIR, filename);
+
+  let connection;
+  let recoveryBackup;
+  try {
+    await fs.access(filePath);
+    const rawBackup = await fs.readFile(filePath, "utf8");
+    const backup = JSON.parse(rawBackup, deserializeBackupValue);
+    validateBackup(backup);
+    recoveryBackup = await createConsistentBackup("backup_pre_restore");
+    connection = await pool.getConnection();
+    try {
+      await applyBackup(connection, backup);
+    } catch (restoreError) {
+      let recovered = false;
+      try {
+        const recoveryTableNames = new Set(
+          recoveryBackup.backup.tables.map((table) => table.name),
+        );
+        await connection.query("SET FOREIGN_KEY_CHECKS = 0");
+        try {
+          for (const table of backup.tables) {
+            if (!recoveryTableNames.has(table.name)) {
+              await connection.query(`DROP TABLE IF EXISTS ${quoteIdentifier(table.name)}`);
+            }
+          }
+        } finally {
+          await connection.query("SET FOREIGN_KEY_CHECKS = 1");
+        }
+        await applyBackup(connection, recoveryBackup.backup);
+        recovered = true;
+      } catch (recoveryError) {
+        console.error("Error recuperando la base de datos tras fallar la restauración:", recoveryError);
+      }
+      const message = recovered
+        ? `La restauración falló y se recuperó el estado anterior. El respaldo preventivo quedó guardado como ${recoveryBackup.filename}.`
+        : `La restauración falló. El respaldo preventivo quedó guardado como ${recoveryBackup.filename}; la recuperación automática no se completó.`;
+      return res.status(500).json({
+        ok: false,
+        message,
+        details: restoreError.message,
+        recoveryBackup: recoveryBackup.filename,
+        rollbackRestored: recovered,
+      });
+    }
+
+    return res.json({
+      ok: true,
+      message: `Copia de seguridad restaurada correctamente. Respaldo preventivo: ${recoveryBackup.filename}.`,
+      recoveryBackup: recoveryBackup.filename,
+    });
+  } catch (error) {
+    console.error("Error restaurando respaldo:", error);
+    if (error.code === "ENOENT") {
+      return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+    }
+    if (error instanceof SyntaxError) {
+      return res.status(400).json({
+        ok: false,
+        message: "El archivo de respaldo no es válido.",
+      });
+    }
+    return res.status(error.statusCode || 500).json({
+      ok: false,
+      message: error.statusCode === 400
+        ? error.message
+        : "No se pudo restaurar el respaldo.",
+      details: error.message,
+    });
+  } finally {
+    if (connection) connection.release();
+  }
+});
+
+app.delete("/api/admin/backups/:filename", requireAdmin, async (req, res) => {
+  const filename = req.params.filename;
+  if (!isSafeBackupFilename(filename)) {
+    return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
+  }
+  try {
+    await fs.unlink(path.join(BACKUP_DIR, filename));
+    return res.json({ ok: true, message: "Respaldo eliminado correctamente." });
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+    }
+    return res.status(500).json({ ok: false, message: "No se pudo eliminar el respaldo." });
+  }
+});
 
 // Middleware to ensure the user is an administrator
 async function requireAdmin(req, res, next) {

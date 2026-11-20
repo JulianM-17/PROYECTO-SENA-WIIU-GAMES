@@ -1719,6 +1719,133 @@ function actualizarEstadoCitaAdmin(id) {
   });
 }
 
+function renderizarGraficoVentas(tendencia) {
+  var contenedor = document.getElementById('graficoVentas');
+  if (!contenedor) return;
+  var periodoSelect = document.getElementById('filtroPeriodoVentas');
+  var periodo = periodoSelect ? Number(periodoSelect.value) : 7;
+  var puntos = Array.isArray(tendencia) ? tendencia.slice().reverse().map(function(punto) {
+    var fecha = String(punto.date || '');
+    var fechaPartes = fecha.split('-');
+    var fechaUtc = fechaPartes.length === 3
+      ? new Date(Date.UTC(Number(fechaPartes[0]), Number(fechaPartes[1]) - 1, Number(fechaPartes[2])))
+      : null;
+    return {
+      date: fecha,
+      label: fechaUtc && !Number.isNaN(fechaUtc.getTime())
+        ? new Intl.DateTimeFormat('es-CO', {
+          day: '2-digit',
+          month: 'short',
+          timeZone: 'UTC'
+        }).format(fechaUtc).replace(/\./g, '')
+        : String(punto.label || ''),
+      value: Math.max(0, Number(punto.value) || 0)
+    };
+  }) : [];
+
+  contenedor.replaceChildren();
+  if (!puntos.length) {
+    var vacio = document.createElement('p');
+    vacio.className = 'grafico-vacio';
+    vacio.textContent = 'No hay ventas para mostrar en los últimos ' + periodo + ' días.';
+    contenedor.appendChild(vacio);
+    return;
+  }
+
+  var valorMaximo = Math.max.apply(null, puntos.map(function(punto) {
+    return punto.value;
+  }));
+  var paso = 1;
+  if (valorMaximo > 0) {
+    var pasoBase = valorMaximo / 4;
+    var magnitud = Math.pow(10, Math.floor(Math.log(pasoBase) / Math.LN10));
+    var normalizado = pasoBase / magnitud;
+    paso = (normalizado <= 1 ? 1 : normalizado <= 2 ? 2 : normalizado <= 5 ? 5 : 10) * magnitud;
+  }
+  var maximoEje = valorMaximo > 0 ? paso * 4 : 4;
+  var formatoCompacto = new Intl.NumberFormat('es-CO', {
+    notation: 'compact',
+    maximumFractionDigits: 1
+  });
+  var formatoMoneda = new Intl.NumberFormat('es-CO', {
+    maximumFractionDigits: 0
+  });
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 700 200');
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', 'Ventas diarias de los últimos ' + periodo + ' días');
+
+  function agregarSvg(nombre, atributos, texto) {
+    var elemento = document.createElementNS('http://www.w3.org/2000/svg', nombre);
+    Object.keys(atributos).forEach(function(atributo) {
+      elemento.setAttribute(atributo, atributos[atributo]);
+    });
+    if (texto !== undefined) elemento.textContent = texto;
+    svg.appendChild(elemento);
+    return elemento;
+  }
+
+  var izquierda = 62;
+  var derecha = 694;
+  var arriba = 14;
+  var abajo = 156;
+  var ancho = derecha - izquierda;
+  var alto = abajo - arriba;
+
+  for (var tick = 0; tick <= 4; tick++) {
+    var valorTick = maximoEje * (4 - tick) / 4;
+    var posicionY = arriba + alto * tick / 4;
+    agregarSvg('line', {
+      x1: izquierda,
+      y1: posicionY,
+      x2: derecha,
+      y2: posicionY,
+      class: 'grafico-linea-guia'
+    });
+    agregarSvg('text', {
+      x: izquierda - 8,
+      y: posicionY + 4,
+      class: 'grafico-etiqueta-eje',
+      'text-anchor': 'end'
+    }, '$' + formatoCompacto.format(valorTick));
+  }
+
+  var coordenadas = puntos.map(function(punto, indice) {
+    var x = izquierda + (puntos.length === 1 ? ancho / 2 : ancho * indice / (puntos.length - 1));
+    var y = abajo - punto.value / maximoEje * alto;
+    return { x: x, y: y, punto: punto };
+  });
+  var trayectoria = coordenadas.map(function(coordenada, indice) {
+    return (indice === 0 ? 'M' : 'L') + coordenada.x + ' ' + coordenada.y;
+  }).join(' ');
+
+  agregarSvg('path', { d: trayectoria, class: 'grafico-linea-ventas' });
+  coordenadas.forEach(function(coordenada) {
+    var circulo = agregarSvg('circle', {
+      cx: coordenada.x,
+      cy: coordenada.y,
+      r: 4,
+      class: 'grafico-punto-venta'
+    });
+    var titulo = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+    titulo.textContent = coordenada.punto.date + ': $ ' + formatoMoneda.format(coordenada.punto.value);
+    circulo.appendChild(titulo);
+  });
+  var frecuenciaEtiquetas = Math.max(1, Math.ceil(coordenadas.length / 7));
+  coordenadas.forEach(function(coordenada, indice) {
+    if (indice % frecuenciaEtiquetas !== 0 && indice !== coordenadas.length - 1) return;
+    agregarSvg('text', {
+      x: coordenada.x,
+      y: 184,
+      class: 'grafico-etiqueta-dia',
+      'text-anchor': 'middle'
+    }, coordenada.punto.label);
+  });
+
+  contenedor.appendChild(svg);
+}
+
 // ==========================================================================
 // 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
 // ==========================================================================
@@ -1791,10 +1918,15 @@ function renderizarGraficoVentas(puntos) {
 function cargarDashboard() {
   var inventoryBranchSelect = document.getElementById('filtroSucursalInventario');
   var selectedBranchId = inventoryBranchSelect && inventoryBranchSelect.value;
+  var periodSelect = document.getElementById('filtroPeriodoVentas');
+  var selectedPeriod = periodSelect ? periodSelect.value : '7';
   var dashboardUrl = API_BASE + '/api/dashboard/admin';
+  var dashboardParams = [];
   if (selectedBranchId) {
-    dashboardUrl += '?branchId=' + encodeURIComponent(selectedBranchId);
+    dashboardParams.push('branchId=' + encodeURIComponent(selectedBranchId));
   }
+  dashboardParams.push('period=' + encodeURIComponent(selectedPeriod));
+  dashboardUrl += '?' + dashboardParams.join('&');
 
   fetch(dashboardUrl, {
     headers: { 'Authorization': 'Bearer ' + sessionToken }
@@ -2756,7 +2888,227 @@ function configurarOrdenamientoUsuarios() {
 }
 
 // ==========================================================================
-// 9. CARGAR DATOS AL INICIAR LA PÁGINA
+// 9. COPIAS DE SEGURIDAD
+// ==========================================================================
+function formatearTamanoBackup(bytes) {
+  var valor = Number(bytes) || 0;
+  if (valor < 1024) return valor + ' B';
+  if (valor < 1024 * 1024) return (valor / 1024).toFixed(1) + ' KB';
+  return (valor / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function crearBackup() {
+  var boton = document.getElementById('btnCrearBackup');
+  if (boton) {
+    boton.disabled = true;
+    boton.textContent = 'Creando respaldo...';
+  }
+
+  fetch(API_BASE + '/api/admin/backups', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        if (!response.ok) throw new Error(data.message || 'No se pudo crear el respaldo.');
+        return data;
+      });
+    })
+    .then(function(data) {
+      mostrarToast('success', data.message);
+      cargarBackups();
+    })
+    .catch(function(error) {
+      console.error('Error creando respaldo:', error);
+      mostrarToast('error', error.message);
+    })
+    .finally(function() {
+      if (boton) {
+        boton.disabled = false;
+        boton.innerHTML = '<i class="fi fi-rr-disk"></i> Crear respaldo';
+      }
+    });
+}
+
+function cargarBackups() {
+  var cuerpo = document.getElementById('tablaBackupsBody');
+  if (!cuerpo) return;
+  cuerpo.innerHTML = '<tr><td colspan="4" class="texto-vacio">Cargando respaldos...</td></tr>';
+
+  fetch(API_BASE + '/api/admin/backups', {
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        if (!response.ok) throw new Error(data.message || 'No se pudieron cargar los respaldos.');
+        return data;
+      });
+    })
+    .then(function(data) {
+      var backups = Array.isArray(data.backups) ? data.backups : [];
+      var cantidad = document.getElementById('backupCantidad');
+      var tamano = document.getElementById('backupTamano');
+      var ultimo = document.getElementById('backupUltimo');
+      var total = backups.reduce(function(sum, backup) {
+        return sum + (Number(backup.size) || 0);
+      }, 0);
+      if (cantidad) cantidad.textContent = String(backups.length);
+      if (tamano) tamano.textContent = formatearTamanoBackup(total);
+      if (ultimo) {
+        if (!backups.length) {
+          ultimo.textContent = 'Sin respaldos';
+        } else {
+          var fecha = new Date(backups[0].createdAt);
+          ultimo.textContent = Number.isNaN(fecha.getTime())
+            ? backups[0].filename
+            : fecha.toLocaleString('es-CO');
+        }
+      }
+
+      if (!backups.length) {
+        cuerpo.innerHTML = '<tr><td colspan="4" class="texto-vacio">No hay copias de seguridad disponibles.</td></tr>';
+        return;
+      }
+
+      cuerpo.replaceChildren();
+      backups.forEach(function(backup) {
+        var fila = document.createElement('tr');
+        var fecha = new Date(backup.createdAt);
+
+        var celdaNombre = document.createElement('td');
+        celdaNombre.textContent = backup.filename;
+        fila.appendChild(celdaNombre);
+
+        var celdaFecha = document.createElement('td');
+        celdaFecha.textContent = Number.isNaN(fecha.getTime())
+          ? backup.createdAt
+          : fecha.toLocaleString('es-CO');
+        fila.appendChild(celdaFecha);
+
+        var celdaTamano = document.createElement('td');
+        celdaTamano.textContent = formatearTamanoBackup(backup.size);
+        fila.appendChild(celdaTamano);
+
+        var celdaAcciones = document.createElement('td');
+        var contenedor = document.createElement('div');
+        contenedor.className = 'acciones-backup';
+
+        var botonDescargar = document.createElement('button');
+        botonDescargar.type = 'button';
+        botonDescargar.className = 'boton-backup';
+        botonDescargar.textContent = 'Descargar';
+        botonDescargar.addEventListener('click', function() {
+          descargarBackup(backup.filename);
+        });
+
+        var botonRestaurar = document.createElement('button');
+        botonRestaurar.type = 'button';
+        botonRestaurar.className = 'boton-backup';
+        botonRestaurar.textContent = 'Restaurar';
+        botonRestaurar.addEventListener('click', function() {
+          restaurarBackup(backup.filename);
+        });
+
+        var botonEliminar = document.createElement('button');
+        botonEliminar.type = 'button';
+        botonEliminar.className = 'boton-backup danger';
+        botonEliminar.textContent = 'Eliminar';
+        botonEliminar.addEventListener('click', function() {
+          eliminarBackup(backup.filename);
+        });
+
+        contenedor.appendChild(botonDescargar);
+        contenedor.appendChild(botonRestaurar);
+        contenedor.appendChild(botonEliminar);
+        celdaAcciones.appendChild(contenedor);
+        fila.appendChild(celdaAcciones);
+        cuerpo.appendChild(fila);
+      });
+    })
+    .catch(function(error) {
+      console.error('Error cargando respaldos:', error);
+      cuerpo.innerHTML = '<tr><td colspan="4" class="texto-vacio">No se pudieron cargar los respaldos.</td></tr>';
+      mostrarToast('error', error.message);
+    });
+}
+
+function descargarBackup(filename) {
+  fetch(API_BASE + '/api/admin/backups/' + encodeURIComponent(filename) + '/download', {
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+    .then(function(response) {
+      if (!response.ok) throw new Error('No se pudo descargar el respaldo.');
+      return response.blob();
+    })
+    .then(function(blob) {
+      var url = URL.createObjectURL(blob);
+      var enlace = document.createElement('a');
+      enlace.href = url;
+      enlace.download = filename;
+      document.body.appendChild(enlace);
+      enlace.click();
+      enlace.remove();
+      URL.revokeObjectURL(url);
+    })
+    .catch(function(error) {
+      console.error('Error descargando respaldo:', error);
+      mostrarToast('error', error.message);
+    });
+}
+
+function restaurarBackup(filename) {
+  if (!window.confirm('Esto reemplazará las tablas respaldadas por el contenido del archivo. ¿Deseas continuar?')) return;
+
+  fetch(API_BASE + '/api/admin/backups/' + encodeURIComponent(filename) + '/restore', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        if (!response.ok) {
+          var mensaje = data.message || 'No se pudo restaurar el respaldo.';
+          if (data.details) mensaje += ' ' + data.details;
+          throw new Error(mensaje);
+        }
+        return data;
+      });
+    })
+    .then(function(data) {
+      mostrarToast('success', data.message);
+      cargarDashboard();
+      cargarBackups();
+    })
+    .catch(function(error) {
+      console.error('Error restaurando respaldo:', error);
+      mostrarToast('error', error.message);
+    });
+}
+
+function eliminarBackup(filename) {
+  if (!window.confirm('¿Eliminar definitivamente el respaldo ' + filename + '?')) return;
+
+  fetch(API_BASE + '/api/admin/backups/' + encodeURIComponent(filename), {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+    .then(function(response) {
+      return response.json().then(function(data) {
+        if (!response.ok) throw new Error(data.message || 'No se pudo eliminar el respaldo.');
+        return data;
+      });
+    })
+    .then(function(data) {
+      mostrarToast('success', data.message);
+      cargarBackups();
+    })
+    .catch(function(error) {
+      console.error('Error eliminando respaldo:', error);
+      mostrarToast('error', error.message);
+    });
+}
+
+// ==========================================================================
+// 10. CARGAR DATOS AL INICIAR LA PÁGINA
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', function() {
   configurarMenuLateral();

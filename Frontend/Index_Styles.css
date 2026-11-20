@@ -1,4 +1,3 @@
-
 * {
   margin: 0;
   padding: 0;
@@ -175,7 +174,7 @@ main {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -306,7 +305,6 @@ main {
   animation: heroFadeUp 0.6s 0.65s forwards;
 }
 
-
 .seccion-titulo-corsair {
   font-size: clamp(1.1rem, 2vw, 1.4rem);
   font-weight: 800;
@@ -360,7 +358,8 @@ main {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: minmax(200px, auto);
   gap: 16px;
-  width: 100%;}
+  width: 100%;
+}
 
 .categorias-carrusel {
   display: flex;
@@ -396,7 +395,7 @@ main {
 .card-grande {
   grid-column: span 2;
   grid-row: span 2;
-  height: 100%
+  height: 100%;
 }
 
 .categoria-card-img {
@@ -442,7 +441,7 @@ main {
 .categoria-card-overlay-otro {
   position: absolute;
   inset: 0;
-  background:rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.7);
   transition: background 0.4s ease;
   z-index: 1;
 }
@@ -874,7 +873,6 @@ main {
   margin-top: 12px;
 }
 
-
 .banner-invertido .banner-destacado-inner {
   direction: rtl;
 }
@@ -1009,8 +1007,9 @@ main {
 [data-animate] {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-animate].visible {
@@ -1056,8 +1055,6 @@ main {
     direction: ltr;
   }
 
-
-
   .seccion-inner {
     padding: 0 24px;
   }
@@ -1073,7 +1070,7 @@ main {
 
   .hero-arrow-right {
     right: 15px;
-  } 
+  }
   categorias-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1084,8 +1081,13 @@ main {
 }
 
 @media (max-width: 768px) {
-  .panel-body { flex-direction: column; padding: 20px; }
-  .panel-lateral { width: 100%; }
+  .panel-body {
+    flex-direction: column;
+    padding: 20px;
+  }
+  .panel-lateral {
+    width: 100%;
+  }
   .hero-slider {
     height: 70vh;
     min-height: 450px;
@@ -1133,11 +1135,11 @@ main {
     overflow-x: auto !important; /* Habilita el scroll horizontal */
     gap: 15px; /* Espacio entre tarjetas */
     padding-bottom: 20px; /* Espacio para que la sombra no se corte */
-    
+
     /* Efecto imán al deslizar (opcional pero recomendado) */
-    scroll-snap-type: x mandatory; 
+    scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    
+
     /* Ocultar la barra de scroll visualmente para un diseño más limpio */
     scrollbar-width: none; /* Firefox */
   }
@@ -1148,7 +1150,7 @@ main {
 
   .categoria-card {
     /* En móviles, le damos un ancho fijo a las tarjetas */
-    width: 250px; 
+    width: 250px;
     min-width: 250px;
     height: 280;
     flex-shrink: 0; /* Evita que las tarjetas se aplasten */

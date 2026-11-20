@@ -78,6 +78,11 @@
           <i class="fi fi-rr-users-alt"></i>
           <span>Clientes</span>
         </button>
+
+        <button class="boton-menu" onclick="cambiarPestana('seccion-backups', this); cargarBackups();">
+          <i class="fi fi-rr-database"></i>
+          <span>Backups</span>
+        </button>
       </nav>
 
 <div class="perfil-usuario" onclick="toggleMenuPerfil()">
@@ -172,11 +177,20 @@
 <div class="caja-panel">
             <div class="encabezado-caja">
               <h3>Ventas</h3>
-              <span class="etiqueta-semana">Esta semana</span>
+              <label class="selector-periodo-grafico">
+                <span class="sr-only">Rango de ventas</span>
+                <select id="filtroPeriodoVentas" aria-label="Rango de fechas para la gráfica de ventas" onchange="cargarDashboard()">
+                  <option value="7">7 días</option>
+                  <option value="15">15 días</option>
+                  <option value="30">30 días</option>
+                </select>
+              </label>
             </div>
 
             <div class="grafico-simple">
-              <svg id="graficoVentas" viewBox="0 0 700 180" role="img" aria-label="Ventas de los últimos siete días"></svg>
+              <div class="zona-grafico" id="graficoVentas" aria-live="polite">
+                <p class="grafico-vacio">Cargando ventas...</p>
+              </div>
             </div>
           </div>
 
@@ -705,6 +719,57 @@
           </div>
         </div>
 
+      </section>
+
+<section id="seccion-backups" class="seccion">
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Copias de Seguridad</h2>
+            <p>Crea, descarga, restaura o elimina respaldos completos de la base de datos.</p>
+          </div>
+          <button class="boton-amarillo" type="button" id="btnCrearBackup" onclick="crearBackup()">
+            <i class="fi fi-rr-disk"></i> Crear respaldo
+          </button>
+        </div>
+
+        <div class="fila-tarjetas backups-resumen">
+          <div class="tarjeta-resumen">
+            <span>Respaldos disponibles</span>
+            <h2 id="backupCantidad">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Espacio utilizado</span>
+            <h2 id="backupTamano">0 KB</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Último respaldo</span>
+            <h2 id="backupUltimo">Sin respaldos</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="encabezado-caja">
+            <h3>Historial de respaldos</h3>
+            <button class="btn-texto" type="button" onclick="cargarBackups()">Actualizar</button>
+          </div>
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
+              <thead>
+                <tr>
+                  <th>Archivo</th>
+                  <th>Fecha de creación</th>
+                  <th>Tamaño</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaBackupsBody">
+                <tr>
+                  <td colspan="4" class="texto-vacio">Cargando respaldos...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
 <footer class="sitio-footer">

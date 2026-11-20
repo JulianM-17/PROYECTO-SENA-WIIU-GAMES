@@ -712,6 +712,22 @@ body {
   border-radius: 6px;
 }
 
+.selector-periodo-grafico select {
+  color: #ffffff;
+  background-color: #111e38;
+  border: 1px solid #263858;
+  border-radius: 6px;
+  padding: 6px 26px 6px 10px;
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.selector-periodo-grafico select:focus-visible {
+  outline: 2px solid #f5a623;
+  outline-offset: 2px;
+}
+
 .enlace-gris {
   color: #8a9bb5;
   font-size: 12px;
@@ -736,80 +752,55 @@ body {
 }
 
 .grafico-simple {
-  display: flex;
-  height: 180px;
-  gap: 15px;
-  padding-bottom: 10px;
-}
-
-.grafico-simple svg {
-  width: 100%;
-  height: 180px;
-  overflow: visible;
-}
-
-.numeros-y {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  font-size: 10px;
-  color: #52637a;
-  text-align: right;
-  width: 24px;
+  height: 190px;
 }
 
 .zona-grafico {
-  flex: 1;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.linea-guia {
   width: 100%;
-  height: 1px;
-  background-color: #111e38;
+  height: 100%;
 }
 
-.linea-grafica-azul {
-  position: absolute;
-  bottom: 25px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #0077ff;
+.zona-grafico svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.etiqueta-mar {
-  position: absolute;
-  right: 0;
-  bottom: 8px;
-  background-color: #080f1e;
-  border: 1px solid #16223d;
-  padding: 2px 6px;
-  border-radius: 4px;
+.grafico-linea-guia {
+  stroke: #16223d;
+  stroke-width: 1;
+}
+
+.grafico-etiqueta-eje,
+.grafico-etiqueta-dia {
+  fill: #8a9bb5;
+  font-family: 'Poppins', sans-serif;
   font-size: 10px;
-  font-weight: 700;
-  color: #ffffff;
-  text-align: center;
-  line-height: 1.1;
 }
 
-.etiqueta-mar small {
-  color: #8a9bb5;
-  font-size: 8px;
+.grafico-linea-ventas {
+  fill: none;
+  stroke: #0077ff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-.dias-x {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.grafico-punto-venta {
+  fill: #080f1e;
+  stroke: #0077ff;
+  stroke-width: 3;
+  cursor: pointer;
+}
+
+.grafico-vacio {
+  height: 100%;
   display: flex;
-  justify-content: space-between;
-  font-size: 10px;
-  color: #52637a;
+  align-items: center;
+  justify-content: center;
+  color: #8a9bb5;
+  font-size: 12px;
+  text-align: center;
 }
 
 .lista-productos-top {
@@ -1112,6 +1103,43 @@ body {
 
 .boton-amarillo:hover {
   background-color: #d9911a;
+}
+
+.backups-resumen {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.backups-resumen .tarjeta-resumen h2 {
+  margin-top: 10px;
+  margin-bottom: 0;
+  font-size: 20px;
+  word-break: break-word;
+}
+
+.acciones-backup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.boton-backup {
+  border: 1px solid #16223d;
+  border-radius: 8px;
+  background: #111d34;
+  color: #dfe8f5;
+  padding: 7px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.boton-backup:hover {
+  border-color: #f1c44f;
+  color: #f1c44f;
+}
+
+.boton-backup.danger {
+  color: #ff9b9b;
 }
 
 .barra-filtros {

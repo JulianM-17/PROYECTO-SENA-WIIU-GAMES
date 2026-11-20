@@ -1,0 +1,900 @@
+{
+  "version": 1,
+  "database": "wiiu_gamesdb",
+  "createdAt": "2026-11-20T21:28:51.163Z",
+  "tables": [
+    {
+      "name": "backup",
+      "createSql": "CREATE TABLE `backup` (\n  `id_backup` int NOT NULL AUTO_INCREMENT,\n  `id_encargado` int DEFAULT NULL,\n  `nombre_archivo` varchar(70) NOT NULL,\n  `ruta_almacenamiento` varchar(255) NOT NULL,\n  `peso` int NOT NULL,\n  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `tipo` enum('COMPLETO','INCREMENTAL','DIFERENCIAL') DEFAULT NULL,\n  `estado` enum('EXITOSO','FALLIDO','EN PROCESO') NOT NULL,\n  PRIMARY KEY (`id_backup`),\n  KEY `id_encargado` (`id_encargado`),\n  CONSTRAINT `backup_ibfk_1` FOREIGN KEY (`id_encargado`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `chk_peso` CHECK ((`peso` >= 0))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "categoria",
+      "createSql": "CREATE TABLE `categoria` (\n  `id_categoria` int NOT NULL AUTO_INCREMENT,\n  `nombre_cat` varchar(40) NOT NULL,\n  `descripcion_cat` varchar(100) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_categoria`)\n) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_categoria": 1,
+          "nombre_cat": "Portatiles",
+          "descripcion_cat": "Computadores portatiles de todas las gamas",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 2,
+          "nombre_cat": "Perifericos",
+          "descripcion_cat": "Mouse, teclados, audifonos y similares",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 3,
+          "nombre_cat": "Almacenamiento",
+          "descripcion_cat": "Discos duros, SSD y memorias",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 4,
+          "nombre_cat": "PC Escritorio",
+          "descripcion_cat": "Torres gamer, empresariales y Todo en Uno",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 5,
+          "nombre_cat": "Tarjetas Graficas",
+          "descripcion_cat": "GPUs NVIDIA GeForce y AMD Radeon de alto rendimiento",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 6,
+          "nombre_cat": "Monitores",
+          "descripcion_cat": "Pantallas gaming y profesionales de alta tasa de refresco",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 7,
+          "nombre_cat": "Memorias RAM",
+          "descripcion_cat": "Modulos DDR4 y DDR5 para portatiles y escritorios",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 8,
+          "nombre_cat": "Motherboards",
+          "descripcion_cat": "Placas base para procesadores Intel y AMD",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 9,
+          "nombre_cat": "Procesadores",
+          "descripcion_cat": "CPUs Intel Core y AMD Ryzen para gaming y creacion de contenido",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_categoria": 10,
+          "nombre_cat": "Consolas y Videojuegos",
+          "descripcion_cat": "Consolas retro, modernas, accesorios y videojuegos",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "cita",
+      "createSql": "CREATE TABLE `cita` (\n  `id_cita` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_tecnico` int DEFAULT NULL,\n  `equipo` varchar(100) NOT NULL,\n  `descripcion` text,\n  `telefono` varchar(20) NOT NULL,\n  `fecha` date NOT NULL,\n  `precio` decimal(14,2) DEFAULT NULL,\n  `tipo_servicio` enum('MANTENIMIENTO','REPARACION') NOT NULL,\n  `estado` enum('SOLICITUD RECIBIDA','CONFIRMADA','EN PROCESO','COMPLETADA','CANCELADA') NOT NULL DEFAULT 'SOLICITUD RECIBIDA',\n  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `id_cita_local` varchar(80) DEFAULT NULL,\n  PRIMARY KEY (`id_cita`),\n  UNIQUE KEY `uq_cita_usuario_local` (`id_usuario`,`id_cita_local`),\n  KEY `idx_cita_usuario_fecha` (`id_usuario`,`fecha`),\n  KEY `idx_cita_tecnico` (`id_tecnico`),\n  CONSTRAINT `cita_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `cita_ibfk_2` FOREIGN KEY (`id_tecnico`) REFERENCES `usuario` (`id_usuario`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "compra",
+      "createSql": "CREATE TABLE `compra` (\n  `id_compra` int NOT NULL AUTO_INCREMENT,\n  `id_admin` int NOT NULL,\n  `id_proveedor` int NOT NULL,\n  `id_sucursal` int NOT NULL,\n  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `metodo_pago` enum('EFECTIVO','TARJETA','TRANSFERENCIA') NOT NULL,\n  `notas` varchar(200) DEFAULT NULL,\n  `estado` enum('PAGADA','ANULADA') NOT NULL DEFAULT 'PAGADA',\n  PRIMARY KEY (`id_compra`),\n  KEY `id_admin` (`id_admin`),\n  KEY `id_proveedor` (`id_proveedor`),\n  KEY `id_sucursal` (`id_sucursal`),\n  CONSTRAINT `compra_ibfk_1` FOREIGN KEY (`id_admin`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `compra_ibfk_2` FOREIGN KEY (`id_proveedor`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `compra_ibfk_3` FOREIGN KEY (`id_sucursal`) REFERENCES `sucursal` (`id_sucursal`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_compra": 1,
+          "id_admin": 3,
+          "id_proveedor": 4,
+          "id_sucursal": 1,
+          "fecha": "2026-08-20T16:00:00.000Z",
+          "metodo_pago": "TRANSFERENCIA",
+          "notas": "Reposicion de portatiles",
+          "estado": "PAGADA"
+        },
+        {
+          "id_compra": 2,
+          "id_admin": 3,
+          "id_proveedor": 4,
+          "id_sucursal": 2,
+          "fecha": "2026-08-22T19:20:00.000Z",
+          "metodo_pago": "TRANSFERENCIA",
+          "notas": "Reposicion de perifericos",
+          "estado": "PAGADA"
+        },
+        {
+          "id_compra": 3,
+          "id_admin": 3,
+          "id_proveedor": 4,
+          "id_sucursal": 3,
+          "fecha": "2026-08-25T21:10:00.000Z",
+          "metodo_pago": "EFECTIVO",
+          "notas": null,
+          "estado": "PAGADA"
+        }
+      ]
+    },
+    {
+      "name": "cotizacion",
+      "createSql": "CREATE TABLE `cotizacion` (\n  `id_cotizacion` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_servicio` int DEFAULT NULL,\n  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `validez` int NOT NULL DEFAULT '15',\n  `total` decimal(14,6) NOT NULL,\n  `estado` enum('PENDIENTE','ACEPTADA','RECHAZADA') NOT NULL,\n  PRIMARY KEY (`id_cotizacion`),\n  KEY `id_usuario` (`id_usuario`),\n  KEY `id_servicio` (`id_servicio`),\n  CONSTRAINT `cotizacion_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `cotizacion_ibfk_2` FOREIGN KEY (`id_servicio`) REFERENCES `servicio` (`id_servicio`),\n  CONSTRAINT `chk_total_cotizacion` CHECK ((`total` >= 0)),\n  CONSTRAINT `chk_validez` CHECK ((`validez` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_cotizacion": 1,
+          "id_usuario": 1,
+          "id_servicio": null,
+          "fecha": "2026-09-05T17:00:00.000Z",
+          "validez": 30,
+          "total": "2200000.000000",
+          "estado": "RECHAZADA"
+        }
+      ]
+    },
+    {
+      "name": "detalle_compra",
+      "createSql": "CREATE TABLE `detalle_compra` (\n  `id_detalle_compra` int NOT NULL AUTO_INCREMENT,\n  `id_compra` int NOT NULL,\n  `id_producto` int NOT NULL,\n  `cantidad` int NOT NULL,\n  `precio_unitario` decimal(14,6) NOT NULL,\n  `subtotal` decimal(14,6) NOT NULL,\n  PRIMARY KEY (`id_detalle_compra`),\n  KEY `id_compra` (`id_compra`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `detalle_compra_ibfk_1` FOREIGN KEY (`id_compra`) REFERENCES `compra` (`id_compra`),\n  CONSTRAINT `detalle_compra_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `chk_cantidad_det_compra` CHECK ((`cantidad` > 0)),\n  CONSTRAINT `chk_precio_det_compra` CHECK ((`precio_unitario` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_detalle_compra": 1,
+          "id_compra": 1,
+          "id_producto": 1,
+          "cantidad": 5,
+          "precio_unitario": "1800000.000000",
+          "subtotal": "9000000.000000"
+        },
+        {
+          "id_detalle_compra": 2,
+          "id_compra": 2,
+          "id_producto": 2,
+          "cantidad": 50,
+          "precio_unitario": "30000.000000",
+          "subtotal": "1500000.000000"
+        },
+        {
+          "id_detalle_compra": 3,
+          "id_compra": 3,
+          "id_producto": 3,
+          "cantidad": 20,
+          "precio_unitario": "130000.000000",
+          "subtotal": "2600000.000000"
+        }
+      ]
+    },
+    {
+      "name": "detalle_cotizacion",
+      "createSql": "CREATE TABLE `detalle_cotizacion` (\n  `id_detalle_cotizacion` int NOT NULL AUTO_INCREMENT,\n  `id_cotizacion` int NOT NULL,\n  `id_producto` int NOT NULL,\n  `cantidad` int NOT NULL,\n  `precio_unitario` decimal(14,6) NOT NULL,\n  `subtotal` decimal(14,6) NOT NULL,\n  PRIMARY KEY (`id_detalle_cotizacion`),\n  KEY `id_cotizacion` (`id_cotizacion`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `detalle_cotizacion_ibfk_1` FOREIGN KEY (`id_cotizacion`) REFERENCES `cotizacion` (`id_cotizacion`),\n  CONSTRAINT `detalle_cotizacion_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `chk_cantidad_det_cot` CHECK ((`cantidad` > 0)),\n  CONSTRAINT `chk_precio_det_cot` CHECK ((`precio_unitario` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_detalle_cotizacion": 1,
+          "id_cotizacion": 1,
+          "id_producto": 1,
+          "cantidad": 1,
+          "precio_unitario": "2200000.000000",
+          "subtotal": "2200000.000000"
+        }
+      ]
+    },
+    {
+      "name": "detalle_servicio",
+      "createSql": "CREATE TABLE `detalle_servicio` (\n  `id_detalle_servicio` int NOT NULL AUTO_INCREMENT,\n  `id_servicio` int NOT NULL,\n  `id_producto` int DEFAULT NULL,\n  `descripcion` varchar(100) NOT NULL,\n  `cantidad` int NOT NULL DEFAULT '1',\n  `precio_unitario` decimal(14,6) NOT NULL,\n  `subtotal` decimal(14,6) GENERATED ALWAYS AS ((`cantidad` * `precio_unitario`)) STORED,\n  `estado` enum('CANCELADO','PENDIENTE','EN PROCESO','COMPLETO') NOT NULL,\n  PRIMARY KEY (`id_detalle_servicio`),\n  KEY `id_servicio` (`id_servicio`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `detalle_servicio_ibfk_1` FOREIGN KEY (`id_servicio`) REFERENCES `servicio` (`id_servicio`),\n  CONSTRAINT `detalle_servicio_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `chk_cantidad_det_serv` CHECK ((`cantidad` >= 0)),\n  CONSTRAINT `chk_precio_det_serv` CHECK ((`precio_unitario` >= 0))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "detalle_venta",
+      "createSql": "CREATE TABLE `detalle_venta` (\n  `id_detalle_venta` int NOT NULL AUTO_INCREMENT,\n  `id_venta` int NOT NULL,\n  `id_producto` int NOT NULL,\n  `cantidad` int NOT NULL,\n  `precio_unitario` decimal(14,6) NOT NULL,\n  `subtotal` decimal(14,6) NOT NULL,\n  `notas` varchar(200) DEFAULT NULL,\n  PRIMARY KEY (`id_detalle_venta`),\n  KEY `id_venta` (`id_venta`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `detalle_venta_ibfk_1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`),\n  CONSTRAINT `detalle_venta_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `chk_cantidad_det_venta` CHECK ((`cantidad` > 0)),\n  CONSTRAINT `chk_precio_det_venta` CHECK ((`precio_unitario` >= 0))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "equipo",
+      "createSql": "CREATE TABLE `equipo` (\n  `id_equipo` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_sucursal` int NOT NULL,\n  `tipo` enum('Portatil','Torre','Consola','Control','All in one') NOT NULL,\n  `marca` varchar(20) NOT NULL,\n  `numero_serial` varchar(40) NOT NULL,\n  `descripcion` varchar(100) NOT NULL,\n  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_equipo`),\n  UNIQUE KEY `numero_serial` (`numero_serial`),\n  KEY `id_usuario` (`id_usuario`),\n  KEY `id_sucursal` (`id_sucursal`),\n  CONSTRAINT `equipo_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `equipo_ibfk_2` FOREIGN KEY (`id_sucursal`) REFERENCES `sucursal` (`id_sucursal`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_equipo": 1,
+          "id_usuario": 1,
+          "id_sucursal": 1,
+          "tipo": "Portatil",
+          "marca": "HP",
+          "numero_serial": "HP-SN-2024-0001",
+          "descripcion": "Portatil HP 15 con falla en la bateria",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_equipo": 2,
+          "id_usuario": 2,
+          "id_sucursal": 3,
+          "tipo": "Consola",
+          "marca": "Sony",
+          "numero_serial": "PS5-SN-2023-0456",
+          "descripcion": "PlayStation 5 que no enciende",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_equipo": 3,
+          "id_usuario": 1,
+          "id_sucursal": 2,
+          "tipo": "Torre",
+          "marca": "Ensamblado",
+          "numero_serial": "TORRE-SN-0789",
+          "descripcion": "Torre gamer con sobrecalentamiento",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "favorito",
+      "createSql": "CREATE TABLE `favorito` (\n  `id_favorito` int NOT NULL AUTO_INCREMENT,\n  `fecha_agregado` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `id_usuario` int NOT NULL,\n  `id_producto` int NOT NULL,\n  PRIMARY KEY (`id_favorito`),\n  UNIQUE KEY `id_usuario` (`id_usuario`,`id_producto`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `favorito_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `favorito_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "garantia",
+      "createSql": "CREATE TABLE `garantia` (\n  `id_garantia` int NOT NULL AUTO_INCREMENT,\n  `id_detalle_venta` int NOT NULL,\n  `fecha_inicio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `fecha_fin` datetime NOT NULL,\n  `estado` enum('VIGENTE','VENCIDA','ANULADA') NOT NULL DEFAULT 'VIGENTE',\n  PRIMARY KEY (`id_garantia`),\n  UNIQUE KEY `uq_garantia_detalle_venta` (`id_detalle_venta`),\n  CONSTRAINT `garantia_ibfk_1` FOREIGN KEY (`id_detalle_venta`) REFERENCES `detalle_venta` (`id_detalle_venta`),\n  CONSTRAINT `chk_fechas_garantia` CHECK ((`fecha_fin` > `fecha_inicio`))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "inventario",
+      "createSql": "CREATE TABLE `inventario` (\n  `id_inventario` int NOT NULL AUTO_INCREMENT,\n  `id_sucursal` int NOT NULL,\n  `id_producto` int NOT NULL,\n  `stock` int NOT NULL DEFAULT '0',\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_inventario`),\n  UNIQUE KEY `sucursal_producto` (`id_sucursal`,`id_producto`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `inventario_ibfk_1` FOREIGN KEY (`id_sucursal`) REFERENCES `sucursal` (`id_sucursal`),\n  CONSTRAINT `inventario_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `chk_stock` CHECK ((`stock` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_inventario": 1,
+          "id_sucursal": 1,
+          "id_producto": 1,
+          "stock": 5,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 2,
+          "id_sucursal": 2,
+          "id_producto": 2,
+          "stock": 50,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 3,
+          "id_sucursal": 3,
+          "id_producto": 3,
+          "stock": 20,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 4,
+          "id_sucursal": 1,
+          "id_producto": 4,
+          "stock": 8,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 5,
+          "id_sucursal": 2,
+          "id_producto": 5,
+          "stock": 6,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 6,
+          "id_sucursal": 3,
+          "id_producto": 6,
+          "stock": 12,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 7,
+          "id_sucursal": 1,
+          "id_producto": 7,
+          "stock": 15,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 8,
+          "id_sucursal": 2,
+          "id_producto": 8,
+          "stock": 30,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 9,
+          "id_sucursal": 3,
+          "id_producto": 9,
+          "stock": 10,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 10,
+          "id_sucursal": 1,
+          "id_producto": 10,
+          "stock": 14,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 11,
+          "id_sucursal": 2,
+          "id_producto": 11,
+          "stock": 22,
+          "estado": "ACTIVO"
+        },
+        {
+          "id_inventario": 12,
+          "id_sucursal": 3,
+          "id_producto": 12,
+          "stock": 9,
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "marca",
+      "createSql": "CREATE TABLE `marca` (\n  `id_marca` int NOT NULL AUTO_INCREMENT,\n  `nombre_marca` varchar(20) NOT NULL,\n  `descripcion_marca` varchar(100) NOT NULL,\n  `fecha_creacion` datetime DEFAULT CURRENT_TIMESTAMP,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_marca`)\n) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_marca": 1,
+          "nombre_marca": "Lenovo",
+          "descripcion_marca": "Computadores y accesorios Lenovo",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 2,
+          "nombre_marca": "Logitech",
+          "descripcion_marca": "Perifericos Logitech",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 3,
+          "nombre_marca": "Kingston",
+          "descripcion_marca": "Memorias y unidades de almacenamiento",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 4,
+          "nombre_marca": "ASUS",
+          "descripcion_marca": "Laptops, componentes y monitores ASUS",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 5,
+          "nombre_marca": "NVIDIA",
+          "descripcion_marca": "Tarjetas graficas GeForce RTX y tecnologias visuales",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 6,
+          "nombre_marca": "Corsair",
+          "descripcion_marca": "Memorias RAM, fuentes y perifericos de alto rendimiento",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 7,
+          "nombre_marca": "Intel",
+          "descripcion_marca": "Procesadores Intel Core y placas base",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 8,
+          "nombre_marca": "AMD",
+          "descripcion_marca": "Procesadores Ryzen y tarjetas graficas Radeon",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 9,
+          "nombre_marca": "Nintendo",
+          "descripcion_marca": "Consolas Nintendo Switch y videojuegos",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 10,
+          "nombre_marca": "Sony",
+          "descripcion_marca": "Consolas PlayStation y accesorios",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_marca": 11,
+          "nombre_marca": "MSI",
+          "descripcion_marca": "Placas base, tarjetas de video y perifericos gaming",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "producto",
+      "createSql": "CREATE TABLE `producto` (\n  `id_producto` int NOT NULL AUTO_INCREMENT,\n  `id_marca` int NOT NULL,\n  `id_categoria` int NOT NULL,\n  `nombre` varchar(100) NOT NULL,\n  `imagen_prin` varchar(255) NOT NULL,\n  `imagen_2` varchar(255) DEFAULT NULL,\n  `imagen_3` varchar(255) DEFAULT NULL,\n  `imagen_4` varchar(255) DEFAULT NULL,\n  `color` varchar(15) DEFAULT NULL,\n  `descripcion` varchar(100) NOT NULL,\n  `precio` decimal(14,6) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id_producto`),\n  KEY `id_marca` (`id_marca`),\n  KEY `id_categoria` (`id_categoria`),\n  CONSTRAINT `producto_ibfk_1` FOREIGN KEY (`id_marca`) REFERENCES `marca` (`id_marca`),\n  CONSTRAINT `producto_ibfk_2` FOREIGN KEY (`id_categoria`) REFERENCES `categoria` (`id_categoria`),\n  CONSTRAINT `chk_precio_producto` CHECK ((`precio` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_producto": 1,
+          "id_marca": 1,
+          "id_categoria": 1,
+          "nombre": "Portatil Lenovo IdeaPad 3",
+          "imagen_prin": "https://exitocol.vtexassets.com/arquivos/ids/9427292/portatil-lenovo-ideapad-3-14-core-i5-8gb-512gb-ssd-w10.jpg?v=637653492669170000",
+          "imagen_2": "https://p3-ofp.static.pub/fes/cms/2022/12/28/h34tkgatdrq93k39ndojjdabaj8ief172697.png",
+          "imagen_3": "https://p1-ofp.static.pub/medias/bWFzdGVyfHJvb3R8ODQ0MjB8aW1hZ2UvanBlZ3xoOGIvaGY0LzEwNzU0NzQxNjAwMjg2LmpwZ3xkZGFiM2ZhYTIyODYzNWJlNWEyYWUwNzNiZDI3MGUwNmU4MzRjYjY0YWE4NDQ1ZjYxNTZiNTQyNzY0YTFjMmZi/lenovo-laptop-ideapad-3-14-intel-subseries-gallery-4.jpg",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuouMzUMYIznreAhfvfAOw7Vy69OnP-Ie9w3iFxcY7-d8Wxor07T0EEuw&s=10",
+          "color": "Gris",
+          "descripcion": "Ryzen 5, 16GB RAM, 512GB SSD, 15.6 pulgadas",
+          "precio": "2200000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 2,
+          "id_marca": 2,
+          "id_categoria": 2,
+          "nombre": "Mouse Logitech M185",
+          "imagen_prin": "https://discoveryeb.com/wp-content/uploads/2025/07/MOUSE-LOGITECH-M185-NEGRO-INALAMBRICO.webp",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRRI3g_cN7GdPpBNhd-DEqtdwSZddY-7FB9IxeJJPWJPQ&s=10",
+          "imagen_3": "https://www.logitechstore.com.co/cdn/shop/files/D_793154-MCO76755306039_052024-B.jpg?v=1749834200&width=800",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsa3gbJhQJP-9Rc0iAhwBNesX5O9mpEmLw-CokefcQ6thXGHO8y1rsx5L2&s=10",
+          "color": "Negro",
+          "descripcion": "Mouse inalambrico con receptor USB",
+          "precio": "45000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 3,
+          "id_marca": 3,
+          "id_categoria": 3,
+          "nombre": "SSD Kingston A400 480GB",
+          "imagen_prin": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc0MEbuVDtNatNOeXLvubslsh7flOHP0_nNlxRRe1T6Nk9-_v4Xnl8lBI6&s=10",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTd-v5gmIGbvBSyScAwP1thFCOVuo-20BXxN2HFkQf04Q&s=10",
+          "imagen_3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1q9RPAlltPAc9lbdxZ2dfbKbMJbWr6aaRSb7s1xoD3A&s=10",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZ0rS4p1fsV8EZW7MyQhIiSzFC98Kb1SHrYoexykdRVw&s=10",
+          "color": "Negro",
+          "descripcion": "Unidad de estado solido SATA 2.5 pulgadas",
+          "precio": "180000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 4,
+          "id_marca": 4,
+          "id_categoria": 1,
+          "nombre": "Portatil Gamer ASUS ROG Strix G16",
+          "imagen_prin": "https://exitocol.vtexassets.com/arquivos/ids/35173962/Portatil-Gaming-ASUS-ROG-Strix-G16-AMD-Ryzen-9-8940HX-RAM-16-GB-1-TB-SSD-G614PM-RV010W-3734616_a.jpg?v=639246642668170000",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaAJ1g40WZ9T0sKbw0VjZPXrNJZ1nMh6VZWe_1WOG_vg&s=10",
+          "imagen_3": "https://www.professionalwireless.com.co/wp-content/uploads/2026/01/ROG-STRIX-G16-G614PR_D.png",
+          "imagen_4": "https://gamerscolombia.com/cdn/shop/files/41.png?v=1757616706",
+          "color": "Negro",
+          "descripcion": "Intel Core i7-13650HX, RTX 4060, 16GB RAM DDR5, 512GB SSD",
+          "precio": "5800000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 5,
+          "id_marca": 8,
+          "id_categoria": 4,
+          "nombre": "PC Gamer Torre Custom Ryzen 7",
+          "imagen_prin": "https://exitocol.vtexassets.com/arquivos/ids/35173962/Portatil-Gaming-ASUS-ROG-Strix-G16-AMD-Ryzen-9-8940HX-RAM-16-GB-1-TB-SSD-G614PM-RV010W-3734616_a.jpg?v=639246642668170000",
+          "imagen_2": "",
+          "imagen_3": "",
+          "imagen_4": "",
+          "color": "Negro",
+          "descripcion": "AMD Ryzen 7 5700X, RTX 4060 Ti, 32GB RAM, 1TB NVMe, Fuente 750W",
+          "precio": "4500000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 6,
+          "id_marca": 5,
+          "id_categoria": 5,
+          "nombre": "Tarjeta Grafica NVIDIA GeForce RTX 4060 8GB",
+          "imagen_prin": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS045T533PXM2vplMfKOCiy0awrf2Y70f1CWvEBORNj0w&s=10",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo0ZuHbmuXklfYa70w10jUOzGZSD3GEdg3AGhLEGh0FQ&s=10",
+          "imagen_3": "https://cdn.mesajil.com/files/2026/10/02/tarjeta-grafica-gigabyte-nvidia-geforce-rtx-4060-gaming-oc-8gb-gddr6-galeria-1.webp",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT29Yc0TviWVjvLgpgyuO8KTa3FPJ4i2jCsSDdX5NICaA&s=10",
+          "color": "Negro",
+          "descripcion": "Arquitectura Ada Lovelace, DLSS 3, Ray Tracing, 8GB GDDR6",
+          "precio": "1650000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 7,
+          "id_marca": 4,
+          "id_categoria": 6,
+          "nombre": "Monitor Gaming ASUS TUF 27 165Hz",
+          "imagen_prin": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyhelKvif-AT95jLas92alyZ_2d7Abs54wrDPh1UW-cg&s=10",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQt2APmTqFTXjBWtnfbrUxpjhkunyKLzyTJVfKwuQwHEA&s=10",
+          "imagen_3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQmThPGcMp6mihlAY4aQPp3HE_-zhelSG322tjkBHy7Jg&s=10",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRo4-_o_LtDieuVElI8qEqBQr2tdahkSvQmoSkQLaRcIQ&s=10",
+          "color": "Negro",
+          "descripcion": "Pantalla IPS 27 pulgadas, 165Hz, 1ms, FreeSync Premium, HDR10",
+          "precio": "1150000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 8,
+          "id_marca": 6,
+          "id_categoria": 7,
+          "nombre": "Memoria RAM Corsair Vengeance RGB 16GB DDR4",
+          "imagen_prin": "https://http2.mlstatic.com/D_NQ_NP_871475-MLA91871043439_092025-O.webp",
+          "imagen_2": "https://www.mipcparquecentral.com/cdn/shop/files/KITRAM16DDR43200CORSAIRVENGANCERGBRS.jpg?v=1776702619",
+          "imagen_3": "https://assets.corsair.com/image/upload/f_auto,q_auto/content/CMR16GX4M2A2666C16-Vengeance-RGB-01.png",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQo1IAa7CRW4a9UTnutFs-VjnajOUMu-29pph60KfKfFA&s=10",
+          "color": "Negro",
+          "descripcion": "Kit 16GB (2x8GB) 3200MHz CL16 con iluminacion dinamica RGB",
+          "precio": "210000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 9,
+          "id_marca": 11,
+          "id_categoria": 8,
+          "nombre": "Motherboard MSI B550M PRO-VDH WiFi",
+          "imagen_prin": "https://symcomputadores.com/wp-content/uploads/2023/12/MSI-B550M-PRO-VHD-WIFI-3.png",
+          "imagen_2": "https://reset.net.co/wp-content/uploads/2024/02/Board-MSI-B550M-PRO-VDH-WIFI-principal.webp",
+          "imagen_3": "https://storage-asset.msi.com/global/picture/image/feature/mb/B550M/PRO-VDH-WIFI/storage-hero.jpg",
+          "imagen_4": "https://storage-asset.msi.com/global/picture/image/feature/mb/B550M/PRO-VDH-WIFI/usb-hero.jpg",
+          "color": "Negro",
+          "descripcion": "Socket AM4, PCIe 4.0, Dual M.2, WiFi integrado, soporte Ryzen 5000",
+          "precio": "490000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 10,
+          "id_marca": 7,
+          "id_categoria": 9,
+          "nombre": "Procesador Intel Core i7-13700K 16 Nucleos",
+          "imagen_prin": "https://http2.mlstatic.com/D_NQ_NP_909668-CBT79029631396_092024-O.webp",
+          "imagen_2": "https://www.fabritec.pe/storage/products/1790796314_bx8071513700k_01.webp",
+          "imagen_3": "https://m.media-amazon.com/images/I/41ce2ohZT2L._AC_UF894,1000_QL80_.jpg",
+          "imagen_4": "https://m.media-amazon.com/images/I/7116i-92V-L._AC_UF350,350_QL80_.jpg",
+          "color": "Azul",
+          "descripcion": "Hasta 5.4 GHz, 30MB Cache, Socket LGA1700, Graficos Intel UHD 770",
+          "precio": "1890000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 11,
+          "id_marca": 9,
+          "id_categoria": 10,
+          "nombre": "Consola Nintendo Switch OLED 64GB",
+          "imagen_prin": "https://exitocol.vtexassets.com/arquivos/ids/32433207/consola-nintendo-switch-oled-blanca-64gb-pantalla-7-pulgadas.jpg?v=639059222278530000",
+          "imagen_2": "https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_2.0/ncom/en_US/switch/site-design-update/photo01.png",
+          "imagen_3": "https://assets.nintendo.com/image/upload/f_auto/q_auto/dpr_2.0/ncom/en_US/switch/videos/heg001-07060600/posters/oled-model.jpg",
+          "imagen_4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9sCV0pyKVqoS46pmRjNkluyz4N2xrGcyd-gY88JlQrw&s",
+          "color": "Blanco",
+          "descripcion": "Pantalla OLED 7 pulgadas, soporte ajustable, 64GB almacenamiento interno",
+          "precio": "1450000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_producto": 12,
+          "id_marca": 10,
+          "id_categoria": 10,
+          "nombre": "Consola PlayStation 5 Slim Digital 1TB",
+          "imagen_prin": "https://i.blogs.es/8fdd98/ps51/450_1000.webp",
+          "imagen_2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShoynVukg-wtSzSk4YhzTrsxJwHvZnTGK5dD8Y17o4P-qVvay77KtZpBd3&s=10",
+          "imagen_3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTo66g8lOlv1xncjYVj4WQSOCf_gT62MsDHCRkM8TRSJRQFFiGFShfksVF&s=10",
+          "imagen_4": "https://t3.ftcdn.net/jpg/06/82/00/48/360_F_682004801_hFGnRDJg2vnxgF9HL25oRhRSBnz5SxTH.jpg",
+          "color": "Blanco",
+          "descripcion": "SSD 1TB de ultra alta velocidad, Tempest 3D AudioTech, soporte 4K 120Hz",
+          "precio": "2490000.000000",
+          "estado": "ACTIVO",
+          "fecha_creacion": "2026-11-20T20:48:45.000Z"
+        }
+      ]
+    },
+    {
+      "name": "promocion",
+      "createSql": "CREATE TABLE `promocion` (\n  `id_promocion` int NOT NULL AUTO_INCREMENT,\n  `id_producto` int NOT NULL,\n  `id_encargado` int NOT NULL,\n  `precio` decimal(14,6) NOT NULL,\n  `descripcion` varchar(150) NOT NULL,\n  `fecha_inicio` datetime NOT NULL,\n  `fecha_fin` datetime NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_promocion`),\n  KEY `id_producto` (`id_producto`),\n  KEY `id_encargado` (`id_encargado`),\n  CONSTRAINT `promocion_ibfk_1` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `promocion_ibfk_2` FOREIGN KEY (`id_encargado`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `chk_fechas_promo` CHECK ((`fecha_fin` > `fecha_inicio`)),\n  CONSTRAINT `chk_precio_promo` CHECK ((`precio` >= 0))\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_promocion": 1,
+          "id_producto": 1,
+          "id_encargado": 3,
+          "precio": "2000000.000000",
+          "descripcion": "Descuento de temporada en portatil Lenovo",
+          "fecha_inicio": "2026-10-01T05:00:00.000Z",
+          "fecha_fin": "2026-11-01T04:59:59.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_promocion": 2,
+          "id_producto": 2,
+          "id_encargado": 3,
+          "precio": "38000.000000",
+          "descripcion": "Promo mouse inalambrico",
+          "fecha_inicio": "2026-10-01T05:00:00.000Z",
+          "fecha_fin": "2026-10-16T04:59:59.000Z",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_promocion": 3,
+          "id_producto": 3,
+          "id_encargado": 3,
+          "precio": "150000.000000",
+          "descripcion": "Oferta SSD 480GB",
+          "fecha_inicio": "2026-09-01T05:00:00.000Z",
+          "fecha_fin": "2026-10-01T04:59:59.000Z",
+          "estado": "INACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "resenas",
+      "createSql": "CREATE TABLE `resenas` (\n  `id_resenas` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_producto` int NOT NULL,\n  `calificacion` tinyint NOT NULL,\n  `comentario` varchar(300) DEFAULT NULL,\n  `compra_verificada` tinyint(1) DEFAULT '0',\n  `fecha_creacion` timestamp NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id_resenas`),\n  UNIQUE KEY `uk_usuario_producto` (`id_usuario`,`id_producto`),\n  KEY `id_producto` (`id_producto`),\n  CONSTRAINT `resenas_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `resenas_ibfk_2` FOREIGN KEY (`id_producto`) REFERENCES `producto` (`id_producto`),\n  CONSTRAINT `resenas_chk_1` CHECK ((`calificacion` between 1 and 5))\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "rol",
+      "createSql": "CREATE TABLE `rol` (\n  `id_rol` int NOT NULL AUTO_INCREMENT,\n  `nombre_rol` varchar(20) NOT NULL,\n  `descripcion_rol` varchar(100) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_rol`)\n) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_rol": 1,
+          "nombre_rol": "Cliente",
+          "descripcion_rol": "Usuario que compra productos y solicita servicios",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 2,
+          "nombre_rol": "Administrador",
+          "descripcion_rol": "Gestiona todo el sistema",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 3,
+          "nombre_rol": "Proveedor",
+          "descripcion_rol": "Empresa o persona que surte productos",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 4,
+          "nombre_rol": "Trabajador",
+          "descripcion_rol": "Empleado de sucursal: ventas y servicios tecnicos",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 5,
+          "nombre_rol": "Administrador",
+          "descripcion_rol": "Admin total",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 6,
+          "nombre_rol": "Administrador",
+          "descripcion_rol": "Admin total",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_rol": 7,
+          "nombre_rol": "Administrador",
+          "descripcion_rol": "Admin total",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "servicio",
+      "createSql": "CREATE TABLE `servicio` (\n  `id_servicio` int NOT NULL AUTO_INCREMENT,\n  `nombre` varchar(100) NOT NULL,\n  `descripcion` varchar(100) NOT NULL,\n  `id_usuario` int NOT NULL,\n  `id_encargado` int NOT NULL,\n  `id_tipo_servicio` int NOT NULL,\n  `id_equipo` int NOT NULL,\n  `estado` enum('PENDIENTE','EN PROCESO','CANCELADO','COMPLETO') NOT NULL DEFAULT 'PENDIENTE',\n  `fecha_creacion` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id_servicio`),\n  KEY `id_usuario` (`id_usuario`),\n  KEY `id_encargado` (`id_encargado`),\n  KEY `id_tipo_servicio` (`id_tipo_servicio`),\n  KEY `id_equipo` (`id_equipo`),\n  CONSTRAINT `servicio_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `servicio_ibfk_2` FOREIGN KEY (`id_encargado`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `servicio_ibfk_3` FOREIGN KEY (`id_tipo_servicio`) REFERENCES `tipo_servicio` (`id_tipo_servicio`),\n  CONSTRAINT `servicio_ibfk_4` FOREIGN KEY (`id_equipo`) REFERENCES `equipo` (`id_equipo`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "solicitud_garantia",
+      "createSql": "CREATE TABLE `solicitud_garantia` (\n  `id_solicitud` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_detalle_venta` int NOT NULL,\n  `descripcion` text NOT NULL,\n  `estado` enum('RECIBIDA','EN_REVISION','APROBADA','RECHAZADA','CERRADA') NOT NULL DEFAULT 'RECIBIDA',\n  `fecha_solicitud` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id_solicitud`),\n  UNIQUE KEY `uq_solicitud_garantia_detalle_venta` (`id_detalle_venta`),\n  KEY `idx_solicitud_garantia_usuario_fecha` (`id_usuario`,`fecha_solicitud`),\n  CONSTRAINT `solicitud_garantia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `solicitud_garantia_ibfk_2` FOREIGN KEY (`id_detalle_venta`) REFERENCES `detalle_venta` (`id_detalle_venta`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "sucursal",
+      "createSql": "CREATE TABLE `sucursal` (\n  `id_sucursal` int NOT NULL AUTO_INCREMENT,\n  `encargado` int DEFAULT NULL,\n  `nombre_suc` varchar(30) NOT NULL,\n  `departamento` varchar(30) NOT NULL,\n  `ciudad` varchar(30) NOT NULL,\n  `direccion` varchar(40) NOT NULL,\n  `telefono` varchar(20) NOT NULL,\n  `correo` varchar(120) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_sucursal`),\n  UNIQUE KEY `correo` (`correo`),\n  KEY `encargado` (`encargado`),\n  CONSTRAINT `sucursal_ibfk_1` FOREIGN KEY (`encargado`) REFERENCES `usuario` (`id_usuario`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_sucursal": 1,
+          "encargado": 3,
+          "nombre_suc": "Sucursal Chapinero",
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Cra 13 # 60-25",
+          "telefono": "6015551001",
+          "correo": "chapinero@tienda.com",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_sucursal": 2,
+          "encargado": 5,
+          "nombre_suc": "Sucursal Centro",
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Calle 19 # 7-30",
+          "telefono": "6015551002",
+          "correo": "centro@tienda.com",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_sucursal": 3,
+          "encargado": 6,
+          "nombre_suc": "Sucursal Poblado",
+          "departamento": "Antioquia",
+          "ciudad": "Medellin",
+          "direccion": "Cra 43A # 10-50",
+          "telefono": "6045551003",
+          "correo": "poblado@tienda.com",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "sugerencia",
+      "createSql": "CREATE TABLE `sugerencia` (\n  `id_sugerencia` int NOT NULL AUTO_INCREMENT,\n  `mensaje` varchar(500) NOT NULL,\n  `fecha_envio` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `id_usuario` int NOT NULL,\n  PRIMARY KEY (`id_sugerencia`),\n  KEY `id_usuario` (`id_usuario`),\n  CONSTRAINT `sugerencia_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    },
+    {
+      "name": "tipo_servicio",
+      "createSql": "CREATE TABLE `tipo_servicio` (\n  `id_tipo_servicio` int NOT NULL AUTO_INCREMENT,\n  `nombre` varchar(100) NOT NULL,\n  `descripcion` varchar(100) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  PRIMARY KEY (`id_tipo_servicio`)\n) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_tipo_servicio": 1,
+          "nombre": "Mantenimiento preventivo",
+          "descripcion": "Limpieza interna y cambio de pasta termica",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_tipo_servicio": 2,
+          "nombre": "Reparacion",
+          "descripcion": "Diagnostico y reparacion de fallas de hardware",
+          "estado": "ACTIVO"
+        },
+        {
+          "id_tipo_servicio": 3,
+          "nombre": "Instalacion de software",
+          "descripcion": "Formateo e instalacion de sistema operativo y programas",
+          "estado": "ACTIVO"
+        }
+      ]
+    },
+    {
+      "name": "usuario",
+      "createSql": "CREATE TABLE `usuario` (\n  `id_usuario` int NOT NULL AUTO_INCREMENT,\n  `id_rol` int DEFAULT NULL,\n  `nombre` varchar(30) NOT NULL,\n  `apellido` varchar(30) NOT NULL,\n  `tipo_doc` enum('CC','TI','PAS','NIT','CE') NOT NULL,\n  `num_doc` varchar(20) NOT NULL,\n  `fecha_nacimiento` date DEFAULT NULL,\n  `telefono` varchar(20) NOT NULL,\n  `telefono_secundario` varchar(20) DEFAULT NULL,\n  `departamento` varchar(30) NOT NULL,\n  `ciudad` varchar(30) DEFAULT NULL,\n  `direccion` varchar(40) DEFAULT NULL,\n  `correo` varchar(120) NOT NULL,\n  `contrasena_hash` varchar(255) NOT NULL,\n  `estado` enum('ACTIVO','INACTIVO') NOT NULL DEFAULT 'ACTIVO',\n  `fecha_ingreso` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id_usuario`),\n  UNIQUE KEY `num_doc` (`num_doc`),\n  UNIQUE KEY `correo` (`correo`),\n  KEY `id_rol` (`id_rol`),\n  CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `rol` (`id_rol`)\n) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": [
+        {
+          "id_usuario": 1,
+          "id_rol": 1,
+          "nombre": "Carlos",
+          "apellido": "Ramirez",
+          "tipo_doc": "CC",
+          "num_doc": "1012345678",
+          "fecha_nacimiento": "1995-03-14T05:00:00.000Z",
+          "telefono": "3101234567",
+          "telefono_secundario": null,
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Cra 15 # 80-20",
+          "correo": "cliente@gmail.com",
+          "contrasena_hash": "Cliente123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 2,
+          "id_rol": 1,
+          "nombre": "Laura",
+          "apellido": "Gomez",
+          "tipo_doc": "CC",
+          "num_doc": "1098765432",
+          "fecha_nacimiento": "1998-07-22T05:00:00.000Z",
+          "telefono": "3209876543",
+          "telefono_secundario": "3151112233",
+          "departamento": "Antioquia",
+          "ciudad": "Medellin",
+          "direccion": "Calle 50 # 45-10",
+          "correo": "cliente2@gmail.com",
+          "contrasena_hash": "Cliente123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 3,
+          "id_rol": 2,
+          "nombre": "Andres",
+          "apellido": "Torres",
+          "tipo_doc": "CC",
+          "num_doc": "80123456",
+          "fecha_nacimiento": "1988-11-05T05:00:00.000Z",
+          "telefono": "3001112233",
+          "telefono_secundario": null,
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Av 68 # 22-15",
+          "correo": "Admin123@gmail.com",
+          "contrasena_hash": "Admin123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 4,
+          "id_rol": 3,
+          "nombre": "Distribuciones Tech",
+          "apellido": "SAS",
+          "tipo_doc": "NIT",
+          "num_doc": "900123456",
+          "fecha_nacimiento": null,
+          "telefono": "6012223344",
+          "telefono_secundario": null,
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Zona Industrial",
+          "correo": "proveedor@gmail.com",
+          "contrasena_hash": "Proveedor123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 5,
+          "id_rol": 4,
+          "nombre": "Sofia",
+          "apellido": "MartineZ",
+          "tipo_doc": "CC",
+          "num_doc": "1023456789",
+          "fecha_nacimiento": "1992-05-10T04:00:00.000Z",
+          "telefono": "3112223344",
+          "telefono_secundario": null,
+          "departamento": "Cundinamarca",
+          "ciudad": "Bogota",
+          "direccion": "Calle 100 # 15-20",
+          "correo": "Trabajador@gmail.com",
+          "contrasena_hash": "Trabajador123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 6,
+          "id_rol": 4,
+          "nombre": "Mateo",
+          "apellido": "Rios",
+          "tipo_doc": "CC",
+          "num_doc": "1034567890",
+          "fecha_nacimiento": "1990-09-15T05:00:00.000Z",
+          "telefono": "3223334455",
+          "telefono_secundario": null,
+          "departamento": "Antioquia",
+          "ciudad": "Medellin",
+          "direccion": "Cra 80 # 30-10",
+          "correo": "Trabajador2@gmail.com",
+          "contrasena_hash": "Trabajador123",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:48:45.000Z"
+        },
+        {
+          "id_usuario": 7,
+          "id_rol": 2,
+          "nombre": "Admin",
+          "apellido": "User",
+          "tipo_doc": "CC",
+          "num_doc": "ADM001",
+          "fecha_nacimiento": null,
+          "telefono": "123456",
+          "telefono_secundario": null,
+          "departamento": "",
+          "ciudad": null,
+          "direccion": null,
+          "correo": "admin@tusitio.com",
+          "contrasena_hash": "$2b$12$hfibUlEH1PDGYfJDs88kV.MbnGMTL3oggKQW4g08casJjyRKN2d1W",
+          "estado": "ACTIVO",
+          "fecha_ingreso": "2026-11-20T20:55:23.000Z"
+        }
+      ]
+    },
+    {
+      "name": "venta",
+      "createSql": "CREATE TABLE `venta` (\n  `id_venta` int NOT NULL AUTO_INCREMENT,\n  `id_usuario` int NOT NULL,\n  `id_empleado` int DEFAULT NULL,\n  `id_sucursal` int NOT NULL,\n  `id_cotizacion` int DEFAULT NULL,\n  `fecha` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `metodo_pago` enum('EFECTIVO','TARJETA','TRANSFERENCIA') NOT NULL,\n  `nro_pago` varchar(255) DEFAULT NULL,\n  `comprobante` varchar(255) DEFAULT NULL,\n  `telefono` varchar(20) DEFAULT NULL,\n  `tipo_venta` enum('DOMICILIO','SUCURSAL') NOT NULL DEFAULT 'SUCURSAL',\n  `ciudad` varchar(100) DEFAULT NULL,\n  `direccion_entrega` varchar(180) DEFAULT NULL,\n  `numero_guia` varchar(30) DEFAULT NULL,\n  `notas` varchar(300) DEFAULT NULL,\n  `estado` enum('PAGADA','ANULADA') NOT NULL DEFAULT 'PAGADA',\n  PRIMARY KEY (`id_venta`),\n  KEY `id_usuario` (`id_usuario`),\n  KEY `id_empleado` (`id_empleado`),\n  KEY `id_sucursal` (`id_sucursal`),\n  KEY `id_cotizacion` (`id_cotizacion`),\n  CONSTRAINT `venta_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `venta_ibfk_2` FOREIGN KEY (`id_empleado`) REFERENCES `usuario` (`id_usuario`),\n  CONSTRAINT `venta_ibfk_3` FOREIGN KEY (`id_sucursal`) REFERENCES `sucursal` (`id_sucursal`),\n  CONSTRAINT `venta_ibfk_4` FOREIGN KEY (`id_cotizacion`) REFERENCES `cotizacion` (`id_cotizacion`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci",
+      "rows": []
+    }
+  ]
+}
