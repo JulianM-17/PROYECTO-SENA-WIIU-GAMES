@@ -366,6 +366,7 @@ function actualizarContadorNotificaciones() {
   var boton = document.querySelector('.campana-alerta');
   var resumen = document.getElementById('resumenNotificaciones');
   if (!contador || !boton) return;
+  boton.classList.toggle('tiene-no-leidas', notificacionesNoLeidas > 0);
   var icono = boton.querySelector('i');
   if (icono) {
     icono.classList.toggle('fi-sr-bell', notificacionesNoLeidas > 0);

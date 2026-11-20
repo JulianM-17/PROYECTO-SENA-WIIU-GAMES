@@ -392,6 +392,12 @@ body {
   font-size: 16px;
 }
 
+.campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: rgba(245, 166, 35, 0.14);
+  color: #f5a623;
+}
+
 .punto-amarillo {
   position: absolute;
   top: -7px;
@@ -1758,6 +1764,16 @@ html[data-theme="light"] .menu-lateral {
   border-right-color: #e2e8f0;
 }
 
+html[data-theme="light"] .menu-lateral .boton-hamburguesa,
+html[data-theme="light"] .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa {
+  background-color: #ffffff;
+  border-color: #dbe3ef;
+}
+
+html[data-theme="light"] .menu-lateral .boton-hamburguesa:hover {
+  background-color: #f1f5f9;
+}
+
 html[data-theme="light"] .texto-bienvenida h1,
 html[data-theme="light"] .datos-usuario .nombre,
 html[data-theme="light"] .encabezado-caja h3,
@@ -1782,6 +1798,35 @@ html[data-theme="light"] .panel-notificaciones li,
 html[data-theme="light"] .panel-notificaciones .notificacion-dia,
 html[data-theme="light"] .panel-notificaciones .notificacion-item time {
   color: #64748b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item {
+  border-color: #dbe3ef;
+  background-color: #f8fafc;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item.no-leida {
+  border-color: rgba(245, 166, 35, 0.55);
+  background: #fff7ed;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido strong {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido span {
+  color: #64748b;
+}
+
+html[data-theme="light"] .campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: #fff7ed;
+  color: #c2410c;
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.16);
+}
+
+html[data-theme="light"] .punto-amarillo {
+  border-color: #ffffff;
 }
 
 html[data-theme="light"] .boton-menu,
