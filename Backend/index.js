@@ -1075,14 +1075,15 @@ app.post("/api/my-appointments/import-legacy", requireUserSession, async (req, r
       `SELECT u.id_usuario
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
-       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
+         AND r.nombre_rol IN ('Cliente', 'Administrador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta de cliente activa puede importar citas antiguas.",
+        message: "Solo una cuenta activa de cliente o administrador puede importar citas antiguas.",
       });
     }
 
@@ -1216,14 +1217,15 @@ app.post("/api/appointments", requireUserSession, async (req, res) => {
       `SELECT u.id_usuario
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
-       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO' AND r.nombre_rol = 'Cliente'
+       WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
+         AND r.nombre_rol IN ('Cliente', 'Administrador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta de cliente activa puede agendar citas.",
+        message: "Solo una cuenta activa de cliente o administrador puede agendar citas.",
       });
     }
 
@@ -1810,7 +1812,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol = 'Cliente'
+         AND r.nombre_rol IN ('Cliente', 'Administrador')
        FOR UPDATE`,
       [req.userId],
     );
@@ -1818,7 +1820,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
       await revertirTransaccionEmpleado(connection);
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta de cliente activa puede realizar compras.",
+        message: "Solo una cuenta activa de cliente o administrador puede realizar compras.",
       });
     }
     if (!String(customerRows[0].direccion || "").trim()) {
