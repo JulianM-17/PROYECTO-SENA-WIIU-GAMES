@@ -392,6 +392,12 @@ body {
   font-size: 16px;
 }
 
+.campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: rgba(245, 166, 35, 0.14);
+  color: #f5a623;
+}
+
 .punto-amarillo {
   position: absolute;
   top: -7px;
@@ -1792,6 +1798,35 @@ html[data-theme="light"] .panel-notificaciones li,
 html[data-theme="light"] .panel-notificaciones .notificacion-dia,
 html[data-theme="light"] .panel-notificaciones .notificacion-item time {
   color: #64748b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item {
+  border-color: #dbe3ef;
+  background-color: #f8fafc;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item.no-leida {
+  border-color: rgba(245, 166, 35, 0.55);
+  background: #fff7ed;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido strong {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido span {
+  color: #64748b;
+}
+
+html[data-theme="light"] .campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: #fff7ed;
+  color: #c2410c;
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.16);
+}
+
+html[data-theme="light"] .punto-amarillo {
+  border-color: #ffffff;
 }
 
 html[data-theme="light"] .boton-menu,
