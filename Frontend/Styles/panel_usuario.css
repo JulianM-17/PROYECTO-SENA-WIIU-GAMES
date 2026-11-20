@@ -778,6 +778,63 @@ body {
   border-color: var(--yellow);
 }
 
+.barra-seguridad-password {
+  height: 6px;
+  margin-top: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--border);
+}
+
+.barra-seguridad-password-relleno {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--text-muted);
+  transition: width 0.25s ease, background-color 0.25s ease;
+}
+
+.barra-seguridad-password-relleno.nivel-debil {
+  width: 25%;
+  background-color: #ef4444;
+}
+
+.barra-seguridad-password-relleno.nivel-medio {
+  width: 60%;
+  background-color: #f59e0b;
+}
+
+.barra-seguridad-password-relleno.nivel-fuerte {
+  width: 100%;
+  background-color: #10b981;
+}
+
+.texto-seguridad-password {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.texto-seguridad-password.nivel-debil {
+  color: #ef4444;
+}
+
+.texto-seguridad-password.nivel-medio {
+  color: #b45309;
+}
+
+.texto-seguridad-password.nivel-fuerte {
+  color: #047857;
+}
+
+html[data-theme="dark"] .texto-seguridad-password.nivel-medio {
+  color: #fbbf24;
+}
+
+html[data-theme="dark"] .texto-seguridad-password.nivel-fuerte {
+  color: #34d399;
+}
+
 .contenedor-password-actual {
   position: relative;
 }
