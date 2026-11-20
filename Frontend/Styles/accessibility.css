@@ -307,7 +307,7 @@ body,
    1. ESCALA DE GRISES (SIN ROMPER POSITION FIXED)
    ===================================================== */
 /* NUNCA poner filter en body ni en html porque rompe position: fixed */
-body.a11y-mode-grayscale > *:not(#a11y-trigger-btn):not(#a11y-menu) {
+body.a11y-mode-grayscale > *:not(#a11y-trigger-btn) {
   filter: grayscale(100%) !important;
 }
 
