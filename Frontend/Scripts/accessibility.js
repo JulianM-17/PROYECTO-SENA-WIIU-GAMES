@@ -13,6 +13,45 @@
   let preferences = loadPreferences();
   let isMenuOpen = false;
 
+  window.confirmarCierreSesion = function () {
+    return new Promise((resolve) => {
+      const dialog = document.createElement("dialog");
+      dialog.className = "confirmacion-sesion-dialog";
+      dialog.setAttribute("aria-labelledby", "confirmacion-sesion-titulo");
+      dialog.setAttribute("aria-describedby", "confirmacion-sesion-mensaje");
+      dialog.innerHTML = `
+        <form method="dialog" class="confirmacion-sesion-contenido">
+          <div class="confirmacion-sesion-cabecera">
+            <span class="confirmacion-sesion-icono" aria-hidden="true">
+              <i class="fi fi-rr-sign-out-alt"></i>
+            </span>
+            <div>
+              <h2 id="confirmacion-sesion-titulo">Cerrar sesión</h2>
+              <p id="confirmacion-sesion-mensaje">¿Estás seguro de que deseas cerrar sesión?</p>
+            </div>
+          </div>
+          <div class="confirmacion-sesion-acciones">
+            <button class="confirmacion-sesion-cancelar" type="submit" value="cancel" autofocus>
+              Cancelar
+            </button>
+            <button class="confirmacion-sesion-confirmar" type="submit" value="confirm">
+              Sí, cerrar sesión
+            </button>
+          </div>
+        </form>
+      `;
+
+      dialog.addEventListener("close", () => {
+        const confirmed = dialog.returnValue === "confirm";
+        dialog.remove();
+        resolve(confirmed);
+      });
+
+      document.body.appendChild(dialog);
+      dialog.showModal();
+    });
+  };
+
   function loadPreferences() {
     const defaults = Object.fromEntries(MODES.map((mode) => [mode, false]));
     try {
@@ -378,7 +417,7 @@
       });
 
       logoutButton.addEventListener("click", async () => {
-        if (!window.confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+        if (!(await window.confirmarCierreSesion())) {
           return;
         }
 

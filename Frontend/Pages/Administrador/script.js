@@ -213,10 +213,10 @@ function toggleMenuPerfil() {
   }
 }
 
-function cerrarSesion(evento) {
+async function cerrarSesion(evento) {
   if (evento) evento.preventDefault();
 
-  if (!confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+  if (!(await window.confirmarCierreSesion())) {
     return;
   }
 

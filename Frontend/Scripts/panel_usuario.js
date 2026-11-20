@@ -2300,7 +2300,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnLogout) {
     btnLogout.addEventListener("click", async (e) => {
       e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+      if (await window.confirmarCierreSesion()) {
         try {
           const favoritesResponse = await fetch(
             "http://localhost:3000/api/my-favorites",
