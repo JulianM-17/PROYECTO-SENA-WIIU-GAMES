@@ -281,10 +281,14 @@
       Cliente: "Pages/panel_usuario.html",
       Proveedor: "Pages/panel_usuario.html",
     };
+    const role = String(user.rol || "").trim().toLowerCase();
+    const isAdmin = role.includes("admin");
     const destination = new URL(
-      destinations[user.rol] || destinations.Cliente,
+      (isAdmin ? destinations.Administrador : destinations[user.rol]) ||
+        destinations.Cliente,
       baseUrl,
     ).href;
+    const profileDestination = new URL("Pages/panel_usuario.html", baseUrl).href;
     const loginDestination = new URL("Pages/Login.html", baseUrl).href;
     const initials = String(user.nombre || "Usuario")
       .trim()
@@ -293,7 +297,8 @@
       .map((part) => part.charAt(0).toUpperCase())
       .join("");
     const existingAvatar = document.querySelector(".foto-perfil");
-    const hasProfileMenu = ["Cliente", "Proveedor"].includes(user.rol);
+    const hasProfileMenu =
+      isAdmin || ["cliente", "proveedor"].includes(role);
     const avatar = document.createElement(hasProfileMenu ? "button" : "a");
     avatar.className = existingAvatar
       ? `avatar-sesion ${existingAvatar.className}`
@@ -328,14 +333,32 @@
       avatar.setAttribute("aria-controls", profileMenu.id);
 
       const panelLink = document.createElement("a");
-      panelLink.href = destination;
+      panelLink.href = isAdmin ? profileDestination : destination;
       panelLink.setAttribute("role", "menuitem");
       const panelIcon = document.createElement("i");
       panelIcon.className = "fi fi-rr-user";
       panelIcon.setAttribute("aria-hidden", "true");
       const panelLabel = document.createElement("span");
-      panelLabel.textContent = "Ir al panel de usuario";
+      panelLabel.textContent = isAdmin
+        ? "Ir a mi perfil"
+        : "Ir al panel de usuario";
       panelLink.append(panelIcon, panelLabel);
+
+      if (isAdmin) {
+        const adminLink = document.createElement("a");
+        adminLink.href = destination;
+        adminLink.setAttribute("role", "menuitem");
+        const adminIcon = document.createElement("i");
+        adminIcon.className = "fi fi-rr-settings";
+        adminIcon.setAttribute("aria-hidden", "true");
+        const adminLabel = document.createElement("span");
+        adminLabel.textContent = "Ir al panel admin";
+        adminLink.append(adminIcon, adminLabel);
+        profileMenu.appendChild(panelLink);
+        profileMenu.appendChild(adminLink);
+      } else {
+        profileMenu.appendChild(panelLink);
+      }
 
       const separator = document.createElement("div");
       separator.className = "separador-perfil-cliente";
@@ -351,7 +374,7 @@
       logoutLabel.textContent = "Cerrar sesión";
       logoutButton.append(logoutIcon, logoutLabel);
 
-      profileMenu.append(panelLink, separator, logoutButton);
+      profileMenu.append(separator, logoutButton);
       wrapper.appendChild(profileMenu);
 
       avatar.addEventListener("click", () => {
@@ -387,44 +410,46 @@
           sessionStorage.getItem("sessionToken") ||
           localStorage.getItem("sessionToken");
         if (token) {
-          try {
-            const favoritesResponse = await fetch(
-              "http://localhost:3000/api/my-favorites",
-              {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            );
-            const favoritesData = await favoritesResponse
-              .json()
-              .catch(() => ({}));
-            if (!favoritesResponse.ok || !favoritesData.ok) {
-              throw new Error(
-                favoritesData.message || "No se pudieron eliminar tus favoritos.",
+          if (["cliente", "proveedor"].includes(role)) {
+            try {
+              const favoritesResponse = await fetch(
+                "http://localhost:3000/api/my-favorites",
+                {
+                  method: "DELETE",
+                  headers: { Authorization: `Bearer ${token}` },
+                },
               );
-            }
+              const favoritesData = await favoritesResponse
+                .json()
+                .catch(() => ({}));
+              if (!favoritesResponse.ok || !favoritesData.ok) {
+                throw new Error(
+                  favoritesData.message || "No se pudieron eliminar tus favoritos.",
+                );
+              }
 
-            const panelData = JSON.parse(
-              localStorage.getItem("wiiu_user_panel_data") || "{}",
-            );
-            if (
-              !panelData ||
-              typeof panelData !== "object" ||
-              Array.isArray(panelData)
-            ) {
-              throw new Error("Los datos locales de favoritos no son válidos.");
+              const panelData = JSON.parse(
+                localStorage.getItem("wiiu_user_panel_data") || "{}",
+              );
+              if (
+                !panelData ||
+                typeof panelData !== "object" ||
+                Array.isArray(panelData)
+              ) {
+                throw new Error("Los datos locales de favoritos no son válidos.");
+              }
+              panelData.favorites = [];
+              localStorage.setItem(
+                "wiiu_user_panel_data",
+                JSON.stringify(panelData),
+              );
+            } catch (error) {
+              console.error("No se pudieron eliminar los favoritos:", error);
+              window.alert(
+                error.message || "No se pudieron eliminar tus favoritos.",
+              );
+              return;
             }
-            panelData.favorites = [];
-            localStorage.setItem(
-              "wiiu_user_panel_data",
-              JSON.stringify(panelData),
-            );
-          } catch (error) {
-            console.error("No se pudieron eliminar los favoritos:", error);
-            window.alert(
-              error.message || "No se pudieron eliminar tus favoritos.",
-            );
-            return;
           }
 
           try {

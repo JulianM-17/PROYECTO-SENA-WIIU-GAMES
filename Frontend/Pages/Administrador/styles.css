@@ -1758,6 +1758,16 @@ html[data-theme="light"] .menu-lateral {
   border-right-color: #e2e8f0;
 }
 
+html[data-theme="light"] .menu-lateral .boton-hamburguesa,
+html[data-theme="light"] .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa {
+  background-color: #ffffff;
+  border-color: #dbe3ef;
+}
+
+html[data-theme="light"] .menu-lateral .boton-hamburguesa:hover {
+  background-color: #f1f5f9;
+}
+
 html[data-theme="light"] .texto-bienvenida h1,
 html[data-theme="light"] .datos-usuario .nombre,
 html[data-theme="light"] .encabezado-caja h3,
