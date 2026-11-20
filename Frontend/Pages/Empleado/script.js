@@ -850,6 +850,7 @@ async function logoutEmployee(event) {
     sessionStorage.removeItem("wiiu_usuario_activo");
     sessionStorage.removeItem("sessionToken");
     localStorage.removeItem("sessionToken");
+    localStorage.removeItem("wiiu_cart");
     window.location.href = "../../Pages/Login.html";
   }
 }

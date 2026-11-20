@@ -485,9 +485,32 @@
                     id="perfil-pass-nueva"
                     placeholder="••••••••"
                     class="entrada-formulario"
+                    aria-describedby="perfil-pass-seguridad-texto"
                     minlength="8"
                     required
                   />
+                  <div
+                    class="barra-seguridad-password"
+                    id="perfil-pass-seguridad"
+                    role="progressbar"
+                    aria-label="Seguridad de la nueva contraseña"
+                    aria-valuemin="0"
+                    aria-valuemax="4"
+                    aria-valuenow="0"
+                    aria-valuetext="Sin contraseña"
+                  >
+                    <div
+                      class="barra-seguridad-password-relleno"
+                      id="perfil-pass-seguridad-relleno"
+                      aria-hidden="true"
+                    ></div>
+                  </div>
+                  <small
+                    class="texto-seguridad-password"
+                    id="perfil-pass-seguridad-texto"
+                    aria-live="polite"
+                    >Escribe una contraseña para evaluar su seguridad.</small
+                  >
                 </div>
                 <div class="campo-formulario">
                   <label class="etiqueta-formulario" for="perfil-pass-confirm"

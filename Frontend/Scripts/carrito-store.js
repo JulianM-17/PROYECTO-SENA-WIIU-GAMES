@@ -1,6 +1,39 @@
 (() => {
   const STORAGE_KEY = "wiiu_cart";
 
+  function requireSession() {
+    let activeUser;
+    try {
+      activeUser = JSON.parse(
+        sessionStorage.getItem("wiiu_usuario_activo") || "null",
+      );
+    } catch (error) {
+      console.error("No se pudo validar la sesión para agregar al carrito:", error);
+    }
+
+    if (activeUser?.token) return true;
+
+    const path = window.location.pathname;
+    const loginPath = /\/Pages\/[^/]+$/i.test(path)
+      ? "Login.html"
+      : /\/Pages\//i.test(path)
+        ? "../Login.html"
+        : "Pages/Login.html";
+    const loginUrl = new URL(loginPath, window.location.href);
+    const currentPage = path.split("/").pop().toLowerCase();
+    const returnTo =
+      currentPage === "product.html" ? "Product.html" : "Catalog.html";
+    loginUrl.searchParams.set("returnTo", returnTo);
+
+    if (returnTo === "Product.html") {
+      const productId = new URLSearchParams(window.location.search).get("id");
+      if (productId) loginUrl.searchParams.set("productId", productId);
+    }
+
+    window.location.href = loginUrl.href;
+    return false;
+  }
+
   function read() {
     try {
       const cart = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
@@ -30,6 +63,10 @@
   }
 
   function add(product, quantity = 1) {
+    if (!requireSession()) {
+      return { ok: false, reason: "login-required" };
+    }
+
     const productId = String(
       product?.productId ?? product?.id_producto ?? product?.id ?? "",
     );
@@ -113,7 +150,15 @@
     write([]);
   }
 
-  window.WiiUGamesCart = { read, add, setQuantity, remove, clear, updateCount };
+  window.WiiUGamesCart = {
+    read,
+    add,
+    setQuantity,
+    remove,
+    clear,
+    updateCount,
+    requireSession,
+  };
   document.addEventListener("DOMContentLoaded", () => updateCount());
   window.addEventListener("storage", (event) => {
     if (event.key === STORAGE_KEY) updateCount();

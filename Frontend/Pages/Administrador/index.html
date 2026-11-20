@@ -44,6 +44,11 @@
           <span>Home</span>
         </button>
 
+        <button class="boton-menu" onclick="cambiarPestana('seccion-ventas', this)">
+          <i class="fi fi-rr-shopping-cart"></i>
+          <span>Ventas</span>
+        </button>
+
         <button class="boton-menu" onclick="cambiarPestana('seccion-garantias', this)">
           <i class="fi fi-rr-shield-check"></i>
           <span>Garantías</span>
@@ -315,6 +320,70 @@
 
         </div>
 
+      </section>
+
+<section id="seccion-ventas" class="seccion">
+        <div class="cabecera-modulo">
+          <div>
+            <h2>Ventas de la tienda</h2>
+            <p>Consulta las ventas realizadas, sus estados y los ingresos registrados.</p>
+          </div>
+        </div>
+
+        <div class="fila-tarjetas">
+          <div class="tarjeta-resumen">
+            <span>Ingresos por ventas pagadas</span>
+            <h2 id="ventasIngresos">$ 0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Ventas pagadas</span>
+            <h2 id="ventasPagadas">0</h2>
+          </div>
+          <div class="tarjeta-resumen">
+            <span>Transacciones registradas</span>
+            <h2 id="ventasRegistradas">0</h2>
+          </div>
+        </div>
+
+        <div class="caja-panel">
+          <div class="barra-filtros">
+            <input
+              type="search"
+              class="input-filtro"
+              placeholder="Buscar por venta o cliente..."
+              oninput="filtrarTabla('tablaVentasBody', this.value)"
+            >
+            <select
+              class="select-filtro"
+              aria-label="Filtrar ventas por estado"
+              onchange="filtrarEstadoTabla('tablaVentasBody', this.value, 3)"
+            >
+              <option value="">Todos los estados</option>
+              <option value="PAGADA">Pagadas</option>
+              <option value="ANULADA">Anuladas</option>
+            </select>
+          </div>
+
+          <div class="tabla-responsive">
+            <table class="tabla-panel">
+              <thead>
+                <tr>
+                  <th>Venta</th>
+                  <th>Cliente</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Total</th>
+                  <th>Detalle</th>
+                </tr>
+              </thead>
+              <tbody id="tablaVentasBody">
+                <tr>
+                  <td colspan="6" class="texto-vacio">Cargando ventas...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
 <section id="seccion-garantias" class="seccion">
@@ -877,6 +946,22 @@
       <footer class="pie-modal-detalle">
         <button type="submit" class="boton-amarillo" id="btnGuardarDetalleServicio" form="formEditarDetalleServicio">Guardar cambios</button>
         <button type="button" class="boton-amarillo" id="btnCerrarDetalleServicioPie">Cerrar</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="modal-detalle-servicio modal-detalle-venta" id="modalDetalleVenta" aria-labelledby="modalDetalleVentaTitulo">
+    <div class="caja-modal-detalle">
+      <header class="cabecera-modal-detalle">
+        <div>
+          <p>Información completa de la transacción</p>
+          <h2 id="modalDetalleVentaTitulo">Detalle de venta</h2>
+        </div>
+        <button type="button" class="btn-cerrar-detalle" id="btnCerrarDetalleVenta" aria-label="Cerrar detalle de venta">&times;</button>
+      </header>
+      <div id="modalDetalleVentaContenido" class="contenido-modal-detalle" aria-live="polite"></div>
+      <footer class="pie-modal-detalle">
+        <button type="button" class="boton-amarillo" id="btnCerrarDetalleVentaPie">Cerrar</button>
       </footer>
     </div>
   </dialog>

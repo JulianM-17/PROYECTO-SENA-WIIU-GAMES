@@ -684,11 +684,51 @@ body {
   opacity: 0.65;
 }
 
-.mensaje-carrito {
-  min-height: 18px;
-  margin-top: 6px;
-  color: #15803d;
-  font-size: 11px;
+.contenedor-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.contenedor-toast .toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-left: 4px solid #22c55e;
+  border-radius: 12px;
+  background: var(--dark-blue);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: catalogo-toast-in 0.3s ease forwards;
+}
+
+.contenedor-toast .toast.error {
+  border-left-color: #ef4444;
+}
+
+.contenedor-toast .toast i {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+@keyframes catalogo-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /*CARRUSEL CONTROLES*/
@@ -795,8 +835,7 @@ body {
   }
 
   .tarjeta-producto .precio-actual,
-  .tarjeta-producto .contenedor-acciones-producto,
-  .tarjeta-producto .mensaje-carrito {
+  .tarjeta-producto .contenedor-acciones-producto {
     flex-shrink: 0;
   }
 

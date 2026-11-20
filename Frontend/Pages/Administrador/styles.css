@@ -392,6 +392,12 @@ body {
   font-size: 16px;
 }
 
+.campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: rgba(245, 166, 35, 0.14);
+  color: #f5a623;
+}
+
 .punto-amarillo {
   position: absolute;
   top: -7px;
@@ -1302,7 +1308,8 @@ body {
   white-space: nowrap;
 }
 
-.btn-mas-informacion {
+.btn-mas-informacion,
+.btn-estado-producto {
   margin-right: 8px;
   padding: 7px 10px;
   border: 1px solid #263755;
@@ -1316,9 +1323,44 @@ body {
 }
 
 .btn-mas-informacion:hover,
-.btn-mas-informacion:focus-visible {
+.btn-mas-informacion:focus-visible,
+.btn-estado-producto:hover,
+.btn-estado-producto:focus-visible {
   border-color: #f5a623;
   color: #f5a623;
+}
+
+.btn-estado-producto.btn-suspender-producto {
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #f87171;
+}
+
+.btn-estado-producto.btn-reactivar-producto {
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #34d399;
+}
+
+.modal-detalle-servicio.modal-detalle-venta {
+  width: min(850px, calc(100vw - 32px));
+  max-width: 850px;
+}
+
+.detalle-venta-datos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detalle-venta-seccion-titulo {
+  margin: 20px 0 10px;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.detalle-venta-total {
+  margin: 14px 0 0;
+  color: #f5a623;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: right;
 }
 
 .modal-detalle-servicio {
@@ -1486,6 +1528,10 @@ body {
   .lista-detalle-servicio div {
     grid-template-columns: 1fr;
     gap: 4px;
+  }
+
+  .detalle-venta-datos {
+    grid-template-columns: 1fr;
   }
 
   .form-edicion-detalle {
@@ -1786,6 +1832,16 @@ html[data-theme="light"] .menu-lateral {
   border-right-color: #e2e8f0;
 }
 
+html[data-theme="light"] .menu-lateral .boton-hamburguesa,
+html[data-theme="light"] .panel-contenedor.menu-colapsado .menu-lateral .boton-hamburguesa {
+  background-color: #ffffff;
+  border-color: #dbe3ef;
+}
+
+html[data-theme="light"] .menu-lateral .boton-hamburguesa:hover {
+  background-color: #f1f5f9;
+}
+
 html[data-theme="light"] .texto-bienvenida h1,
 html[data-theme="light"] .datos-usuario .nombre,
 html[data-theme="light"] .encabezado-caja h3,
@@ -1810,6 +1866,81 @@ html[data-theme="light"] .panel-notificaciones li,
 html[data-theme="light"] .panel-notificaciones .notificacion-dia,
 html[data-theme="light"] .panel-notificaciones .notificacion-item time {
   color: #64748b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item {
+  border-color: #dbe3ef;
+  background-color: #f8fafc;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-item.no-leida {
+  border-color: rgba(245, 166, 35, 0.55);
+  background: #fff7ed;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido strong {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-notificaciones .notificacion-contenido span {
+  color: #64748b;
+}
+
+html[data-theme="light"] .btn-mas-informacion,
+html[data-theme="light"] .btn-estado-producto {
+  border-color: #dbe3ef;
+  background: #ffffff;
+  color: #52637a;
+}
+
+html[data-theme="light"] .btn-estado-producto.btn-suspender-producto {
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+html[data-theme="light"] .btn-estado-producto.btn-reactivar-producto {
+  border-color: #a7f3d0;
+  color: #047857;
+}
+
+html[data-theme="light"] .modal-detalle-venta {
+  border-color: #dbe3ef;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .modal-detalle-venta .cabecera-modal-detalle {
+  border-bottom-color: #e2e8f0;
+}
+
+html[data-theme="light"] .modal-detalle-venta .cabecera-modal-detalle p,
+html[data-theme="light"] .modal-detalle-venta .lista-detalle-servicio dt {
+  color: #64748b;
+}
+
+html[data-theme="light"] .modal-detalle-venta .cabecera-modal-detalle h2,
+html[data-theme="light"] .modal-detalle-venta .lista-detalle-servicio dd,
+html[data-theme="light"] .modal-detalle-venta .detalle-venta-seccion-titulo {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .modal-detalle-venta .lista-detalle-servicio div {
+  border-bottom-color: #e2e8f0;
+}
+
+html[data-theme="light"] .modal-detalle-venta .detalle-venta-total {
+  color: #b45309;
+}
+
+html[data-theme="light"] .campana-alerta.tiene-no-leidas {
+  border-color: #f5a623;
+  background-color: #fff7ed;
+  color: #c2410c;
+  box-shadow: 0 0 0 2px rgba(245, 166, 35, 0.16);
+}
+
+html[data-theme="light"] .punto-amarillo {
+  border-color: #ffffff;
 }
 
 html[data-theme="light"] .boton-menu,

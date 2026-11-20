@@ -709,6 +709,68 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const inputPasswordNueva = document.getElementById("perfil-pass-nueva");
   const inputPasswordConfirm = document.getElementById("perfil-pass-confirm");
+  const passwordStrength = document.getElementById("perfil-pass-seguridad");
+  const passwordStrengthFill = document.getElementById(
+    "perfil-pass-seguridad-relleno",
+  );
+  const passwordStrengthText = document.getElementById(
+    "perfil-pass-seguridad-texto",
+  );
+  const updatePasswordStrength = () => {
+    if (
+      !inputPasswordNueva ||
+      !passwordStrength ||
+      !passwordStrengthFill ||
+      !passwordStrengthText
+    ) {
+      return;
+    }
+
+    const password = inputPasswordNueva.value;
+    const levels = ["nivel-debil", "nivel-medio", "nivel-fuerte"];
+    passwordStrengthFill.classList.remove(...levels);
+    passwordStrengthText.classList.remove(...levels);
+
+    if (!password) {
+      passwordStrength.setAttribute("aria-valuenow", "0");
+      passwordStrength.setAttribute("aria-valuetext", "Sin contraseña");
+      passwordStrengthText.textContent =
+        "Escribe una contraseña para evaluar su seguridad.";
+      return;
+    }
+
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[^A-Za-z0-9\s]/.test(password)) score++;
+
+    let level;
+    let levelText;
+    let value;
+    if (password.length < 8 || score <= 1) {
+      level = "nivel-debil";
+      levelText = "Seguridad: Débil (usa al menos 8 caracteres).";
+      value = 1;
+    } else if (score < 4) {
+      level = "nivel-medio";
+      levelText = "Seguridad: Media (combina mayúsculas, números y símbolos).";
+      value = score;
+    } else {
+      level = "nivel-fuerte";
+      levelText = "Seguridad: Fuerte.";
+      value = 4;
+    }
+
+    passwordStrengthFill.classList.add(level);
+    passwordStrengthText.classList.add(level);
+    passwordStrength.setAttribute("aria-valuenow", String(value));
+    passwordStrength.setAttribute("aria-valuetext", levelText);
+    passwordStrengthText.textContent = levelText;
+  };
+  inputPasswordNueva?.addEventListener("input", updatePasswordStrength);
+  updatePasswordStrength();
+
   const passwordErrorIsVisible = (input) =>
     input?.classList.contains("input-error") ||
     input?.closest(".campo-formulario")?.querySelector(".error-mensaje-campo");
@@ -968,6 +1030,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (inputActual) inputActual.value = "";
         if (inputNueva) inputNueva.value = "";
         if (inputConfirm) inputConfirm.value = "";
+        updatePasswordStrength();
         setTypedFieldError(inputActual, "");
         setTypedFieldError(inputNueva, "");
         setTypedFieldError(inputConfirm, "");
@@ -2300,7 +2363,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (btnLogout) {
     btnLogout.addEventListener("click", async (e) => {
       e.preventDefault();
-      if (confirm("¿Estás seguro de que deseas cerrar sesión?")) {
+      if (await window.confirmarCierreSesion()) {
         try {
           const favoritesResponse = await fetch(
             "http://localhost:3000/api/my-favorites",
@@ -2334,7 +2397,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
           console.error("No se pudo invalidar la sesión en el servidor:", error);
         }
+        if (window.WiiUGamesCart) {
+          window.WiiUGamesCart.clear();
+        } else {
+          localStorage.removeItem("wiiu_cart");
+        }
         sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
         window.location.href = "Login.html";
       }
     });

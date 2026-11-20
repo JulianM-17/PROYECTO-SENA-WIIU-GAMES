@@ -447,7 +447,6 @@ function crearTarjetaProducto(prod) {
           ><i class="fi fi-rr-heart" aria-hidden="true"></i></button>
         </div>
       </div>
-      <span class="mensaje-carrito" aria-live="polite"></span>
     </article>
   `;
 }
@@ -604,9 +603,17 @@ function configurarFavoritos() {
 
       guardarFavoritosEnPanel(data.favorites);
       actualizarBotonesFavoritos();
+      mostrarToastCatalogo(
+        favoriteIndex >= 0
+          ? 'Producto eliminado de favoritos.'
+          : 'Producto agregado a favoritos.'
+      );
     } catch (error) {
       console.error('No se pudo actualizar la lista de favoritos:', error);
-      window.alert(error.message || 'No se pudo actualizar tu lista de favoritos.');
+      mostrarToastCatalogo(
+        error.message || 'No se pudo actualizar tu lista de favoritos.',
+        'error'
+      );
     } finally {
       button.disabled = false;
     }
@@ -623,6 +630,8 @@ function configurarAgregarAlCarrito() {
 
     event.preventDefault();
     event.stopPropagation();
+
+    if (!window.WiiUGamesCart?.requireSession?.()) return;
 
     const contenedorAcciones = button.closest('.contenedor-acciones-producto');
     const inputCantidad = contenedorAcciones?.querySelector('.cantidad-producto');
@@ -648,14 +657,10 @@ function configurarAgregarAlCarrito() {
     }
 
     const stockDisponible = Number(product.stock_total) || 99;
-    const feedback = button.parentElement?.nextElementSibling || button.nextElementSibling;
     let agregadoExitoso = false;
 
     if (cantidad > stockDisponible) {
-      if (feedback) {
-        feedback.textContent = `Solo hay ${stockDisponible} disponibles.`;
-        feedback.style.color = '#b91c1c';
-      }
+      mostrarToastCatalogo(`Solo hay ${stockDisponible} disponibles.`, 'error');
       return;
     }
 
@@ -664,10 +669,12 @@ function configurarAgregarAlCarrito() {
       if (result.ok) {
         agregadoExitoso = true;
       } else if (result.reason === 'stock') {
-        if (feedback) feedback.textContent = `Solo hay ${result.stock} disponibles.`;
+        mostrarToastCatalogo(`Solo hay ${result.stock} disponibles.`, 'error');
         return;
       } else if (result.reason === 'unavailable') {
-        if (feedback) feedback.textContent = 'Producto agotado.';
+        mostrarToastCatalogo('Producto agotado.', 'error');
+        return;
+      } else if (result.reason === 'login-required') {
         return;
       }
     }
@@ -706,20 +713,44 @@ function configurarAgregarAlCarrito() {
       button.textContent = '✔ ¡Agregado!';
       button.style.backgroundColor = '#22c55e';
       button.style.color = '#ffffff';
-      if (feedback) {
-        feedback.textContent = `¡Añadido ${cantidad} al carrito con éxito!`;
-        feedback.style.color = '#22c55e';
-      }
+      mostrarToastCatalogo(`¡Añadido ${cantidad} al carrito con éxito!`);
 
       setTimeout(() => {
         if (!button.isConnected) return;
         button.textContent = textoOriginal;
         button.style.backgroundColor = '';
         button.style.color = '';
-        if (feedback) feedback.textContent = '';
       }, 1500);
     }
   });
+}
+
+function mostrarToastCatalogo(mensaje, tipo = 'exito') {
+  const container = document.getElementById('contenedor-toast');
+  if (!container) {
+    console.error('No se encontró el contenedor de notificaciones del catálogo.');
+    return;
+  }
+
+  const toast = document.createElement('div');
+  toast.className = `toast${tipo === 'error' ? ' error' : ''}`;
+  toast.setAttribute('role', 'status');
+
+  const icon = document.createElement('i');
+  icon.className = `fi ${tipo === 'error' ? 'fi-rr-cross-circle' : 'fi-rr-check-circle'}`;
+  icon.setAttribute('aria-hidden', 'true');
+
+  const text = document.createElement('span');
+  text.textContent = mensaje;
+  toast.append(icon, text);
+  container.appendChild(toast);
+
+  window.setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(50px)';
+    toast.style.transition = 'all 0.3s ease';
+    window.setTimeout(() => toast.remove(), 300);
+  }, 3500);
 }
 
 async function cargarCategorias() {

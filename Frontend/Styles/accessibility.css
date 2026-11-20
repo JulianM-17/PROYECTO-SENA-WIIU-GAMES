@@ -307,7 +307,7 @@ body,
    1. ESCALA DE GRISES (SIN ROMPER POSITION FIXED)
    ===================================================== */
 /* NUNCA poner filter en body ni en html porque rompe position: fixed */
-body.a11y-mode-grayscale > *:not(#a11y-trigger-btn):not(#a11y-menu) {
+body.a11y-mode-grayscale > * {
   filter: grayscale(100%) !important;
 }
 
@@ -394,10 +394,21 @@ body.a11y-mode-high-contrast .caja-login,
 body.a11y-mode-high-contrast .caja-modal-terminos,
 body.a11y-mode-high-contrast .modal-contenido,
 body.a11y-mode-high-contrast .modal-tarjeta-exito,
-body.a11y-mode-high-contrast .toast {
+body.a11y-mode-high-contrast .toast,
+body.a11y-mode-high-contrast .confirmacion-sesion-contenido {
   background-color: #101010 !important;
   color: #ffffff !important;
   border: 1.5px solid #f5c842 !important;
+}
+
+body.a11y-mode-high-contrast .confirmacion-sesion-cabecera h2,
+body.a11y-mode-high-contrast .confirmacion-sesion-cabecera p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .confirmacion-sesion-icono {
+  background: #f5c842 !important;
+  color: #080f20 !important;
 }
 
 /* Formularios y Controles */
@@ -2250,5 +2261,154 @@ body.a11y-mode-dark-mode .tarjeta-producto .btn-agregar-carrito {
   background-image: none !important;
   color: #080f20 !important;
   border: 0 !important;
+}
+
+.confirmacion-sesion-dialog {
+  position: fixed;
+  inset: 0;
+  width: min(460px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  color: #0f172a;
+  overflow: auto;
+}
+
+.confirmacion-sesion-dialog::backdrop {
+  background: rgba(3, 8, 20, 0.68);
+  backdrop-filter: blur(4px);
+}
+
+.confirmacion-sesion-contenido {
+  padding: 26px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.35);
+}
+
+.confirmacion-sesion-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.confirmacion-sesion-icono {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff5cc;
+  color: #080f20;
+  font-size: 20px;
+}
+
+.confirmacion-sesion-icono i {
+  display: block;
+  font-style: normal;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.confirmacion-sesion-cabecera h2 {
+  margin: 2px 0 6px;
+  color: #080f20;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.confirmacion-sesion-cabecera p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.confirmacion-sesion-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.confirmacion-sesion-acciones button {
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.confirmacion-sesion-cancelar {
+  border-color: #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+.confirmacion-sesion-cancelar:hover {
+  border-color: #94a3b8 !important;
+  background: #f8fafc !important;
+}
+
+.confirmacion-sesion-confirmar {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+.confirmacion-sesion-confirmar:hover {
+  background: #e8b830 !important;
+  transform: translateY(-1px);
+}
+
+.confirmacion-sesion-acciones button:focus-visible {
+  outline: 3px solid rgba(245, 200, 66, 0.55);
+  outline-offset: 3px;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-contenido {
+  border-color: #1a2c5b;
+  background: #0e1834;
+  color: #f8fafc;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-cabecera h2 {
+  color: #f8fafc;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-cabecera p {
+  color: #cbd5e1;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-icono {
+  background: #fff5cc !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-icono i {
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-cancelar {
+  border-color: #334155 !important;
+  background: #070d1e !important;
+  color: #e2e8f0 !important;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-cancelar:hover {
+  border-color: #f5c842 !important;
+  background: #132247 !important;
 }
 

@@ -351,6 +351,8 @@ function configureCartButton(product) {
   }
 
   button.addEventListener("click", () => {
+    if (!window.WiiUGamesCart?.requireSession?.()) return;
+
     const quantity = Math.floor(Number(quantityInput?.value));
     if (!Number.isInteger(quantity) || quantity < 1) {
       feedback.textContent = "Ingresa una cantidad válida.";
