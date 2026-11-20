@@ -624,6 +624,8 @@ function configurarAgregarAlCarrito() {
     event.preventDefault();
     event.stopPropagation();
 
+    if (!window.WiiUGamesCart?.requireSession?.()) return;
+
     const contenedorAcciones = button.closest('.contenedor-acciones-producto');
     const inputCantidad = contenedorAcciones?.querySelector('.cantidad-producto');
     const cantidad = Math.max(Number(inputCantidad?.value) || 1, 1);
@@ -668,6 +670,8 @@ function configurarAgregarAlCarrito() {
         return;
       } else if (result.reason === 'unavailable') {
         if (feedback) feedback.textContent = 'Producto agotado.';
+        return;
+      } else if (result.reason === 'login-required') {
         return;
       }
     }

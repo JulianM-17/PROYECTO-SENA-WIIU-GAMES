@@ -440,6 +440,11 @@
         sessionStorage.removeItem("wiiu_usuario_activo");
         sessionStorage.removeItem("sessionToken");
         localStorage.removeItem("sessionToken");
+        if (window.WiiUGamesCart) {
+          window.WiiUGamesCart.clear();
+        } else {
+          localStorage.removeItem("wiiu_cart");
+        }
         window.location.href = loginDestination;
       });
 

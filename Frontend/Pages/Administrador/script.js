@@ -234,6 +234,7 @@ function cerrarSesion(evento) {
   localStorage.removeItem('sessionToken');
   sessionStorage.removeItem('sessionToken');
   sessionStorage.removeItem('wiiu_usuario_activo');
+  localStorage.removeItem('wiiu_cart');
 
   // Redirigir al Login después de una breve pausa para feedback
   setTimeout(function() {

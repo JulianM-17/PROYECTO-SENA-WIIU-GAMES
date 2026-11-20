@@ -268,6 +268,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (returnTo === "Catalog.html") {
           return returnTo;
         }
+        if (returnTo === "Product.html") {
+          const productId = new URLSearchParams(window.location.search).get("productId");
+          return `Product.html${productId ? `?id=${encodeURIComponent(productId)}` : ""}`;
+        }
         if (returnTo === "metodos_pago.html") {
           return returnTo;
         }
@@ -324,7 +328,14 @@ document.addEventListener("DOMContentLoaded", () => {
         mostrarToast(`¡Bienvenido, ${usuario.nombre}!`, "exito");
 
         let rutaFinal = resolverRutaPorRol(usuario.rol, returnTo);
-        if (returnTo !== "metodos_pago.html" && returnTo !== "Catalog.html" && redirectToApi && redirectToApi.includes("index.html") && !redirectToApi.includes("index_admin.html")) {
+        if (
+          returnTo !== "metodos_pago.html" &&
+          returnTo !== "Catalog.html" &&
+          returnTo !== "Product.html" &&
+          redirectToApi &&
+          redirectToApi.includes("index.html") &&
+          !redirectToApi.includes("index_admin.html")
+        ) {
           rutaFinal = redirectToApi;
         }
 

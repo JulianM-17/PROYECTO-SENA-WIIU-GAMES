@@ -2334,7 +2334,14 @@ document.addEventListener("DOMContentLoaded", async () => {
         } catch (error) {
           console.error("No se pudo invalidar la sesión en el servidor:", error);
         }
+        if (window.WiiUGamesCart) {
+          window.WiiUGamesCart.clear();
+        } else {
+          localStorage.removeItem("wiiu_cart");
+        }
         sessionStorage.removeItem("wiiu_usuario_activo");
+        sessionStorage.removeItem("sessionToken");
+        localStorage.removeItem("sessionToken");
         window.location.href = "Login.html";
       }
     });
