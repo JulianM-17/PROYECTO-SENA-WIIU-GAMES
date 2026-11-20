@@ -2293,7 +2293,7 @@ body.a11y-mode-dark-mode .tarjeta-producto .btn-agregar-carrito {
 
 .confirmacion-sesion-cabecera {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 16px;
 }
 
@@ -2305,8 +2305,15 @@ body.a11y-mode-dark-mode .tarjeta-producto .btn-agregar-carrito {
   place-items: center;
   border-radius: 14px;
   background: #fff5cc;
-  color: #725200;
+  color: #080f20;
   font-size: 20px;
+}
+
+.confirmacion-sesion-icono i {
+  display: block;
+  font-style: normal;
+  line-height: 1;
+  transform: translateY(1px);
 }
 
 .confirmacion-sesion-cabecera h2 {
@@ -2383,6 +2390,15 @@ body.a11y-mode-dark-mode .confirmacion-sesion-cabecera h2 {
 
 body.a11y-mode-dark-mode .confirmacion-sesion-cabecera p {
   color: #cbd5e1;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-icono {
+  background: #fff5cc !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-dark-mode .confirmacion-sesion-icono i {
+  color: #080f20 !important;
 }
 
 body.a11y-mode-dark-mode .confirmacion-sesion-cancelar {

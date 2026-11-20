@@ -449,20 +449,22 @@ input.input-error:focus,
   border-radius: 6px;
   background-color: rgba(255, 255, 255, 0.08);
   border: 1.5px solid rgba(255, 255, 255, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
   transition: all 0.25s ease;
   margin-top: 1px;
 }
 
 .caja-check i {
-  color: #080f20;
+  display: block;
+  color: #080f20 !important;
   font-size: 11px;
+  font-style: normal;
   font-weight: 900;
+  line-height: 1;
   opacity: 0;
-  transform: scale(0.5);
+  transform: translateY(1px) scale(0.5);
   transition: all 0.2s ease;
 }
 
@@ -475,7 +477,7 @@ input.input-error:focus,
 
 .check-oculto:checked + .caja-check i {
   opacity: 1;
-  transform: scale(1);
+  transform: translateY(1px) scale(1);
 }
 
 .opcion-seleccion:hover .caja-check {

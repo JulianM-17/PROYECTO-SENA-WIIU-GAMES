@@ -339,9 +339,7 @@
     const hasProfileMenu =
       isAdmin || ["cliente", "proveedor"].includes(role);
     const avatar = document.createElement(hasProfileMenu ? "button" : "a");
-    avatar.className = existingAvatar
-      ? `avatar-sesion ${existingAvatar.className}`
-      : "avatar-sesion";
+    avatar.className = "avatar-sesion";
     if (hasProfileMenu) {
       avatar.type = "button";
       avatar.setAttribute("aria-haspopup", "menu");
