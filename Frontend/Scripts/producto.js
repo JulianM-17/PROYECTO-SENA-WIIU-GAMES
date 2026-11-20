@@ -147,15 +147,24 @@ function updateProductHeader(product) {
 
   const stock = Number(product.stock);
   const inStock = Number.isFinite(stock) && stock > 0;
-  setText(
-    ".estado-disponibilidad",
-    inStock ? "¡Disponible en tienda!" : Number.isFinite(stock) ? "Agotado" : "Consulta disponibilidad",
-  );
+  const availability = document.querySelector(".estado-disponibilidad");
+  if (availability) {
+    availability.textContent = inStock
+      ? "Disponible en tienda"
+      : Number.isFinite(stock)
+        ? "Agotado"
+        : "Consulta disponibilidad";
+    availability.classList.toggle("sin-stock", !inStock);
+  }
   setText(
     ".unidades-disponibles",
     inStock ? `Unidades disponibles: ${stock}` : "Consulta la disponibilidad con nuestro equipo.",
   );
-  setText(".insignia-stock", inStock ? "En stock" : "Consulta disponibilidad");
+  const stockBadge = document.querySelector(".insignia-stock");
+  if (stockBadge) {
+    stockBadge.textContent = inStock ? "En stock" : "Consulta disponibilidad";
+    stockBadge.classList.toggle("sin-stock", !inStock);
+  }
 
   const image = document.querySelector(".imagen-hero");
   if (image) {

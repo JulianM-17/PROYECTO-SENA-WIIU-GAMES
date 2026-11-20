@@ -42,6 +42,9 @@
   function applyPreferences() {
     const root = document.documentElement;
     const body = document.body;
+    const theme = preferences["dark-mode"] ? "dark" : "light";
+    root.dataset.theme = theme;
+    body.dataset.theme = theme;
     MODES.forEach((mode) => {
       const className = `a11y-mode-${mode}`;
       root.classList.toggle(className, preferences[mode]);

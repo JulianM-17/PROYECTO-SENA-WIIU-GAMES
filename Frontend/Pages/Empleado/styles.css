@@ -1175,6 +1175,24 @@ body.a11y-mode-dark-mode .grupo-campo textarea {
   color: #ffffff;
 }
 
+html[data-theme="dark"] .barra-lateral,
+html[data-theme="dark"] .barra-superior,
+html[data-theme="dark"] .caja-blanca,
+html[data-theme="dark"] .tarjeta-orden-caja,
+html[data-theme="dark"] .producto-pos-card,
+html[data-theme="dark"] .modal-empleado,
+html[data-theme="dark"] .cuerpo-modal-empleado {
+  background: #0e1834;
+  border-color: #1a2c5b;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .contenido-empleado,
+html[data-theme="dark"] .seccion-vista {
+  background: #070d1e;
+  color: #f8fafc;
+}
+
 @media (max-width: 600px) {
   .contenido-empleado {
     padding: 20px 14px;

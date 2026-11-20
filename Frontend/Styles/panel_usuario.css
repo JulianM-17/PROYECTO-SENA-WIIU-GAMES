@@ -2585,3 +2585,458 @@ a.btn-agregar {
   margin-top: 4px;
   display: block;
 }
+
+/* =====================================================
+   TEMA CLARO / OSCURO DEL PANEL DE USUARIO
+   Solo se modifican colores; la distribución permanece intacta.
+   ===================================================== */
+html[data-theme="light"] body,
+body[data-theme="light"] {
+  background-color: #f1f4f9;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-layout,
+html[data-theme="light"] .panel-contenido,
+html[data-theme="light"] .vista-panel {
+  background-color: transparent;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-barra-lateral,
+html[data-theme="light"] .tarjeta-opcion,
+html[data-theme="light"] .tarjeta-opcion-wide,
+html[data-theme="light"] .perfil-avatar-card,
+html[data-theme="light"] .perfil-stat-item,
+html[data-theme="light"] .tarjeta-formulario,
+html[data-theme="light"] .dir-card,
+html[data-theme="light"] .filtros-pedidos,
+html[data-theme="light"] .pedidos-mensaje,
+html[data-theme="light"] .cita-card,
+html[data-theme="light"] .pedido-card,
+html[data-theme="light"] .fav-card,
+html[data-theme="light"] .seguimiento-buscador,
+html[data-theme="light"] .seguimiento-resumen-card,
+html[data-theme="light"] .transportadora-info,
+html[data-theme="light"] .tabla-facturas,
+html[data-theme="light"] .garantias-panel,
+html[data-theme="light"] .garantia-solicitud-card,
+html[data-theme="light"] .tarjeta-modal {
+  background-color: #ffffff;
+  border-color: #e2e8f2;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .valor-dato-perfil,
+html[data-theme="light"] .entrada-formulario,
+html[data-theme="light"] .seguimiento-input,
+html[data-theme="light"] .garantia-form input,
+html[data-theme="light"] .garantia-form select,
+html[data-theme="light"] .garantia-form textarea,
+html[data-theme="light"] .detalle-pedido-dato,
+html[data-theme="light"] .pedido-img,
+html[data-theme="light"] .pedido-img-emoji,
+html[data-theme="light"] .timeline-paso {
+  background-color: #f8fafc;
+  color: #1e293b;
+  border-color: #e2e8f2;
+}
+
+html[data-theme="light"] .seccion-titulo,
+html[data-theme="light"] .nav-section-label,
+html[data-theme="light"] .tarjeta-opcion-desc,
+html[data-theme="light"] .perfil-avatar-email,
+html[data-theme="light"] .perfil-stat-label,
+html[data-theme="light"] .descripcion-seguridad,
+html[data-theme="light"] .etiqueta-formulario,
+html[data-theme="light"] .dir-detalle,
+html[data-theme="light"] .dir-telefono,
+html[data-theme="light"] .citas-aviso,
+html[data-theme="light"] .cita-detalle span,
+html[data-theme="light"] .pedido-fecha,
+html[data-theme="light"] .pedido-cantidad,
+html[data-theme="light"] .fav-categoria,
+html[data-theme="light"] .timeline-desc,
+html[data-theme="light"] .timeline-hora,
+html[data-theme="light"] .transportadora-guia,
+html[data-theme="light"] .factura-desc,
+html[data-theme="light"] .factura-fecha,
+html[data-theme="light"] .garantia-producto-meta {
+  color: #64748b;
+}
+
+html[data-theme="light"] .tarjeta-opcion-nombre,
+html[data-theme="light"] .perfil-avatar-nombre,
+html[data-theme="light"] .perfil-stat-numero,
+html[data-theme="light"] .titulo-tarjeta-formulario,
+html[data-theme="light"] .dir-tipo,
+html[data-theme="light"] .dir-nombre,
+html[data-theme="light"] .cita-card-encabezado h2,
+html[data-theme="light"] .pedido-numero b,
+html[data-theme="light"] .pedido-producto,
+html[data-theme="light"] .fav-nombre,
+html[data-theme="light"] .seguimiento-pedido-num,
+html[data-theme="light"] .timeline-titulo,
+html[data-theme="light"] .transportadora-nombre,
+html[data-theme="light"] .factura-num,
+html[data-theme="light"] .factura-total,
+html[data-theme="light"] .garantia-producto-nombre {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .elemento-nav {
+  color: #64748b;
+}
+
+html[data-theme="light"] .elemento-nav:hover {
+  background-color: rgba(8, 15, 32, 0.04);
+  color: #1e293b;
+}
+
+html[data-theme="light"] .elemento-nav.activo {
+  background-color: rgba(245, 200, 66, 0.12);
+  color: #1e293b;
+}
+
+html[data-theme="light"] .nav-divider,
+html[data-theme="light"] .titulo-tarjeta-formulario,
+html[data-theme="light"] .pedido-header,
+html[data-theme="light"] .dir-acciones,
+html[data-theme="light"] .tabla-header,
+html[data-theme="light"] .tabla-fila,
+html[data-theme="light"] .timeline-conector,
+html[data-theme="light"] .tarjeta-modal-cabecera,
+html[data-theme="light"] .tarjeta-modal-pie {
+  border-color: #e2e8f2;
+}
+
+html[data-theme="dark"] body,
+body.a11y-mode-dark-mode {
+  background-color: #070d1e;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .panel-layout,
+html[data-theme="dark"] .panel-contenido,
+html[data-theme="dark"] .vista-panel {
+  background-color: transparent;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .panel-barra-lateral,
+html[data-theme="dark"] .tarjeta-opcion,
+html[data-theme="dark"] .tarjeta-opcion-wide,
+html[data-theme="dark"] .perfil-avatar-card,
+html[data-theme="dark"] .perfil-stat-item,
+html[data-theme="dark"] .tarjeta-formulario,
+html[data-theme="dark"] .dir-card,
+html[data-theme="dark"] .filtros-pedidos,
+html[data-theme="dark"] .pedidos-mensaje,
+html[data-theme="dark"] .cita-card,
+html[data-theme="dark"] .pedido-card,
+html[data-theme="dark"] .fav-card,
+html[data-theme="dark"] .seguimiento-buscador,
+html[data-theme="dark"] .seguimiento-resumen-card,
+html[data-theme="dark"] .transportadora-info,
+html[data-theme="dark"] .tabla-facturas,
+html[data-theme="dark"] .garantias-panel,
+html[data-theme="dark"] .garantia-solicitud-card,
+html[data-theme="dark"] .tarjeta-modal,
+body.a11y-mode-dark-mode .panel-barra-lateral,
+body.a11y-mode-dark-mode .tarjeta-opcion,
+body.a11y-mode-dark-mode .tarjeta-opcion-wide,
+body.a11y-mode-dark-mode .perfil-avatar-card,
+body.a11y-mode-dark-mode .perfil-stat-item,
+body.a11y-mode-dark-mode .tarjeta-formulario,
+body.a11y-mode-dark-mode .dir-card,
+body.a11y-mode-dark-mode .filtros-pedidos,
+body.a11y-mode-dark-mode .pedidos-mensaje,
+body.a11y-mode-dark-mode .cita-card,
+body.a11y-mode-dark-mode .pedido-card,
+body.a11y-mode-dark-mode .fav-card,
+body.a11y-mode-dark-mode .seguimiento-buscador,
+body.a11y-mode-dark-mode .seguimiento-resumen-card,
+body.a11y-mode-dark-mode .transportadora-info,
+body.a11y-mode-dark-mode .tabla-facturas,
+body.a11y-mode-dark-mode .garantias-panel,
+body.a11y-mode-dark-mode .garantia-solicitud-card,
+body.a11y-mode-dark-mode .tarjeta-modal {
+  background-color: #0e1834;
+  border-color: #1a2c5b;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .valor-dato-perfil,
+html[data-theme="dark"] .entrada-formulario,
+html[data-theme="dark"] .seguimiento-input,
+html[data-theme="dark"] .garantia-form input,
+html[data-theme="dark"] .garantia-form select,
+html[data-theme="dark"] .garantia-form textarea,
+html[data-theme="dark"] .detalle-pedido-dato,
+html[data-theme="dark"] .pedido-img,
+html[data-theme="dark"] .pedido-img-emoji,
+html[data-theme="dark"] .timeline-paso,
+body.a11y-mode-dark-mode .valor-dato-perfil,
+body.a11y-mode-dark-mode .entrada-formulario,
+body.a11y-mode-dark-mode .seguimiento-input,
+body.a11y-mode-dark-mode .garantia-form input,
+body.a11y-mode-dark-mode .garantia-form select,
+body.a11y-mode-dark-mode .garantia-form textarea,
+body.a11y-mode-dark-mode .detalle-pedido-dato,
+body.a11y-mode-dark-mode .pedido-img,
+body.a11y-mode-dark-mode .pedido-img-emoji,
+body.a11y-mode-dark-mode .timeline-paso {
+  background-color: #070d1e;
+  color: #f8fafc;
+  border-color: #1a2c5b;
+}
+
+html[data-theme="dark"] .seccion-titulo,
+html[data-theme="dark"] .nav-section-label,
+html[data-theme="dark"] .tarjeta-opcion-desc,
+html[data-theme="dark"] .perfil-avatar-email,
+html[data-theme="dark"] .perfil-stat-label,
+html[data-theme="dark"] .descripcion-seguridad,
+html[data-theme="dark"] .etiqueta-formulario,
+html[data-theme="dark"] .dir-detalle,
+html[data-theme="dark"] .dir-telefono,
+html[data-theme="dark"] .citas-aviso,
+html[data-theme="dark"] .cita-detalle span,
+html[data-theme="dark"] .pedido-fecha,
+html[data-theme="dark"] .pedido-cantidad,
+html[data-theme="dark"] .fav-categoria,
+html[data-theme="dark"] .timeline-desc,
+html[data-theme="dark"] .timeline-hora,
+html[data-theme="dark"] .transportadora-guia,
+html[data-theme="dark"] .factura-desc,
+html[data-theme="dark"] .factura-fecha,
+html[data-theme="dark"] .garantia-producto-meta,
+body.a11y-mode-dark-mode .seccion-titulo,
+body.a11y-mode-dark-mode .nav-section-label,
+body.a11y-mode-dark-mode .tarjeta-opcion-desc,
+body.a11y-mode-dark-mode .perfil-avatar-email,
+body.a11y-mode-dark-mode .perfil-stat-label,
+body.a11y-mode-dark-mode .descripcion-seguridad,
+body.a11y-mode-dark-mode .etiqueta-formulario,
+body.a11y-mode-dark-mode .dir-detalle,
+body.a11y-mode-dark-mode .dir-telefono,
+body.a11y-mode-dark-mode .citas-aviso,
+body.a11y-mode-dark-mode .cita-detalle span,
+body.a11y-mode-dark-mode .pedido-fecha,
+body.a11y-mode-dark-mode .pedido-cantidad,
+body.a11y-mode-dark-mode .fav-categoria,
+body.a11y-mode-dark-mode .timeline-desc,
+body.a11y-mode-dark-mode .timeline-hora,
+body.a11y-mode-dark-mode .transportadora-guia,
+body.a11y-mode-dark-mode .factura-desc,
+body.a11y-mode-dark-mode .factura-fecha,
+body.a11y-mode-dark-mode .garantia-producto-meta {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .tarjeta-opcion-nombre,
+html[data-theme="dark"] .perfil-avatar-nombre,
+html[data-theme="dark"] .perfil-stat-numero,
+html[data-theme="dark"] .titulo-tarjeta-formulario,
+html[data-theme="dark"] .dir-tipo,
+html[data-theme="dark"] .dir-nombre,
+html[data-theme="dark"] .cita-card-encabezado h2,
+html[data-theme="dark"] .pedido-numero b,
+html[data-theme="dark"] .pedido-producto,
+html[data-theme="dark"] .fav-nombre,
+html[data-theme="dark"] .seguimiento-pedido-num,
+html[data-theme="dark"] .timeline-titulo,
+html[data-theme="dark"] .transportadora-nombre,
+html[data-theme="dark"] .factura-num,
+html[data-theme="dark"] .factura-total,
+html[data-theme="dark"] .garantia-producto-nombre,
+body.a11y-mode-dark-mode .tarjeta-opcion-nombre,
+body.a11y-mode-dark-mode .perfil-avatar-nombre,
+body.a11y-mode-dark-mode .perfil-stat-numero,
+body.a11y-mode-dark-mode .titulo-tarjeta-formulario,
+body.a11y-mode-dark-mode .dir-tipo,
+body.a11y-mode-dark-mode .dir-nombre,
+body.a11y-mode-dark-mode .cita-card-encabezado h2,
+body.a11y-mode-dark-mode .pedido-numero b,
+body.a11y-mode-dark-mode .pedido-producto,
+body.a11y-mode-dark-mode .fav-nombre,
+body.a11y-mode-dark-mode .seguimiento-pedido-num,
+body.a11y-mode-dark-mode .timeline-titulo,
+body.a11y-mode-dark-mode .transportadora-nombre,
+body.a11y-mode-dark-mode .factura-num,
+body.a11y-mode-dark-mode .factura-total,
+body.a11y-mode-dark-mode .garantia-producto-nombre {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .elemento-nav,
+body.a11y-mode-dark-mode .elemento-nav {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"] .elemento-nav:hover,
+body.a11y-mode-dark-mode .elemento-nav:hover {
+  background-color: rgba(245, 200, 66, 0.06);
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .elemento-nav.activo,
+body.a11y-mode-dark-mode .elemento-nav.activo {
+  background-color: rgba(245, 200, 66, 0.12);
+  color: #f5c842;
+}
+
+html[data-theme="dark"] .tarjeta-icono-wrap,
+html[data-theme="dark"] .dir-icono,
+body.a11y-mode-dark-mode .tarjeta-icono-wrap,
+body.a11y-mode-dark-mode .dir-icono {
+  color: #080f20;
+}
+
+/* Iconos visibles cuando las tarjetas no están seleccionadas */
+html[data-theme="light"] .tarjeta-icono-wrap,
+body[data-theme="light"] .tarjeta-icono-wrap {
+  background: #edf2f7;
+  color: #334155;
+  border: 1px solid #dde5ef;
+}
+
+html[data-theme="light"] .tarjeta-opcion:hover .tarjeta-icono-wrap,
+html[data-theme="light"] .tarjeta-opcion-wide:hover .tarjeta-icono-wrap,
+body[data-theme="light"] .tarjeta-opcion:hover .tarjeta-icono-wrap,
+body[data-theme="light"] .tarjeta-opcion-wide:hover .tarjeta-icono-wrap {
+  background: linear-gradient(135deg, var(--yellow), var(--yellow-hover));
+  color: #080f20;
+  border-color: transparent;
+  transform: scale(1.08);
+}
+
+html[data-theme="dark"] .tarjeta-icono-wrap,
+body.a11y-mode-dark-mode .tarjeta-icono-wrap {
+  background: #17294a;
+  color: #f5c842;
+  border: 1px solid #29416e;
+}
+
+html[data-theme="dark"] .tarjeta-opcion:hover .tarjeta-icono-wrap,
+html[data-theme="dark"] .tarjeta-opcion-wide:hover .tarjeta-icono-wrap,
+body.a11y-mode-dark-mode .tarjeta-opcion:hover .tarjeta-icono-wrap,
+body.a11y-mode-dark-mode .tarjeta-opcion-wide:hover .tarjeta-icono-wrap {
+  background: linear-gradient(135deg, #f5c842, #e8b830);
+  color: #080f20;
+  border-color: transparent;
+  transform: scale(1.08);
+}
+
+/* Iconos del menú lateral inactivos con mayor contraste */
+html[data-theme="light"] .elemento-nav i,
+body[data-theme="light"] .elemento-nav i {
+  color: #52637a;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+html[data-theme="light"] .elemento-nav:hover i,
+body[data-theme="light"] .elemento-nav:hover i {
+  color: #b87900;
+  transform: scale(1.08);
+}
+
+html[data-theme="light"] .elemento-nav.activo i,
+body[data-theme="light"] .elemento-nav.activo i {
+  color: #b87900;
+}
+
+html[data-theme="dark"] .elemento-nav i,
+body.a11y-mode-dark-mode .elemento-nav i {
+  color: #cbd5e1;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+html[data-theme="dark"] .elemento-nav:hover i,
+body.a11y-mode-dark-mode .elemento-nav:hover i {
+  color: #f5c842;
+  transform: scale(1.08);
+}
+
+html[data-theme="dark"] .elemento-nav.activo i,
+body.a11y-mode-dark-mode .elemento-nav.activo i {
+  color: #f5c842;
+}
+
+html[data-theme="dark"] .nav-divider,
+html[data-theme="dark"] .titulo-tarjeta-formulario,
+html[data-theme="dark"] .pedido-header,
+html[data-theme="dark"] .dir-acciones,
+html[data-theme="dark"] .tabla-header,
+html[data-theme="dark"] .tabla-fila,
+html[data-theme="dark"] .timeline-conector,
+html[data-theme="dark"] .tarjeta-modal-cabecera,
+html[data-theme="dark"] .tarjeta-modal-pie,
+body.a11y-mode-dark-mode .nav-divider,
+body.a11y-mode-dark-mode .titulo-tarjeta-formulario,
+body.a11y-mode-dark-mode .pedido-header,
+body.a11y-mode-dark-mode .dir-acciones,
+body.a11y-mode-dark-mode .tabla-header,
+body.a11y-mode-dark-mode .tabla-fila,
+body.a11y-mode-dark-mode .timeline-conector,
+body.a11y-mode-dark-mode .tarjeta-modal-cabecera,
+body.a11y-mode-dark-mode .tarjeta-modal-pie {
+  border-color: #1a2c5b;
+}
+
+/* Estado vacío y transportadora en seguimiento */
+html[data-theme="light"] .seguimiento-sin-eventos,
+body[data-theme="light"] .seguimiento-sin-eventos {
+  background: #eef2f7;
+  color: #94a3b8;
+  border: 1px solid #e2e8f2;
+}
+
+html[data-theme="dark"] .seguimiento-sin-eventos,
+body.a11y-mode-dark-mode .seguimiento-sin-eventos {
+  background: #070d1e;
+  color: #94a3b8;
+  border: 1px solid #1a2c5b;
+}
+
+html[data-theme="light"] .seguimiento-transportadora,
+body[data-theme="light"] .seguimiento-transportadora {
+  background: #ffffff;
+  border-color: #e2e8f2;
+  color: #1e293b;
+}
+
+html[data-theme="dark"] .seguimiento-transportadora,
+body.a11y-mode-dark-mode .seguimiento-transportadora {
+  background: #0e1834;
+  border-color: #1a2c5b;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"] .transportadora-icono,
+body.a11y-mode-dark-mode .transportadora-icono {
+  background: #17294a;
+  color: #f5c842;
+  border: 1px solid #29416e;
+}
+
+html[data-theme="light"] .transportadora-icono,
+body[data-theme="light"] .transportadora-icono {
+  background: #edf2f7;
+  color: #334155;
+  border: 1px solid #dde5ef;
+}
+
+html[data-theme="dark"] .seguimiento-estimado,
+html[data-theme="dark"] .seguimiento-estimado b,
+body.a11y-mode-dark-mode .seguimiento-estimado,
+body.a11y-mode-dark-mode .seguimiento-estimado b {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .insignia-procesando,
+body.a11y-mode-dark-mode .insignia-procesando {
+  background: #4a3512;
+  color: #fcd34d;
+  border-color: #8a6515;
+}
