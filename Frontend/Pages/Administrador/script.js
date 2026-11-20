@@ -1790,6 +1790,156 @@ function renderizarGraficoVentas(puntos) {
   svg.setAttribute('aria-label', 'Ventas de los últimos siete días');
 }
 
+var detalleVentaRequestId = 0;
+
+function mostrarDetalleVenta(id) {
+  var saleId = Number(id);
+  var dialogo = document.getElementById('modalDetalleVenta');
+  var titulo = document.getElementById('modalDetalleVentaTitulo');
+  var contenido = document.getElementById('modalDetalleVentaContenido');
+  if (!Number.isSafeInteger(saleId) || saleId <= 0 || !dialogo || !titulo || !contenido) {
+    mostrarToast('error', 'No se pudo abrir el detalle de la venta.');
+    return;
+  }
+
+  var requestId = ++detalleVentaRequestId;
+  titulo.textContent = 'Detalle de venta #' + saleId;
+  contenido.textContent = 'Cargando detalle de la venta...';
+  contenido.setAttribute('aria-busy', 'true');
+  if (!dialogo.open) dialogo.showModal();
+
+  fetch(API_BASE + '/api/admin/ventas/' + encodeURIComponent(saleId), {
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+  .then(async function(response) {
+    var data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error('El servidor devolvió información inválida para esta venta.');
+    }
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || 'No se pudo cargar el detalle de la venta.');
+    }
+    return data;
+  })
+  .then(function(data) {
+    if (requestId !== detalleVentaRequestId || !dialogo.open) return;
+
+    var sale = data.sale;
+    var items = Array.isArray(data.items) ? data.items : [];
+    var details = document.createElement('dl');
+    details.className = 'lista-detalle-servicio detalle-venta-datos';
+
+    var saleTypes = {
+      DOMICILIO: 'Domicilio',
+      SUCURSAL: 'Venta en sucursal'
+    };
+    var paymentMethods = {
+      EFECTIVO: 'Efectivo',
+      TARJETA: 'Tarjeta',
+      TRANSFERENCIA: 'Transferencia'
+    };
+    var statuses = {
+      PAGADA: 'Pagada',
+      ANULADA: 'Anulada'
+    };
+    agregarDatoLecturaDetalleAdmin(details, 'Venta', '#' + sale.id);
+    agregarDatoLecturaDetalleAdmin(details, 'Referencia de pago', sale.reference);
+    agregarDatoLecturaDetalleAdmin(details, 'Cliente', sale.clientName);
+    agregarDatoLecturaDetalleAdmin(details, 'Correo', sale.clientEmail);
+    agregarDatoLecturaDetalleAdmin(details, 'Teléfono', sale.phone);
+    agregarDatoLecturaDetalleAdmin(details, 'Fecha', sale.date);
+    agregarDatoLecturaDetalleAdmin(details, 'Estado', statuses[sale.status] || sale.status);
+    agregarDatoLecturaDetalleAdmin(
+      details,
+      'Método de pago',
+      paymentMethods[sale.paymentMethod] || sale.paymentMethod,
+    );
+    agregarDatoLecturaDetalleAdmin(
+      details,
+      'Tipo de venta',
+      saleTypes[sale.saleType] || sale.saleType,
+    );
+    agregarDatoLecturaDetalleAdmin(details, 'Sucursal', sale.branchName);
+    if (sale.saleType === 'DOMICILIO') {
+      agregarDatoLecturaDetalleAdmin(details, 'Ciudad de entrega', sale.city);
+      agregarDatoLecturaDetalleAdmin(details, 'Dirección de entrega', sale.address);
+      agregarDatoLecturaDetalleAdmin(details, 'Número de guía', sale.trackingNumber);
+    }
+    if (sale.receipt) {
+      agregarDatoLecturaDetalleAdmin(details, 'Comprobante', sale.receipt);
+    }
+
+    var productsTitle = document.createElement('h3');
+    productsTitle.className = 'detalle-venta-seccion-titulo';
+    productsTitle.textContent = 'Productos de la venta';
+
+    var tableWrapper = document.createElement('div');
+    tableWrapper.className = 'tabla-responsive';
+    var table = document.createElement('table');
+    table.className = 'tabla-panel';
+    table.innerHTML =
+      '<thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Subtotal</th></tr></thead>' +
+      '<tbody></tbody>';
+    var tableBody = table.querySelector('tbody');
+    if (items.length) {
+      items.forEach(function(item) {
+        var row = document.createElement('tr');
+        [
+          item.productName || 'Producto',
+          Number(item.quantity || 0).toLocaleString('es-CO'),
+          '$ ' + Number(item.unitPrice || 0).toLocaleString('es-CO'),
+          '$ ' + Number(item.subtotal || 0).toLocaleString('es-CO')
+        ].forEach(function(value) {
+          var cell = document.createElement('td');
+          cell.textContent = String(value);
+          row.appendChild(cell);
+        });
+        tableBody.appendChild(row);
+      });
+    } else {
+      var emptyRow = document.createElement('tr');
+      var emptyCell = document.createElement('td');
+      emptyCell.colSpan = 4;
+      emptyCell.className = 'texto-vacio';
+      emptyCell.textContent = 'Esta venta no tiene productos asociados.';
+      emptyRow.appendChild(emptyCell);
+      tableBody.appendChild(emptyRow);
+    }
+    tableWrapper.appendChild(table);
+
+    var total = document.createElement('p');
+    total.className = 'detalle-venta-total';
+    total.textContent =
+      'Total de la venta: $ ' + Number(sale.total || 0).toLocaleString('es-CO');
+
+    contenido.replaceChildren(details, productsTitle, tableWrapper, total);
+    contenido.setAttribute('aria-busy', 'false');
+  })
+  .catch(function(error) {
+    if (requestId !== detalleVentaRequestId || !dialogo.open) return;
+    console.error('Error al cargar el detalle de la venta:', error);
+    contenido.textContent = error.message || 'No se pudo cargar el detalle de la venta.';
+    contenido.setAttribute('aria-busy', 'false');
+    mostrarToast('error', contenido.textContent);
+  });
+}
+
+var modalDetalleVenta = document.getElementById('modalDetalleVenta');
+document.getElementById('btnCerrarDetalleVenta')?.addEventListener('click', function() {
+  modalDetalleVenta?.close();
+});
+document.getElementById('btnCerrarDetalleVentaPie')?.addEventListener('click', function() {
+  modalDetalleVenta?.close();
+});
+modalDetalleVenta?.addEventListener('click', function(evento) {
+  if (evento.target === modalDetalleVenta) modalDetalleVenta.close();
+});
+modalDetalleVenta?.addEventListener('close', function() {
+  detalleVentaRequestId++;
+});
+
 function cargarDashboard() {
   var inventoryBranchSelect = document.getElementById('filtroSucursalInventario');
   var selectedBranchId = inventoryBranchSelect && inventoryBranchSelect.value;
@@ -1876,7 +2026,47 @@ function cargarDashboard() {
           '<tr><td colspan="6" class="texto-vacio">No hay pedidos registrados en la base de datos</td></tr>';
       }
     }
-    inventarioNotificaciones = data.inventory || [];
+
+    var ventas = Array.isArray(data.orders) ? data.orders : [];
+    var ventasIngresos = document.getElementById('ventasIngresos');
+    if (ventasIngresos) {
+      ventasIngresos.textContent =
+        '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
+    }
+    var ventasPagadas = document.getElementById('ventasPagadas');
+    if (ventasPagadas) {
+      ventasPagadas.textContent = String(data.summary.ordersCount || 0);
+    }
+    var ventasRegistradas = document.getElementById('ventasRegistradas');
+    if (ventasRegistradas) {
+      ventasRegistradas.textContent = String(ventas.length);
+    }
+    if (ventas.length) {
+      poblarTabla('tablaVentasBody', ventas, function(row) {
+        var estado = String(row.estado || '');
+        var estadoClase = estado === 'PAGADA'
+          ? 'etiqueta-verde'
+          : estado === 'ANULADA'
+            ? 'etiqueta-rojo'
+            : 'etiqueta-naranja';
+        var cliente = [row.nombre, row.apellido].filter(Boolean).join(' ');
+        return '<td><strong>Venta #' + escaparHtmlAdmin(row.id_venta) + '</strong></td>' +
+          '<td>' + escaparHtmlAdmin(cliente) + '</td>' +
+          '<td>' + escaparHtmlAdmin(row.date) + '</td>' +
+          '<td><span class="' + estadoClase + '">' + escaparHtmlAdmin(estado) + '</span></td>' +
+          '<td>$ ' + Number(row.total || 0).toLocaleString('es-CO') + '</td>' +
+          '<td><button type="button" class="btn-mas-informacion" aria-label="Ver detalle de venta #' +
+          escaparHtmlAdmin(row.id_venta) + '" title="Ver detalle" onclick="mostrarDetalleVenta(' +
+          Number(row.id_venta) + ')"><i class="fi fi-rr-eye" aria-hidden="true"></i> Ver detalle</button></td>';
+      });
+    } else {
+      document.getElementById('tablaVentasBody').innerHTML =
+        '<tr><td colspan="6" class="texto-vacio">No hay ventas registradas en la tienda.</td></tr>';
+    }
+
+    inventarioNotificaciones = (data.inventory || []).filter(function(producto) {
+      return producto.status === 'ACTIVO';
+    });
     if (notificacionesInicializadas) {
       actualizarNotificaciones(
         ventasNotificaciones,
@@ -1891,18 +2081,26 @@ function cargarDashboard() {
         var stockTexto = row.stock + ' uds';
         var stockActual = Number(row.stock);
         var stockMinimo = Number(row.minStock || 3);
-        var estadoClase = stockActual <= 0
+        var productoActivo = row.status === 'ACTIVO';
+        var estadoClase = !productoActivo || stockActual <= 0
           ? 'etiqueta-rojo'
           : stockActual <= stockMinimo
             ? 'etiqueta-naranja'
             : 'etiqueta-verde';
-        var estadoTexto = stockActual <= 0
-          ? 'Agotado'
-          : stockActual <= stockMinimo
-            ? 'Stock bajo'
-            : 'Disponible';
+        var estadoTexto = !productoActivo
+          ? 'Suspendido'
+          : stockActual <= 0
+            ? 'Agotado'
+            : stockActual <= stockMinimo
+              ? 'Stock bajo'
+              : 'Disponible';
         var productId = Number(row.id);
-        return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td><button class="boton-icono" title="Editar" aria-label="Editar ' + escaparHtmlAdmin(row.name) + '" onclick="abrirModal(\'inventario\', ' + productId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'productos\', ' + productId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var nextStatus = productoActivo ? 'INACTIVO' : 'ACTIVO';
+        var actionLabel = productoActivo ? 'Suspender' : 'Reactivar';
+        var editButton = productoActivo
+          ? '<button class="boton-icono" type="button" title="Editar" aria-label="Editar ' + escaparHtmlAdmin(row.name) + '" onclick="abrirModal(\'inventario\', ' + productId + ')"><i class="fi fi-rr-edit"></i></button>'
+          : '';
+        return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td>' + editButton + '<button class="btn-estado-producto ' + (productoActivo ? 'btn-suspender-producto' : 'btn-reactivar-producto') + '" type="button" aria-label="' + actionLabel + ' ' + escaparHtmlAdmin(row.name) + '" onclick="cambiarEstadoProductoAdmin(' + productId + ', \'' + nextStatus + '\')">' + actionLabel + '</button></td>';
       });
       // Actualizar tarjetas de inventario
       el = document.getElementById('invTotalProductos');
@@ -1921,7 +2119,10 @@ function cargarDashboard() {
       if (el) {
         var alertas = 0;
         for (var si = 0; si < data.inventory.length; si++) {
-          if (Number(data.inventory[si].stock) <= Number(data.inventory[si].minStock || 3)) alertas++;
+          if (
+            data.inventory[si].status === 'ACTIVO' &&
+            Number(data.inventory[si].stock) <= Number(data.inventory[si].minStock || 3)
+          ) alertas++;
         }
         el.textContent = alertas + ' alertas';
       }
@@ -2642,6 +2843,45 @@ function cambiarEstadoUsuarioAdmin(id, status) {
   .catch(function(error) {
     console.error('Error al cambiar el estado del usuario:', error);
     mostrarToast('error', 'No se pudo conectar con el servidor para cambiar el estado.');
+  });
+}
+
+function cambiarEstadoProductoAdmin(id, status) {
+  if (!['ACTIVO', 'INACTIVO'].includes(status)) {
+    mostrarToast('error', 'El estado del producto no es válido.');
+    return;
+  }
+
+  var suspension = status === 'INACTIVO';
+  var pregunta = suspension
+    ? '¿Suspender este producto? Dejará de estar disponible en la tienda.'
+    : '¿Reactivar este producto para que vuelva a estar disponible en la tienda?';
+  if (!confirm(pregunta)) return;
+
+  fetch(API_BASE + '/api/admin/productos/' + encodeURIComponent(id) + '/estado', {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + sessionToken
+    },
+    body: JSON.stringify({ status: status })
+  })
+  .then(function(res) {
+    return res.json().then(function(data) {
+      return { ok: res.ok, data: data };
+    });
+  })
+  .then(function(response) {
+    if (!response.ok || !response.data.ok) {
+      mostrarToast('error', response.data.message || 'No se pudo cambiar el estado del producto.');
+      return;
+    }
+    mostrarToast('success', response.data.message);
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al cambiar el estado del producto:', error);
+    mostrarToast('error', 'No se pudo conectar con el servidor para cambiar el estado del producto.');
   });
 }
 

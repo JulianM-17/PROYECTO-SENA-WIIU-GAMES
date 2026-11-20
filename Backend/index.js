@@ -1290,6 +1290,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       `SELECT p.nombre, p.imagen_prin AS imagen_url, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
        FROM detalle_venta dv
        INNER JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE p.estado = 'ACTIVO'
        GROUP BY p.id_producto, p.nombre, p.imagen_prin
        ORDER BY cantidad DESC, total DESC
        LIMIT 3`,
@@ -1369,7 +1370,8 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          p.imagen_4 AS imageUrl4,
          p.descripcion AS description,
          'Original' AS platform,
-         m.nombre_marca AS publisher
+         m.nombre_marca AS publisher,
+         p.estado AS status
        FROM producto p
        INNER JOIN categoria c ON c.id_categoria = p.id_categoria
        INNER JOIN marca m ON m.id_marca = p.id_marca
@@ -1382,7 +1384,6 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
           WHERE i.estado = 'ACTIVO'
           GROUP BY i.id_producto
        ) i ON i.id_producto = p.id_producto
-       WHERE p.estado = 'ACTIVO'
        ORDER BY p.nombre`,
       [selectedBranchId],
     );
@@ -1673,6 +1674,100 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
       ok: false,
       message: "No se pudo cargar el dashboard del administrador.",
       error: error.message,
+    });
+  }
+});
+
+app.get("/api/admin/ventas/:id", requireAdmin, async (req, res) => {
+  const saleId = Number(req.params.id);
+  if (!Number.isSafeInteger(saleId) || saleId <= 0) {
+    return res.status(400).json({ ok: false, message: "ID de venta inválido." });
+  }
+
+  try {
+    const [saleRows] = await pool.query(
+      `SELECT
+         v.id_venta AS id,
+         COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS reference,
+         CONCAT(u.nombre, ' ', u.apellido) AS clientName,
+         u.correo AS clientEmail,
+         COALESCE(v.telefono, u.telefono) AS phone,
+         DATE_FORMAT(v.fecha, '%Y-%m-%d %H:%i') AS date,
+         v.estado AS status,
+         v.metodo_pago AS paymentMethod,
+         v.tipo_venta AS saleType,
+         v.ciudad AS city,
+         v.direccion_entrega AS address,
+         v.numero_guia AS trackingNumber,
+         v.comprobante AS receipt,
+         s.nombre_suc AS branchName,
+         v.notas AS notes
+       FROM venta v
+       INNER JOIN usuario u ON u.id_usuario = v.id_usuario
+       INNER JOIN sucursal s ON s.id_sucursal = v.id_sucursal
+       WHERE v.id_venta = ?
+       LIMIT 1`,
+      [saleId],
+    );
+    if (!saleRows.length) {
+      return res.status(404).json({ ok: false, message: "No se encontró la venta solicitada." });
+    }
+
+    const [itemRows] = await pool.query(
+      `SELECT
+         dv.id_detalle_venta AS id,
+         dv.id_producto AS productId,
+         p.nombre AS productName,
+         dv.cantidad AS quantity,
+         dv.precio_unitario AS unitPrice,
+         dv.subtotal AS subtotal
+       FROM detalle_venta dv
+       INNER JOIN producto p ON p.id_producto = dv.id_producto
+       WHERE dv.id_venta = ?
+       ORDER BY dv.id_detalle_venta`,
+      [saleId],
+    );
+    const sale = saleRows[0];
+    const totalMatch = String(sale.notes || "").match(
+      /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
+    );
+    const recordedTotal = totalMatch ? Number(totalMatch[1]) : null;
+    const itemSubtotal = itemRows.reduce(
+      (total, item) => total + Number(item.subtotal || 0),
+      0,
+    );
+
+    return res.json({
+      ok: true,
+      sale: {
+        id: sale.id,
+        reference: sale.reference,
+        clientName: sale.clientName,
+        clientEmail: sale.clientEmail,
+        phone: sale.phone,
+        date: sale.date,
+        status: sale.status,
+        paymentMethod: sale.paymentMethod,
+        saleType: sale.saleType,
+        city: sale.city,
+        address: sale.address,
+        trackingNumber: sale.trackingNumber,
+        receipt: sale.receipt,
+        branchName: sale.branchName,
+        total: Number.isFinite(recordedTotal) ? recordedTotal : itemSubtotal,
+      },
+      items: itemRows.map((item) => ({
+        ...item,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice),
+        subtotal: Number(item.subtotal),
+      })),
+    });
+  } catch (error) {
+    console.error("Error consultando detalle de venta:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo cargar el detalle de la venta.",
     });
   }
 });
@@ -3164,6 +3259,60 @@ app.put("/api/admin/productos/:id", requireAdmin, async (req, res) => {
   } catch (error) {
     console.error("Error al actualizar producto:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo actualizar el producto." });
+  }
+});
+
+app.patch("/api/admin/productos/:id/estado", requireAdmin, async (req, res) => {
+  const productId = Number(req.params.id);
+  const status = String(req.body?.status || "");
+  if (!Number.isSafeInteger(productId) || productId <= 0) {
+    return res.status(400).json({ ok: false, message: "ID de producto inválido." });
+  }
+  if (!["ACTIVO", "INACTIVO"].includes(status)) {
+    return res.status(400).json({ ok: false, message: "Estado de producto inválido." });
+  }
+
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const [productRows] = await connection.query(
+      "SELECT id_producto FROM producto WHERE id_producto = ? FOR UPDATE",
+      [productId],
+    );
+    if (!productRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "Producto no encontrado." });
+    }
+
+    await connection.query(
+      "UPDATE producto SET estado = ? WHERE id_producto = ?",
+      [status, productId],
+    );
+    await connection.query(
+      "UPDATE inventario SET estado = ? WHERE id_producto = ?",
+      [status, productId],
+    );
+    await connection.commit();
+    return res.json({
+      ok: true,
+      message: status === "INACTIVO" ? "Producto suspendido." : "Producto reactivado.",
+    });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo suspensión de producto:", rollbackError.message);
+      }
+    }
+    console.error("Error cambiando estado del producto:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo cambiar el estado del producto.",
+    });
+  } finally {
+    connection?.release();
   }
 });
 
