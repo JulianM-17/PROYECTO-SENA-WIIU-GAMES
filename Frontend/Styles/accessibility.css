@@ -7,6 +7,17 @@
   --a11y-shift-y: 0px;
 }
 
+/* Mantiene estable la geometría al cambiar de tema desde Accesibilidad. */
+html {
+  scrollbar-gutter: stable;
+}
+
+body,
+.panel-contenedor,
+.panel-empleado {
+  overflow-anchor: none;
+}
+
 /* Oculta el panel hasta que se abre y mantiene la animación al cerrar. */
 #contacto-panel {
   visibility: hidden;
@@ -2240,3 +2251,4 @@ body.a11y-mode-dark-mode .tarjeta-producto .btn-agregar-carrito {
   color: #080f20 !important;
   border: 0 !important;
 }
+

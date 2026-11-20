@@ -1727,3 +1727,120 @@ body {
     opacity: 1;
   }
 }
+
+/* Tema claro del panel: solo colores, sin cambiar dimensiones ni posiciones. */
+html[data-theme="light"] body,
+body[data-theme="light"] {
+  background-color: #f4f6fb;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .panel-contenedor,
+html[data-theme="light"] .contenido,
+html[data-theme="light"] .seccion,
+html[data-theme="light"] .barra-superior {
+  background-color: #f4f6fb;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .menu-lateral,
+html[data-theme="light"] .caja-panel,
+html[data-theme="light"] .tarjeta-resumen,
+html[data-theme="light"] .caja-modal,
+html[data-theme="light"] .sitio-footer,
+html[data-theme="light"] .panel-notificaciones,
+html[data-theme="light"] .cabecera-notificaciones button {
+  background-color: #ffffff;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .menu-lateral {
+  border-right-color: #e2e8f0;
+}
+
+html[data-theme="light"] .texto-bienvenida h1,
+html[data-theme="light"] .datos-usuario .nombre,
+html[data-theme="light"] .encabezado-caja h3,
+html[data-theme="light"] .tarjeta-resumen h2,
+html[data-theme="light"] .tabla-panel th,
+html[data-theme="light"] .tabla-panel td,
+html[data-theme="light"] .cabecera-modulo h2,
+html[data-theme="light"] .caja-modal h3,
+html[data-theme="light"] .campo-grupo label {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .texto-bienvenida p,
+html[data-theme="light"] .datos-usuario .rol,
+html[data-theme="light"] .titulo-tarjeta,
+html[data-theme="light"] .texto-vacio,
+html[data-theme="light"] .tabla-panel th,
+html[data-theme="light"] .item-dinero small,
+html[data-theme="light"] .cabecera-modulo p,
+html[data-theme="light"] .resumen-notificaciones,
+html[data-theme="light"] .panel-notificaciones li,
+html[data-theme="light"] .panel-notificaciones .notificacion-dia,
+html[data-theme="light"] .panel-notificaciones .notificacion-item time {
+  color: #64748b;
+}
+
+html[data-theme="light"] .boton-menu,
+html[data-theme="light"] .boton-menu i,
+html[data-theme="light"] .boton-hamburguesa,
+html[data-theme="light"] .campana-alerta,
+html[data-theme="light"] .caja-buscar i,
+html[data-theme="light"] .cabecera-notificaciones button {
+  color: #52637a;
+}
+
+html[data-theme="light"] .boton-menu.activo,
+html[data-theme="light"] .boton-menu.activo i {
+  background-color: #f5a623;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .caja-buscar,
+html[data-theme="light"] .campana-alerta,
+html[data-theme="light"] .input-filtro,
+html[data-theme="light"] .select-filtro,
+html[data-theme="light"] .campo-grupo input,
+html[data-theme="light"] .campo-grupo select,
+html[data-theme="light"] .campo-grupo textarea,
+html[data-theme="light"] .select-estado-solicitud,
+html[data-theme="light"] .cabecera-notificaciones button {
+  background-color: #ffffff;
+  border-color: #dbe3ef;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .caja-buscar input,
+html[data-theme="light"] .input-filtro,
+html[data-theme="light"] .select-filtro,
+html[data-theme="light"] .campo-grupo input,
+html[data-theme="light"] .campo-grupo select,
+html[data-theme="light"] .campo-grupo textarea,
+html[data-theme="light"] .select-estado-solicitud {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .caja-buscar input::placeholder,
+html[data-theme="light"] .campo-grupo input::placeholder,
+html[data-theme="light"] .campo-grupo textarea::placeholder {
+  color: #94a3b8;
+}
+
+html[data-theme="light"] .item-producto-top,
+html[data-theme="light"] .etiqueta-semana,
+html[data-theme="light"] .panel-notificaciones li {
+  background-color: #f8fafc;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .tabla-panel th,
+html[data-theme="light"] .tabla-panel td,
+html[data-theme="light"] .pie-enlace,
+html[data-theme="light"] .separador-menu,
+html[data-theme="light"] .cabecera-modal,
+html[data-theme="light"] .pie-modal {
+  border-color: #e2e8f0;
+}
