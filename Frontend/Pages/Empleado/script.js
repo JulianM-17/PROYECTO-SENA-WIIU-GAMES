@@ -90,16 +90,6 @@ function initializeEmployeePanel() {
     .querySelector(".enlace-rojo")
     .addEventListener("click", logoutEmployee);
 
-  document
-    .getElementById("modalEmpleado")
-    .addEventListener("click", (event) => {
-      if (event.target.id === "modalEmpleado") cerrarModalEmpleado();
-    });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") cerrarModalEmpleado();
-  });
-
   cargarDatosPanel();
 }
 
@@ -641,10 +631,50 @@ function createInput(id, type, placeholder, required = true) {
 function filterEmployeeFormInput(event) {
   const input = event.target;
   if (input.dataset.validation === "name") {
-    input.value = input.value.replace(/[^\p{L}\s'-]/gu, "");
+    input.value = input.value
+      .normalize("NFC")
+      .replace(/[^\p{L}\s'-]/gu, "")
+      .replace(/\s+/g, " ")
+      .replace(/^[\s'-]+|[\s'-]+$/g, "");
+    input.setCustomValidity(validatePersonName(input.value));
+  } else if (input.id === "empDocumento") {
+    const documentType = document.getElementById("empTipoDocumento")?.value;
+    input.value = documentType === "PAS"
+      ? input.value.replace(/[^A-Za-z0-9-]/g, "").toUpperCase()
+      : input.value.replace(/\D/g, "");
   } else if (input.dataset.validation === "phone") {
     input.value = input.value.replace(/[^+\d()\s-]/g, "");
+  } else if (input.id === "empNacimiento") {
+    input.setCustomValidity(validateBirthDate(input.value));
+  } else if (input.id === "empConfirmarCorreo") {
+    input.setCustomValidity("");
+  } else if (input.id === "empConfirmarContrasena") {
+    input.setCustomValidity("");
   }
+}
+
+function validatePersonName(value) {
+  const name = String(value || "").normalize("NFC").trim();
+  if (name.length < 2) return "El nombre debe tener al menos 2 caracteres.";
+  if (name.length > 30) return "El nombre no puede superar 30 caracteres.";
+  if (!/^[\p{L}][\p{L}\s'-]*$/u.test(name)) {
+    return "Ingresa un nombre válido sin números ni símbolos.";
+  }
+  return "";
+}
+
+function validateBirthDate(value) {
+  if (!value) return "Selecciona la fecha de nacimiento.";
+  const today = new Date();
+  const minimumDate = new Date("1940-01-01T00:00:00");
+  const selectedDate = new Date(`${value}T00:00:00`);
+  const maximumDate = new Date(today);
+  maximumDate.setFullYear(maximumDate.getFullYear() - 10);
+
+  if (Number.isNaN(selectedDate.getTime())) return "Ingresa una fecha válida.";
+  if (selectedDate < minimumDate) return "La fecha de nacimiento no puede ser anterior a 1940.";
+  if (selectedDate > maximumDate) return "El cliente debe tener al menos 10 años.";
+  return "";
 }
 
 function createSelect(id, placeholder, options) {
@@ -659,6 +689,18 @@ function createSelect(id, placeholder, options) {
   return select;
 }
 
+const COLOMBIAN_LOCATIONS = {
+  "Boyacá": ["Sogamoso", "Tunja", "Duitama", "Paipa", "Chiquinquirá", "Nobsa", "Garagoa"],
+  "Cundinamarca": ["Bogotá D.C.", "Soacha", "Chía", "Zipaquirá", "Facatativá", "Girardot"],
+  "Antioquia": ["Medellín", "Bello", "Envigado", "Itagüí", "Rionegro", "Apartadó"],
+  "Santander": ["Bucaramanga", "Floridablanca", "Girón", "Piedecuesta", "Barrancabermeja"],
+  "Valle del Cauca": ["Cali", "Palmira", "Buenaventura", "Tuluá", "Buga", "Cartago"],
+  "Atlántico": ["Barranquilla", "Soledad", "Malambo", "Sabanalarga", "Puerto Colombia"],
+  "Tolima": ["Ibagué", "Espinal", "Melgar", "Honda", "Chaparral"],
+  "Meta": ["Villavicencio", "Acacías", "Granada", "Puerto López"],
+  "Norte de Santander": ["Cúcuta", "Ocaña", "Pamplona", "Los Patios", "Villa del Rosario"],
+};
+
 function getClientOptions() {
   return employeeState.clients.map((client) => ({
     value: String(client.id),
@@ -672,7 +714,10 @@ function abrirModalEmpleado(tipo) {
   const title = document.getElementById("modalEmpleadoTitulo");
   const fields = document.getElementById("modalEmpleadoCampos");
   const form = document.getElementById("formEmpleado");
+  const modalBox = modal.querySelector(".caja-modal-empleado");
   fields.replaceChildren();
+  fields.classList.remove("campos-cliente-completo");
+  modalBox.classList.remove("modal-cliente-amplio");
   form.reset();
 
   if (tipo === "taller") {
@@ -712,20 +757,108 @@ function abrirModalEmpleado(tipo) {
     form.querySelector('[type="submit"]').disabled = !clients.length;
   } else if (tipo === "cliente") {
     title.textContent = "Registrar Nuevo Cliente";
-    const name = createInput("empNombre", "text", "Ej. Carlos Ramírez");
-    name.maxLength = 61;
+    modal.querySelector(".caja-modal-empleado").classList.add("modal-cliente-amplio");
+    const name = createInput("empNombre", "text", "Ej. Carlos");
+    name.minLength = 2;
+    name.maxLength = 30;
     name.dataset.validation = "name";
-    const phone = createInput("empTelefono", "tel", "Ej. 312 345 6789");
+    const lastName = createInput("empApellido", "text", "Ej. Ramírez");
+    lastName.minLength = 2;
+    lastName.maxLength = 30;
+    lastName.dataset.validation = "name";
+    const birthDate = createInput("empNacimiento", "date", "");
+    birthDate.min = "1940-01-01";
+    birthDate.max = new Date(new Date().setFullYear(new Date().getFullYear() - 10))
+      .toISOString().slice(0, 10);
+    birthDate.setAttribute("lang", "es");
+    const documentType = createSelect("empTipoDocumento", "Tipo de documento", [
+      { value: "CC", label: "Cédula de ciudadanía" },
+      { value: "TI", label: "Tarjeta de identidad" },
+      { value: "CE", label: "Cédula de extranjería" },
+      { value: "PAS", label: "Pasaporte" },
+      { value: "NIT", label: "NIT" },
+    ]);
+    documentType.value = "CC";
+    const documentNumber = createInput("empDocumento", "text", "Ej. 1075654321");
+    documentNumber.maxLength = 20;
+    documentNumber.minLength = 6;
+    documentNumber.inputMode = "numeric";
+    documentNumber.pattern = "[0-9]{6,20}";
+    documentNumber.dataset.validation = "document";
+    documentType.addEventListener("change", () => {
+      if (documentType.value === "PAS") {
+        documentNumber.inputMode = "text";
+        documentNumber.pattern = "[A-Za-z0-9-]{5,20}";
+        documentNumber.placeholder = "Ej. AB123456";
+      } else {
+        documentNumber.inputMode = "numeric";
+        documentNumber.pattern = "[0-9]{6,20}";
+        documentNumber.placeholder = "Ej. 1075654321";
+      }
+      documentNumber.value = "";
+      documentNumber.setCustomValidity("");
+    });
+    const department = createSelect(
+      "empDepartamento",
+      "Selecciona un departamento",
+      Object.keys(COLOMBIAN_LOCATIONS).map((name) => ({ value: name, label: name })),
+    );
+    department.value = "Boyacá";
+    const city = createSelect("empCiudad", "Selecciona municipio / ciudad", []);
+    const address = createInput("empDireccion", "text", "Ej. Carrera 11 #14-14 Local 126");
+    address.minLength = 5;
+    address.maxLength = 40;
+    const phone = createInput("empTelefono", "tel", "Ej. 3123456789");
+    phone.pattern = "[0-9 +()-]{7,20}";
+    phone.inputMode = "tel";
     phone.maxLength = 20;
     phone.dataset.validation = "phone";
+    const secondaryPhone = createInput("empTelefonoSecundario", "tel", "Ej. 6087701234", false);
+    secondaryPhone.pattern = "[0-9 +()-]{7,20}";
+    secondaryPhone.inputMode = "tel";
+    secondaryPhone.maxLength = 20;
+    secondaryPhone.dataset.validation = "phone";
     const email = createInput("empCorreo", "email", "Ej. cliente@email.com");
     email.maxLength = 120;
+    const confirmEmail = createInput("empConfirmarCorreo", "email", "Repite el correo electrónico");
+    confirmEmail.maxLength = 120;
+    const password = createInput("empContrasena", "password", "Mínimo 8 caracteres");
+    password.minLength = 8;
+    password.maxLength = 128;
+    const confirmPassword = createInput("empConfirmarContrasena", "password", "Repite la contraseña");
+    confirmPassword.minLength = 8;
+    confirmPassword.maxLength = 128;
+
+    function updateCities() {
+      city.replaceChildren(new Option("Selecciona municipio / ciudad", ""));
+      (COLOMBIAN_LOCATIONS[department.value] || []).forEach((cityName) => {
+        city.add(new Option(cityName, cityName));
+      });
+    }
+    department.addEventListener("change", updateCities);
+    updateCities();
+    city.value = "Sogamoso";
+
     fields.append(
-      createField("Nombre completo", name),
+      createField("Nombre", name),
+      createField("Apellido", lastName),
+      createField("Fecha de nacimiento", birthDate),
+      createField("Tipo de documento", documentType),
+      createField("Número de documento", documentNumber),
+      createField("Departamento", department),
+      createField("Municipio / Ciudad", city),
+      createField("Dirección principal", address),
       createField("Teléfono de contacto", phone),
+      createField("Teléfono secundario (opcional)", secondaryPhone),
       createField("Correo electrónico", email),
+      createField("Confirmar correo electrónico", confirmEmail),
+      createField("Contraseña", password),
+      createField("Confirmar contraseña", confirmPassword),
     );
+    fields.classList.add("campos-cliente-completo");
     form.querySelector('[type="submit"]').disabled = false;
+  } else {
+    fields.classList.remove("campos-cliente-completo");
   }
 
   modal.classList.add("activo");
@@ -739,6 +872,55 @@ async function guardarRegistroEmpleado(event) {
   event.preventDefault();
   const submitButton = event.currentTarget.querySelector('[type="submit"]');
   if (!event.currentTarget.reportValidity() || submitButton.disabled) return;
+
+  if (tipoRegistroActual === "cliente") {
+    const email = document.getElementById("empCorreo");
+    const confirmEmail = document.getElementById("empConfirmarCorreo");
+    const password = document.getElementById("empContrasena");
+    const confirmPassword = document.getElementById("empConfirmarContrasena");
+    const birthDate = document.getElementById("empNacimiento");
+    const documentType = document.getElementById("empTipoDocumento");
+    const documentNumber = document.getElementById("empDocumento");
+    const phone = document.getElementById("empTelefono");
+    const secondaryPhone = document.getElementById("empTelefonoSecundario");
+    const firstName = document.getElementById("empNombre");
+    const lastName = document.getElementById("empApellido");
+
+    firstName.setCustomValidity(validatePersonName(firstName.value));
+    lastName.setCustomValidity(validatePersonName(lastName.value));
+    birthDate.setCustomValidity(validateBirthDate(birthDate.value));
+    documentNumber.setCustomValidity(
+      documentType.value === "PAS"
+        ? (/^[A-Za-z0-9-]{5,20}$/.test(documentNumber.value)
+          ? ""
+          : "Usa entre 5 y 20 caracteres alfanuméricos.")
+        : (/^[0-9]{6,20}$/.test(documentNumber.value)
+          ? ""
+          : "El documento seleccionado debe contener solo números."),
+    );
+    phone.setCustomValidity(
+      /^[0-9]{7,15}$/.test(phone.value.replace(/\D/g, ""))
+        ? ""
+        : "El teléfono debe contener entre 7 y 15 dígitos.",
+    );
+    secondaryPhone.setCustomValidity(
+      !secondaryPhone.value ||
+      /^[0-9]{7,15}$/.test(secondaryPhone.value.replace(/\D/g, ""))
+        ? ""
+        : "El teléfono secundario debe contener entre 7 y 15 dígitos.",
+    );
+    confirmEmail.setCustomValidity(
+      confirmEmail.value.trim().toLowerCase() === email.value.trim().toLowerCase()
+        ? ""
+        : "Los correos electrónicos no coinciden.",
+    );
+    confirmPassword.setCustomValidity(
+      confirmPassword.value === password.value
+        ? ""
+        : "Las contraseñas no coinciden.",
+    );
+    if (!event.currentTarget.reportValidity()) return;
+  }
   submitButton.disabled = true;
 
   try {
@@ -756,10 +938,24 @@ async function guardarRegistroEmpleado(event) {
       };
     } else if (tipoRegistroActual === "cliente") {
       path = "/clients";
+      const firstNameValue = document.getElementById("empNombre").value.trim();
+      const lastNameValue = document.getElementById("empApellido").value.trim();
       body = {
-        name: document.getElementById("empNombre").value.trim(),
+        name: `${firstNameValue} ${lastNameValue}`.trim(),
+        firstName: firstNameValue,
+        lastName: lastNameValue,
+        birthDate: document.getElementById("empNacimiento").value,
+        documentType: document.getElementById("empTipoDocumento").value,
+        documentNumber: document.getElementById("empDocumento").value.trim(),
+        department: document.getElementById("empDepartamento").value,
+        city: document.getElementById("empCiudad").value,
+        address: document.getElementById("empDireccion").value.trim(),
         phone: document.getElementById("empTelefono").value.trim(),
+        secondaryPhone: document.getElementById("empTelefonoSecundario").value.trim(),
         email: document.getElementById("empCorreo").value.trim(),
+        confirmEmail: document.getElementById("empConfirmarCorreo").value.trim(),
+        password: document.getElementById("empContrasena").value,
+        confirmPassword: document.getElementById("empConfirmarContrasena").value,
       };
     } else {
       return;
@@ -772,10 +968,7 @@ async function guardarRegistroEmpleado(event) {
     cerrarModalEmpleado();
     await cargarDatosPanel();
 
-    const successMessage =
-      tipoRegistroActual === "cliente" && result.temporaryPassword
-        ? `${result.message} Contraseña temporal para entregar al cliente: ${result.temporaryPassword}`
-        : result.message;
+    const successMessage = result.message;
     showEmployeeToast(successMessage, "success");
   } catch (error) {
     console.error("No se pudo guardar el registro del empleado:", error);
