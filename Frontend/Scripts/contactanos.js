@@ -1,12 +1,10 @@
 (function () {
   let contactStylesheetPromise;
+  const contactScriptUrl = document.currentScript?.src;
 
   function getContactStylesheetPath() {
-    const pathParts = window.location.pathname.split('/');
-    const pagesIndex = pathParts.lastIndexOf('Pages');
-    const depth = pagesIndex === -1 ? 0 : pathParts.length - pagesIndex - 1;
-    const prefix = depth === 0 ? '' : '../'.repeat(depth);
-    return `${prefix}Styles/contactanos.css`;
+    const scriptUrl = contactScriptUrl || new URL('/Scripts/contactanos.js', window.location.origin).href;
+    return new URL('../Styles/contactanos.css', scriptUrl).href;
   }
 
   function loadContactStylesheet() {

@@ -1778,6 +1778,34 @@ function renderizarGraficoVentas(tendencia) {
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', 'Ventas diarias de los últimos ' + periodo + ' días');
 
+  var defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  function agregarGradiente(id, x1, y1, x2, y2, paradas) {
+    var gradiente = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    gradiente.setAttribute('id', id);
+    gradiente.setAttribute('x1', x1);
+    gradiente.setAttribute('y1', y1);
+    gradiente.setAttribute('x2', x2);
+    gradiente.setAttribute('y2', y2);
+    paradas.forEach(function(parada) {
+      var stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+      stop.setAttribute('offset', parada.offset);
+      stop.setAttribute('stop-color', parada.color);
+      stop.setAttribute('stop-opacity', parada.opacity);
+      gradiente.appendChild(stop);
+    });
+    defs.appendChild(gradiente);
+  }
+  agregarGradiente('ventasAreaGradient', '0', '0', '0', '1', [
+    { offset: '0%', color: '#22d3ee', opacity: '.28' },
+    { offset: '100%', color: '#2563eb', opacity: '.01' }
+  ]);
+  agregarGradiente('ventasLineGradient', '0', '0', '1', '0', [
+    { offset: '0%', color: '#22d3ee', opacity: '1' },
+    { offset: '55%', color: '#3b82f6', opacity: '1' },
+    { offset: '100%', color: '#a78bfa', opacity: '1' }
+  ]);
+  svg.appendChild(defs);
+
   function agregarSvg(nombre, atributos, texto) {
     var elemento = document.createElementNS('http://www.w3.org/2000/svg', nombre);
     Object.keys(atributos).forEach(function(atributo) {
@@ -1822,17 +1850,21 @@ function renderizarGraficoVentas(tendencia) {
     return (indice === 0 ? 'M' : 'L') + coordenada.x + ' ' + coordenada.y;
   }).join(' ');
 
+  var area = trayectoria + ' L' + coordenadas[coordenadas.length - 1].x + ' ' + abajo +
+    ' L' + coordenadas[0].x + ' ' + abajo + ' Z';
+  agregarSvg('path', { d: area, class: 'grafico-area-ventas' });
   agregarSvg('path', { d: trayectoria, class: 'grafico-linea-ventas' });
   coordenadas.forEach(function(coordenada) {
-    var circulo = agregarSvg('circle', {
-      cx: coordenada.x,
-      cy: coordenada.y,
-      r: 4,
-      class: 'grafico-punto-venta'
-    });
+    var grupo = agregarSvg('g', { class: 'grafico-punto-grupo' });
+    var circulo = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circulo.setAttribute('cx', coordenada.x);
+    circulo.setAttribute('cy', coordenada.y);
+    circulo.setAttribute('r', 5);
+    circulo.setAttribute('class', 'grafico-punto-venta');
+    grupo.appendChild(circulo);
     var titulo = document.createElementNS('http://www.w3.org/2000/svg', 'title');
     titulo.textContent = coordenada.punto.date + ': $ ' + formatoMoneda.format(coordenada.punto.value);
-    circulo.appendChild(titulo);
+    grupo.appendChild(titulo);
   });
   var frecuenciaEtiquetas = Math.max(1, Math.ceil(coordenadas.length / 7));
   coordenadas.forEach(function(coordenada, indice) {
@@ -1851,72 +1883,6 @@ function renderizarGraficoVentas(tendencia) {
 // ==========================================================================
 // 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
 // ==========================================================================
-function renderizarGraficoVentas(puntos) {
-  var svg = document.getElementById('graficoVentas');
-  if (!svg) return;
-
-  var datos = Array.isArray(puntos) ? puntos.slice(-7) : [];
-  while (datos.length < 7) {
-    datos.unshift({ label: '', value: 0 });
-  }
-
-  var ancho = 700;
-  var alto = 180;
-  var margenIzquierdo = 58;
-  var margenDerecho = 12;
-  var margenSuperior = 12;
-  var margenInferior = 28;
-  var anchoGrafico = ancho - margenIzquierdo - margenDerecho;
-  var altoGrafico = alto - margenSuperior - margenInferior;
-  var valores = datos.map(function(punto) { return Number(punto.value || 0); });
-  var maximo = Math.max.apply(null, valores);
-  if (!Number.isFinite(maximo) || maximo <= 0) maximo = 1000;
-  var potencia = Math.pow(10, Math.max(0, String(Math.floor(maximo)).length - 1));
-  maximo = Math.ceil(maximo / potencia) * potencia;
-
-  var partes = [
-    '<rect x="0" y="0" width="' + ancho + '" height="' + alto + '" fill="transparent"/>'
-  ];
-  for (var linea = 0; linea <= 4; linea++) {
-    var y = margenSuperior + (altoGrafico * linea / 4);
-    var valorLinea = maximo - (maximo * linea / 4);
-    var etiqueta = valorLinea >= 1000000
-      ? (valorLinea / 1000000).toFixed(1) + 'M'
-      : valorLinea >= 1000
-        ? (valorLinea / 1000).toFixed(valorLinea % 1000 === 0 ? 0 : 1) + 'K'
-        : String(Math.round(valorLinea));
-    partes.push('<line x1="' + margenIzquierdo + '" y1="' + y + '" x2="' + ancho + '" y2="' + y + '" stroke="#16223d" stroke-width="1"/>');
-    partes.push('<text x="' + (margenIzquierdo - 8) + '" y="' + (y + 4) + '" fill="#52637a" font-size="10" text-anchor="end">' + etiqueta + '</text>');
-  }
-
-  var coordenadas = datos.map(function(punto, indice) {
-    var x = margenIzquierdo + (anchoGrafico * indice / Math.max(1, datos.length - 1));
-    var y = margenSuperior + altoGrafico - (Number(punto.value || 0) / maximo * altoGrafico);
-    return [x, y];
-  });
-
-  var linea = coordenadas.map(function(punto, indice) {
-    return (indice === 0 ? 'M' : 'L') + punto[0].toFixed(2) + ',' + punto[1].toFixed(2);
-  }).join(' ');
-  var area = linea + ' L' + coordenadas[coordenadas.length - 1][0].toFixed(2) + ',' +
-    (margenSuperior + altoGrafico) + ' L' + coordenadas[0][0].toFixed(2) + ',' +
-    (margenSuperior + altoGrafico) + ' Z';
-
-  partes.push('<defs><linearGradient id="ventasArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0077ff" stop-opacity=".35"/><stop offset="100%" stop-color="#0077ff" stop-opacity=".03"/></linearGradient></defs>');
-  partes.push('<path d="' + area + '" fill="url(#ventasArea)"/>');
-  partes.push('<path d="' + linea + '" fill="none" stroke="#0077ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>');
-
-  datos.forEach(function(punto, indice) {
-    var coordenada = coordenadas[indice];
-    var valor = Number(punto.value || 0).toLocaleString('es-CO');
-    partes.push('<g><circle cx="' + coordenada[0].toFixed(2) + '" cy="' + coordenada[1].toFixed(2) + '" r="4" fill="#080f1e" stroke="#0077ff" stroke-width="2"/><title>$ ' + valor + '</title></g>');
-    partes.push('<text x="' + coordenada[0].toFixed(2) + '" y="' + (alto - 7) + '" fill="#8a9bb5" font-size="10" text-anchor="middle">' + escaparHtmlAdmin(punto.label || '') + '</text>');
-  });
-
-  svg.innerHTML = partes.join('');
-  svg.setAttribute('aria-label', 'Ventas de los últimos siete días');
-}
-
 var detalleVentaRequestId = 0;
 
 function mostrarDetalleVenta(id) {
@@ -2090,6 +2056,13 @@ function cargarDashboard() {
   })
   .then(function(response) {
     var data = response.data;
+    if (response.status === 401) {
+      localStorage.removeItem('sessionToken');
+      sessionStorage.removeItem('sessionToken');
+      sessionStorage.removeItem('wiiu_usuario_activo');
+      window.location.replace('../Login.html');
+      return;
+    }
     if (!response.status || response.status >= 400 || !data.ok) {
       var errorMessage = data.message || 'No se pudo cargar el panel del administrador.';
       console.warn('Dashboard respondió con error:', response.status, errorMessage);
@@ -3219,6 +3192,16 @@ function cargarBackups() {
 
         var celdaNombre = document.createElement('td');
         celdaNombre.textContent = backup.filename;
+        var ubicacionesBackup = [];
+        if (backup.storedInDatabase) ubicacionesBackup.push('MySQL');
+        if (backup.storedLocally) ubicacionesBackup.push('PC');
+        if (ubicacionesBackup.length) {
+          var estadoUbicaciones = document.createElement('small');
+          estadoUbicaciones.className = 'backup-ubicaciones';
+          estadoUbicaciones.textContent = ubicacionesBackup.join(' · ');
+          celdaNombre.appendChild(document.createElement('br'));
+          celdaNombre.appendChild(estadoUbicaciones);
+        }
         fila.appendChild(celdaNombre);
 
         var celdaFecha = document.createElement('td');

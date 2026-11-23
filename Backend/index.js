@@ -41,10 +41,91 @@ let warrantyRequestSchemaPromise;
 let warrantyDetailIndexSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
+let backupSchemaPromise;
 const BACKUP_DIR = path.join(__dirname, "backups");
+const BACKUP_TABLE = "backup";
+const LEGACY_BACKUP_TABLE = "wiiu_admin_backups";
 
 async function ensureBackupDir() {
   await fs.mkdir(BACKUP_DIR, { recursive: true });
+}
+
+async function ensureBackupTable() {
+  if (!backupSchemaPromise) {
+    backupSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        `SHOW COLUMNS FROM ${quoteIdentifier(BACKUP_TABLE)} LIKE 'contenido'`,
+      );
+      if (!columns.length) {
+        await pool.query(
+          `ALTER TABLE ${quoteIdentifier(BACKUP_TABLE)} ` +
+          "ADD COLUMN `contenido` LONGTEXT NULL AFTER `ruta_almacenamiento`",
+        );
+      }
+
+      const [tableRows] = await pool.query("SHOW TABLES");
+      const tableKey = Object.keys(tableRows[0] || {})[0];
+      if (!tableKey || !tableRows.some((row) => row[tableKey] === LEGACY_BACKUP_TABLE)) {
+        return;
+      }
+
+      const [legacyRows] = await pool.query(
+        `SELECT legacy.filename, legacy.content, legacy.size, legacy.created_at
+         FROM ${quoteIdentifier(LEGACY_BACKUP_TABLE)} legacy
+         LEFT JOIN ${quoteIdentifier(BACKUP_TABLE)} target
+           ON target.nombre_archivo = legacy.filename
+         WHERE target.id_backup IS NULL`,
+      );
+      for (const row of legacyRows) {
+        if (!isSafeBackupFilename(row.filename)) continue;
+        const createdAt = new Date(row.created_at);
+        const createdAtSql = Number.isNaN(createdAt.getTime())
+          ? null
+          : createdAt.toISOString().slice(0, 19).replace("T", " ");
+        await pool.query(
+          `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+             (nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
+           VALUES (?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), 'COMPLETO', 'EXITOSO', ?)`,
+          [
+            row.filename,
+            path.join(BACKUP_DIR, row.filename),
+            Number(row.size) || 0,
+            createdAtSql,
+            row.content,
+          ],
+        );
+      }
+    })();
+  }
+
+  try {
+    await backupSchemaPromise;
+  } catch (error) {
+    backupSchemaPromise = null;
+    throw error;
+  }
+}
+
+async function readBackupContent(filename) {
+  try {
+    return await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  await ensureBackupTable();
+  const [rows] = await pool.query(
+    `SELECT contenido FROM ${quoteIdentifier(BACKUP_TABLE)}
+     WHERE nombre_archivo = ? AND contenido IS NOT NULL
+     ORDER BY id_backup DESC LIMIT 1`,
+    [filename],
+  );
+  if (!rows.length) {
+    const error = new Error("El respaldo no existe.");
+    error.code = "ENOENT";
+    throw error;
+  }
+  return rows[0].contenido;
 }
 
 function isSafeBackupFilename(filename) {
@@ -174,6 +255,7 @@ async function readBackupTables(connection) {
     if (typeof tableName !== "string" || !/^[A-Za-z0-9_$]+$/.test(tableName)) {
       throw new Error("Hay una tabla con un nombre que no se puede respaldar.");
     }
+    if (tableName === BACKUP_TABLE || tableName === LEGACY_BACKUP_TABLE) continue;
 
     const [createRows] = await connection.query(`SHOW CREATE TABLE ${quoteIdentifier(tableName)}`);
     const createKey = Object.keys(createRows[0] || {}).find((key) =>
@@ -192,6 +274,9 @@ async function readBackupTables(connection) {
       rows: dataRows,
     });
   }
+  if (!tables.length) {
+    throw new Error("No hay tablas de la aplicación para respaldar.");
+  }
   return tables;
 }
 
@@ -208,11 +293,12 @@ async function writeBackupFile(tables, prefix) {
     createdAt: new Date().toISOString(),
     tables,
   };
+  const content = JSON.stringify(backup, serializeBackupValue, 2);
 
   try {
     await fs.writeFile(
       temporaryPath,
-      JSON.stringify(backup, serializeBackupValue, 2),
+      content,
       { encoding: "utf8", flag: "wx" },
     );
     await fs.rename(temporaryPath, filePath);
@@ -231,22 +317,24 @@ async function writeBackupFile(tables, prefix) {
   return {
     backup,
     filename,
+    content,
     size: stats.size,
-    createdAt: stats.birthtime.toISOString(),
+    createdAt: backup.createdAt,
   };
 }
 
-async function createConsistentBackup(prefix) {
+async function createConsistentBackup(prefix, userId) {
+  await ensureBackupTable();
   const connection = await pool.getConnection();
   let transactionOpen = false;
+  let tables;
   try {
     await connection.query("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ");
     await connection.query("START TRANSACTION WITH CONSISTENT SNAPSHOT");
     transactionOpen = true;
-    const tables = await readBackupTables(connection);
+    tables = await readBackupTables(connection);
     await connection.commit();
     transactionOpen = false;
-    return await writeBackupFile(tables, prefix);
   } catch (error) {
     if (transactionOpen) {
       try {
@@ -259,12 +347,39 @@ async function createConsistentBackup(prefix) {
   } finally {
     connection.release();
   }
+
+  const backupFile = await writeBackupFile(tables, prefix);
+  try {
+    await pool.query(
+      `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+         (id_encargado, nombre_archivo, ruta_almacenamiento, peso, tipo, estado, contenido)
+       VALUES (?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
+      [
+        userId,
+        backupFile.filename,
+        path.join(BACKUP_DIR, backupFile.filename),
+        backupFile.size,
+        backupFile.content,
+      ],
+    );
+  } catch (error) {
+    try {
+      await fs.unlink(path.join(BACKUP_DIR, backupFile.filename));
+    } catch (cleanupError) {
+      if (cleanupError.code !== "ENOENT") {
+        console.error("Error eliminando respaldo local incompleto:", cleanupError);
+      }
+    }
+    throw error;
+  }
+  return backupFile;
 }
 
 async function applyBackup(connection, backup) {
   await connection.query("SET FOREIGN_KEY_CHECKS = 0");
   try {
     for (const table of backup.tables) {
+      if (table.name === BACKUP_TABLE || table.name === LEGACY_BACKUP_TABLE) continue;
       const tableIdentifier = quoteIdentifier(table.name);
       await connection.query(`DROP TABLE IF EXISTS ${tableIdentifier}`);
       await connection.query(table.createSql);
@@ -4886,6 +5001,34 @@ app.post("/api/admin/pedidos", requireAdmin, async (req, res) => {
 
 // ---------- ELIMINACIONES GENÉRICAS DEL PANEL ----------
 
+app.delete("/api/admin/backups/:filename", requireAdmin, async (req, res) => {
+  const filename = req.params.filename;
+  if (!isSafeBackupFilename(filename)) {
+    return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
+  }
+  try {
+    await ensureBackupTable();
+    let deletedLocally = false;
+    try {
+      await fs.unlink(path.join(BACKUP_DIR, filename));
+      deletedLocally = true;
+    } catch (error) {
+      if (error.code !== "ENOENT") throw error;
+    }
+    const [result] = await pool.query(
+      `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
+      [filename],
+    );
+    if (!deletedLocally && !result.affectedRows) {
+      return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+    }
+    return res.json({ ok: true, message: "Respaldo eliminado correctamente." });
+  } catch (error) {
+    console.error("Error eliminando respaldo:", error);
+    return res.status(500).json({ ok: false, message: "No se pudo eliminar el respaldo." });
+  }
+});
+
 app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
   try {
     const { recurso, id } = req.params;
@@ -4981,18 +5124,101 @@ async function requireEmployee(req, res, next) {
 app.get("/api/admin/backups", requireAdmin, async (req, res) => {
   try {
     await ensureBackupDir();
+    await ensureBackupTable();
     const entries = await fs.readdir(BACKUP_DIR, { withFileTypes: true });
-    const backups = [];
+    const backupsByName = new Map();
+    const [databaseRows] = await pool.query(
+      `SELECT id_backup, nombre_archivo, peso, fecha_creacion,
+              contenido IS NOT NULL AS has_content
+       FROM ${quoteIdentifier(BACKUP_TABLE)}
+       ORDER BY id_backup DESC`,
+    );
+    for (const row of databaseRows) {
+      if (!isSafeBackupFilename(row.nombre_archivo) || backupsByName.has(row.nombre_archivo)) continue;
+      const createdAt = new Date(row.fecha_creacion);
+      backupsByName.set(row.nombre_archivo, {
+        id: row.id_backup,
+        filename: row.nombre_archivo,
+        size: Number(row.peso),
+        createdAt: Number.isNaN(createdAt.getTime())
+          ? String(row.fecha_creacion || "")
+          : createdAt.toISOString(),
+        storedLocally: false,
+        storedInDatabase: Boolean(row.has_content),
+      });
+    }
+
     for (const entry of entries) {
       if (!entry.isFile() || !isSafeBackupFilename(entry.name)) continue;
       const filePath = path.join(BACKUP_DIR, entry.name);
       const stats = await fs.stat(filePath);
-      backups.push({
-        filename: entry.name,
-        size: stats.size,
-        createdAt: stats.birthtime.toISOString(),
-      });
+      let backupRecord = backupsByName.get(entry.name);
+      if (!backupRecord || !backupRecord.storedInDatabase) {
+        const content = await fs.readFile(filePath, "utf8");
+        let backupCreatedAt = stats.birthtime.toISOString();
+        let validBackup = false;
+        try {
+          const parsedBackup = JSON.parse(content, deserializeBackupValue);
+          validateBackup(parsedBackup);
+          if (
+            typeof parsedBackup.createdAt === "string" &&
+            !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+          ) {
+            backupCreatedAt = parsedBackup.createdAt;
+          }
+          validBackup = true;
+        } catch (validationError) {
+          if (!(validationError instanceof SyntaxError) && validationError.statusCode !== 400) {
+            throw validationError;
+          }
+          console.warn("No se pudo sincronizar un respaldo local con MySQL:", entry.name, validationError.message);
+        }
+
+        if (validBackup) {
+          const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
+          if (backupRecord) {
+            await pool.query(
+              `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
+               SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
+                   tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
+               WHERE id_backup = ?`,
+              [filePath, stats.size, createdAtSql, content, backupRecord.id],
+            );
+          } else {
+            const [result] = await pool.query(
+              `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+                 (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
+               VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
+              [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
+            );
+            backupRecord = {
+              id: result.insertId,
+              filename: entry.name,
+              size: stats.size,
+              createdAt: backupCreatedAt,
+              storedInDatabase: true,
+            };
+            backupsByName.set(entry.name, backupRecord);
+          }
+        }
+        if (!backupRecord) {
+          backupRecord = {
+            filename: entry.name,
+            size: stats.size,
+            createdAt: backupCreatedAt,
+            storedInDatabase: false,
+          };
+          backupsByName.set(entry.name, backupRecord);
+        }
+        backupRecord.storedInDatabase = validBackup;
+        backupRecord.createdAt = backupCreatedAt;
+      }
+      backupRecord.storedLocally = true;
+      backupRecord.size = stats.size;
     }
+    const backups = Array.from(backupsByName.values()).filter(
+      (backup) => backup.storedInDatabase || backup.storedLocally,
+    );
     backups.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
     return res.json({ ok: true, backups });
   } catch (error) {
@@ -5003,7 +5229,7 @@ app.get("/api/admin/backups", requireAdmin, async (req, res) => {
 
 app.post("/api/admin/backups", requireAdmin, async (req, res) => {
   try {
-    const backup = await createConsistentBackup("backup_wiiu");
+    const backup = await createConsistentBackup("backup_wiiu", req.userId);
     return res.status(201).json({
       ok: true,
       message: "Copia de seguridad creada correctamente.",
@@ -5024,12 +5250,15 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
   if (!isSafeBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
-  const filePath = path.join(BACKUP_DIR, filename);
   try {
-    await fs.access(filePath);
-    return res.download(filePath, filename);
+    const content = await readBackupContent(filename);
+    return res.type("application/json").attachment(filename).send(content);
   } catch (error) {
-    return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+    if (error.code === "ENOENT") {
+      return res.status(404).json({ ok: false, message: "El respaldo no existe." });
+    }
+    console.error("Error descargando respaldo:", error);
+    return res.status(500).json({ ok: false, message: "No se pudo descargar el respaldo." });
   }
 });
 
@@ -5038,16 +5267,14 @@ app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) 
   if (!isSafeBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
-  const filePath = path.join(BACKUP_DIR, filename);
 
   let connection;
   let recoveryBackup;
   try {
-    await fs.access(filePath);
-    const rawBackup = await fs.readFile(filePath, "utf8");
+    const rawBackup = await readBackupContent(filename);
     const backup = JSON.parse(rawBackup, deserializeBackupValue);
     validateBackup(backup);
-    recoveryBackup = await createConsistentBackup("backup_pre_restore");
+    recoveryBackup = await createConsistentBackup("backup_pre_restore", req.userId);
     connection = await pool.getConnection();
     try {
       await applyBackup(connection, backup);
@@ -5060,7 +5287,11 @@ app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) 
         await connection.query("SET FOREIGN_KEY_CHECKS = 0");
         try {
           for (const table of backup.tables) {
-            if (!recoveryTableNames.has(table.name)) {
+            if (
+              table.name !== BACKUP_TABLE &&
+              table.name !== LEGACY_BACKUP_TABLE &&
+              !recoveryTableNames.has(table.name)
+            ) {
               await connection.query(`DROP TABLE IF EXISTS ${quoteIdentifier(table.name)}`);
             }
           }
@@ -5109,22 +5340,6 @@ app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) 
     });
   } finally {
     if (connection) connection.release();
-  }
-});
-
-app.delete("/api/admin/backups/:filename", requireAdmin, async (req, res) => {
-  const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename)) {
-    return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
-  }
-  try {
-    await fs.unlink(path.join(BACKUP_DIR, filename));
-    return res.json({ ok: true, message: "Respaldo eliminado correctamente." });
-  } catch (error) {
-    if (error.code === "ENOENT") {
-      return res.status(404).json({ ok: false, message: "El respaldo no existe." });
-    }
-    return res.status(500).json({ ok: false, message: "No se pudo eliminar el respaldo." });
   }
 });
 
