@@ -29,6 +29,13 @@
     return "../servicios.html";
   }
 
+  function productPage(productId) {
+    const query = `?id=${encodeURIComponent(productId)}`;
+    if (depth === 0) return `Pages/Product.html${query}`;
+    if (depth === 1) return `Product.html${query}`;
+    return `../Product.html${query}`;
+  }
+
   const footerTemplate = `
     <div class="cuadricula-footer">
       <div class="columna-footer">
@@ -67,10 +74,16 @@
       </div>
       <div class="columna-footer">
         <h3>Portátiles</h3>
-        <ul>
-          <li><a href="${catalogPage("?categoria=Portátiles")}">Portátiles para todos los días</a></li>
-          <li><a href="${catalogPage("?categoria=Portátiles")}">Portátiles gaming</a></li>
-        </ul>
+        <div class="grupos-portatiles-footer" id="grupos-portatiles-footer">
+          <section class="grupo-portatil-footer" data-tipo-portatil="diario">
+            <h4>Portátiles para todos los días</h4>
+            <ul aria-live="polite"><li>Cargando portátiles...</li></ul>
+          </section>
+          <section class="grupo-portatil-footer" data-tipo-portatil="gaming">
+            <h4>Portátiles gaming</h4>
+            <ul aria-live="polite"><li>Cargando portátiles...</li></ul>
+          </section>
+        </div>
       </div>
       <div class="columna-footer columna-contacto">
         <h3>Dirección</h3>
@@ -94,6 +107,89 @@
     </div>
   `;
 
+  function normalizarTexto(value) {
+    return String(value ?? "")
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .trim()
+      .toLocaleLowerCase("es");
+  }
+
+  function escaparHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  async function cargarPortatilesFooter() {
+    const contenedor = document.getElementById("grupos-portatiles-footer");
+    if (!contenedor) return;
+
+    try {
+      const response = await fetch("http://localhost:3000/api/productos");
+      if (!response.ok) {
+        throw new Error(`Estado ${response.status}`);
+      }
+
+      const products = await response.json();
+      if (!Array.isArray(products)) {
+        throw new Error("La respuesta del catálogo no tiene un formato válido.");
+      }
+
+      const portatiles = products.filter(
+        (product) => normalizarTexto(product.nombre_cat) === "portatiles",
+      );
+      if (portatiles.length === 0) {
+        contenedor.innerHTML = "<p>No hay portátiles disponibles.</p>";
+        return;
+      }
+
+      const grupos = {
+        diario: [],
+        gaming: [],
+      };
+
+      portatiles.forEach((product) => {
+        const textoProducto = normalizarTexto(
+          `${product.nombre} ${product.descripcion}`,
+        );
+        const tipo = /\b(?:gaming|gamer)\b/.test(textoProducto)
+          ? "gaming"
+          : "diario";
+        grupos[tipo].push(product);
+      });
+
+      Object.entries(grupos).forEach(([tipo, productsInGroup]) => {
+        const grupo = contenedor.querySelector(
+          `[data-tipo-portatil="${tipo}"]`,
+        );
+        if (!grupo) return;
+        if (productsInGroup.length === 0) {
+          grupo.hidden = true;
+          return;
+        }
+
+        const lista = grupo.querySelector("ul");
+        lista.innerHTML = productsInGroup
+          .map(
+            (product) => `
+              <li>
+                <a href="${productPage(product.id_producto)}">${escaparHtml(product.nombre)}</a>
+              </li>
+            `,
+          )
+          .join("");
+      });
+    } catch (error) {
+      console.error("No se pudieron cargar los portátiles del footer:", error);
+      contenedor.innerHTML =
+        "<p>No se pudieron cargar los portátiles del catálogo.</p>";
+    }
+  }
+
   function normalizarFooter() {
     document.querySelectorAll("footer.sitio-footer").forEach((footer) => {
       footer.innerHTML = footerTemplate;
@@ -106,6 +202,7 @@
       document.body.appendChild(footer);
     }
     document.dispatchEvent(new CustomEvent("footer-normalized"));
+    cargarPortatilesFooter();
   }
 
   document.addEventListener("DOMContentLoaded", normalizarFooter);

@@ -325,7 +325,12 @@ function renderizarProductos() {
     const coincidePrecio =
       precio >= filtrosCatalogo.precioMin &&
       precio <= filtrosCatalogo.precioMax;
-    return coincideCategoria && coincideMarca && coincideBusqueda && coincidePrecio;
+    return (
+      coincideCategoria &&
+      coincideMarca &&
+      coincideBusqueda &&
+      coincidePrecio
+    );
   });
 
   const totalPaginas = Math.ceil(productosFiltrados.length / productosPorPagina);
