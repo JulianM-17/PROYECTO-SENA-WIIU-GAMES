@@ -1,9 +1,4 @@
-/**
- * =====================================================
- * REGISTRO DE USUARIO — WiiU Games
- * Lógica Completa, Validaciones en Tiempo Real y Dinamismo
- * =====================================================
- */
+// Registro de usuario
 
 document.addEventListener('DOMContentLoaded', () => {
   // Elementos DOM del Formulario
@@ -35,9 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return localDigits ? `${prefijo} ${localDigits}` : '';
   }
 
-  // -----------------------------------------------------
-  // 1. DICCIONARIO DE DEPARTAMENTOS Y MUNICIPIOS DE COLOMBIA
-  // -----------------------------------------------------
+  // Departamentos y municipios disponibles
   const departamentosColombia = {
     "Boyacá": [
       "Sogamoso", "Tunja", "Duitama", "Paipa", "Chiquinquirá", "Villa de Leyva",
@@ -169,9 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ].join('-');
   }
 
-  // -----------------------------------------------------
-  // 3. FUNCIONALIDAD DEL OJITO (MOSTRAR / OCULTAR TEXTO)
-  // -----------------------------------------------------
+  // Alternar la visibilidad de las contraseñas
   document.querySelectorAll('.btn-toggle-pass').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetId = btn.getAttribute('data-target');
@@ -194,9 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // -----------------------------------------------------
-  // 4. INDICADOR DE ÍNDICE DE SEGURIDAD DE CONTRASEÑA
-  // -----------------------------------------------------
+  // Indicador de seguridad de la contraseña
   if (inputContrasena && barraSeguridad && textoSeguridad) {
     inputContrasena.addEventListener('input', () => {
       const val = inputContrasena.value;
@@ -242,9 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
     mostrarToast('Has aceptado los términos y condiciones de WiiU-Games.', 'exito');
   });
 
-  // -----------------------------------------------------
-  // 6. TOAST NOTIFICACIONES
-  // -----------------------------------------------------
+  // Notificaciones flotantes
   function mostrarToast(mensaje, tipo = 'exito') {
     let contenedor = document.getElementById('contenedor-toast');
     if (!contenedor) {
@@ -268,9 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 3500);
   }
 
-  // -----------------------------------------------------
-  // 7. SISTEMA DE VALIDACIONES EN TIEMPO REAL
-  // -----------------------------------------------------
+  // Validaciones en tiempo real
   function mostrarError(input, idSpan, mensaje) {
     if (input) {
       input.classList.add('input-error');
@@ -551,9 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkTerminos.addEventListener('change', validarTerminos);
   }
 
-  // -----------------------------------------------------
-  // 8. ENVÍO Y VALIDACIÓN GENERAL DEL FORMULARIO
-  // -----------------------------------------------------
+  // Envío y validación del formulario
   if (formRegistro) {
     formRegistro.addEventListener('submit', async (e) => {
       e.preventDefault();

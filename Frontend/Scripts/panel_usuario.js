@@ -1,12 +1,7 @@
-// =====================================================
-//   PANEL DE USUARIO — LÓGICA COMPLETA E INTERACTIVIDAD
-//   WiiU-Games
-// =====================================================
+// Panel de usuario
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // ===================================================
-  // 1. ESTADO DE LA APLICACIÓN Y LOCALSTORAGE
-  // ===================================================
+  // Estado de la aplicación y almacenamiento local
   const STORAGE_KEY = "wiiu_user_panel_data";
   let sessionUser;
   try {
@@ -319,9 +314,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }));
   }
 
-  // ===================================================
-  // 2. SISTEMA DE TOASTS Y MODALES
-  // ===================================================
+  // Notificaciones y modales
   const toastContainer = document.getElementById("contenedor-notificacion");
 
   function showToast(mensaje, tipo = "success") {
@@ -531,9 +524,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // ===================================================
-  // 3. NAVEGACIÓN SPA & BREADCRUMBS
-  // ===================================================
+  // Navegación entre vistas
   const navItems = document.querySelectorAll(".elemento-nav[data-vista]");
   const vistas = document.querySelectorAll(".vista-panel");
   const migaActiva = document.getElementById("miga-activa");
@@ -588,9 +579,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // ===================================================
-  // 4. ACTUALIZACIÓN GLOBAL DE INTERFAZ (RERENDER)
-  // ===================================================
+  // Actualización de la interfaz
   function updateUI() {
     // 4.1 Carrito en Header
     const burbujaCarrito = document.querySelector(".burbuja-carrito");
@@ -681,9 +670,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderAppointments();
   }
 
-  // ===================================================
-  // 5. PERFIL — GUARDAR DATOS & CAMBIAR CONTRASEÑA
-  // ===================================================
+  // Edición del perfil y cambio de contraseña
   const formPerfilDatos = document.getElementById("form-perfil-datos");
   const btnEditarPerfil = document.getElementById("btn-editar-perfil");
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
@@ -1052,9 +1039,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 6. DIRECCIONES — AGREGAR / EDITAR / ELIMINAR
-  // ===================================================
+  // Administración de direcciones
   const gridDirecciones = document.querySelector(".grid-direcciones");
   const btnAgregarDir = document.querySelector(
     "#vista-direcciones .btn-agregar",
@@ -1254,9 +1239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 7. MÉTODOS DE PAGO — TARJETAS Y PAYPAL
-  // ===================================================
+  // Administración de métodos de pago
   const gridTarjetas = document.querySelector(".grid-tarjetas-pago");
   const btnAgregarTarjeta = document.querySelector("#vista-pagos .btn-agregar");
   const formCard = document.getElementById("form-modal-tarjeta");
@@ -1457,9 +1440,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 8. FAVORITOS — AGREGAR AL CARRITO / QUITAR
-  // ===================================================
+  // Productos favoritos
   const gridFavoritos = document.querySelector(".grid-favoritos");
 
   function renderFavorites() {
@@ -1606,9 +1587,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // ===================================================
-  // 9. MIS PEDIDOS & FILTROS DE ESTADO
-  // ===================================================
+  // Historial de pedidos y filtros
   const listaPedidos = document.getElementById("lista-pedidos");
   let filtroPedidoActual = "todos";
   const formatCOP = (amount) =>
@@ -2198,9 +2177,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 10. SIGUE TU PEDIDO (SEGUIMIENTO)
-  // ===================================================
+  // Seguimiento de pedidos
   const btnRastrearBuscar = document.querySelector(".btn-rastrear-buscar");
   const inputSeguimiento = document.querySelector(".seguimiento-input");
 
@@ -2290,9 +2267,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 11. FACTURA — DESCARGAS PDF Y LOTES
-  // ===================================================
+  // Descarga de facturas
   const listaFacturas = document.getElementById("lista-facturas");
   const btnDescargarTodas = document.querySelector(".btn-descargar-todas");
 
@@ -2356,9 +2331,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ===================================================
-  // 12. CERRAR SESIÓN
-  // ===================================================
+  // Cierre de sesión
   const btnLogout = document.querySelector(".elemento-nav.logout");
   if (btnLogout) {
     btnLogout.addEventListener("click", async (e) => {
