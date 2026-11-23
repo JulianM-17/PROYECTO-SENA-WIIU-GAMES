@@ -12,6 +12,9 @@
   ];
   let preferences = loadPreferences();
   let isMenuOpen = false;
+  const largeTextElements = new Map();
+  let largeTextObserver = null;
+  const LARGE_TEXT_SCALE = 1.15;
 
   window.confirmarCierreSesion = function () {
     return new Promise((resolve) => {
@@ -89,6 +92,7 @@
       root.classList.toggle(className, preferences[mode]);
       body.classList.toggle(className, preferences[mode]);
     });
+    applyLargeText(preferences["large-text"]);
 
     const hasActivePreference = MODES.some((mode) => preferences[mode]);
     document
@@ -104,6 +108,113 @@
         String(preferences[item.dataset.mode] === true),
       );
     });
+  }
+
+  function hasDirectText(element) {
+    return Array.from(element.childNodes).some(
+      (node) =>
+        node.nodeType === Node.TEXT_NODE && node.textContent.trim().length > 0,
+    );
+  }
+
+  function scaleTextIn(root) {
+    const elements = [
+      ...(root instanceof HTMLElement ? [root] : []),
+      ...root.querySelectorAll("*"),
+    ].filter(
+      (element) =>
+        element instanceof HTMLElement &&
+        !element.closest("#a11y-menu, #a11y-trigger-btn") &&
+        !element.matches("script, style, noscript, template") &&
+        hasDirectText(element) &&
+        !largeTextElements.has(element),
+    );
+    const snapshots = elements.map((element) => ({
+      element,
+      fontSize: Number.parseFloat(window.getComputedStyle(element).fontSize),
+      inlineFontSize: element.style.getPropertyValue("font-size"),
+      inlinePriority: element.style.getPropertyPriority("font-size"),
+    }));
+
+    snapshots.forEach(
+      ({ element, fontSize, inlineFontSize, inlinePriority }) => {
+        if (!Number.isFinite(fontSize)) return;
+        largeTextElements.set(element, { inlineFontSize, inlinePriority });
+        element.style.setProperty(
+          "font-size",
+          `${fontSize * LARGE_TEXT_SCALE}px`,
+          "important",
+        );
+      },
+    );
+  }
+
+  function restoreTextIn(root) {
+    largeTextElements.forEach(({ inlineFontSize, inlinePriority }, element) => {
+      if (element !== root && !root.contains(element)) return;
+      if (inlineFontSize) {
+        element.style.setProperty(
+          "font-size",
+          inlineFontSize,
+          inlinePriority,
+        );
+      } else {
+        element.style.removeProperty("font-size");
+      }
+      largeTextElements.delete(element);
+    });
+  }
+
+  function hasScaledTextAncestor(element) {
+    let ancestor = element.parentElement;
+    while (ancestor) {
+      if (largeTextElements.has(ancestor)) return true;
+      ancestor = ancestor.parentElement;
+    }
+    return false;
+  }
+
+  function applyLargeText(enabled) {
+    if (enabled) {
+      scaleTextIn(document.body);
+      if (!largeTextObserver) {
+        largeTextObserver = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.removedNodes.forEach((node) => {
+              if (
+                node instanceof HTMLElement &&
+                !document.body.contains(node)
+              ) {
+                restoreTextIn(node);
+              }
+            });
+            mutation.addedNodes.forEach((node) => {
+              const root =
+                node instanceof HTMLElement ? node : mutation.target;
+              if (
+                root instanceof HTMLElement &&
+                !root.closest("#a11y-menu, #a11y-trigger-btn") &&
+                !root.parentElement?.closest(
+                  "#a11y-menu, #a11y-trigger-btn",
+                ) &&
+                !hasScaledTextAncestor(root)
+              ) {
+                scaleTextIn(root);
+              }
+            });
+          });
+        });
+        largeTextObserver.observe(document.body, {
+          childList: true,
+          subtree: true,
+        });
+      }
+      return;
+    }
+
+    largeTextObserver?.disconnect();
+    largeTextObserver = null;
+    restoreTextIn(document.body);
   }
 
   function resetPreferences() {

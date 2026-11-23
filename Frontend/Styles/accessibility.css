@@ -312,21 +312,6 @@ body.a11y-mode-grayscale > * {
 }
 
 /* =====================================================
-   2. TEXTO GRANDE (FUNCIONAMIENTO REAL CON ZOOM Y FUENTES)
-   ===================================================== */
-body.a11y-mode-large-text > *:not(#a11y-trigger-btn):not(#a11y-menu) {
-  zoom: 1.15;
-}
-
-/* Respaldo para navegadores o elementos con fuentes específicas */
-body.a11y-mode-large-text p,
-body.a11y-mode-large-text a:not(.a11y-menu *),
-body.a11y-mode-large-text li,
-body.a11y-mode-large-text span:not(.a11y-menu *):not(#a11y-trigger-btn *) {
-  letter-spacing: 0.02em;
-}
-
-/* =====================================================
    3. ALTO CONTRASTE (FONDO NEGRO PURO Y TEXTO DORADO/BLANCO)
    ===================================================== */
 body.a11y-mode-high-contrast {
