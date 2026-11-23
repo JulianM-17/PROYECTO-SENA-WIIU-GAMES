@@ -1228,6 +1228,68 @@ body {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
+.caja-modal.modal-inventario {
+  width: min(760px, 92vw);
+  max-width: 760px;
+}
+
+.caja-modal.modal-dos-columnas {
+  width: min(760px, 92vw);
+  max-width: 760px;
+}
+
+.caja-modal.modal-dos-columnas .cuerpo-modal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 18px;
+  align-items: start;
+}
+
+.caja-modal.modal-dos-columnas .cuerpo-modal > .campo-grupo {
+  min-width: 0;
+}
+
+.caja-modal.modal-dos-columnas .campo-grupo input,
+.caja-modal.modal-dos-columnas .campo-grupo select,
+.caja-modal.modal-dos-columnas .campo-grupo textarea {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+}
+
+.caja-modal.modal-dos-columnas .campo-grupo textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.caja-modal.modal-dos-columnas .campo-grupo:has(textarea) {
+  grid-column: 1 / -1;
+}
+
+.caja-modal.modal-inventario .cuerpo-modal {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.caja-modal.modal-inventario .cuerpo-modal > .campo-grupo:first-child,
+.caja-modal.modal-inventario .cuerpo-modal > .campo-grupo:nth-child(6) {
+  grid-column: 1 / -1;
+}
+
+.caja-modal.modal-inventario .campo-grupo input,
+.caja-modal.modal-inventario .campo-grupo select,
+.caja-modal.modal-inventario .campo-grupo textarea {
+  min-height: 42px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.caja-modal.modal-inventario .campo-grupo textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
 .cabecera-modal {
   display: flex;
   justify-content: space-between;
@@ -1602,6 +1664,20 @@ body {
 }
 
 @media (max-width: 768px) {
+  .caja-modal.modal-dos-columnas,
+  .caja-modal.modal-inventario {
+    width: calc(100vw - 24px);
+    max-height: calc(100vh - 24px);
+  }
+  .caja-modal.modal-dos-columnas .cuerpo-modal,
+  .caja-modal.modal-inventario .cuerpo-modal {
+    grid-template-columns: 1fr;
+  }
+  .caja-modal.modal-dos-columnas .cuerpo-modal > .campo-grupo,
+  .caja-modal.modal-inventario .cuerpo-modal > .campo-grupo {
+    grid-column: 1;
+  }
+
   .panel-contenedor {
     flex-direction: column;
   }

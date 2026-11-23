@@ -641,6 +641,9 @@ function abrirModal(tipo, productoId) {
   var modal = document.getElementById('modalFormulario');
   var titulo = document.getElementById('modalTitulo');
   var campos = document.getElementById('modalCampos');
+  var cajaModal = modal.querySelector('.caja-modal');
+  cajaModal.classList.toggle('modal-inventario', tipo === 'inventario');
+  cajaModal.classList.toggle('modal-dos-columnas', tipo !== 'inventario');
 
   limpiarErroresModal();
   modal.classList.add('activo');
