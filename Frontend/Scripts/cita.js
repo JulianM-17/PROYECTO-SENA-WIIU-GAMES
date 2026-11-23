@@ -133,9 +133,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     mensajeCita.setAttribute("role", tipo === "error" ? "alert" : "status");
   }
 
-  // ============================================================
-  // 1. CAMPO NOMBRE: NO PERMITIR NÚMEROS NI SÍMBOLOS
-  // ============================================================
+  // Validación del nombre
   if (nombreInput) {
     // Bloqueo directo en keypress para teclas numéricas
     nombreInput.addEventListener("keypress", (e) => {
@@ -191,9 +189,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ============================================================
-  // 2. CAMPO EQUIPO / DISPOSITIVO: NO CARACTERES DAÑINOS
-  // ============================================================
+  // Validación del equipo
   if (equipoInput) {
     equipoInput.addEventListener("input", () => {
       const valorLimpio = equipoInput.value.replace(/[<>{}%$~|\\]/g, "");
@@ -219,9 +215,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ============================================================
-  // 3. CAMPO TELÉFONO: SOLO NÚMEROS (10 DÍGITOS)
-  // ============================================================
+  // Validación del teléfono
   if (telefonoInput) {
     // Bloqueo directo de cualquier tecla no numérica
     telefonoInput.addEventListener("keypress", (e) => {
@@ -269,9 +263,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ============================================================
-  // 4. CAMPO FECHA: NO PERMITIR FECHAS PASADAS
-  // ============================================================
+  // Validación de la fecha
   if (fechaInput) {
     fechaInput.addEventListener("change", () => {
       if (!fechaInput.value) {
@@ -297,9 +289,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ============================================================
-  // 5. CAMPO SERVICIO: DEBE SELECCIONAR UNA OPCIÓN VÁLIDA
-  // ============================================================
+  // Validación del tipo de servicio
   if (servicioInput) {
     servicioInput.addEventListener("change", () => {
       if (!servicioInput.value || servicioInput.value === "") {
@@ -353,9 +343,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // ============================================================
-  // ENVÍO DEL FORMULARIO
-  // ============================================================
+  // Envío del formulario
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let esValido = true;

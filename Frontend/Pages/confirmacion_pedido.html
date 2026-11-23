@@ -20,6 +20,7 @@
     />
   </head>
   <body>
+    <!-- Navegación principal -->
     <header>
       <div class="menu-principal">
         <div class="seccion-logo">
@@ -48,6 +49,7 @@
       </div>
     </header>
 
+    <!-- Resumen de compra y resultado del pago -->
     <main class="pagina-confirmacion">
       <section class="encabezado-confirmacion">
         <span class="icono-confirmacion" aria-hidden="true">
@@ -65,6 +67,7 @@
       </section>
 
       <div class="contenido-confirmacion">
+        <!-- Productos y totales del pedido -->
         <section class="panel-confirmacion" aria-labelledby="titulo-productos">
           <h2 id="titulo-productos">Productos</h2>
           <div id="lista-productos-confirmacion" class="lista-confirmacion"></div>
@@ -76,6 +79,7 @@
           </dl>
         </section>
 
+        <!-- El pago es de demostración y no implica un cobro real -->
         <section class="panel-confirmacion panel-pago" aria-labelledby="titulo-pago">
           <h2 id="titulo-pago">Datos del método de pago</h2>
           <p class="estado-pendiente">
@@ -89,18 +93,21 @@
           </p>
         </section>
 
+        <!-- Dirección de envío -->
         <section class="panel-confirmacion" aria-labelledby="titulo-envio">
           <h2 id="titulo-envio">Dirección de envío</h2>
           <dl id="detalle-envio" class="detalle-pago"></dl>
         </section>
       </div>
 
+      <!-- Acciones posteriores a la compra -->
       <div class="acciones-confirmacion">
         <a href="Catalog.html" class="btn-volver-catalogo">Volver al catálogo</a>
         <a href="carrito.html" class="enlace-carrito">Regresar al carrito</a>
       </div>
     </main>
 
+    <!-- Scripts de confirmación y elementos compartidos -->
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/confirmacion_pedido.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>

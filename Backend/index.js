@@ -2718,36 +2718,97 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
 });
 
 app.post("/api/employee/clients", requireEmployee, async (req, res) => {
-  const fullName = String(req.body?.name || "").trim();
+  const legacyName = String(req.body?.name || "").normalize("NFC").trim().replace(/\s+/g, " ");
+  const legacyNameParts = legacyName.split(/\s+/);
+  const firstName =
+    String(req.body?.firstName || legacyNameParts.shift() || "")
+      .normalize("NFC")
+      .trim()
+      .replace(/\s+/g, " ");
+  const lastName =
+    String(req.body?.lastName || legacyNameParts.join(" ") || "")
+      .normalize("NFC")
+      .trim()
+      .replace(/\s+/g, " ");
+  const birthDate = String(req.body?.birthDate || "").trim();
+  const documentType = String(req.body?.documentType || "CC").trim().toUpperCase();
+  const documentNumber = String(req.body?.documentNumber || "").trim();
   const phone = String(req.body?.phone || "").trim();
+  const secondaryPhone = String(req.body?.secondaryPhone || "").trim();
   const email = String(req.body?.email || "").trim().toLowerCase();
+  const confirmEmail = String(req.body?.confirmEmail || "").trim().toLowerCase();
+  const password = String(req.body?.password || "");
+  const confirmPassword = String(req.body?.confirmPassword || "");
+  const department = String(req.body?.department || "").trim();
+  const city = String(req.body?.city || "").trim();
+  const address = String(req.body?.address || "").trim();
   const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
-  const nameParts = fullName.split(/\s+/);
+  const validDocumentTypes = ["CC", "TI", "PAS", "NIT", "CE"];
+  const birth = new Date(`${birthDate}T00:00:00Z`);
+  const birthValid =
+    /^\d{4}-\d{2}-\d{2}$/.test(birthDate) &&
+    !Number.isNaN(birth.getTime()) &&
+    birth.toISOString().slice(0, 10) === birthDate &&
+    birthDate >= "1940-01-01" &&
+    birthDate <= new Date(new Date().setFullYear(new Date().getFullYear() - 10)).toISOString().slice(0, 10);
 
   if (
-    fullName.length < 3 ||
-    fullName.length > 61 ||
-    !namePattern.test(fullName) ||
-    nameParts.some((part) => part.length > 30)
+    firstName.length < 2 ||
+    firstName.length > 30 ||
+    lastName.length < 2 ||
+    lastName.length > 30 ||
+    !namePattern.test(firstName) ||
+    !namePattern.test(lastName)
   ) {
-    return res.status(400).json({ ok: false, message: "Ingresa un nombre válido." });
+    return res.status(400).json({ ok: false, message: "Ingresa un nombre y apellido válidos." });
   }
-  if (!/^[+\d()\s-]{7,20}$/.test(phone) || !/\d{7,}/.test(phone.replace(/\D/g, ""))) {
-    return res.status(400).json({ ok: false, message: "Ingresa un teléfono válido." });
+  if (!birthValid) {
+    return res.status(400).json({ ok: false, message: "Selecciona una fecha de nacimiento válida." });
+  }
+  if (!validDocumentTypes.includes(documentType)) {
+    return res.status(400).json({ ok: false, message: "Selecciona un tipo de documento válido." });
+  }
+  const validDocumentNumber =
+    documentType === "PAS"
+      ? /^[A-Za-z0-9-]{5,20}$/.test(documentNumber)
+      : /^[0-9]{6,20}$/.test(documentNumber);
+  if (!validDocumentNumber) {
+    return res.status(400).json({
+      ok: false,
+      message: documentType === "PAS"
+        ? "El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos."
+        : "El documento seleccionado debe contener solo números.",
+    });
+  }
+  const phoneDigits = phone.replace(/\D/g, "");
+  const secondaryPhoneDigits = secondaryPhone.replace(/\D/g, "");
+  if (!/^[+\d()\s-]{7,20}$/.test(phone) || phoneDigits.length < 7 || phoneDigits.length > 15) {
+    return res.status(400).json({ ok: false, message: "Ingresa un teléfono válido de 7 a 15 dígitos." });
+  }
+  if (secondaryPhone && (!/^[+\d()\s-]{7,20}$/.test(secondaryPhone) || secondaryPhoneDigits.length < 7 || secondaryPhoneDigits.length > 15)) {
+    return res.status(400).json({ ok: false, message: "Ingresa un teléfono secundario válido." });
   }
   if (
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
-    email.length > 120
+    email.length > 120 ||
+    email !== confirmEmail
   ) {
-    return res.status(400).json({ ok: false, message: "Ingresa un correo válido." });
+    return res.status(400).json({ ok: false, message: "Ingresa correos electrónicos válidos y coincidentes." });
+  }
+  if (password.length < 8 || password.length > 128 || password !== confirmPassword) {
+    return res.status(400).json({ ok: false, message: "La contraseña debe tener entre 8 y 128 caracteres y coincidir." });
+  }
+  if (!department || !city || department.length > 30 || city.length > 30) {
+    return res.status(400).json({ ok: false, message: "Selecciona departamento y municipio." });
+  }
+  if (address.length < 5 || address.length > 40) {
+    return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
   }
 
-  const firstName = nameParts.shift();
-  const lastName = nameParts.join(" ") || "Sin apellido";
-  const temporaryPassword = crypto.randomBytes(9).toString("base64url");
-  const documentNumber = `CLI${Date.now()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+  const fullName = `${firstName} ${lastName}`.trim();
 
   try {
+    const passwordHash = await bcrypt.hash(password, 12);
     const branch = await obtenerSucursalEmpleado(req.userId);
     if (!branch) {
       return res.status(409).json({
@@ -2755,8 +2816,6 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
         message: "No hay una sucursal activa asignada a este empleado.",
       });
     }
-    const passwordHash = await bcrypt.hash(temporaryPassword, 12);
-
     const [roleRows] = await pool.query(
       "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
     );
@@ -2770,21 +2829,32 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
     if (emailRows.length) {
       return res.status(409).json({ ok: false, message: "El correo ya está registrado." });
     }
+    const [documentRows] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE num_doc = ? LIMIT 1",
+      [documentNumber],
+    );
+    if (documentRows.length) {
+      return res.status(409).json({ ok: false, message: "El número de documento ya está registrado." });
+    }
 
     const [result] = await pool.query(
       `INSERT INTO usuario
-         (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento,
-          ciudad, direccion, correo, contrasena_hash, estado)
-       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+         (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
+          telefono, telefono_secundario, departamento, ciudad, direccion,
+          correo, contrasena_hash, estado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         roleRows[0].id_rol,
         firstName,
         lastName,
+        documentType,
         documentNumber,
+        birthDate,
         phone,
-        branch.departamento,
-        branch.ciudad,
-        branch.nombre_suc,
+        secondaryPhone || null,
+        department,
+        city,
+        address,
         email,
         passwordHash,
       ],
@@ -2801,7 +2871,6 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
         totalSpent: 0,
         level: "Nuevo",
       },
-      temporaryPassword,
     });
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {

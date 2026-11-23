@@ -1,7 +1,4 @@
-/* ==========================================================================
-   LÓGICA JAVASCRIPT DEL PANEL DE ADMINISTRADOR - WIIU-GAMES
-   Conectado con la API del backend para persistir datos en MySQL
-   ========================================================================== */
+// Lógica del panel de administración
 
 // URL base del backend
 var API_BASE = 'http://localhost:3000';
@@ -15,9 +12,7 @@ var sessionToken =
   sessionStorage.getItem('sessionToken') ||
   '';
 
-// ==========================================================================
-// 0. SISTEMA DE NOTIFICACIONES TOAST
-// ==========================================================================
+// Notificaciones
 function mostrarToast(tipo, mensaje) {
   var contenedor = document.getElementById('contenedor-toast');
   if (!contenedor) {
@@ -41,9 +36,7 @@ function mostrarToast(tipo, mensaje) {
   }, 3500);
 }
 
-// ==========================================================================
-// 1. CAMBIAR ENTRE PESTAÑAS DEL MENÚ LATERAL
-// ==========================================================================
+// Navegación entre secciones
 function cambiarPestana(idSeccion, botonClickeado) {
   // 1. Ocultar todas las secciones
   var secciones = document.querySelectorAll('.seccion');
@@ -145,9 +138,7 @@ function configurarMenuLateral() {
   });
 }
 
-// ==========================================================================
-// 2. BUSCADOR GLOBAL Y FILTROS EN TIEMPO REAL
-// ==========================================================================
+// Búsqueda y filtros
 function filtrarGlobal(texto) {
   var filtro = texto.toLowerCase();
   var filas = document.querySelectorAll('.seccion.visible tbody tr');
@@ -203,9 +194,7 @@ function filtrarEstadoTabla(idTbody, valor, indiceColumna) {
   }
 }
 
-// ==========================================================================
-// 3. MENÚ DE PERFIL, CERRAR SESIÓN Y NOTIFICACIONES
-// ==========================================================================
+// Perfil, cierre de sesión y notificaciones
 function toggleMenuPerfil() {
   var menu = document.getElementById('menuPerfil');
   if (menu) {
@@ -597,7 +586,7 @@ function cargarNotificacionesAdmin() {
   });
 }
 
-// Variables globales de datos auxiliares para los modales
+// Formularios modales de registro y edición
 var categoriasDisponibles = [];
 var marcasDisponibles = [];
 var clientesDisponibles = [];
@@ -610,9 +599,6 @@ var productoInventarioEdicion = null;
 var detallesOrdenServicio = new Map();
 var detalleOrdenAbiertaAdmin = null;
 
-// ==========================================================================
-// 4. VENTANAS MODALES PARA REGISTRAR DATOS
-// ==========================================================================
 function abrirModal(tipo, productoId) {
   tipoModalActual = tipo;
   productoInventarioEdicion = null;
@@ -1883,9 +1869,7 @@ function renderizarGraficoVentas(tendencia) {
   contenedor.appendChild(svg);
 }
 
-// ==========================================================================
-// 5. CARGAR DATOS DESDE EL DASHBOARD DEL BACKEND
-// ==========================================================================
+// Cargar datos del panel desde el backend
 var detalleVentaRequestId = 0;
 
 function mostrarDetalleVenta(id) {
@@ -2097,7 +2081,7 @@ function cargarDashboard() {
       inventoryBranchSelect.value = selectedBranchId;
     }
 
-    // ---------- HOME: Tarjetas de resumen ----------
+    // Resumen de ventas y pedidos
     var el;
     el = document.getElementById('homeVentasTotales');
     if (el) el.textContent = '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
@@ -2110,7 +2094,7 @@ function cargarDashboard() {
 
     renderizarGraficoVentas(data.salesTrend);
 
-    // ---------- HOME: Productos más vendidos ----------
+    // Productos más vendidos
     if (data.topProducts && data.topProducts.length > 0) {
       var contenedorTop = document.getElementById('contenedorTopProductos');
       if (contenedorTop) {
@@ -2122,7 +2106,7 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- HOME: Pedidos registrados ----------
+    // Pedidos registrados
     if (data.orders) {
       if (data.orders.length) {
         poblarTabla('tablaPedidosBody', data.orders, function(row) {
@@ -2183,7 +2167,7 @@ function cargarDashboard() {
       );
     }
 
-    // ---------- INVENTARIO ----------
+    // Inventario
     if (data.inventory) {
       poblarTabla('tablaInventarioBody', data.inventory, function(row) {
         var stockTexto = row.stock + ' uds';
@@ -2236,7 +2220,7 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- GARANTÍAS ----------
+    // Garantías
     if (data.warranties) {
       poblarTabla('tablaGarantiasBody', data.warranties, function(row) {
         var estadoClase = row.status === 'Activa'
@@ -2288,7 +2272,7 @@ function cargarDashboard() {
       }
     }
 
-    // ---------- MANTENIMIENTOS ----------
+    // Mantenimientos
     var maintenanceRows = (data.maintenance || []).slice();
     (data.appointments || []).filter(function(appointment) {
       return appointment.serviceType === 'MANTENIMIENTO';
@@ -2310,7 +2294,7 @@ function cargarDashboard() {
       });
     }
 
-    // ---------- REPARACIONES ----------
+    // Reparaciones
     var repairRows = (data.repairs || []).slice();
     (data.appointments || []).filter(function(appointment) {
       return appointment.serviceType === 'REPARACION';
@@ -2333,7 +2317,7 @@ function cargarDashboard() {
       });
     }
 
-    // ---------- DESCUENTOS ----------
+    // Descuentos
     if (data.discounts) {
       poblarTabla('tablaDescuentosBody', data.discounts, function(row) {
         var estadoClase = row.status === 'Activo' ? 'etiqueta-verde' : 'etiqueta-rojo';
@@ -2344,7 +2328,7 @@ function cargarDashboard() {
       if (el) el.textContent = data.discounts.length;
     }
 
-    // ---------- USUARIOS ----------
+    // Usuarios
     if (data.users) {
       poblarTabla('tablaClientesBody', data.users, function(row) {
         var id = Number(row.id);
@@ -2388,7 +2372,7 @@ function cargarDashboard() {
       if (el) el.textContent = usuariosNuevos;
     }
 
-    // ---------- RESEÑAS ----------
+    // Reseñas
     if (data.reviews && data.reviews.length > 0) {
       poblarTabla('tablaResenasBody', data.reviews, function(row) {
         return '<td><strong>RES-' + row.id + '</strong></td><td>' + row.client + '</td><td>' + row.product + '</td><td>' + row.rating + '</td><td>' + row.comment + '</td><td>' + row.date + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'resenas\', ' + row.id + ')"><i class="fi fi-rr-trash"></i></button></td>';
@@ -2397,7 +2381,7 @@ function cargarDashboard() {
       if (el) el.textContent = data.reviews.length;
     }
 
-    // ---------- RESUMEN FINANCIERO ----------
+    // Resumen financiero
     el = document.getElementById('finIngresos');
     if (el) el.textContent = '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
 
@@ -2409,9 +2393,7 @@ function cargarDashboard() {
   });
 }
 
-// ==========================================================================
-// 6. FUNCIÓN AUXILIAR: POBLAR TABLA CON DATOS
-// ==========================================================================
+// Renderizar filas de las tablas
 function poblarTabla(idTbody, datos, generarFila) {
   var tbody = document.getElementById(idTbody);
   if (!tbody) return;
@@ -2428,9 +2410,7 @@ function poblarTabla(idTbody, datos, generarFila) {
   }
 }
 
-// ==========================================================================
-// 7. GUARDAR DATOS DESDE LOS FORMULARIOS MODALES (CON VALIDACIÓN COMPLETA)
-// ==========================================================================
+// Guardar datos de los formularios
 async function subirImagenProducto(file) {
   var response = await fetch(API_BASE + '/api/admin/product-images', {
     method: 'POST',
@@ -2477,9 +2457,7 @@ async function guardarDatos(evento) {
   var metodo = 'POST';
   var payload = {};
 
-  // -------------------------------------------------------------
-  // VALIDACIONES ESPECÍFICAS SEGÚN EL MÓDULO ACTUAL
-  // -------------------------------------------------------------
+  // Validaciones específicas del módulo actual
   if (tipoModalActual === 'inventario') {
     var imagenPrincipal = document.getElementById('campo_imagen_principal');
     var imagen2 = document.getElementById('campo_imagen_2');
@@ -2917,9 +2895,7 @@ async function guardarDatos(evento) {
   });
 }
 
-// ==========================================================================
-// 8. FUNCIONES AUXILIARES PARA MANIPULAR FILAS
-// ==========================================================================
+// Acciones de las tablas
 function cambiarEstadoUsuarioAdmin(id, status) {
   var suspension = status === 'INACTIVO';
   var pregunta = suspension
@@ -3105,9 +3081,7 @@ function configurarOrdenamientoUsuarios() {
   });
 }
 
-// ==========================================================================
-// 9. COPIAS DE SEGURIDAD
-// ==========================================================================
+// Copias de seguridad
 function formatearTamanoBackup(bytes) {
   var valor = Number(bytes) || 0;
   if (valor < 1024) return valor + ' B';
@@ -3335,9 +3309,7 @@ function eliminarBackup(filename) {
     });
 }
 
-// ==========================================================================
-// 10. CARGAR DATOS AL INICIAR LA PÁGINA
-// ==========================================================================
+// Inicializar el panel
 document.addEventListener('DOMContentLoaded', function() {
   configurarMenuLateral();
   window.matchMedia('(max-width: 768px)').addEventListener('change', configurarMenuLateral);
