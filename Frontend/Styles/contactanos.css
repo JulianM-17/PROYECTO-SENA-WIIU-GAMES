@@ -290,6 +290,93 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #terminos-panel .termino-i
   text-decoration: underline;
 }
 
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel,
+body.a11y-mode-dark-mode #contacto-panel {
+  background-color: #0e1834;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .panel-header,
+body.a11y-mode-dark-mode #contacto-panel .panel-header {
+  background-color: #0a1329;
+  color: #f8fafc;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .panel-header h2,
+body.a11y-mode-dark-mode #contacto-panel .panel-header h2 {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .panel-header p,
+body.a11y-mode-dark-mode #contacto-panel .panel-header p {
+  color: #94a3b8;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .formulario-contacto,
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .info-card,
+body.a11y-mode-dark-mode #contacto-panel .formulario-contacto,
+body.a11y-mode-dark-mode #contacto-panel .info-card {
+  background-color: #132247;
+  color: #f8fafc;
+  border: 1px solid #263b68;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group label,
+body.a11y-mode-dark-mode #contacto-panel .input-group label {
+  color: #f8fafc;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group input,
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group textarea,
+body.a11y-mode-dark-mode #contacto-panel .input-group input,
+body.a11y-mode-dark-mode #contacto-panel .input-group textarea {
+  background-color: #0e1834;
+  color: #f8fafc;
+  border-color: #263b68;
+  caret-color: #f5c842;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group input::placeholder,
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group textarea::placeholder,
+body.a11y-mode-dark-mode #contacto-panel .input-group input::placeholder,
+body.a11y-mode-dark-mode #contacto-panel .input-group textarea::placeholder {
+  color: #94a3b8;
+  opacity: 1;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group input:focus,
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .input-group textarea:focus,
+body.a11y-mode-dark-mode #contacto-panel .input-group input:focus,
+body.a11y-mode-dark-mode #contacto-panel .input-group textarea:focus {
+  outline: none;
+  border-color: #f5c842;
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.16);
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .info-card p,
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .correo-contactanos,
+body.a11y-mode-dark-mode #contacto-panel .info-card p,
+body.a11y-mode-dark-mode #contacto-panel .correo-contactanos {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .info-card h4,
+body.a11y-mode-dark-mode #contacto-panel .info-card h4 {
+  color: #f5c842;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .correo-contactanos:hover,
+body.a11y-mode-dark-mode #contacto-panel .correo-contactanos:hover {
+  color: #f5c842;
+}
+
+html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .btn-enviar,
+body.a11y-mode-dark-mode #contacto-panel .btn-enviar {
+  background-color: #f5c842;
+  color: #080f20;
+}
+
 @media (max-width: 700px) {
   #contacto-panel .panel-body { flex-direction: column; padding: 20px; }
   #contacto-panel { width: 100%; }
