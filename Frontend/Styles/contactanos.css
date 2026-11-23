@@ -23,7 +23,7 @@
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease;
-  z-index: 999;
+  z-index: 1099;
 }
 
 .overlay.activo {
@@ -44,7 +44,7 @@
   box-shadow: -5px 0 15px rgba(0,0,0,0.5);
   transform: translateX(100%);
   transition: transform 0.4s ease-in-out;
-  z-index: 1000;
+  z-index: 1100;
   overflow-y: auto;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .panel-header {
-  background-color: var(--dark-blue, #080f20);
+  background-color: #080f20;
   color: white;
   padding: 40px 50px;
 }
@@ -265,12 +265,12 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #terminos-panel .termino-i
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .info-card h4 {
-  color: #f5c842;
+  color: #745a08;
   font-size: 12px; letter-spacing: 1px;
   margin-bottom: 10px;
 }
 .info-card p {
-  font-size: 13px; color: #555; line-height: 1.6; margin: 0;
+  font-size: 13px; color: #334155; line-height: 1.6; margin: 0;
 }
 .badge-correo {
   background-color: #2b5797;
@@ -278,7 +278,7 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #terminos-panel .termino-i
 }
 
 .correo-contactanos {
-  color: #555;
+  color: #334155;
   font-size: 13px;
   line-height: 1.6;
   text-decoration: none;
@@ -290,6 +290,7 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #terminos-panel .termino-i
   text-decoration: underline;
 }
 
+<<<<<<< Updated upstream
 html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel,
 body.a11y-mode-dark-mode #contacto-panel {
   background-color: #0e1834;
@@ -375,6 +376,101 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .btn-envia
 body.a11y-mode-dark-mode #contacto-panel .btn-enviar {
   background-color: #f5c842;
   color: #080f20;
+=======
+body.a11y-mode-dark-mode #contacto-panel .panel-header {
+  background-color: #070d1e !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .panel-header h2 {
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .panel-header p,
+body.a11y-mode-dark-mode #contacto-panel .input-group label {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .formulario-contacto,
+body.a11y-mode-dark-mode #contacto-panel .info-card {
+  background: #0e1834 !important;
+  border: 1px solid #1a2c5b !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .input-group input,
+body.a11y-mode-dark-mode #contacto-panel .input-group textarea {
+  background: #070d1e !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .input-group input::placeholder,
+body.a11y-mode-dark-mode #contacto-panel .input-group textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .info-card h4 {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .info-card p,
+body.a11y-mode-dark-mode #contacto-panel .correo-contactanos {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .correo-contactanos:hover {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-dark-mode #contacto-panel .btn-enviar {
+  background: #f5c842 !important;
+  color: #080f20 !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .panel-header {
+  background-color: #000000 !important;
+  border-bottom: 2px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .panel-header h2,
+body.a11y-mode-high-contrast #contacto-panel .info-card h4 {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .panel-header p,
+body.a11y-mode-high-contrast #contacto-panel .input-group label,
+body.a11y-mode-high-contrast #contacto-panel .info-card p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .formulario-contacto,
+body.a11y-mode-high-contrast #contacto-panel .info-card {
+  background: #101010 !important;
+  border: 1.5px solid #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .input-group input,
+body.a11y-mode-high-contrast #contacto-panel .input-group textarea {
+  background: #000000 !important;
+  border: 1.5px solid #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .input-group input::placeholder,
+body.a11y-mode-high-contrast #contacto-panel .input-group textarea::placeholder {
+  color: #cbd5e1 !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .correo-contactanos {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #contacto-panel .btn-enviar {
+  background: #ffff00 !important;
+  color: #000000 !important;
+  border: 2px solid #ffff00 !important;
+>>>>>>> Stashed changes
 }
 
 @media (max-width: 700px) {
