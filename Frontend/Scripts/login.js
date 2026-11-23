@@ -1,8 +1,4 @@
-/**
- * =====================================================
- * INICIO DE SESIÓN (LOGIN) — WiiU Games
- * =====================================================
- */
+// Inicio de sesión
 
 document.addEventListener("DOMContentLoaded", () => {
   // Elementos DOM del Formulario Principal
@@ -32,18 +28,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Contenedor de Toasts
   const contenedorToast = document.getElementById("contenedor-toast");
 
-  // -----------------------------------------------------
-  // 1. CARGA INICIAL: RECORDAR CORREO
-  // -----------------------------------------------------
+  // Restaurar el correo guardado por el usuario
   const correoGuardado = localStorage.getItem("wiiu_remember_email");
   if (correoGuardado && inputCorreo && checkRecordar) {
     inputCorreo.value = correoGuardado;
     checkRecordar.checked = true;
   }
 
-  // -----------------------------------------------------
-  // 2. ALTERNAR VISIBILIDAD DE LA CONTRASEÑA
-  // -----------------------------------------------------
+  // Alternar la visibilidad de la contraseña
   if (togglePassword && inputContrasena && iconoOjito) {
     togglePassword.addEventListener("click", () => {
       const esPassword = inputContrasena.getAttribute("type") === "password";
@@ -60,9 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 3. VALIDACIÓN EN TIEMPO REAL Y MANEJO DE ERRORES
-  // -----------------------------------------------------
+  // Validación en tiempo real y manejo de errores
   const validarEmailFormat = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
@@ -155,9 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 5. PROCESAMIENTO DEL FORMULARIO DE LOGIN
-  // -----------------------------------------------------
+  // Procesar el formulario de inicio de sesión
   if (formLogin) {
     formLogin.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -405,9 +393,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // -----------------------------------------------------
-  // 6. MODAL DE RECUPERACIÓN DE CONTRASEÑA
-  // -----------------------------------------------------
+  // Recuperación de contraseña
   if (linkOlvido && modalRecuperar) {
     linkOlvido.addEventListener("click", (e) => {
       e.preventDefault();
@@ -473,9 +459,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 7. BOTÓN SOCIAL (Google)
-  // -----------------------------------------------------
+  // Inicio de sesión con Google
   if (btnGoogle) {
     btnGoogle.addEventListener("click", () => {
       mostrarToast(
@@ -485,9 +469,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // -----------------------------------------------------
-  // 8. SISTEMA DE NOTIFICACIONES FLOTANTES (TOAST)
-  // -----------------------------------------------------
+  // Notificaciones flotantes
   function mostrarToast(mensaje, tipo = "exito") {
     if (!contenedorToast) return;
 
