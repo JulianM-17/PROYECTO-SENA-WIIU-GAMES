@@ -1629,8 +1629,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (daysRemaining < 0) {
       return `Vencida; inició el ${startDate} y terminó el ${expirationDate}.`;
     }
-    if (item.warrantyStatus === "ANULADA") {
-      return `Anulada; la cobertura terminó el ${expirationDate}.`;
+    if (["ANULADA", "SUSPENDIDA"].includes(item.warrantyStatus)) {
+      return `Suspendida; la cobertura terminó el ${expirationDate}.`;
     }
     if (!item.warrantyActive) {
       return "No disponible: la cobertura de esta compra no está activa.";

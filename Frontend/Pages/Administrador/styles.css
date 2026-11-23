@@ -1859,16 +1859,29 @@ body {
 }
 
 .toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   pointer-events: auto;
   padding: 14px 22px;
   border-radius: 10px;
   color: #fff;
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.45;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   animation: toastEntrar 0.4s ease;
   transition: opacity 0.3s ease, transform 0.3s ease;
   max-width: 400px;
+  overflow-wrap: anywhere;
+}
+
+.toast-icono {
+  flex: 0 0 auto;
+}
+
+.toast-mensaje {
+  min-width: 0;
 }
 
 .toast-success {

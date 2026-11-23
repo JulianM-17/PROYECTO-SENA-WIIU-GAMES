@@ -25,8 +25,16 @@ function mostrarToast(tipo, mensaje) {
   var toast = document.createElement('div');
   toast.className = 'toast toast-' + tipo;
   var icono = tipo === 'success' ? '✅' : tipo === 'error' ? '❌' : 'ℹ️';
+  toast.setAttribute('role', tipo === 'error' ? 'alert' : 'status');
+  toast.setAttribute('aria-live', tipo === 'error' ? 'assertive' : 'polite');
+  var iconoContenido = document.createElement('span');
+  iconoContenido.className = 'toast-icono';
+  iconoContenido.setAttribute('aria-hidden', 'true');
+  iconoContenido.textContent = icono;
   var contenido = document.createElement('span');
-  contenido.textContent = icono + ' ' + mensaje;
+  contenido.className = 'toast-mensaje';
+  contenido.textContent = mensaje;
+  toast.appendChild(iconoContenido);
   toast.appendChild(contenido);
   contenedor.appendChild(toast);
 
@@ -2225,20 +2233,31 @@ function cargarDashboard() {
       poblarTabla('tablaGarantiasBody', data.warranties, function(row) {
         var estadoClase = row.status === 'Activa'
           ? 'etiqueta-verde'
-          : row.status === 'Anulada'
+          : row.status === 'Suspendida'
             ? 'etiqueta-rojo'
             : 'etiqueta-naranja';
         var rawId = Number(String(row.id).replace('GAR-', ''));
         var productLabel = row.quantity > 1
           ? row.product + ' (x' + row.quantity + ')'
           : row.product;
+        var puedeCambiarEstado = Number(row.canChangeStatus) === 1 &&
+          (row.status === 'Activa' || row.status === 'Suspendida');
+        var siguienteEstado = row.status === 'Activa' ? 'SUSPENDIDA' : 'VIGENTE';
+        var textoAccion = siguienteEstado === 'SUSPENDIDA' ? 'Suspender' : 'Reactivar';
+        var iconoAccion = siguienteEstado === 'SUSPENDIDA' ? 'fi-rr-ban' : 'fi-rr-refresh';
+        var accionCobertura = puedeCambiarEstado
+          ? '<button class="boton-icono" title="' + textoAccion + ' cobertura" aria-label="' +
+            textoAccion + ' garantía ' + escaparHtmlAdmin(row.id) +
+            '" onclick="cambiarEstadoGarantiaAdmin(this, ' + rawId + ', \'' +
+            siguienteEstado + '\')"><i class="fi ' + iconoAccion + '"></i></button>'
+          : '<span aria-label="La garantía venció; no se puede cambiar su estado">—</span>';
         return '<td><strong>' + escaparHtmlAdmin(row.id) + '</strong></td>' +
           '<td>' + escaparHtmlAdmin(row.client) + '</td>' +
           '<td>' + escaparHtmlAdmin(productLabel) + '</td>' +
           '<td>' + escaparHtmlAdmin(String(row.buyDate).substring(0, 10)) + '</td>' +
           '<td>' + escaparHtmlAdmin(String(row.expDate).substring(0, 10)) + '</td>' +
           '<td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td>' +
-          '<td><button class="boton-icono rojo" title="Anular cobertura" aria-label="Anular garantía ' + escaparHtmlAdmin(row.id) + '" onclick="eliminarFilaDB(this, \'garantias\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+          '<td>' + accionCobertura + '</td>';
       });
     }
     if (Array.isArray(data.warrantyRequests)) {
@@ -3018,6 +3037,60 @@ function eliminarFilaDB(boton, recurso, id) {
     console.error('Error:', err);
     mostrarToast('error', 'Error de conexión al eliminar');
   });
+}
+
+function cambiarEstadoGarantiaAdmin(boton, id, status) {
+  var suspension = status === 'SUSPENDIDA';
+  var confirmacion = suspension
+    ? '¿Suspender la cobertura de esta garantía? El registro se conservará.'
+    : '¿Reactivar la cobertura de esta garantía?';
+  if (!confirm(confirmacion)) return;
+
+  boton.disabled = true;
+  fetch(API_BASE + '/api/admin/garantias/' + encodeURIComponent(id) + '/estado', {
+    method: 'PATCH',
+    headers: {
+      'Authorization': 'Bearer ' + sessionToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ status: status })
+  })
+    .then(function(response) {
+      return response.text().then(function(text) {
+        var data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch (error) {
+          data = null;
+        }
+        if (!data) {
+          if (response.status === 404) {
+            throw new Error(
+              'No se encontró la ruta para cambiar el estado de la garantía. Reinicia el backend e inténtalo de nuevo.'
+            );
+          }
+          throw new Error('El servidor devolvió una respuesta inesperada. Inténtalo de nuevo.');
+        }
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || 'No se pudo suspender la cobertura.');
+        }
+        return data;
+      });
+    })
+    .then(function(data) {
+      mostrarToast('success', data.message || 'Cobertura suspendida.');
+      cargarDashboard();
+    })
+    .catch(function(error) {
+      console.error('Error actualizando estado de garantía:', error);
+      var mensaje = error instanceof TypeError
+        ? 'No se pudo conectar con el servidor. Verifica que el backend esté iniciado.'
+        : error.message || 'No se pudo actualizar el estado de la garantía.';
+      mostrarToast('error', mensaje);
+    })
+    .finally(function() {
+      if (boton.isConnected) boton.disabled = false;
+    });
 }
 
 function configurarOrdenamientoUsuarios() {

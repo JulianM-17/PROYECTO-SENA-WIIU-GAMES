@@ -39,6 +39,7 @@ const SESSION_TTL = 8 * 60 * 60 * 1000;
 const sessions = new Map();
 let warrantyRequestSchemaPromise;
 let warrantyDetailIndexSchemaPromise;
+let warrantyStatusSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
 let backupSchemaPromise;
@@ -511,6 +512,33 @@ function ensureWarrantyRequestSchema() {
   return warrantyRequestSchemaPromise;
 }
 
+function ensureWarrantyStatusSchema() {
+  if (!warrantyStatusSchemaPromise) {
+    warrantyStatusSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        "SHOW COLUMNS FROM garantia LIKE 'estado'",
+      );
+      if (!columns.length) {
+        throw new Error("No se encontró la columna de estado de garantía.");
+      }
+
+      const statusType = String(columns[0].Type || "").toUpperCase();
+      if (!statusType.includes("'SUSPENDIDA'")) {
+        await pool.query(
+          `ALTER TABLE garantia
+           MODIFY estado
+           ENUM('VIGENTE', 'VENCIDA', 'ANULADA', 'SUSPENDIDA')
+           NOT NULL DEFAULT 'VIGENTE'`,
+        );
+      }
+    })().catch((error) => {
+      warrantyStatusSchemaPromise = null;
+      throw error;
+    });
+  }
+  return warrantyStatusSchemaPromise;
+}
+
 function ensureLegacyAppointmentSchema() {
   if (!legacyAppointmentSchemaPromise) {
     legacyAppointmentSchemaPromise = (async () => {
@@ -571,6 +599,7 @@ function ensureAutomaticWarrantyCoverage() {
       let connection;
       try {
         await ensureWarrantyRequestSchema();
+        await ensureWarrantyStatusSchema();
         await ensureWarrantyDetailIndexes();
         connection = await pool.getConnection();
         await connection.beginTransaction();
@@ -588,7 +617,7 @@ function ensureAutomaticWarrantyCoverage() {
                  ELSE 'VENCIDA'
                END
            WHERE v.estado = 'PAGADA'
-             AND g.estado <> 'ANULADA'`,
+             AND g.estado NOT IN ('ANULADA', 'SUSPENDIDA')`,
         );
         await connection.query(
           `INSERT INTO garantia
@@ -1850,10 +1879,11 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
          dv.cantidad AS quantity,
          DATE(v.fecha) AS buyDate,
          DATE(g.fecha_fin) AS expDate,
+         DATE(g.fecha_fin) >= CURRENT_DATE() AS canChangeStatus,
          CASE
-           WHEN g.estado = 'ANULADA' THEN 'Anulada'
-           WHEN g.estado = 'VIGENTE'
-             AND DATE(g.fecha_fin) >= CURRENT_DATE() THEN 'Activa'
+           WHEN DATE(g.fecha_fin) < CURRENT_DATE() THEN 'Vencida'
+           WHEN g.estado IN ('ANULADA', 'SUSPENDIDA') THEN 'Suspendida'
+           WHEN g.estado = 'VIGENTE' THEN 'Activa'
            ELSE 'Vencida'
          END AS status
        FROM garantia g
@@ -2648,9 +2678,11 @@ app.get("/api/employee/dashboard", requireEmployee, async (req, res) => {
              dv.cantidad AS quantity,
              DATE_FORMAT(v.fecha, '%Y-%m-%d') AS buyDate,
              DATE_FORMAT(g.fecha_fin, '%Y-%m-%d') AS expDate,
+             DATE(g.fecha_fin) >= CURRENT_DATE() AS canChangeStatus,
              CASE
-               WHEN g.estado = 'VIGENTE' AND g.fecha_fin >= CURDATE() THEN 'Activa'
-               WHEN g.estado = 'ANULADA' THEN 'Anulada'
+               WHEN DATE(g.fecha_fin) < CURRENT_DATE() THEN 'Vencida'
+               WHEN g.estado IN ('ANULADA', 'SUSPENDIDA') THEN 'Suspendida'
+               WHEN g.estado = 'VIGENTE' THEN 'Activa'
                ELSE 'Vencida'
              END AS status
            FROM garantia g
@@ -5068,6 +5100,96 @@ app.post("/api/admin/pedidos", requireAdmin, async (req, res) => {
   }
 });
 
+app.patch(
+  "/api/admin/garantias/:id/estado",
+  requireAdmin,
+  async (req, res) => {
+    const warrantyId = Number(req.params.id);
+    const requestedStatus = String(req.body?.status || "").toUpperCase();
+    if (!Number.isInteger(warrantyId) || warrantyId <= 0) {
+      return res.status(400).json({ ok: false, message: "ID de garantía inválido." });
+    }
+    if (!["VIGENTE", "SUSPENDIDA"].includes(requestedStatus)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Selecciona un estado válido para la garantía.",
+      });
+    }
+
+    try {
+      await ensureAutomaticWarrantyCoverage();
+      const [warranties] = await pool.query(
+        `SELECT estado, DATE(fecha_fin) >= CURRENT_DATE() AS canChangeStatus
+         FROM garantia
+         WHERE id_garantia = ?`,
+        [warrantyId],
+      );
+      if (!warranties.length) {
+        return res.status(404).json({
+          ok: false,
+          message: "La garantía no existe.",
+        });
+      }
+
+      const warranty = warranties[0];
+      if (Number(warranty.canChangeStatus) !== 1) {
+        return res.status(409).json({
+          ok: false,
+          message: "No se puede cambiar el estado de una garantía vencida.",
+        });
+      }
+      const currentStatus = warranty.estado;
+      const isSuspended = ["ANULADA", "SUSPENDIDA"].includes(currentStatus);
+      if (
+        (requestedStatus === "SUSPENDIDA" && isSuspended) ||
+        (requestedStatus === "VIGENTE" && currentStatus === "VIGENTE")
+      ) {
+        return res.status(409).json({
+          ok: false,
+          message: "La garantía ya tiene ese estado.",
+        });
+      }
+      if (
+        (requestedStatus === "SUSPENDIDA" && currentStatus !== "VIGENTE") ||
+        (requestedStatus === "VIGENTE" && !isSuspended)
+      ) {
+        return res.status(409).json({
+          ok: false,
+          message: "No se puede realizar ese cambio de estado.",
+        });
+      }
+
+      const [result] = await pool.query(
+        `UPDATE garantia
+         SET estado = ?
+         WHERE id_garantia = ?
+           AND estado = ?
+           AND fecha_fin >= CURRENT_DATE()`,
+        [requestedStatus, warrantyId, currentStatus],
+      );
+      if (!result.affectedRows) {
+        return res.status(409).json({
+          ok: false,
+          message: "La garantía cambió de estado. Actualiza la tabla e inténtalo de nuevo.",
+        });
+      }
+
+      return res.json({
+        ok: true,
+        message: requestedStatus === "SUSPENDIDA"
+          ? "Cobertura suspendida. El registro de garantía se conservó."
+          : "Cobertura reactivada correctamente.",
+      });
+    } catch (error) {
+      console.error("Error actualizando estado de garantía:", error.message);
+      return res.status(500).json({
+        ok: false,
+        message: "No se pudo actualizar el estado de la garantía.",
+      });
+    }
+  },
+);
+
 // ---------- ELIMINACIONES GENÉRICAS DEL PANEL ----------
 
 app.delete("/api/admin/backups/:filename", requireAdmin, async (req, res) => {
@@ -5108,7 +5230,10 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
     }
 
     if (recurso === "garantias") {
-      await pool.query("UPDATE garantia SET estado = 'ANULADA' WHERE id_garantia = ?", [numId]);
+      return res.status(405).json({
+        ok: false,
+        message: "Las garantías no se eliminan; suspende la cobertura.",
+      });
     } else if (recurso === "mantenimientos" || recurso === "reparaciones") {
       await pool.query("UPDATE servicio SET estado = 'CANCELADO' WHERE id_servicio = ?", [numId]);
     } else if (recurso === "descuentos") {

@@ -217,7 +217,7 @@ CREATE TABLE garantia (
     FOREIGN KEY (id_detalle_venta) REFERENCES detalle_venta (id_detalle_venta),
     fecha_inicio DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_fin DATETIME NOT NULL,
-    estado ENUM('VIGENTE','VENCIDA', 'ANULADA') NOT NULL DEFAULT 'VIGENTE',
+    estado ENUM('VIGENTE','VENCIDA', 'ANULADA', 'SUSPENDIDA') NOT NULL DEFAULT 'VIGENTE',
     UNIQUE KEY uq_garantia_detalle_venta (id_detalle_venta),
     CONSTRAINT chk_fechas_garantia CHECK (fecha_fin > fecha_inicio)
 );
