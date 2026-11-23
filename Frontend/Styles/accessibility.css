@@ -317,6 +317,10 @@ body.a11y-mode-grayscale > *:not(#a11y-trigger-btn):not(#a11y-menu) {
   filter: grayscale(100%) !important;
 }
 
+body.a11y-mode-grayscale > #a11y-menu {
+  filter: grayscale(100%) !important;
+}
+
 body.a11y-mode-grayscale > header {
   position: relative !important;
   z-index: 1001 !important;
@@ -534,6 +538,62 @@ body.a11y-mode-high-contrast .insignia-stock-favorito {
 body.a11y-mode-high-contrast header:not(#a11y-menu *) {
   background-color: #000000 !important;
   border-bottom: 2px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu {
+  background: #000000 !important;
+  border: 2px solid #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-menu-header {
+  border-bottom-color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-menu-header span,
+body.a11y-mode-high-contrast #a11y-menu .a11y-menu-help,
+body.a11y-mode-high-contrast #a11y-menu .a11y-menu-close {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-reset-btn {
+  background: #000000 !important;
+  border-color: #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-reset-btn:hover {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item {
+  background: #000000 !important;
+  border: 1px solid #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item b {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item.selected,
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item:hover {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item.selected b,
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item:hover b {
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-switch {
+  background: #64748b !important;
+}
+
+body.a11y-mode-high-contrast #a11y-menu .a11y-option-item.selected .a11y-switch {
+  background: #000000 !important;
 }
 
 /* =====================================================
@@ -1747,7 +1807,14 @@ body.a11y-mode-dark-mode .circulo-icono i {
 /* =====================================================
    5. SUBRAYAR ENLACES Y REDUCIR MOVIMIENTO
    ===================================================== */
-body.a11y-mode-underline-links a:not(#a11y-trigger-btn):not(#a11y-menu a) {
+body.a11y-mode-underline-links a:not(#a11y-trigger-btn) {
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 3px !important;
+}
+
+body.a11y-mode-underline-links #a11y-menu .a11y-option-item span:first-child,
+body.a11y-mode-underline-links #a11y-menu .a11y-reset-btn {
   text-decoration: underline !important;
   text-decoration-thickness: 2px !important;
   text-underline-offset: 3px !important;
