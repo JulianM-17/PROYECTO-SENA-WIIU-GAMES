@@ -274,6 +274,12 @@ body,
   font-weight: 600 !important;
 }
 
+#a11y-trigger-btn:focus-visible,
+#a11y-menu button:focus-visible {
+  outline: 3px solid #ffffff !important;
+  outline-offset: 3px !important;
+}
+
 .a11y-radio-circle {
   width: 14px !important;
   height: 14px !important;
@@ -307,8 +313,13 @@ body,
    1. ESCALA DE GRISES (SIN ROMPER POSITION FIXED)
    ===================================================== */
 /* NUNCA poner filter en body ni en html porque rompe position: fixed */
-body.a11y-mode-grayscale > * {
+body.a11y-mode-grayscale > *:not(#a11y-trigger-btn):not(#a11y-menu) {
   filter: grayscale(100%) !important;
+}
+
+body.a11y-mode-grayscale > header {
+  position: relative !important;
+  z-index: 1001 !important;
 }
 
 /* =====================================================
@@ -331,7 +342,7 @@ body.a11y-mode-high-contrast {
   --dark-blue: #ffffff !important;
   --dark-blue-2: #e2e8f0 !important;
   --dark-blue-3: #cbd5e1 !important;
-  --DarkBlue: #ffffff !important;
+  --DarkBlue: #000000 !important;
   --black: #ffffff !important;
   --Black: #ffffff !important;
   background-color: #000000 !important;
@@ -427,7 +438,7 @@ body.a11y-mode-high-contrast .titulo-producto {
 
 /* Textos Generales */
 body.a11y-mode-high-contrast p,
-body.a11y-mode-high-contrast span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.tag):not(.zip-brand):not(.insignia-descuento-favorito):not(.check-porque),
+body.a11y-mode-high-contrast span:not(#a11y-menu *):not(#a11y-trigger-btn *):not(.tag):not(.zip-brand):not(.insignia-descuento-favorito):not(.check-porque),
 body.a11y-mode-high-contrast li,
 body.a11y-mode-high-contrast label,
 body.a11y-mode-high-contrast small,
@@ -438,13 +449,13 @@ body.a11y-mode-high-contrast div:not(.tag):not(.zip-brand):not(.insignia-descuen
 }
 
 /* Enlaces */
-body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a):not(.btn-iniciar):not(.btn-registrar):not(.boton-submit):not(.btn-accion):not(.btn-agendar):not(.btn-añadir):not(.buy):not(.save):not(.btn-demo):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.btn-primary):not(.btn-secondary):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-agendar-porque):not(.btn-reservar) {
+body.a11y-mode-high-contrast a:not(#a11y-trigger-btn):not(#a11y-menu a):not(.btn-iniciar):not(.btn-registrar):not(.boton-submit):not(.btn-accion):not(.btn-agendar):not(.btn-añadir):not(.buy):not(.save):not(.btn-demo):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.btn-primary):not(.btn-secondary):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-agendar-porque):not(.btn-reservar):not(.hero-btn):not(.btn):not(.avatar-sesion) {
   color: #ffff00 !important;
   text-decoration: underline !important;
 }
 
 /* Botones en Alto Contraste */
-body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(.a11y-menu *),
+body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(#a11y-menu *),
 body.a11y-mode-high-contrast .boton-submit,
 body.a11y-mode-high-contrast .boton-enviar,
 body.a11y-mode-high-contrast .btn-primario,
@@ -476,14 +487,14 @@ body.a11y-mode-high-contrast .btn-secondary {
   text-decoration: none !important;
 }
 
-body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(.a11y-menu *) *,
+body.a11y-mode-high-contrast button:not(#a11y-trigger-btn):not(#a11y-menu *) *,
 body.a11y-mode-high-contrast .boton-submit *,
 body.a11y-mode-high-contrast .btn-iniciar *,
 body.a11y-mode-high-contrast .btn-demo * {
   color: #ffff00 !important;
 }
 
-body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(.a11y-menu *),
+body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(#a11y-menu *),
 body.a11y-mode-high-contrast .boton-submit:hover,
 body.a11y-mode-high-contrast .btn-accion:hover,
 body.a11y-mode-high-contrast .btn-agendar:hover,
@@ -500,7 +511,7 @@ body.a11y-mode-high-contrast .btn-primary:hover {
   border-color: #ffff00 !important;
 }
 
-body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(.a11y-menu *) *,
+body.a11y-mode-high-contrast button:hover:not(#a11y-trigger-btn):not(#a11y-menu *) *,
 body.a11y-mode-high-contrast .boton-submit:hover *,
 body.a11y-mode-high-contrast .btn-iniciar:hover *,
 body.a11y-mode-high-contrast .btn-demo:hover * {
@@ -520,7 +531,7 @@ body.a11y-mode-high-contrast .insignia-stock-favorito {
 }
 
 /* Header */
-body.a11y-mode-high-contrast header:not(.a11y-menu *) {
+body.a11y-mode-high-contrast header:not(#a11y-menu *) {
   background-color: #000000 !important;
   border-bottom: 2px solid #ffff00 !important;
 }
@@ -600,7 +611,7 @@ body.a11y-mode-dark-mode .title-porque {
 }
 
 body.a11y-mode-dark-mode p,
-body.a11y-mode-dark-mode span:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion):not(.hero-badge),
+body.a11y-mode-dark-mode:not(.a11y-mode-high-contrast) span:not(#a11y-menu *):not(#a11y-trigger-btn *):not(.estado-stock):not(.badge-estado):not(.calificacion *):not(.obligatorio):not(.mensaje-error):not(.texto-btn):not(.btn-modal-aceptar *):not(.boton-enviar *):not(.enlace-olvido *):not(.check-porque):not(.icono-confirmacion):not(.hero-badge),
 body.a11y-mode-dark-mode label {
   color: #cbd5e1 !important;
 }
@@ -613,7 +624,7 @@ body.a11y-mode-dark-mode .precio-anterior {
   color: #64748b !important;
 }
 
-body.a11y-mode-dark-mode a:not(.a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar):not(.hero-btn):not(.hero-btn-primary):not(.hero-btn-secondary):not(.redes-footer a):not(.redes-footer a *) {
+body.a11y-mode-dark-mode a:not(#a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar):not(.hero-btn):not(.hero-btn-primary):not(.hero-btn-secondary):not(.redes-footer a):not(.redes-footer a *) {
   color: #f5c842;
 }
 
@@ -1598,7 +1609,7 @@ body.a11y-mode-dark-mode .toast {
   border: 1px solid #1a2c5b !important;
 }
 
-body.a11y-mode-dark-mode header:not(.a11y-menu *) {
+body.a11y-mode-dark-mode header:not(#a11y-menu *) {
   background-color: #070d1e !important;
 }
 
@@ -1748,6 +1759,19 @@ body.a11y-mode-reduced-motion *::after {
   animation-duration: 0.01ms !important;
   animation-iteration-count: 1 !important;
   scroll-behavior: auto !important;
+  transition-duration: 0.01ms !important;
+}
+
+html.a11y-mode-reduced-motion {
+  scroll-behavior: auto !important;
+}
+
+body.a11y-mode-reduced-motion #a11y-menu,
+body.a11y-mode-reduced-motion #a11y-menu *,
+body.a11y-mode-reduced-motion #a11y-trigger-btn,
+body.a11y-mode-reduced-motion #a11y-trigger-btn * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
 
@@ -2395,5 +2419,399 @@ body.a11y-mode-dark-mode .confirmacion-sesion-cancelar {
 body.a11y-mode-dark-mode .confirmacion-sesion-cancelar:hover {
   border-color: #f5c842 !important;
   background: #132247 !important;
+}
+
+/* Texto grande: evita truncar contenido en tarjetas y datos de perfil. */
+body.a11y-mode-large-text .tarjeta-producto {
+  height: auto !important;
+}
+
+body.a11y-mode-large-text .titulo-producto,
+body.a11y-mode-large-text .descripcion-producto,
+body.a11y-mode-large-text .nombre-sugerencia {
+  display: block !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: initial !important;
+}
+
+body.a11y-mode-large-text .resumen-stock {
+  flex-wrap: wrap !important;
+}
+
+body.a11y-mode-large-text .cantidad-stock {
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+}
+
+body.a11y-mode-large-text .categoria-ruta {
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+  white-space: normal !important;
+}
+
+body.a11y-mode-large-text .categoria-ruta > * {
+  flex: 0 1 auto !important;
+  min-width: 0 !important;
+  white-space: normal !important;
+}
+
+body.a11y-mode-large-text .categoria-ruta .miga-activa {
+  max-width: 100% !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  text-overflow: clip !important;
+}
+
+body.a11y-mode-large-text .info-perfil-barra-lateral {
+  overflow: visible !important;
+}
+
+body.a11y-mode-large-text .info-perfil-barra-lateral .nombre,
+body.a11y-mode-large-text .info-perfil-barra-lateral .email,
+body.a11y-mode-large-text .nombre-producto,
+body.a11y-mode-large-text .item-orden-pos span {
+  min-width: 0 !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+}
+
+body.a11y-mode-large-text .sitio-footer .columna-contacto a {
+  overflow-wrap: anywhere !important;
+}
+
+/* Mantiene legibles los estados de stock al combinar alto contraste con otros modos. */
+body.a11y-mode-high-contrast .estado-stock {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .cantidad-stock,
+body.a11y-mode-high-contrast .insignia-stock,
+body.a11y-mode-high-contrast .estado-disponibilidad {
+  background-color: #ffff00 !important;
+  border: 1px solid #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast .cantidad-stock.sin-stock,
+body.a11y-mode-high-contrast .insignia-stock.sin-stock,
+body.a11y-mode-high-contrast .estado-disponibilidad.sin-stock {
+  background-color: #ffff00 !important;
+  border-color: #ffff00 !important;
+  color: #000000 !important;
+}
+
+/* Contraste alto: corrige superficies claras y textos atenuados por los temas de pagina. */
+body.a11y-mode-high-contrast .porque-card,
+body.a11y-mode-high-contrast .panel-barra-lateral,
+body.a11y-mode-high-contrast .tarjeta-opcion,
+body.a11y-mode-high-contrast .tarjeta-opcion-wide,
+body.a11y-mode-high-contrast .perfil-avatar-card,
+body.a11y-mode-high-contrast .perfil-stat-item,
+body.a11y-mode-high-contrast .tarjeta-formulario,
+body.a11y-mode-high-contrast .dir-card,
+body.a11y-mode-high-contrast .filtros-pedidos,
+body.a11y-mode-high-contrast .pedidos-mensaje,
+body.a11y-mode-high-contrast .cita-card,
+body.a11y-mode-high-contrast .pedido-card,
+body.a11y-mode-high-contrast .fav-card,
+body.a11y-mode-high-contrast .seguimiento-buscador,
+body.a11y-mode-high-contrast .seguimiento-resumen-card,
+body.a11y-mode-high-contrast .transportadora-info,
+body.a11y-mode-high-contrast .tabla-facturas,
+body.a11y-mode-high-contrast .garantias-panel,
+body.a11y-mode-high-contrast .garantia-solicitud-card,
+body.a11y-mode-high-contrast .tarjeta-modal {
+  background: #101010 !important;
+  border-color: #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .banner-bienvenida,
+body.a11y-mode-high-contrast .barra-lateral-perfil,
+body.a11y-mode-high-contrast .razon1,
+body.a11y-mode-high-contrast .razon2,
+body.a11y-mode-high-contrast .razon3,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado {
+  background: #101010 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.claro,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.oscuro,
+body.a11y-mode-high-contrast .panel-layout .barra-lateral-perfil,
+body.a11y-mode-high-contrast .panel-layout .banner-bienvenida {
+  background: #101010 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-servicios .card {
+  border: 1.5px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .porque-card h3,
+body.a11y-mode-high-contrast .banner-encabezado h1,
+body.a11y-mode-high-contrast .tarjeta-opcion-nombre,
+body.a11y-mode-high-contrast .seccion-titulo,
+body.a11y-mode-high-contrast .nav-section-label,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado h2,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado h3,
+body.a11y-mode-high-contrast .title-razon1,
+body.a11y-mode-high-contrast .title-razon2,
+body.a11y-mode-high-contrast .title-razon3 {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .porque-card p,
+body.a11y-mode-high-contrast .hero-subtitle,
+body.a11y-mode-high-contrast .banner-destacado-desc,
+body.a11y-mode-high-contrast .banner-subtitulo,
+body.a11y-mode-high-contrast .banner-saludo,
+body.a11y-mode-high-contrast .tarjeta-opcion-desc,
+body.a11y-mode-high-contrast .info-perfil-barra-lateral .nombre,
+body.a11y-mode-high-contrast .info-perfil-barra-lateral .email,
+body.a11y-mode-high-contrast .description-razon1,
+body.a11y-mode-high-contrast .description-razon2,
+body.a11y-mode-high-contrast .description-razon3,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .banner-saludo span {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .porque-icono,
+body.a11y-mode-high-contrast .tarjeta-icono-wrap {
+  background: #000000 !important;
+  border: 1px solid #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .avatar-barra-lateral {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast .avatar-sesion {
+  background: #000000 !important;
+  border: 2px solid #ffff00 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .elemento-nav.activo {
+  background: #161616 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .elemento-nav i,
+body.a11y-mode-high-contrast .elemento-nav.activo i {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .nav-divider {
+  background-color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .numero-paso-razon,
+body.a11y-mode-high-contrast .razon2-container .numero-paso-razon {
+  background: #ffff00 !important;
+  border-color: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast .hero-badge,
+body.a11y-mode-high-contrast .banner-destacado-tag {
+  background: #ffff00 !important;
+  border-color: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast .hero-btn-primary,
+body.a11y-mode-high-contrast .hero-btn-secondary,
+body.a11y-mode-high-contrast a.hero-btn-primary,
+body.a11y-mode-high-contrast a.hero-btn-secondary,
+body.a11y-mode-high-contrast .contenedor-servicios .card .btn {
+  background: #ffff00 !important;
+  border: 2px solid #ffff00 !important;
+  color: #000000 !important;
+  text-decoration: none !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-servicios .card .btn span {
+  background: none !important;
+  background-clip: border-box !important;
+  color: #000000 !important;
+  -webkit-background-clip: border-box !important;
+}
+
+body.a11y-mode-high-contrast .desplegable-perfil-cliente {
+  background: #000000 !important;
+  border-color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.claro h2,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.claro h3,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.oscuro h2,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.oscuro h3 {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.claro p,
+body.a11y-mode-high-contrast .contenedor-servicios .card .lado.oscuro p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .panel-layout .barra-lateral-perfil .nombre,
+body.a11y-mode-high-contrast .panel-layout .barra-lateral-perfil .email,
+body.a11y-mode-high-contrast .panel-layout .banner-encabezado h1,
+body.a11y-mode-high-contrast .panel-layout .banner-saludo,
+body.a11y-mode-high-contrast .panel-layout .banner-subtitulo {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .panel-layout .banner-saludo span {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .perfil-avatar-nombre,
+body.a11y-mode-high-contrast .perfil-avatar-email,
+body.a11y-mode-high-contrast .perfil-stat-label {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .perfil-stat-numero,
+body.a11y-mode-high-contrast .titulo-tarjeta-formulario {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .panel-layout .elemento-nav.activo {
+  background: #161616 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .panel-layout .elemento-nav.activo i {
+  color: #ffff00 !important;
+}
+
+/* Alto contraste en los paneles administrativos y de empleado. */
+body.a11y-mode-high-contrast .panel-contenedor,
+body.a11y-mode-high-contrast .contenido,
+body.a11y-mode-high-contrast .seccion,
+body.a11y-mode-high-contrast .panel-empleado,
+body.a11y-mode-high-contrast .contenido-empleado,
+body.a11y-mode-high-contrast .seccion-vista {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .panel-contenedor :is(
+    .menu-lateral,
+    .caja-panel,
+    .tarjeta-resumen,
+    .caja-modal,
+    .sitio-footer,
+    .panel-notificaciones,
+    .panel-notificaciones li,
+    .cabecera-notificaciones button,
+    .notificacion-item,
+    .item-producto-top,
+    .imagen-caja,
+    .modal-detalle-venta,
+    .caja-modal-detalle,
+    .modal-detalle-servicio,
+    .menu-desplegable-perfil,
+    .caja-buscar,
+    .input-filtro,
+    .select-filtro,
+    .select-estado-solicitud,
+    .grafico-simple,
+    .zona-grafico
+  ),
+body.a11y-mode-high-contrast .panel-empleado :is(
+    .barra-lateral,
+    .barra-superior,
+    .caja-blanca,
+    .tarjeta-orden-caja,
+    .producto-pos-card,
+    .modal-empleado,
+    .caja-modal-empleado,
+    .cuerpo-modal-empleado,
+    .menu-desplegable-perfil,
+    .caja-vacia-pos,
+    .caja-aviso-seleccion,
+    .item-orden-pos,
+    .barra-buscar-pos,
+    .select-cliente,
+    .buscador-modulo,
+    .sitio-footer,
+    .campana-caja,
+    .insignia-turno
+  ) {
+  background: #101010 !important;
+  border-color: #ffff00 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .panel-contenedor :is(
+    .texto-bienvenida p,
+    .datos-usuario .nombre,
+    .datos-usuario .rol,
+    .titulo-tarjeta,
+    .verde,
+    .item-producto-top small,
+    .tabla-panel th,
+    .tabla-panel td,
+    .texto-vacio,
+    .item-dinero small,
+    .panel-notificaciones li,
+    .cabecera-modulo p,
+    .resumen-notificaciones,
+    .notificacion-dia,
+    .notificacion-item time,
+    .notificacion-contenido span,
+    .campo-grupo label,
+    .menu-desplegable-perfil a,
+    .enlace-gris
+  ),
+body.a11y-mode-high-contrast .panel-empleado :is(
+    .info-empleado .nombre,
+    .info-empleado .rol,
+    .saludo p,
+    .cabecera-modulo p,
+    .cabecera-modulo-con-boton p,
+    .caja-vacia-pos,
+    .caja-aviso-seleccion,
+    .mensaje-vacio,
+    .fila-calculo,
+    .etiqueta-cliente,
+    .metodo-pago label,
+    .tabla-empleado th,
+    .tabla-empleado td,
+    .menu-desplegable-perfil a,
+    .btn-cancelar-modal
+  ) {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast .panel-contenedor :is(h1, h2, h3, h4, h5, h6),
+body.a11y-mode-high-contrast .panel-empleado :is(h1, h2, h3, h4, h5, h6) {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .panel-contenedor :is(.tabla-panel th, .tabla-panel td),
+body.a11y-mode-high-contrast .panel-empleado :is(.tabla-empleado th, .tabla-empleado td) {
+  border-color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .panel-contenedor :is(.icono-cuadro, .separador-menu),
+body.a11y-mode-high-contrast .panel-empleado .separador-menu {
+  background: #000000 !important;
+  color: #ffff00 !important;
 }
 
