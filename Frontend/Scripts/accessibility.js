@@ -124,7 +124,7 @@
     ].filter(
       (element) =>
         element instanceof HTMLElement &&
-        !element.closest("#a11y-menu, #a11y-trigger-btn") &&
+        !element.closest("#a11y-trigger-btn") &&
         !element.matches("script, style, noscript, template") &&
         hasDirectText(element) &&
         !largeTextElements.has(element),
@@ -193,10 +193,8 @@
                 node instanceof HTMLElement ? node : mutation.target;
               if (
                 root instanceof HTMLElement &&
-                !root.closest("#a11y-menu, #a11y-trigger-btn") &&
-                !root.parentElement?.closest(
-                  "#a11y-menu, #a11y-trigger-btn",
-                ) &&
+                !root.closest("#a11y-trigger-btn") &&
+                !root.parentElement?.closest("#a11y-trigger-btn") &&
                 !hasScaledTextAncestor(root)
               ) {
                 scaleTextIn(root);
