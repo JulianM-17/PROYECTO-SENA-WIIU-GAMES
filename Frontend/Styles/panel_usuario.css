@@ -943,6 +943,13 @@ a.btn-agregar {
   text-decoration: none;
 }
 
+html[data-theme="dark"] .acciones-top .btn-agregar,
+body.a11y-mode-dark-mode .acciones-top .btn-agregar,
+html[data-theme="dark"] .acciones-top .btn-agregar i,
+body.a11y-mode-dark-mode .acciones-top .btn-agregar i {
+  color: #080f20 !important;
+}
+
 .grid-direcciones {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
