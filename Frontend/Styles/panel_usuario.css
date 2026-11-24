@@ -2830,6 +2830,12 @@ body.a11y-mode-dark-mode .tarjeta-modal {
   color: #f8fafc;
 }
 
+html[data-theme="dark"] .tarjeta-modal .pie-modal,
+body.a11y-mode-dark-mode .tarjeta-modal .pie-modal {
+  background-color: #0a1329;
+  border-top-color: #1a2c5b;
+}
+
 html[data-theme="dark"] .valor-dato-perfil,
 html[data-theme="dark"] .entrada-formulario,
 html[data-theme="dark"] .seguimiento-input,
