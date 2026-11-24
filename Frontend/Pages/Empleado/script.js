@@ -330,7 +330,9 @@ function renderCatalog() {
   tbody.replaceChildren();
   if (!employeeState.products.length) {
     const row = tbody.insertRow();
-    row.appendChild(createCell("No hay productos registrados en esta sucursal.", "mensaje-vacio"));
+    const cell = createCell("No hay productos registrados en esta sucursal.", "mensaje-vacio");
+    cell.colSpan = 6;
+    row.appendChild(cell);
     return;
   }
 
@@ -342,17 +344,8 @@ function renderCatalog() {
       createCell(product.category),
       createCell(formatCurrency(product.price)),
       createCell(String(product.stock)),
-      createCell(Number(product.stock) > 0 ? "Disponible" : "Agotado"),
+      createCell(Number(product.stock) > 0 ? "Disponible" : "No disponible"),
     );
-    const actions = document.createElement("td");
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "boton-tabla";
-    button.textContent = Number(product.stock) > 0 ? "Agregar al POS" : "Sin stock";
-    button.disabled = Number(product.stock) < 1;
-    button.addEventListener("click", () => addProductToCart(Number(product.id)));
-    actions.appendChild(button);
-    row.appendChild(actions);
   });
 }
 
@@ -1032,6 +1025,8 @@ function printWarranty(warrantyId) {
 
 async function logoutEmployee(event) {
   event.preventDefault();
+  if (!(await window.confirmarCierreSesion())) return;
+
   try {
     await fetch(`${window.location.origin}/api/session`, {
       method: "DELETE",
