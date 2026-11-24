@@ -431,6 +431,7 @@
     };
     const role = String(user.rol || "").trim().toLowerCase();
     const isAdmin = role.includes("admin");
+    const isEmployee = role === "trabajador";
     const destination = new URL(
       (isAdmin ? destinations.Administrador : destinations[user.rol]) ||
         destinations.Cliente,
@@ -446,7 +447,7 @@
       .join("");
     const existingAvatar = document.querySelector(".foto-perfil");
     const hasProfileMenu =
-      isAdmin || ["cliente", "proveedor"].includes(role);
+      isAdmin || isEmployee || ["cliente", "proveedor"].includes(role);
     const avatar = document.createElement(hasProfileMenu ? "button" : "a");
     avatar.className = "avatar-sesion";
     if (hasProfileMenu) {
@@ -479,7 +480,7 @@
       avatar.setAttribute("aria-controls", profileMenu.id);
 
       const panelLink = document.createElement("a");
-      panelLink.href = isAdmin ? profileDestination : destination;
+      panelLink.href = isAdmin || isEmployee ? profileDestination : destination;
       panelLink.setAttribute("role", "menuitem");
       const panelIcon = document.createElement("i");
       panelIcon.className = "fi fi-rr-user";
@@ -504,6 +505,18 @@
         profileMenu.appendChild(adminLink);
       } else {
         profileMenu.appendChild(panelLink);
+        if (isEmployee) {
+          const employeeLink = document.createElement("a");
+          employeeLink.href = destination;
+          employeeLink.setAttribute("role", "menuitem");
+          const employeeIcon = document.createElement("i");
+          employeeIcon.className = "fi fi-rr-briefcase";
+          employeeIcon.setAttribute("aria-hidden", "true");
+          const employeeLabel = document.createElement("span");
+          employeeLabel.textContent = "Ir al panel trabajador";
+          employeeLink.append(employeeIcon, employeeLabel);
+          profileMenu.appendChild(employeeLink);
+        }
       }
 
       const separator = document.createElement("div");

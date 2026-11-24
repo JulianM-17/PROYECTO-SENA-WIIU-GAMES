@@ -821,6 +821,23 @@ body.a11y-mode-dark-mode .barra-lateral {
   border-right-color: #16223d !important;
 }
 
+body.a11y-mode-dark-mode .barra-lateral .boton-hamburguesa,
+html[data-theme="dark"] .barra-lateral .boton-hamburguesa {
+  background-color: #050814 !important;
+  border: 2px solid #f5a623 !important;
+}
+
+body.a11y-mode-dark-mode .barra-lateral .boton-hamburguesa span,
+html[data-theme="dark"] .barra-lateral .boton-hamburguesa span {
+  background-color: #f5a623 !important;
+}
+
+body.a11y-mode-dark-mode .barra-lateral .boton-hamburguesa::before,
+html[data-theme="dark"] .barra-lateral .boton-hamburguesa::before {
+  border-bottom-color: #f5a623 !important;
+  border-left-color: #f5a623 !important;
+}
+
 body.a11y-mode-dark-mode .boton-menu {
   color: #8a9bb5 !important;
 }
