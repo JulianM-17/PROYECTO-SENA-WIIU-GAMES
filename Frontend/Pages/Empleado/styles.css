@@ -860,13 +860,6 @@ body.a11y-mode-dark-mode .perfil-empleado {
   border-top-color: #16223d !important;
 }
 
-body.a11y-mode-dark-mode .avatar-cm,
-html[data-theme="dark"] .avatar-cm {
-  background-color: #f5a623 !important;
-  color: #000000 !important;
-  text-shadow: none !important;
-}
-
 body.a11y-mode-dark-mode .info-empleado .nombre {
   color: #ffffff !important;
 }
