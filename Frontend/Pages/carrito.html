@@ -128,15 +128,32 @@
             Ingresa tu destino para obtener un estimado exacto de envío.
           </p>
 
-          <div class="acordeon acordeon-linea">
+          <button type="button" class="acordeon acordeon-linea" id="btn-descuento" aria-expanded="false" aria-controls="panel-descuento">
             <p>Aplicar código de descuento</p>
             <i class="fi fi-rr-angle-small-down"></i>
+          </button>
+          <div class="panel-descuento" id="panel-descuento" hidden>
+            <input
+              type="text"
+              id="input-descuento"
+              class="input-descuento"
+              placeholder="Escribe el código"
+              aria-label="Código de descuento"
+              autocomplete="off"
+              maxlength="20"
+            >
+            <button type="button" class="btn-aplicar-descuento" id="btn-aplicar-descuento">Aplicar</button>
+            <button type="button" class="btn-quitar-descuento" id="btn-quitar-descuento" hidden>Quitar</button>
           </div>
 
           <div class="desglose-totales">
             <div class="fila-total">
               <span>Subtotal</span>
               <b id="resumen-subtotal">$0 COP</b>
+            </div>
+            <div class="fila-total fila-descuento" id="fila-descuento" hidden>
+              <span id="texto-descuento">Descuento</span>
+              <b id="resumen-descuento">$0 COP</b>
             </div>
             <div class="fila-total fila-envio">
               <div class="info-envio">

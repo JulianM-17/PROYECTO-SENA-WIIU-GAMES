@@ -2,6 +2,44 @@ document.addEventListener('DOMContentLoaded', () => {
   const listaProductos = document.getElementById('lista-productos');
   if (!listaProductos) return;
 
+  let promocionesDisponibles = [];
+
+  async function cargarPromociones() {
+    try {
+      const response = await fetch('http://localhost:3000/api/promotions');
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !Array.isArray(data.promotions)) {
+        throw new Error(data.message || 'No se pudieron cargar los descuentos.');
+      }
+      promocionesDisponibles = data.promotions;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function leerDescuentoActivo() {
+    try {
+      return JSON.parse(localStorage.getItem('wiiu_active_discount') || 'null');
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function obtenerDescuentoAplicado(subtotal) {
+    const active = leerDescuentoActivo();
+    if (!active || !Number.isFinite(Number(active.percent))) return null;
+    const promotion = promocionesDisponibles.find(
+      (item) => item.code === active.code
+    );
+    if (!promotion) return null;
+    const percent = Math.min(100, Math.max(0, Number(promotion.percent) || 0));
+    return {
+      code: promotion.code,
+      percent,
+      amount: subtotal * (percent / 100),
+    };
+  }
+
   function formatCOP(amount) {
     return '$' + Math.round(amount).toLocaleString('es-CO') + ' COP';
   }
@@ -56,13 +94,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const shipping = cart.length ? 25000 : 0;
-    const taxes = subtotal * 0.19;
+    const descuento = obtenerDescuentoAplicado(subtotal);
+    const montoDescuento = descuento ? descuento.amount : 0;
+    const subtotalConDescuento = Math.max(0, subtotal - montoDescuento);
+    const taxes = subtotalConDescuento * 0.19;
     document.getElementById('resumen-subtotal').textContent = formatCOP(subtotal);
     document.getElementById('resumen-envio').textContent = formatCOP(shipping);
     document.getElementById('resumen-impuestos').textContent = formatCOP(taxes);
     document.getElementById('resumen-total').textContent = formatCOP(
-      subtotal + shipping + taxes,
+      subtotalConDescuento + shipping + taxes,
     );
+    const filaDescuento = document.getElementById('fila-descuento');
+    if (descuento && filaDescuento) {
+      filaDescuento.hidden = false;
+      document.getElementById('texto-descuento').textContent =
+        `Descuento (${descuento.code} · ${descuento.percent}%)`;
+      document.getElementById('resumen-descuento').textContent =
+        `-${formatCOP(montoDescuento)}`;
+    } else if (filaDescuento) {
+      filaDescuento.hidden = true;
+    }
     window.WiiUGamesCart.updateCount(cart);
   }
 
@@ -87,6 +138,61 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-vaciar')?.addEventListener('click', () => {
     window.WiiUGamesCart.clear();
   });
+
+  const botonDescuento = document.getElementById('btn-descuento');
+  const panelDescuento = document.getElementById('panel-descuento');
+  botonDescuento?.addEventListener('click', () => {
+    const isOpen = botonDescuento.getAttribute('aria-expanded') === 'true';
+    botonDescuento.setAttribute('aria-expanded', String(!isOpen));
+    botonDescuento.classList.toggle('abierto', !isOpen);
+    panelDescuento.hidden = isOpen;
+  });
+
+  const inputDescuento = document.getElementById('input-descuento');
+  const botonAplicarDescuento = document.getElementById('btn-aplicar-descuento');
+  const botonQuitarDescuento = document.getElementById('btn-quitar-descuento');
+
+  function actualizarBotonesDescuento() {
+    const active = leerDescuentoActivo();
+    if (botonQuitarDescuento) botonQuitarDescuento.hidden = !active;
+    if (inputDescuento && active) inputDescuento.value = active.code;
+  }
+
+  botonAplicarDescuento?.addEventListener('click', () => {
+    const code = inputDescuento?.value.trim().toUpperCase();
+    if (!code) {
+      mostrarToast('Escribe un código de descuento.');
+      return;
+    }
+    const promotion = promocionesDisponibles.find(
+      (item) => String(item.code).toUpperCase() === code
+    );
+    if (!promotion) {
+      mostrarToast('El código ingresado no es válido.');
+      return;
+    }
+    localStorage.setItem('wiiu_active_discount', JSON.stringify({
+      code: promotion.code,
+      percent: Number(promotion.percent) || 0,
+    }));
+    actualizarBotonesDescuento();
+    renderCart();
+  });
+
+  inputDescuento?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      botonAplicarDescuento?.click();
+    }
+  });
+
+  botonQuitarDescuento?.addEventListener('click', () => {
+    localStorage.removeItem('wiiu_active_discount');
+    if (inputDescuento) inputDescuento.value = '';
+    actualizarBotonesDescuento();
+    renderCart();
+  });
+
   document.getElementById('btn-proceder-pago')?.addEventListener('click', (event) => {
     event.preventDefault();
 
@@ -114,6 +220,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'metodos_pago.html';
   });
   window.addEventListener('wiiu-cart-change', renderCart);
+  cargarPromociones().finally(() => {
+    actualizarBotonesDescuento();
+    renderCart();
+  });
   renderCart();
 });
 

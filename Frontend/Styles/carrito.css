@@ -441,6 +441,74 @@ body {
   padding-top: 16px;
 }
 
+button.acordeon {
+  width: 100%;
+  border: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0;
+  background: transparent;
+  text-align: left;
+  font-family: inherit;
+}
+
+button.acordeon i {
+  transition: transform 0.2s ease;
+}
+
+button.acordeon.abierto i {
+  transform: rotate(180deg);
+}
+
+.panel-descuento {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.panel-descuento[hidden] {
+  display: none;
+}
+
+.input-descuento {
+  min-width: 0;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #101f38;
+  color: var(--white);
+  padding: 0 12px;
+  font: inherit;
+}
+
+.input-descuento:focus {
+  outline: 2px solid var(--yellow);
+  outline-offset: 1px;
+}
+
+.btn-aplicar-descuento,
+.btn-quitar-descuento {
+  height: 42px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-aplicar-descuento {
+  background: var(--yellow);
+  color: var(--navy);
+}
+
+.btn-quitar-descuento {
+  grid-column: 1 / -1;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--white);
+}
+
 .texto-gris {
   font-size: 13px;
   color: rgba(255, 255, 255, 0.55);

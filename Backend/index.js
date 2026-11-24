@@ -4860,6 +4860,30 @@ app.patch("/api/admin/appointments/:id/technician", requireAdmin, async (req, re
 });
 
 // ---------- DESCUENTOS / PROMOCIONES ----------
+app.get("/api/promotions", async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      `SELECT
+         CONCAT('PROM-', pr.id_promocion) AS code,
+         pr.descripcion AS description,
+         ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percent,
+         DATE_FORMAT(pr.fecha_fin, '%Y-%m-%d') AS expires
+       FROM promocion pr
+       INNER JOIN producto p ON p.id_producto = pr.id_producto
+       WHERE pr.estado = 'ACTIVO'
+         AND pr.fecha_inicio <= CURRENT_DATE()
+         AND pr.fecha_fin >= CURRENT_DATE()
+       ORDER BY pr.fecha_fin ASC`
+    );
+    return res.json({ ok: true, promotions: rows || [] });
+  } catch (error) {
+    console.error("Error consultando promociones:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron consultar los descuentos disponibles.",
+    });
+  }
+});
 
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
