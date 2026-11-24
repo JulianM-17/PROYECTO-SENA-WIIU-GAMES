@@ -710,6 +710,31 @@ body {
   opacity: 0.5;
 }
 
+.select-estado-garantia {
+  min-width: 130px;
+  padding: 8px 10px;
+  border: 1px solid #263752;
+  border-radius: 7px;
+  background: #080f1e;
+  color: #ffffff;
+  font: inherit;
+}
+
+.select-estado-garantia:focus-visible,
+.boton-guardar-garantia:focus-visible {
+  outline: 2px solid #f5a623;
+  outline-offset: 2px;
+}
+
+.boton-guardar-garantia {
+  white-space: nowrap;
+}
+
+.boton-guardar-garantia:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .etiqueta-semana {
   font-size: 11px;
   color: #8a9bb5;

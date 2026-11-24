@@ -1163,6 +1163,36 @@ function configurarAccionesSolicitudesGarantia() {
   });
 }
 
+function configurarAccionesGarantias() {
+  var tbody = document.getElementById('tablaGarantiasBody');
+  if (!tbody) return;
+
+  tbody.addEventListener('change', function(event) {
+    var selector = event.target.closest('.select-estado-garantia');
+    if (!selector) return;
+    var button = selector.closest('tr').querySelector('.boton-guardar-garantia');
+    button.disabled = selector.value === selector.dataset.savedStatus;
+  });
+
+  tbody.addEventListener('click', function(event) {
+    var button = event.target.closest('.boton-guardar-garantia');
+    if (!button || button.disabled) return;
+
+    var row = button.closest('tr');
+    var selector = row.querySelector('.select-estado-garantia');
+    var warrantyId = button.dataset.warrantyId;
+    var nextStatus = selector.value;
+    button.disabled = true;
+    selector.disabled = true;
+
+    cambiarEstadoGarantiaAdmin(button, Number(warrantyId), nextStatus)
+      .finally(function() {
+        selector.disabled = false;
+        button.disabled = selector.value === selector.dataset.savedStatus;
+      });
+  });
+}
+
 function crearSelectorEstadoServicio(tipo, orden) {
   var estados = tipo === 'mantenimientos'
     ? [
@@ -2242,21 +2272,22 @@ function cargarDashboard() {
           : row.product;
         var puedeCambiarEstado = Number(row.canChangeStatus) === 1 &&
           (row.status === 'Activa' || row.status === 'Suspendida');
-        var siguienteEstado = row.status === 'Activa' ? 'SUSPENDIDA' : 'VIGENTE';
-        var textoAccion = siguienteEstado === 'SUSPENDIDA' ? 'Suspender' : 'Reactivar';
-        var iconoAccion = siguienteEstado === 'SUSPENDIDA' ? 'fi-rr-ban' : 'fi-rr-refresh';
+        var estadoActual = row.status === 'Suspendida' ? 'SUSPENDIDA' : 'VIGENTE';
+        var estadoCobertura = puedeCambiarEstado
+          ? '<select class="select-estado-garantia" data-warranty-id="' + rawId + '" data-saved-status="' + estadoActual + '" aria-label="Estado de garantía ' + escaparHtmlAdmin(row.id) + '">' +
+            '<option value="VIGENTE"' + (estadoActual === 'VIGENTE' ? ' selected' : '') + '>Activa</option>' +
+            '<option value="SUSPENDIDA"' + (estadoActual === 'SUSPENDIDA' ? ' selected' : '') + '>Suspendida</option>' +
+            '</select>'
+          : '<span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span>';
         var accionCobertura = puedeCambiarEstado
-          ? '<button class="boton-icono" title="' + textoAccion + ' cobertura" aria-label="' +
-            textoAccion + ' garantía ' + escaparHtmlAdmin(row.id) +
-            '" onclick="cambiarEstadoGarantiaAdmin(this, ' + rawId + ', \'' +
-            siguienteEstado + '\')"><i class="fi ' + iconoAccion + '"></i></button>'
+          ? '<button type="button" class="boton-amarillo boton-guardar-garantia" data-warranty-id="' + rawId + '" disabled>Guardar</button>'
           : '<span aria-label="La garantía venció; no se puede cambiar su estado">—</span>';
         return '<td><strong>' + escaparHtmlAdmin(row.id) + '</strong></td>' +
           '<td>' + escaparHtmlAdmin(row.client) + '</td>' +
           '<td>' + escaparHtmlAdmin(productLabel) + '</td>' +
           '<td>' + escaparHtmlAdmin(String(row.buyDate).substring(0, 10)) + '</td>' +
           '<td>' + escaparHtmlAdmin(String(row.expDate).substring(0, 10)) + '</td>' +
-          '<td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td>' +
+          '<td>' + estadoCobertura + '</td>' +
           '<td>' + accionCobertura + '</td>';
       });
     }
@@ -3040,14 +3071,8 @@ function eliminarFilaDB(boton, recurso, id) {
 }
 
 function cambiarEstadoGarantiaAdmin(boton, id, status) {
-  var suspension = status === 'SUSPENDIDA';
-  var confirmacion = suspension
-    ? '¿Suspender la cobertura de esta garantía? El registro se conservará.'
-    : '¿Reactivar la cobertura de esta garantía?';
-  if (!confirm(confirmacion)) return;
-
   boton.disabled = true;
-  fetch(API_BASE + '/api/admin/garantias/' + encodeURIComponent(id) + '/estado', {
+  return fetch(API_BASE + '/api/admin/garantias/' + encodeURIComponent(id) + '/estado', {
     method: 'PATCH',
     headers: {
       'Authorization': 'Bearer ' + sessionToken,
@@ -3391,6 +3416,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ?.addEventListener('click', limpiarNotificacionesAdmin);
   configurarOrdenamientoUsuarios();
   configurarAccionesSolicitudesGarantia();
+  configurarAccionesGarantias();
   cargarDashboard();
   cargarNotificacionesAdmin();
   window.setInterval(cargarNotificacionesAdmin, 15000);
