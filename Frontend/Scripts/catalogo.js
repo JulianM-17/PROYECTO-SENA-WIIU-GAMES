@@ -477,6 +477,26 @@ function actualizarBotonesFavoritos() {
 
 function cargarFavoritos() {
   try {
+    let sessionUser = null;
+    try {
+      sessionUser = JSON.parse(
+        sessionStorage.getItem('wiiu_usuario_activo') || 'null'
+      );
+    } catch (error) {
+      sessionUser = null;
+    }
+
+    if (!sessionUser?.token) {
+      const panelData = JSON.parse(
+        localStorage.getItem('wiiu_user_panel_data') || '{}'
+      );
+      if (panelData && typeof panelData === 'object' && !Array.isArray(panelData)) {
+        panelData.favorites = [];
+        localStorage.setItem('wiiu_user_panel_data', JSON.stringify(panelData));
+      }
+      return [];
+    }
+
     const data = JSON.parse(localStorage.getItem('wiiu_user_panel_data') || '{}');
     return data && Array.isArray(data.favorites) ? data.favorites : [];
   } catch (error) {
