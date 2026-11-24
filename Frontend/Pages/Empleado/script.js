@@ -607,6 +607,13 @@ function createField(labelText, control) {
   const label = document.createElement("label");
   label.htmlFor = control.id;
   label.textContent = labelText;
+  if (control.required) {
+    const indicator = document.createElement("span");
+    indicator.className = "obligatorio";
+    indicator.setAttribute("aria-hidden", "true");
+    indicator.textContent = "*";
+    label.append(" ", indicator);
+  }
   wrapper.append(label, control);
   return wrapper;
 }

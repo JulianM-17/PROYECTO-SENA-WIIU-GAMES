@@ -768,6 +768,11 @@ body {
   color: #64748b;
 }
 
+.grupo-campo .obligatorio {
+  color: #ef4444;
+  font-weight: 700;
+}
+
 .grupo-campo input, .grupo-campo select {
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
