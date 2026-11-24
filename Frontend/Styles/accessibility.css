@@ -685,7 +685,7 @@ body.a11y-mode-dark-mode .precio-anterior {
 }
 
 body.a11y-mode-dark-mode a:not(#a11y-menu *):not(#a11y-trigger-btn *):not(.btn-iniciar):not(.btn-registrar):not(.btn-accion):not(.btn-principal):not(.btn-añadir):not(.enlace-ver-todos):not(.btn-agendar-porque):not(.btn-agendar):not(.btn-pago-amarillo):not(.btn-pago-naranja):not(.btn-pago-blanco):not(.btn-primario):not(.btn-secundario):not(.buy):not(.save):not(.btn-primary):not(.btn-secondary):not(.btn-demo):not(.boton-submit):not(.boton-enviar):not(.btn-modal-aceptar):not(.btn-modal-cancelar):not(.btn-reservar):not(.hero-btn):not(.hero-btn-primary):not(.hero-btn-secondary):not(.redes-footer a):not(.redes-footer a *) {
-  color: #f5c842;
+  color: #0e1130;
 }
 
 /* Tarjetas y Paneles Generales */
