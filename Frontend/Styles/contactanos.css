@@ -290,7 +290,6 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #terminos-panel .termino-i
   text-decoration: underline;
 }
 
-<<<<<<< Updated upstream
 html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel,
 body.a11y-mode-dark-mode #contacto-panel {
   background-color: #0e1834;
@@ -376,7 +375,8 @@ html[data-theme="dark"]:not(.a11y-mode-high-contrast) #contacto-panel .btn-envia
 body.a11y-mode-dark-mode #contacto-panel .btn-enviar {
   background-color: #f5c842;
   color: #080f20;
-=======
+}
+
 body.a11y-mode-dark-mode #contacto-panel .panel-header {
   background-color: #070d1e !important;
 }
@@ -470,7 +470,49 @@ body.a11y-mode-high-contrast #contacto-panel .btn-enviar {
   background: #ffff00 !important;
   color: #000000 !important;
   border: 2px solid #ffff00 !important;
->>>>>>> Stashed changes
+}
+
+body.a11y-mode-high-contrast #terminos-panel,
+body.a11y-mode-high-contrast #terminos-panel .panel-header,
+body.a11y-mode-high-contrast #terminos-panel .panel-body {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel {
+  border: 2px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .panel-header {
+  border-bottom: 2px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .panel-header h2,
+body.a11y-mode-high-contrast #terminos-panel .termino-item h3 {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .panel-header p,
+body.a11y-mode-high-contrast #terminos-panel .termino-item p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .termino-item {
+  background: #101010 !important;
+  border: 1.5px solid #ffff00 !important;
+  box-shadow: none !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .termino-item::before {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+body.a11y-mode-high-contrast #terminos-panel .btn-cerrar {
+  background: #000000 !important;
+  border: 2px solid #ffff00 !important;
+  color: #ffff00 !important;
 }
 
 @media (max-width: 700px) {
