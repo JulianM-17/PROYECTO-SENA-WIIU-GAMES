@@ -2999,3 +2999,24 @@ body.a11y-mode-high-contrast .panel-empleado .separador-menu {
   color: #ffff00 !important;
 }
 
+body.a11y-mode-high-contrast .pagina-pago .opcion-metodo:has(input:checked) {
+  border-color: #ffff00 !important;
+  background: #161616 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .pagina-pago .opcion-metodo:has(input:checked) strong,
+body.a11y-mode-high-contrast .pagina-pago .opcion-metodo:has(input:checked) small {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .pagina-pago .icono-metodo {
+  border: 1px solid #ffff00 !important;
+  background: #000000 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .pagina-pago .icono-metodo i {
+  color: #ffff00 !important;
+}
+

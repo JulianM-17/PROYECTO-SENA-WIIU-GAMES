@@ -275,6 +275,28 @@ function mostrarNotificaciones() {
   }
 }
 
+function abrirSeccionNotificacion(evento, idSeccion) {
+  if (evento) evento.preventDefault();
+
+  var seccionesPermitidas = [
+    'seccion-ventas',
+    'seccion-mantenimientos',
+    'seccion-reparacion',
+    'seccion-garantias',
+    'seccion-inventario'
+  ];
+  if (seccionesPermitidas.indexOf(idSeccion) === -1) return;
+
+  var botonMenu = document.querySelector(
+    '#menuNavegacion [data-seccion="' + idSeccion + '"]'
+  );
+  var panel = document.getElementById('panelNotificaciones');
+  var botonCampana = document.querySelector('.campana-alerta');
+  cambiarPestana(idSeccion, botonMenu);
+  if (panel) panel.hidden = true;
+  if (botonCampana) botonCampana.setAttribute('aria-expanded', 'false');
+}
+
 var ventasNotificaciones = [];
 var citasNotificaciones = [];
 var garantiasNotificaciones = [];
@@ -402,6 +424,7 @@ function actualizarNotificaciones(ventas, inventario, citas, garantias) {
     eventos.push({
       key: 'venta:' + venta.id,
       type: 'sale',
+      section: 'seccion-ventas',
       createdAt: venta.createdAt,
       titulo: 'Nueva compra ' + escaparHtmlAdmin(venta.orderNumber || ('#' + venta.id)),
       detalle:
@@ -418,6 +441,9 @@ function actualizarNotificaciones(ventas, inventario, citas, garantias) {
     eventos.push({
       key: 'cita:' + cita.id,
       type: 'appointment',
+      section: cita.serviceType === 'MANTENIMIENTO'
+        ? 'seccion-mantenimientos'
+        : 'seccion-reparacion',
       createdAt: cita.createdAt,
       titulo: 'Nueva cita CIT-' + escaparHtmlAdmin(cita.id),
       detalle:
@@ -434,6 +460,7 @@ function actualizarNotificaciones(ventas, inventario, citas, garantias) {
     eventos.push({
       key: 'garantia:' + solicitud.id,
       type: 'warranty',
+      section: 'seccion-garantias',
       createdAt: solicitud.createdAt,
       titulo: 'Nueva solicitud de garantía #' + escaparHtmlAdmin(solicitud.id),
       detalle:
@@ -476,6 +503,7 @@ function actualizarNotificaciones(ventas, inventario, citas, garantias) {
     notificaciones.push({
       key: 'stock:' + (producto.id || producto.name),
       type: 'stock',
+      section: 'seccion-inventario',
       createdAt: fechaLocalParaNotificaciones(new Date()),
       titulo: 'Stock bajo: ' + escaparHtmlAdmin(producto.name),
       detalle: 'Quedan ' + stock + ' unidades disponibles.'
@@ -526,10 +554,13 @@ function actualizarNotificaciones(ventas, inventario, citas, garantias) {
         hora = fecha.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
       }
       return '<li class="notificacion-item' + (noLeida ? ' no-leida' : '') + '">' +
+        '<a class="notificacion-enlace" href="#' + escaparHtmlAdmin(notificacion.section) +
+        '" onclick="abrirSeccionNotificacion(event, \'' +
+        escaparHtmlAdmin(notificacion.section) + '\')">' +
         '<span class="notificacion-icono"><i class="fi ' + icono + '"></i></span>' +
-        '<div class="notificacion-contenido"><strong>' + notificacion.titulo + '</strong>' +
-        '<span>' + notificacion.detalle + '</span></div>' +
-        (hora ? '<time>' + hora + '</time>' : '') + '</li>';
+        '<span class="notificacion-contenido"><strong>' + notificacion.titulo + '</strong>' +
+        '<span>' + notificacion.detalle + '</span></span>' +
+        (hora ? '<time>' + hora + '</time>' : '') + '</a></li>';
     }).join('');
     return '<li class="notificacion-grupo"><strong class="notificacion-dia">' +
       escaparHtmlAdmin(grupo[0]) + '</strong><ul class="notificaciones-dia">' +
@@ -2267,19 +2298,92 @@ function renderizarGraficoVentas(tendencia) {
 
 // Cargar datos del panel desde el backend
 var detalleVentaRequestId = 0;
+var detalleVentaActual = null;
+var resumenFinancieroActual = null;
 
-function mostrarDetalleVenta(id) {
+function mostrarDetallesFinancieros(evento) {
+  if (evento) evento.preventDefault();
+
+  var dialogo = document.getElementById('modalDetalleFinanciero');
+  var contenido = document.getElementById('modalDetalleFinancieroContenido');
+  var periodo = document.getElementById('modalDetalleFinancieroPeriodo');
+  var resumen = resumenFinancieroActual;
+  if (!dialogo || !contenido || !resumen) {
+    mostrarToast('error', 'No se pudieron cargar los detalles financieros.');
+    return;
+  }
+
+  var partesMes = String(resumen.month || '').split('-');
+  var fechaMes = partesMes.length === 2
+    ? new Date(Number(partesMes[0]), Number(partesMes[1]) - 1, 1)
+    : new Date();
+  var nombreMes = fechaMes.toLocaleDateString('es-CO', {
+    month: 'long',
+    year: 'numeric'
+  });
+  if (periodo) periodo.textContent = 'Periodo: ' + nombreMes;
+
+  var detalles = document.createElement('dl');
+  detalles.className = 'lista-detalle-servicio';
+  agregarDatoLecturaDetalleAdmin(
+    detalles,
+    'Ingresos por ventas pagadas',
+    '$ ' + Number(resumen.income || 0).toLocaleString('es-CO') +
+      ' · ' + Number(resumen.salesCount || 0) + ' ventas'
+  );
+  agregarDatoLecturaDetalleAdmin(
+    detalles,
+    'Compras de inventario pagadas',
+    '$ ' + Number(resumen.expenses || 0).toLocaleString('es-CO') +
+      ' · ' + Number(resumen.purchasesCount || 0) + ' compras'
+  );
+  agregarDatoLecturaDetalleAdmin(
+    detalles,
+    'Resultado estimado',
+    '$ ' + Number(resumen.result || 0).toLocaleString('es-CO')
+  );
+  agregarDatoLecturaDetalleAdmin(
+    detalles,
+    'Margen estimado',
+    Number(resumen.marginPercent || 0).toLocaleString('es-CO', {
+      maximumFractionDigits: 1
+    }) + '%'
+  );
+
+  var nota = document.createElement('p');
+  nota.className = 'detalle-financiero-nota';
+  nota.textContent =
+    'El resultado resta las compras de inventario pagadas durante el mes a las ventas pagadas del mismo periodo. Es una estimación de flujo: no incluye otros gastos ni el costo de productos comprados en meses anteriores.';
+  contenido.replaceChildren(detalles, nota);
+  if (!dialogo.open) dialogo.showModal();
+}
+
+var modalDetalleFinanciero = document.getElementById('modalDetalleFinanciero');
+document.getElementById('btnCerrarDetalleFinanciero')?.addEventListener('click', function() {
+  modalDetalleFinanciero?.close();
+});
+document.getElementById('btnCerrarDetalleFinancieroPie')?.addEventListener('click', function() {
+  modalDetalleFinanciero?.close();
+});
+modalDetalleFinanciero?.addEventListener('click', function(evento) {
+  if (evento.target === modalDetalleFinanciero) modalDetalleFinanciero.close();
+});
+
+function mostrarDetalleVenta(id, iniciarEdicion) {
   var saleId = Number(id);
   var dialogo = document.getElementById('modalDetalleVenta');
   var titulo = document.getElementById('modalDetalleVentaTitulo');
   var contenido = document.getElementById('modalDetalleVentaContenido');
+  var botonEditar = document.getElementById('btnEditarDetalleVenta');
   if (!Number.isSafeInteger(saleId) || saleId <= 0 || !dialogo || !titulo || !contenido) {
     mostrarToast('error', 'No se pudo abrir el detalle de la venta.');
     return;
   }
 
   var requestId = ++detalleVentaRequestId;
-  titulo.textContent = 'Detalle de venta #' + saleId;
+  detalleVentaActual = null;
+  if (botonEditar) botonEditar.hidden = true;
+  titulo.textContent = (iniciarEdicion ? 'Editar datos de venta #' : 'Detalle de venta #') + saleId;
   contenido.textContent = 'Cargando detalle de la venta...';
   contenido.setAttribute('aria-busy', 'true');
   if (!dialogo.open) dialogo.showModal();
@@ -2390,7 +2494,16 @@ function mostrarDetalleVenta(id) {
     total.textContent =
       'Total de la venta: $ ' + Number(sale.total || 0).toLocaleString('es-CO');
 
-    contenido.replaceChildren(details, productsTitle, tableWrapper, total);
+    detalleVentaActual = {
+      sale: sale,
+      elements: [details, productsTitle, tableWrapper, total]
+    };
+    if (iniciarEdicion) {
+      mostrarFormularioEdicionVenta();
+    } else {
+      contenido.replaceChildren.apply(contenido, detalleVentaActual.elements);
+      if (botonEditar) botonEditar.hidden = false;
+    }
     contenido.setAttribute('aria-busy', 'false');
   })
   .catch(function(error) {
@@ -2402,6 +2515,143 @@ function mostrarDetalleVenta(id) {
   });
 }
 
+function mostrarFormularioEdicionVenta() {
+  if (!detalleVentaActual) return;
+
+  var sale = detalleVentaActual.sale;
+  var contenido = document.getElementById('modalDetalleVentaContenido');
+  var botonEditar = document.getElementById('btnEditarDetalleVenta');
+  if (!contenido) return;
+  if (botonEditar) botonEditar.hidden = true;
+
+  var formulario = document.createElement('form');
+  formulario.id = 'formEditarVenta';
+  formulario.className = 'form-edicion-detalle';
+
+  var campos = [
+    { name: 'firstName', label: 'Nombre(s) del cliente (actualiza su cuenta)', type: 'text', maxLength: 30, value: sale.clientFirstName, required: true },
+    { name: 'lastName', label: 'Apellidos del cliente', type: 'text', maxLength: 30, value: sale.clientLastName, required: true },
+    { name: 'date', label: 'Fecha de venta', type: 'datetime-local', value: String(sale.date || '').replace(' ', 'T'), required: true },
+    { name: 'status', label: 'Estado', type: 'select', value: sale.status, options: [
+      { value: 'PAGADA', label: 'Pagada' },
+      { value: 'ANULADA', label: 'Anulada' }
+    ] },
+    { name: 'total', label: 'Total de la venta', type: 'number', value: Number(sale.total || 0), min: '0', max: '99999999.999999', step: '0.01', required: true },
+    { name: 'phone', label: 'Teléfono de contacto', type: 'text', maxLength: 20, value: sale.phone }
+  ];
+  if (sale.saleType === 'DOMICILIO') {
+    campos.push(
+      { name: 'city', label: 'Ciudad de entrega', type: 'text', maxLength: 100, value: sale.city },
+      { name: 'address', label: 'Dirección de entrega', type: 'text', maxLength: 180, value: sale.address },
+      { name: 'trackingNumber', label: 'Número de guía', type: 'text', maxLength: 30, value: sale.trackingNumber }
+    );
+  }
+
+  campos.forEach(function(campo) {
+    var contenedor = document.createElement('label');
+    contenedor.className = 'campo-edicion-detalle';
+    contenedor.textContent = campo.label;
+    var control = campo.type === 'select'
+      ? document.createElement('select')
+      : document.createElement('input');
+    control.name = campo.name;
+    if (campo.type === 'select') {
+      campo.options.forEach(function(optionData) {
+        var option = document.createElement('option');
+        option.value = optionData.value;
+        option.textContent = optionData.label;
+        control.appendChild(option);
+      });
+    } else {
+      control.type = campo.type;
+      if (campo.maxLength) control.maxLength = campo.maxLength;
+      if (campo.min !== undefined) control.min = campo.min;
+      if (campo.max !== undefined) control.max = campo.max;
+      if (campo.step !== undefined) control.step = campo.step;
+    }
+    control.value = campo.value === undefined ? '' : campo.value;
+    control.required = Boolean(campo.required);
+    contenedor.appendChild(control);
+    formulario.appendChild(contenedor);
+  });
+
+  var acciones = document.createElement('div');
+  acciones.className = 'acciones-edicion-venta';
+  var cancelar = document.createElement('button');
+  cancelar.type = 'button';
+  cancelar.className = 'btn-cancelar';
+  cancelar.textContent = 'Cancelar';
+  cancelar.addEventListener('click', cancelarEdicionVenta);
+  var guardar = document.createElement('button');
+  guardar.type = 'submit';
+  guardar.className = 'boton-amarillo';
+  guardar.textContent = 'Guardar cambios';
+  acciones.append(cancelar, guardar);
+  formulario.appendChild(acciones);
+  formulario.addEventListener('submit', guardarEdicionVentaAdmin);
+
+  contenido.replaceChildren(formulario);
+}
+
+function cancelarEdicionVenta() {
+  var contenido = document.getElementById('modalDetalleVentaContenido');
+  var botonEditar = document.getElementById('btnEditarDetalleVenta');
+  if (!contenido || !detalleVentaActual) return;
+  contenido.replaceChildren.apply(contenido, detalleVentaActual.elements);
+  if (botonEditar) botonEditar.hidden = false;
+}
+
+async function guardarEdicionVentaAdmin(evento) {
+  evento.preventDefault();
+  if (!detalleVentaActual) return;
+
+  var formulario = evento.currentTarget;
+  var botonGuardar = formulario.querySelector('button[type="submit"]');
+  var saleId = detalleVentaActual.sale.id;
+  var body = {
+    firstName: formulario.elements.firstName.value,
+    lastName: formulario.elements.lastName.value,
+    date: formulario.elements.date.value,
+    status: formulario.elements.status.value,
+    total: Number(formulario.elements.total.value),
+    phone: formulario.elements.phone.value,
+    city: formulario.elements.city ? formulario.elements.city.value : '',
+    address: formulario.elements.address ? formulario.elements.address.value : '',
+    trackingNumber: formulario.elements.trackingNumber
+      ? formulario.elements.trackingNumber.value
+      : ''
+  };
+  if (botonGuardar) botonGuardar.disabled = true;
+
+  try {
+    var response = await fetch(API_BASE + '/api/admin/ventas/' + encodeURIComponent(saleId), {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + sessionToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    var data;
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error('El servidor devolvió una respuesta inválida al guardar la venta.');
+    }
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || 'No se pudieron guardar los cambios de la venta.');
+    }
+
+    modalDetalleVenta?.close();
+    mostrarToast('success', data.message || 'Datos de la venta actualizados.');
+    cargarDashboard();
+  } catch (error) {
+    console.error('Error al editar la venta:', error);
+    mostrarToast('error', error.message || 'No se pudieron guardar los cambios.');
+    if (botonGuardar) botonGuardar.disabled = false;
+  }
+}
+
 var modalDetalleVenta = document.getElementById('modalDetalleVenta');
 document.getElementById('btnCerrarDetalleVenta')?.addEventListener('click', function() {
   modalDetalleVenta?.close();
@@ -2409,11 +2659,15 @@ document.getElementById('btnCerrarDetalleVenta')?.addEventListener('click', func
 document.getElementById('btnCerrarDetalleVentaPie')?.addEventListener('click', function() {
   modalDetalleVenta?.close();
 });
+document.getElementById('btnEditarDetalleVenta')?.addEventListener('click', mostrarFormularioEdicionVenta);
 modalDetalleVenta?.addEventListener('click', function(evento) {
   if (evento.target === modalDetalleVenta) modalDetalleVenta.close();
 });
 modalDetalleVenta?.addEventListener('close', function() {
   detalleVentaRequestId++;
+  detalleVentaActual = null;
+  var botonEditar = document.getElementById('btnEditarDetalleVenta');
+  if (botonEditar) botonEditar.hidden = true;
 });
 
 function cargarDashboard() {
@@ -2506,8 +2760,18 @@ function cargarDashboard() {
     if (data.orders) {
       if (data.orders.length) {
         poblarTabla('tablaPedidosBody', data.orders, function(row) {
-          var estadoClase = row.estado === 'PAGADA' ? 'etiqueta-verde' : 'etiqueta-naranja';
-          return '<td><strong>#' + escaparHtmlAdmin(row.orderNumber || row.id_venta) + '</strong></td><td>' + escaparHtmlAdmin(row.nombre + ' ' + row.apellido) + '<small>Cliente #' + escaparHtmlAdmin(row.clientId) + '</small></td><td>' + escaparHtmlAdmin(row.date) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.estado) + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'pedidos\', ' + Number(row.id_venta) + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var estadoClase = row.estado === 'PAGADA'
+          ? 'etiqueta-verde'
+          : row.estado === 'ANULADA'
+            ? 'etiqueta-rojo'
+            : 'etiqueta-naranja';
+          var saleId = Number(row.id_venta);
+          var botonAnular = row.estado === 'ANULADA'
+            ? '<button class="boton-icono" type="button" disabled title="La venta ya está anulada" aria-label="Venta anulada"><i class="fi fi-rr-ban"></i></button>'
+            : '<button class="boton-icono rojo" type="button" title="Anular venta" aria-label="Anular venta #' +
+              escaparHtmlAdmin(row.id_venta) + '" onclick="anularVentaAdmin(' + saleId +
+              ')"><i class="fi fi-rr-ban"></i></button>';
+          return '<td><strong>#' + escaparHtmlAdmin(row.orderNumber || row.id_venta) + '</strong></td><td>' + escaparHtmlAdmin(row.nombre + ' ' + row.apellido) + '<small>Cliente #' + escaparHtmlAdmin(row.clientId) + '</small></td><td>' + escaparHtmlAdmin(row.date) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.estado) + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td>' + botonAnular + '</td>';
         });
       } else {
         document.getElementById('tablaPedidosBody').innerHTML =
@@ -2532,20 +2796,31 @@ function cargarDashboard() {
     if (ventas.length) {
       poblarTabla('tablaVentasBody', ventas, function(row) {
         var estado = String(row.estado || '');
+        var saleId = Number(row.id_venta);
         var estadoClase = estado === 'PAGADA'
           ? 'etiqueta-verde'
           : estado === 'ANULADA'
             ? 'etiqueta-rojo'
             : 'etiqueta-naranja';
         var cliente = [row.nombre, row.apellido].filter(Boolean).join(' ');
+        var botonAnular = estado === 'ANULADA'
+          ? '<button type="button" class="boton-icono" disabled title="La venta ya está anulada" aria-label="Venta anulada"><i class="fi fi-rr-ban"></i></button>'
+          : '<button type="button" class="boton-icono rojo" title="Anular venta" aria-label="Anular venta #' +
+            escaparHtmlAdmin(row.id_venta) + '" onclick="anularVentaAdmin(' + saleId +
+            ')"><i class="fi fi-rr-ban"></i></button>';
         return '<td><strong>Venta #' + escaparHtmlAdmin(row.id_venta) + '</strong></td>' +
           '<td>' + escaparHtmlAdmin(cliente) + '</td>' +
           '<td>' + escaparHtmlAdmin(row.date) + '</td>' +
           '<td><span class="' + estadoClase + '">' + escaparHtmlAdmin(estado) + '</span></td>' +
           '<td>$ ' + Number(row.total || 0).toLocaleString('es-CO') + '</td>' +
-          '<td><button type="button" class="btn-mas-informacion" aria-label="Ver detalle de venta #' +
+          '<td><div class="acciones-venta">' +
+          '<button type="button" class="btn-mas-informacion" aria-label="Ver detalle de venta #' +
           escaparHtmlAdmin(row.id_venta) + '" title="Ver detalle" onclick="mostrarDetalleVenta(' +
-          Number(row.id_venta) + ')"><i class="fi fi-rr-eye" aria-hidden="true"></i> Ver detalle</button></td>';
+          saleId + ')"><i class="fi fi-rr-eye" aria-hidden="true"></i> Ver</button>' +
+          '<button type="button" class="boton-icono" title="Editar datos de venta" aria-label="Editar datos de venta #' +
+          escaparHtmlAdmin(row.id_venta) + '" onclick="mostrarDetalleVenta(' + saleId +
+          ', true)"><i class="fi fi-rr-edit"></i></button>' + botonAnular +
+          '</div></td>';
       });
     } else {
       document.getElementById('tablaVentasBody').innerHTML =
@@ -2791,9 +3066,38 @@ function cargarDashboard() {
       if (el) el.textContent = data.reviews.length;
     }
 
-    // Resumen financiero
+    // Resumen financiero del mes
+    resumenFinancieroActual = data.summary.monthlyFinancial;
+    if (!resumenFinancieroActual) {
+      console.error('El backend no devolvió summary.monthlyFinancial.');
+      ['finIngresos', 'finGastos', 'finUtilidad', 'finMargen'].forEach(function(id) {
+        el = document.getElementById(id);
+        if (el) el.textContent = '—';
+      });
+      mostrarToast(
+        'error',
+        'El backend está usando una versión anterior. Reinícialo para cargar el resumen financiero.'
+      );
+      return;
+    }
+
     el = document.getElementById('finIngresos');
-    if (el) el.textContent = '$ ' + Number(data.summary.salesTotal || 0).toLocaleString('es-CO');
+    if (el) el.textContent =
+      '$ ' + Number(resumenFinancieroActual.income || 0).toLocaleString('es-CO');
+
+    el = document.getElementById('finGastos');
+    if (el) el.textContent =
+      '$ ' + Number(resumenFinancieroActual.expenses || 0).toLocaleString('es-CO');
+
+    el = document.getElementById('finUtilidad');
+    if (el) el.textContent =
+      '$ ' + Number(resumenFinancieroActual.result || 0).toLocaleString('es-CO');
+
+    el = document.getElementById('finMargen');
+    if (el) {
+      el.textContent = Number(resumenFinancieroActual.marginPercent || 0)
+        .toLocaleString('es-CO', { maximumFractionDigits: 1 }) + '%';
+    }
 
     mostrarToast('success', 'Datos del panel cargados correctamente');
   })
@@ -3453,6 +3757,39 @@ function eliminarFila(boton) {
 }
 
 // Eliminar producto de la BD (soft-delete)
+function anularVentaAdmin(id) {
+  var saleId = Number(id);
+  if (!Number.isSafeInteger(saleId) || saleId <= 0) {
+    mostrarToast('error', 'No se pudo identificar la venta que quieres anular.');
+    return;
+  }
+  if (!confirm('¿Anular esta venta? Se conservará el registro, pero dejará de contar como venta pagada.')) {
+    return;
+  }
+
+  fetch(API_BASE + '/api/admin/pedidos/' + encodeURIComponent(saleId), {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+  .then(function(response) {
+    return response.json().then(function(data) {
+      return { ok: response.ok, data: data };
+    });
+  })
+  .then(function(result) {
+    if (!result.ok || !result.data.ok) {
+      throw new Error(result.data.message || 'No se pudo anular la venta.');
+    }
+    mostrarToast('success', result.data.message || 'Venta anulada correctamente.');
+    cargarDashboard();
+    cargarNotificacionesAdmin();
+  })
+  .catch(function(error) {
+    console.error('Error al anular la venta:', error);
+    mostrarToast('error', error.message || 'No se pudo anular la venta.');
+  });
+}
+
 function eliminarFilaDB(boton, recurso, id) {
   if (!confirm("¿Estás seguro de que deseas eliminar este registro de la base de datos?")) return;
 
