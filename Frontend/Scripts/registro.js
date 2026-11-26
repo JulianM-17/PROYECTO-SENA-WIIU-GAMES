@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputNombre = document.getElementById('nombre');
   const inputApellido = document.getElementById('apellido');
   const inputFechaNacimiento = document.getElementById('fecha-nacimiento');
+  const selectTipoDocumento = document.getElementById('tipo-documento');
+  const inputNumeroDocumento = document.getElementById('numero-documento');
   const inputCorreo = document.getElementById('correo');
   const inputConfirmarCorreo = document.getElementById('confirmar-correo');
   const inputContrasena = document.getElementById('contrasena');
@@ -261,6 +263,39 @@ document.addEventListener('DOMContentLoaded', () => {
     return limpiarError(inputFechaNacimiento, 'error-nacimiento');
   }
 
+  function validarTipoDocumento() {
+    if (!selectTipoDocumento.value) {
+      return mostrarError(selectTipoDocumento, 'error-tipo-documento', 'Selecciona el tipo de documento.');
+    }
+    const esPasaporte = selectTipoDocumento.value === 'PAS';
+    inputNumeroDocumento.inputMode = esPasaporte ? 'text' : 'numeric';
+    inputNumeroDocumento.pattern = esPasaporte ? '[A-Za-z0-9-]{5,20}' : '[0-9]{6,20}';
+    inputNumeroDocumento.placeholder = esPasaporte ? 'Ej. AB123456' : 'Ej. 1075654321';
+    inputNumeroDocumento.setCustomValidity('');
+    return limpiarError(selectTipoDocumento, 'error-tipo-documento');
+  }
+
+  function validarNumeroDocumento() {
+    const tipo = selectTipoDocumento.value;
+    const valor = inputNumeroDocumento.value.trim();
+    if (!tipo) {
+      return mostrarError(inputNumeroDocumento, 'error-numero-documento', 'Primero selecciona el tipo de documento.');
+    }
+    const valido = tipo === 'PAS'
+      ? /^[A-Za-z0-9-]{5,20}$/.test(valor)
+      : /^[0-9]{6,20}$/.test(valor);
+    if (!valido) {
+      return mostrarError(
+        inputNumeroDocumento,
+        'error-numero-documento',
+        tipo === 'PAS'
+          ? 'El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos.'
+          : 'El documento debe contener entre 6 y 20 números.',
+      );
+    }
+    return limpiarError(inputNumeroDocumento, 'error-numero-documento');
+  }
+
   function validarCorreo() {
     const val = inputCorreo.value.trim();
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -413,6 +448,20 @@ document.addEventListener('DOMContentLoaded', () => {
     inputFechaNacimiento.addEventListener('blur', validarFechaNacimiento);
   }
 
+  if (selectTipoDocumento) {
+    selectTipoDocumento.addEventListener('change', validarTipoDocumento);
+  }
+
+  if (inputNumeroDocumento) {
+    inputNumeroDocumento.addEventListener('input', () => {
+      inputNumeroDocumento.value = selectTipoDocumento.value === 'PAS'
+        ? inputNumeroDocumento.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase()
+        : inputNumeroDocumento.value.replace(/\D/g, '');
+      if (inputNumeroDocumento.classList.contains('input-error')) validarNumeroDocumento();
+    });
+    inputNumeroDocumento.addEventListener('blur', validarNumeroDocumento);
+  }
+
   if (inputCorreo) {
     inputCorreo.addEventListener('blur', validarCorreo);
     inputCorreo.addEventListener('input', () => { if (inputCorreo.classList.contains('input-error')) validarCorreo(); });
@@ -475,6 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const vNombre = validarNombre();
       const vApellido = validarApellido();
       const vFecha = validarFechaNacimiento();
+      const vTipoDocumento = validarTipoDocumento();
+      const vNumeroDocumento = validarNumeroDocumento();
       const vCorreo = validarCorreo();
       const vConfCorreo = validarConfirmarCorreo();
       const vPass = validarContrasena();
@@ -486,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const vTelSecundario = validarTelefonoSecundario();
       const vTerm = validarTerminos();
 
-      const esValido = vNombre && vApellido && vFecha && vCorreo && vConfCorreo &&
+      const esValido = vNombre && vApellido && vFecha && vTipoDocumento && vNumeroDocumento && vCorreo && vConfCorreo &&
                         vPass && vConfPass && vDir && vDep && vMun && vTel &&
                         vTelSecundario && vTerm;
 
@@ -509,6 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const nuevoUsuario = {
         nombre: inputNombre.value.trim(),
         apellido: inputApellido.value.trim(),
+        tipoDocumento: selectTipoDocumento.value,
+        numeroDocumento: inputNumeroDocumento.value.trim(),
         email: inputCorreo.value.trim().toLowerCase(),
         telefono: formatearTelefono(inputTelefonoPrincipal, selectPrefijoPrincipal),
         telefono_secundario: inputTelefonoSecundario

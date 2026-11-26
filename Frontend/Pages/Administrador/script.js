@@ -954,6 +954,21 @@ function abrirModal(tipo, productoId) {
           <input type="date" id="cliente-nacimiento" required min="1940-01-01">
         </div>
         <div class="campo-grupo">
+          <label for="cliente-tipo-documento">Tipo de documento:</label>
+          <select id="cliente-tipo-documento" required>
+            <option value="">Selecciona el tipo</option>
+            <option value="CC">Cédula de ciudadanía</option>
+            <option value="TI">Tarjeta de identidad</option>
+            <option value="CE">Cédula de extranjería</option>
+            <option value="PAS">Pasaporte</option>
+            <option value="NIT">NIT</option>
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-numero-documento">Número de documento:</label>
+          <input type="text" id="cliente-numero-documento" required minlength="6" maxlength="20" inputmode="numeric" placeholder="Ej. 1075654321">
+        </div>
+        <div class="campo-grupo">
           <label for="cliente-correo">Correo electrónico:</label>
           <input type="email" id="cliente-correo" required maxlength="120" autocomplete="email" placeholder="ejemplo@correo.com">
         </div>
@@ -1082,6 +1097,8 @@ function actualizarCiudadesNuevoClienteAdmin(departamento) {
 function configurarFormularioNuevoClienteAdmin() {
   var departamentoSelect = document.getElementById('cliente-departamento');
   var nacimientoInput = document.getElementById('cliente-nacimiento');
+  var tipoDocumentoSelect = document.getElementById('cliente-tipo-documento');
+  var numeroDocumentoInput = document.getElementById('cliente-numero-documento');
   if (departamentoSelect) {
     departamentoSelect.addEventListener('change', function() {
       actualizarCiudadesNuevoClienteAdmin(departamentoSelect.value);
@@ -1105,6 +1122,21 @@ function configurarFormularioNuevoClienteAdmin() {
       String(fechaMaxima.getDate()).padStart(2, '0')
     ].join('-');
   }
+  if (tipoDocumentoSelect && numeroDocumentoInput) {
+    tipoDocumentoSelect.addEventListener('change', function() {
+      var esPasaporte = tipoDocumentoSelect.value === 'PAS';
+      numeroDocumentoInput.value = '';
+      numeroDocumentoInput.inputMode = esPasaporte ? 'text' : 'numeric';
+      numeroDocumentoInput.pattern = esPasaporte ? '[A-Za-z0-9-]{5,20}' : '[0-9]{6,20}';
+      numeroDocumentoInput.placeholder = esPasaporte ? 'Ej. AB123456' : 'Ej. 1075654321';
+      limpiarErrorCampoAdmin(numeroDocumentoInput);
+    });
+    numeroDocumentoInput.addEventListener('input', function() {
+      numeroDocumentoInput.value = tipoDocumentoSelect.value === 'PAS'
+        ? numeroDocumentoInput.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase()
+        : numeroDocumentoInput.value.replace(/\D/g, '');
+    });
+  }
 }
 
 function limpiarErrorCampoAdmin(input) {
@@ -1122,6 +1154,8 @@ function validarNuevoClienteAdmin() {
     firstName: document.getElementById('cliente-nombre').value.trim(),
     lastName: document.getElementById('cliente-apellido').value.trim(),
     birthDate: document.getElementById('cliente-nacimiento').value,
+    documentType: document.getElementById('cliente-tipo-documento').value,
+    documentNumber: document.getElementById('cliente-numero-documento').value.trim(),
     email: document.getElementById('cliente-correo').value.trim().toLowerCase(),
     confirmEmail: document.getElementById('cliente-confirmar-correo').value.trim().toLowerCase(),
     password: document.getElementById('cliente-contrasena').value,
@@ -1162,6 +1196,21 @@ function validarNuevoClienteAdmin() {
     valores.birthDate > fechaMaximaTexto
   ) {
     invalidar('cliente-nacimiento', 'Selecciona una fecha válida entre 1940 y la fecha límite permitida (mínimo 10 años).');
+  }
+
+  if (!['CC', 'TI', 'CE', 'PAS', 'NIT'].includes(valores.documentType)) {
+    invalidar('cliente-tipo-documento', 'Selecciona un tipo de documento válido.');
+  }
+  var documentoValido = valores.documentType === 'PAS'
+    ? /^[A-Za-z0-9-]{5,20}$/.test(valores.documentNumber)
+    : /^[0-9]{6,20}$/.test(valores.documentNumber);
+  if (!documentoValido) {
+    invalidar(
+      'cliente-numero-documento',
+      valores.documentType === 'PAS'
+        ? 'Ingresa un pasaporte de 5 a 20 caracteres alfanuméricos.'
+        : 'Ingresa un documento de 6 a 20 números.',
+    );
   }
 
   var formatoCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1273,6 +1322,8 @@ function campoIdParaErrorBackend(campo) {
       firstName: 'cliente-nombre',
       lastName: 'cliente-apellido',
       birthDate: 'cliente-nacimiento',
+      documentType: 'cliente-tipo-documento',
+      documentNumber: 'cliente-numero-documento',
       email: 'cliente-correo',
       confirmEmail: 'cliente-confirmar-correo',
       password: 'cliente-contrasena',
@@ -2905,7 +2956,7 @@ async function guardarDatos(evento) {
   } else if (tipoModalActual === 'mantenimientos') {
     var tipoEquipoMntInput = document.getElementById('campo_tipo_equipo');
     var marcaEquipoMntInput = document.getElementById('campo_marca_equipo');
-    var serialEquipoMntInput = document.getElementById('campo_serie_equipo');
+    var serialMntInput = document.getElementById('campo_serie_equipo');
     var trabajoMntInput = document.getElementById('campo_detalle');
     var diagnosticoMntInput = document.getElementById('campo_diagnostico');
     if (!c1 || c1.length < 3 || c1.length > 100) {
@@ -2956,7 +3007,7 @@ async function guardarDatos(evento) {
       equipment: c1,
       equipmentType: tipoEquipoMntInput.value,
       brand: marcaEquipoMntInput.value.trim(),
-      serialNumber: serialEquipoMntInput.value.trim(),
+      serialNumber: serialMntInput.value.trim(),
       clientId: Number(c2),
       technicianId: Number(c3),
       serviceDescription: trabajoMntInput.value.trim(),
@@ -3128,6 +3179,8 @@ async function guardarDatos(evento) {
         firstName: document.getElementById('cliente-nombre').value.trim(),
         lastName: document.getElementById('cliente-apellido').value.trim(),
         birthDate: document.getElementById('cliente-nacimiento').value,
+        documentType: document.getElementById('cliente-tipo-documento').value,
+        documentNumber: document.getElementById('cliente-numero-documento').value.trim(),
         email: document.getElementById('cliente-correo').value.trim().toLowerCase(),
         confirmEmail: document.getElementById('cliente-confirmar-correo').value.trim().toLowerCase(),
         password: document.getElementById('cliente-contrasena').value,
@@ -3475,6 +3528,9 @@ function configurarOrdenamientoUsuarios() {
 function configurarOrdenamientoTodasLasTablas() {
   document.querySelectorAll('.tabla-panel').forEach(function(tabla) {
     tabla.querySelectorAll('thead th').forEach(function(encabezado) {
+      var esUltimaColumna = encabezado === encabezado.parentElement.lastElementChild;
+      var esTablaMantenimientos = tabla.closest('#seccion-mantenimientos');
+      if (esTablaMantenimientos && esUltimaColumna) return;
       encabezado.setAttribute('title', 'Ordenar por ' + encabezado.textContent.trim());
       encabezado.setAttribute('aria-sort', 'none');
     });
@@ -3482,6 +3538,9 @@ function configurarOrdenamientoTodasLasTablas() {
     tabla.addEventListener('click', function(evento) {
       var encabezado = evento.target.closest('thead th');
       if (!encabezado || !tabla.contains(encabezado)) return;
+      var esUltimaColumna = encabezado === encabezado.parentElement.lastElementChild;
+      var esTablaMantenimientos = tabla.closest('#seccion-mantenimientos');
+      if (esTablaMantenimientos && esUltimaColumna) return;
 
       var tbody = tabla.tBodies[0];
       if (!tbody) return;

@@ -978,6 +978,15 @@ body {
   color: #f5a623;
 }
 
+#seccion-mantenimientos .tabla-panel th:last-child {
+  cursor: default;
+  user-select: text;
+}
+
+#seccion-mantenimientos .tabla-panel th:last-child::after {
+  content: none;
+}
+
 #tablaUsuarios .boton-orden-tabla {
   display: inline-flex;
   align-items: center;
@@ -1513,6 +1522,18 @@ body {
 
 .acciones-servicio {
   white-space: nowrap;
+}
+
+#seccion-mantenimientos .acciones-servicio {
+  text-align: left;
+}
+
+#seccion-mantenimientos .acciones-servicio > :not(.btn-mas-informacion) {
+  display: none;
+}
+
+#seccion-mantenimientos .acciones-servicio .btn-mas-informacion {
+  margin-right: 0;
 }
 
 .btn-mas-informacion,

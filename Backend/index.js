@@ -2797,6 +2797,7 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
   const department = String(req.body?.department || "").trim();
   const city = String(req.body?.city || "").trim();
   const address = String(req.body?.address || "").trim();
+  const postalCode = String(req.body?.postalCode || "").trim();
   const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
   const validDocumentTypes = ["CC", "TI", "PAS", "NIT", "CE"];
   const birth = new Date(`${birthDate}T00:00:00Z`);
@@ -2859,6 +2860,15 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
   if (address.length < 5 || address.length > 40) {
     return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
   }
+  if (postalCode.length > 20) {
+    return res.status(400).json({ ok: false, message: "El código postal no puede superar 20 caracteres." });
+  }
+  if (req.body?.acceptedTerms !== true) {
+    return res.status(400).json({
+      ok: false,
+      message: "El cliente debe aceptar los términos y la política de datos.",
+    });
+  }
 
   const fullName = `${firstName} ${lastName}`.trim();
 
@@ -2892,10 +2902,11 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
       return res.status(409).json({ ok: false, message: "El número de documento ya está registrado." });
     }
 
+    await ensureCustomerPostalCodeSchema();
     const [result] = await pool.query(
       `INSERT INTO usuario
          (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
-          telefono, telefono_secundario, departamento, ciudad, direccion,
+          telefono, telefono_secundario, departamento, ciudad, direccion, codigo_postal,
           correo, contrasena_hash, estado)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
@@ -2910,6 +2921,7 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
         department,
         city,
         address,
+        postalCode || null,
         email,
         passwordHash,
       ],
@@ -3025,8 +3037,9 @@ app.post("/api/employee/workshop-orders", requireEmployee, async (req, res) => {
     defect.length > 100 ||
     !validEquipmentTypes.includes(equipmentType) ||
     !validServiceTypes.includes(serviceType) ||
-    !Number.isFinite(cost) ||
-    cost <= 0
+    !Number.isSafeInteger(cost) ||
+    cost <= 0 ||
+    cost > 99999999
   ) {
     return res.status(400).json({ ok: false, message: "Revisa los datos de la orden de taller." });
   }
@@ -3122,9 +3135,12 @@ app.patch("/api/employee/workshop-orders/:id", requireEmployee, async (req, res)
   const serviceId = Number(req.params.id);
   const requestedStatus = String(req.body?.status || "");
   const statusLabels = {
-    PENDIENTE: "Pendiente",
     "EN PROCESO": "En proceso",
     COMPLETO: "Completado",
+  };
+  const previousStatusByTransition = {
+    "EN PROCESO": "PENDIENTE",
+    COMPLETO: "EN PROCESO",
   };
   if (
     !Number.isSafeInteger(serviceId) ||
@@ -3138,11 +3154,12 @@ app.patch("/api/employee/workshop-orders/:id", requireEmployee, async (req, res)
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
+    const previousStatus = previousStatusByTransition[requestedStatus];
     const [result] = await connection.query(
       `UPDATE servicio
        SET estado = ?
-       WHERE id_servicio = ? AND id_encargado = ? AND estado <> 'CANCELADO'`,
-      [requestedStatus, serviceId, req.userId],
+       WHERE id_servicio = ? AND id_encargado = ? AND estado = ?`,
+      [requestedStatus, serviceId, req.userId, previousStatus],
     );
     if (!result.affectedRows) {
       await revertirTransaccionEmpleado(connection);
@@ -3869,8 +3886,10 @@ app.post("/api/usuarios", async (req, res) => {
     const departamento = String(req.body?.departamento || "").trim();
     const ciudad = String(req.body?.ciudad || "").trim();
     const nacimiento = String(req.body?.nacimiento || "").trim();
+    const tipoDocumento = String(req.body?.tipoDocumento || "CC").trim().toUpperCase();
+    const numeroDocumento = String(req.body?.numeroDocumento || "").trim();
 
-    if (!nombre || !apellido || !email || !password) {
+    if (!nombre || !apellido || !email || !password || !tipoDocumento || !numeroDocumento) {
       return res.status(400).json({ ok: false, message: "Datos obligatorios faltantes." });
     }
     const nombreValido = /^[\p{L}][\p{L}\s'-]*$/u;
@@ -3915,6 +3934,28 @@ app.post("/api/usuarios", async (req, res) => {
     if (!fechaValida) {
       return res.status(400).json({ ok: false, message: "Selecciona una fecha de nacimiento válida." });
     }
+    const tiposDocumentoValidos = ["CC", "TI", "PAS", "NIT", "CE"];
+    if (!tiposDocumentoValidos.includes(tipoDocumento)) {
+      return res.status(400).json({ ok: false, message: "Selecciona un tipo de documento válido." });
+    }
+    const documentoValido = tipoDocumento === "PAS"
+      ? /^[A-Za-z0-9-]{5,20}$/.test(numeroDocumento)
+      : /^[0-9]{6,20}$/.test(numeroDocumento);
+    if (!documentoValido) {
+      return res.status(400).json({
+        ok: false,
+        message: tipoDocumento === "PAS"
+          ? "El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos."
+          : "El documento seleccionado debe contener entre 6 y 20 números.",
+      });
+    }
+    const [documentoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE num_doc = ? LIMIT 1",
+      [numeroDocumento],
+    );
+    if (documentoExistente.length) {
+      return res.status(409).json({ ok: false, message: "El número de documento ya está registrado." });
+    }
 
     const [roleRows] = await pool.query(
       "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
@@ -3923,8 +3964,6 @@ app.post("/api/usuarios", async (req, res) => {
       return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
     }
 
-    // Generar documento (ID) único
-    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
     const passwordHash = await bcrypt.hash(password, 12);
     await ensureCustomerPostalCodeSchema();
     const [result] = await pool.query(
@@ -3932,12 +3971,13 @@ app.post("/api/usuarios", async (req, res) => {
          (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario,
           departamento, ciudad, direccion, codigo_postal, fecha_nacimiento,
           correo, contrasena_hash, estado)
-       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         roleRows[0].id_rol,
         nombre,
         apellido,
-        numDoc,
+        tipoDocumento,
+        numeroDocumento,
         telefono.substring(0, 20),
         telefonoSecundario.substring(0, 20) || null,
         departamento,
@@ -3964,6 +4004,8 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
     const nombre = String(req.body?.firstName || "").normalize("NFC").trim().replace(/\s+/g, " ");
     const apellido = String(req.body?.lastName || "").normalize("NFC").trim().replace(/\s+/g, " ");
     const nacimiento = String(req.body?.birthDate || "").trim();
+    const tipoDocumento = String(req.body?.documentType || "").trim().toUpperCase();
+    const numeroDocumento = String(req.body?.documentNumber || "").trim();
     const correo = String(req.body?.email || "").trim().toLowerCase();
     const confirmarCorreo = String(req.body?.confirmEmail || "").trim().toLowerCase();
     const contrasena = String(req.body?.password || "");
@@ -4000,6 +4042,18 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
       nacimiento <= fechaMaxima;
     if (!fechaNacimientoValida) {
       errors.birthDate = "Selecciona una fecha válida entre 1940 y la fecha límite permitida (mínimo 10 años).";
+    }
+    const tiposDocumentoValidos = ["CC", "TI", "CE", "PAS", "NIT"];
+    if (!tiposDocumentoValidos.includes(tipoDocumento)) {
+      errors.documentType = "Selecciona un tipo de documento válido.";
+    }
+    const documentoValido = tipoDocumento === "PAS"
+      ? /^[A-Za-z0-9-]{5,20}$/.test(numeroDocumento)
+      : /^[0-9]{6,20}$/.test(numeroDocumento);
+    if (!documentoValido) {
+      errors.documentNumber = tipoDocumento === "PAS"
+        ? "El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos."
+        : "El documento debe contener entre 6 y 20 números.";
     }
 
     const formatoCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -4062,20 +4116,43 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
       return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente activo." });
     }
 
-    const numeroDocumento = `CLI${Date.now().toString(36).toUpperCase()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
     const passwordHash = await bcrypt.hash(contrasena, 12);
     await ensureCustomerPostalCodeSchema();
+
+    const [correoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE correo = ? LIMIT 1",
+      [correo],
+    );
+    if (correoExistente.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un usuario registrado con este correo.",
+        errors: { email: "Ya existe un usuario registrado con este correo." },
+      });
+    }
+    const [documentoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE num_doc = ? LIMIT 1",
+      [numeroDocumento],
+    );
+    if (documentoExistente.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un usuario registrado con este número de documento.",
+        errors: { documentNumber: "El número de documento ya está registrado." },
+      });
+    }
 
     const [result] = await pool.query(
       `INSERT INTO usuario
          (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
           telefono, telefono_secundario, departamento, ciudad, direccion,
           codigo_postal, correo, contrasena_hash, estado)
-       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         roleRows[0].id_rol,
         nombre,
         apellido,
+          tipoDocumento,
         numeroDocumento,
         nacimiento,
         telefono,

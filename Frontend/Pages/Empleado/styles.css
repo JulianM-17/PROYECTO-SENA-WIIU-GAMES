@@ -701,6 +701,29 @@ body {
   text-overflow: ellipsis;
 }
 
+.etiqueta-estado {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.etiqueta-verde {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+}
+
+.etiqueta-naranja {
+  background-color: rgba(245, 166, 35, 0.15);
+  color: #f5a623;
+}
+
+.etiqueta-rojo {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
 .mensaje-vacio {
   text-align: center;
   color: #64748b;
@@ -784,6 +807,24 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.grupo-campo.grupo-campo-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.grupo-campo-check input[type="checkbox"] {
+  width: auto;
+  min-height: auto;
+  margin: 3px 0 0;
+  padding: 0;
+}
+
+.grupo-campo-check label {
+  line-height: 1.5;
 }
 
 .grupo-campo label {
@@ -1209,28 +1250,70 @@ body.a11y-mode-dark-mode .btn-cancelar-modal {
   font-size: 13px;
 }
 
-.notificaciones-empleado {
+.contenedor-toast.notificaciones-empleado {
   position: fixed;
-  top: 18px;
-  right: 18px;
-  z-index: 1200;
-  display: grid;
-  gap: 8px;
-  max-width: min(420px, calc(100vw - 36px));
+  right: 24px;
+  bottom: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  max-width: min(400px, calc(100vw - 32px));
+  pointer-events: none;
 }
 
-.notificacion-empleado {
-  padding: 12px 16px;
-  border-radius: 9px;
-  background: #ecfdf5;
-  color: #065f46;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
-  font-size: 13px;
+.notificaciones-empleado .toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 400px;
+  padding: 14px 22px;
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  pointer-events: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  animation: empleadoToastEntrar 0.4s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.notificacion-empleado.error {
-  background: #fef2f2;
-  color: #991b1b;
+.notificaciones-empleado .toast-icono {
+  flex: 0 0 auto;
+}
+
+.notificaciones-empleado .toast-mensaje {
+  min-width: 0;
+}
+
+.notificaciones-empleado .toast-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.notificaciones-empleado .toast-error {
+  background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
+.notificaciones-empleado .toast-info {
+  background: linear-gradient(135deg, #17a2b8, #138496);
+}
+
+.notificaciones-empleado .toast-warning {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #333333;
+}
+
+@keyframes empleadoToastEntrar {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
 
 body.a11y-mode-dark-mode .producto-pos-card {

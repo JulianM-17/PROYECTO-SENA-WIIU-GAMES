@@ -61,16 +61,6 @@
           <i class="fi fi-rr-users-alt"></i>
           <span>Directorio Clientes</span>
         </button>
-
-        <a class="boton-menu" href="../Catalog.html" title="Comprar productos">
-          <i class="fi fi-rr-shopping-bag"></i>
-          <span>Comprar productos</span>
-        </a>
-
-        <a class="boton-menu" href="../cita.html" title="Agendar una cita">
-          <i class="fi fi-rr-calendar"></i>
-          <span>Agendar una cita</span>
-        </a>
       </nav>
 
       <div class="perfil-empleado" onclick="toggleMenuPerfil()">
@@ -176,7 +166,7 @@
               </div>
 
               <button type="button" class="btn-completar-venta" onclick="completarVenta()">
-                ✔ COMPLETAR VENTA Y RECIBO
+                 COMPLETAR VENTA Y RECIBO
               </button>
             </div>
           </div>
@@ -333,13 +323,12 @@
           <div class="columna-footer">
             <h3>Componentes de PC</h3>
             <ul>
-              <li><a href="../Catalog.html">CPUs</a></li>
+              <li><a href="../Catalog.html">Procesadores</a></li>
               <li><a href="../Catalog.html">Discos Duros</a></li>
               <li><a href="../Catalog.html">Tarjetas Gráficas</a></li>
               <li><a href="../Catalog.html">Teclados / Mouse</a></li>
-              <li><a href="../Catalog.html">Gabinetes / Fuentes de Poder / Refrigeración</a></li>
+              <li><a href="../Catalog.html">Gabinetes / Fuentes / Refrigeración</a></li>
               <li><a href="../Catalog.html">RAM (Memoria)</a></li>
-              <li><a href="../Catalog.html">Software</a></li>
               <li><a href="../Catalog.html">Altavoces / Audífonos</a></li>
               <li><a href="../Catalog.html">Motherboards</a></li>
             </ul>
@@ -348,7 +337,6 @@
             <h3>Computadores de escritorio</h3>
             <ul>
               <li><a href="../Catalog.html">PC personalizados</a></li>
-              <li><a href="../Catalog.html">Servidores</a></li>
               <li><a href="../Catalog.html">PCs todo en uno</a></li>
               <li><a href="../Catalog.html">HP/Compaq PCs</a></li>
               <li><a href="../Catalog.html">ASUS PCs</a></li>
@@ -357,17 +345,27 @@
           </div>
           <div class="columna-footer">
             <h3>Portátiles</h3>
-            <ul>
-              <li><a href="../Catalog.html">Portátiles para todos los días</a></li>
-              <li><a href="../Catalog.html">Portátiles gaming</a></li>
-            </ul>
+            <div class="grupos-portatiles-footer" id="grupos-portatiles-footer">
+              <section class="grupo-portatil-footer" data-tipo-portatil="diario">
+                <h4>Portátiles para todos los días</h4>
+                <ul>
+                  <li><a href="../Catalog.html">Portátil Lenovo IdeaPad 3</a></li>
+                </ul>
+              </section>
+              <section class="grupo-portatil-footer" data-tipo-portatil="gaming">
+                <h4>Portátiles gaming</h4>
+                <ul>
+                  <li><a href="../Catalog.html">Portátil Gamer ASUS ROG Strix G16</a></li>
+                </ul>
+              </section>
+            </div>
           </div>
           <div class="columna-footer columna-contacto">
             <h3>Dirección</h3>
             <p>Centro Comercial Meditrópoli 1, Cra. 11 #14 - 14 Local 126, Sogamoso, Boyacá</p>
-            <p>Teléfonos: <a href="tel:0012345578" class="enlace-resaltado">(00) 1234 5578</a></p>
+            <p>Teléfonos: <a href="tel:3046616081" class="enlace-resaltado">304 661 6081</a></p>
+            <p>Lunes-Sábado: 8:00 a.m. - 12:30 p.m. / 2:00 - 7:00 p.m.</p>
             <p>Correo electrónico: <a href="mailto:wiiugames2026@gmail.com" class="enlace-resaltado">wiiugames2026@gmail.com</a></p>
-            <p>Lunes - Sábado: 8:00 a.m. – 12:30 p.m. | 2:00 – 7:00 p.m.</p>
           </div>
         </div>
         <div class="barra-inferior-footer">
@@ -380,7 +378,7 @@
             <span class="tarjeta-icono">Visa</span>
             <span class="tarjeta-icono">MasterCard</span>
           </div>
-          <div class="copyright"><p>Copyright © 2026 WiiU-Games. Todos los derechos reservados.</p></div>
+          <div class="copyright"><p>Copyright © 2026 WiiU-Games.</p></div>
         </div>
       </footer>
 
@@ -404,7 +402,7 @@
     </div>
   </div>
 
-  <div id="notificacionesEmpleado" class="notificaciones-empleado" aria-live="polite"></div>
+  <div id="notificacionesEmpleado" class="contenedor-toast notificaciones-empleado" aria-live="polite"></div>
   <script src="script.js"></script>
   <script src="../../Scripts/accessibility.js" defer></script>
   <script src="../../Scripts/contactanos.js" defer></script>
