@@ -904,38 +904,140 @@ function abrirModal(tipo, productoId) {
     }
 
     titulo.textContent = usuarioEdicion ? "Editar Usuario" : "Registrar Nuevo Cliente";
-    campos.innerHTML = `
-      <div class="campo-grupo">
-        <label>Nombre y Apellidos:</label>
-        <input type="text" id="campo1" required maxlength="60" value="${escaparHtmlAdmin(nombreCompleto)}" placeholder="Ej. Mario Alejandro Pérez">
-      </div>
-      <div class="campo-grupo">
-        <label>Teléfono de Contacto (7 a 15 dígitos):</label>
-        <input type="tel" id="campo2" required maxlength="20" value="${escaparHtmlAdmin(usuarioEdicion ? usuarioEdicion.phone : '')}" placeholder="Ej. 3124567890">
-      </div>
-      <div class="campo-grupo">
-        <label>Correo Electrónico:</label>
-        <input type="email" id="campo3" required maxlength="120" value="${escaparHtmlAdmin(usuarioEdicion ? usuarioEdicion.email : '')}" placeholder="Ej. cliente@gmail.com">
-      </div>
-      ${usuarioEdicion ? `
+    if (usuarioEdicion) {
+      campos.innerHTML = `
         <div class="campo-grupo">
-          <label>Departamento:</label>
+          <label for="campo1">Nombre y Apellidos:</label>
+          <input type="text" id="campo1" required maxlength="60" value="${escaparHtmlAdmin(nombreCompleto)}" placeholder="Ej. Mario Alejandro Pérez">
+        </div>
+        <div class="campo-grupo">
+          <label for="campo2">Teléfono de Contacto:</label>
+          <input type="tel" id="campo2" required maxlength="20" value="${escaparHtmlAdmin(usuarioEdicion.phone || '')}" placeholder="Ej. 3124567890">
+        </div>
+        <div class="campo-grupo">
+          <label for="campo3">Correo Electrónico:</label>
+          <input type="email" id="campo3" required maxlength="120" value="${escaparHtmlAdmin(usuarioEdicion.email || '')}" placeholder="Ej. cliente@gmail.com">
+        </div>
+        <div class="campo-grupo">
+          <label for="campo_departamento">Departamento:</label>
           <input type="text" id="campo_departamento" required maxlength="30" value="${escaparHtmlAdmin(usuarioEdicion.department || '')}">
         </div>
         <div class="campo-grupo">
-          <label>Ciudad:</label>
+          <label for="campo_ciudad">Ciudad:</label>
           <input type="text" id="campo_ciudad" maxlength="30" value="${escaparHtmlAdmin(usuarioEdicion.city || '')}">
         </div>
         <div class="campo-grupo">
-          <label>Dirección:</label>
+          <label for="campo_direccion">Dirección:</label>
           <input type="text" id="campo_direccion" maxlength="40" value="${escaparHtmlAdmin(usuarioEdicion.address || '')}">
         </div>
         <div class="campo-grupo">
-          <label>Rol:</label>
+          <label for="campo_rol">Rol:</label>
           <select id="campo_rol" required>${opcionesRoles}</select>
         </div>
-      ` : ''}
-    `;
+      `;
+    } else {
+      var opcionesDepartamentos = Object.keys(window.departamentosColombia).map(function(departamento) {
+        return '<option value="' + escaparHtmlAdmin(departamento) + '">' +
+          escaparHtmlAdmin(departamento) + '</option>';
+      }).join('');
+      campos.innerHTML = `
+        <div class="campo-grupo">
+          <label for="cliente-nombre">Nombre:</label>
+          <input type="text" id="cliente-nombre" required minlength="2" maxlength="30" autocomplete="given-name" placeholder="Tu nombre">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-apellido">Apellido:</label>
+          <input type="text" id="cliente-apellido" required minlength="2" maxlength="30" autocomplete="family-name" placeholder="Tu apellido">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-nacimiento">Fecha de nacimiento:</label>
+          <input type="date" id="cliente-nacimiento" required min="1940-01-01">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-correo">Correo electrónico:</label>
+          <input type="email" id="cliente-correo" required maxlength="120" autocomplete="email" placeholder="ejemplo@correo.com">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-confirmar-correo">Confirmar correo electrónico:</label>
+          <input type="email" id="cliente-confirmar-correo" required maxlength="120" autocomplete="email" placeholder="Repite el correo electrónico">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-contrasena">Contraseña:</label>
+          <input type="password" id="cliente-contrasena" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-confirmar-contrasena">Confirmar contraseña:</label>
+          <input type="password" id="cliente-confirmar-contrasena" required minlength="8" maxlength="128" autocomplete="new-password" placeholder="Repite la contraseña">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-direccion">Dirección principal:</label>
+          <input type="text" id="cliente-direccion" required minlength="5" maxlength="40" autocomplete="street-address" placeholder="Calle, carrera, avenida, casa">
+          <small class="ayuda-campo">Máximo 40 caracteres.</small>
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-departamento">Departamento:</label>
+          <select id="cliente-departamento" required>
+            <option value="">Selecciona un departamento</option>
+            ${opcionesDepartamentos}
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-ciudad">Municipio / Ciudad:</label>
+          <select id="cliente-ciudad" required disabled>
+            <option value="">Primero elige un departamento</option>
+          </select>
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-codigo-postal">Código postal (opcional):</label>
+          <input type="text" id="cliente-codigo-postal" maxlength="20" autocomplete="postal-code" placeholder="Ej. 152210">
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-telefono">Teléfono principal:</label>
+          <div class="campo-telefono">
+            <select id="cliente-prefijo-telefono" aria-label="Prefijo del teléfono principal">
+              <option value="+57">🇨🇴 +57</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+54">🇦🇷 +54</option>
+              <option value="+55">🇧🇷 +55</option>
+              <option value="+56">🇨🇱 +56</option>
+              <option value="+51">🇵🇪 +51</option>
+              <option value="+593">🇪🇨 +593</option>
+              <option value="+58">🇻🇪 +58</option>
+            </select>
+            <input type="tel" id="cliente-telefono" required maxlength="16" autocomplete="tel-national" placeholder="Ej. 312 345 6789">
+          </div>
+        </div>
+        <div class="campo-grupo">
+          <label for="cliente-telefono-secundario">Teléfono secundario (opcional):</label>
+          <div class="campo-telefono">
+            <select id="cliente-prefijo-secundario" aria-label="Prefijo del teléfono secundario">
+              <option value="+57">🇨🇴 +57</option>
+              <option value="+1">🇺🇸 +1</option>
+              <option value="+52">🇲🇽 +52</option>
+              <option value="+34">🇪🇸 +34</option>
+              <option value="+54">🇦🇷 +54</option>
+              <option value="+55">🇧🇷 +55</option>
+              <option value="+56">🇨🇱 +56</option>
+              <option value="+51">🇵🇪 +51</option>
+              <option value="+593">🇪🇨 +593</option>
+              <option value="+58">🇻🇪 +58</option>
+            </select>
+            <input type="tel" id="cliente-telefono-secundario" maxlength="16" autocomplete="tel" placeholder="Ej. 608 770 1234">
+          </div>
+        </div>
+        <div class="campo-grupo campo-grupo-check">
+          <input type="checkbox" id="cliente-misma-direccion" checked>
+          <label for="cliente-misma-direccion">Usar la misma dirección para facturación.</label>
+        </div>
+        <div class="campo-grupo campo-grupo-check">
+          <input type="checkbox" id="cliente-terminos" required>
+          <label for="cliente-terminos">El cliente acepta los términos, condiciones y la política de tratamiento de datos.</label>
+        </div>
+      `;
+      configurarFormularioNuevoClienteAdmin();
+    }
   } else if (tipo === 'pedidos') {
     titulo.textContent = "Registrar Nuevo Pedido / Venta";
     var optsClientes = clientesDisponibles.length > 0
@@ -956,6 +1058,163 @@ function abrirModal(tipo, productoId) {
     `;
   }
   aplicarIndicadoresCamposObligatorios(campos);
+}
+
+function actualizarCiudadesNuevoClienteAdmin(departamento) {
+  var ciudadSelect = document.getElementById('cliente-ciudad');
+  if (!ciudadSelect) return;
+
+  ciudadSelect.replaceChildren();
+  var ciudades = window.departamentosColombia[departamento];
+  if (!ciudades) {
+    ciudadSelect.add(new Option('Primero elige un departamento', ''));
+    ciudadSelect.disabled = true;
+    return;
+  }
+
+  ciudadSelect.disabled = false;
+  ciudadSelect.add(new Option('Selecciona tu municipio', ''));
+  ciudades.forEach(function(ciudad) {
+    ciudadSelect.add(new Option(ciudad, ciudad));
+  });
+}
+
+function configurarFormularioNuevoClienteAdmin() {
+  var departamentoSelect = document.getElementById('cliente-departamento');
+  var nacimientoInput = document.getElementById('cliente-nacimiento');
+  if (departamentoSelect) {
+    departamentoSelect.addEventListener('change', function() {
+      actualizarCiudadesNuevoClienteAdmin(departamentoSelect.value);
+      limpiarErrorCampoAdmin(document.getElementById('cliente-ciudad'));
+    });
+  }
+  document.querySelectorAll('#modalCampos input, #modalCampos select').forEach(function(input) {
+    input.addEventListener('input', function() {
+      if (input.classList.contains('campo-invalido')) limpiarErrorCampoAdmin(input);
+    });
+    input.addEventListener('change', function() {
+      if (input.classList.contains('campo-invalido')) limpiarErrorCampoAdmin(input);
+    });
+  });
+  if (nacimientoInput) {
+    var fechaMaxima = new Date();
+    fechaMaxima.setFullYear(fechaMaxima.getFullYear() - 10);
+    nacimientoInput.max = [
+      fechaMaxima.getFullYear(),
+      String(fechaMaxima.getMonth() + 1).padStart(2, '0'),
+      String(fechaMaxima.getDate()).padStart(2, '0')
+    ].join('-');
+  }
+}
+
+function limpiarErrorCampoAdmin(input) {
+  if (!input) return;
+  input.classList.remove('campo-invalido');
+  input.removeAttribute('aria-invalid');
+  input.removeAttribute('aria-describedby');
+  if (input.nextElementSibling?.classList.contains('mensaje-error-campo')) {
+    input.nextElementSibling.remove();
+  }
+}
+
+function validarNuevoClienteAdmin() {
+  var valores = {
+    firstName: document.getElementById('cliente-nombre').value.trim(),
+    lastName: document.getElementById('cliente-apellido').value.trim(),
+    birthDate: document.getElementById('cliente-nacimiento').value,
+    email: document.getElementById('cliente-correo').value.trim().toLowerCase(),
+    confirmEmail: document.getElementById('cliente-confirmar-correo').value.trim().toLowerCase(),
+    password: document.getElementById('cliente-contrasena').value,
+    confirmPassword: document.getElementById('cliente-confirmar-contrasena').value,
+    address: document.getElementById('cliente-direccion').value.trim(),
+    department: document.getElementById('cliente-departamento').value,
+    city: document.getElementById('cliente-ciudad').value,
+    phone: document.getElementById('cliente-telefono').value.trim(),
+    secondaryPhone: document.getElementById('cliente-telefono-secundario').value.trim()
+  };
+  var valido = true;
+  function invalidar(id, mensaje) {
+    marcarErrorCampo(document.getElementById(id), mensaje);
+    valido = false;
+  }
+
+  var patronNombre = /^[\p{L}][\p{L}\s'-]*$/u;
+  if (valores.firstName.length < 2 || valores.firstName.length > 30 || !patronNombre.test(valores.firstName)) {
+    invalidar('cliente-nombre', 'Ingresa un nombre de 2 a 30 caracteres; usa solo letras, espacios, apóstrofes o guiones.');
+  }
+  if (valores.lastName.length < 2 || valores.lastName.length > 30 || !patronNombre.test(valores.lastName)) {
+    invalidar('cliente-apellido', 'Ingresa un apellido de 2 a 30 caracteres; usa solo letras, espacios, apóstrofes o guiones.');
+  }
+
+  var fechaNacimiento = new Date(valores.birthDate + 'T00:00:00Z');
+  var fechaMaxima = new Date();
+  fechaMaxima.setFullYear(fechaMaxima.getFullYear() - 10);
+  var fechaMaximaTexto = [
+    fechaMaxima.getFullYear(),
+    String(fechaMaxima.getMonth() + 1).padStart(2, '0'),
+    String(fechaMaxima.getDate()).padStart(2, '0')
+  ].join('-');
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(valores.birthDate) ||
+    Number.isNaN(fechaNacimiento.getTime()) ||
+    fechaNacimiento.toISOString().slice(0, 10) !== valores.birthDate ||
+    valores.birthDate < '1940-01-01' ||
+    valores.birthDate > fechaMaximaTexto
+  ) {
+    invalidar('cliente-nacimiento', 'Selecciona una fecha válida entre 1940 y la fecha límite permitida (mínimo 10 años).');
+  }
+
+  var formatoCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (valores.email.length > 120 || !formatoCorreo.test(valores.email)) {
+    invalidar('cliente-correo', 'Ingresa un correo válido de máximo 120 caracteres.');
+  }
+  if (valores.confirmEmail !== valores.email || !valores.confirmEmail) {
+    invalidar('cliente-confirmar-correo', 'Los correos electrónicos deben coincidir.');
+  }
+  if (valores.password.length < 8 || valores.password.length > 128) {
+    invalidar('cliente-contrasena', 'La contraseña debe tener entre 8 y 128 caracteres.');
+  }
+  if (valores.confirmPassword !== valores.password || !valores.confirmPassword) {
+    invalidar('cliente-confirmar-contrasena', 'Las contraseñas deben coincidir.');
+  }
+  if (valores.address.length < 5 || valores.address.length > 40) {
+    invalidar('cliente-direccion', 'Ingresa una dirección de 5 a 40 caracteres.');
+  }
+  if (!Object.hasOwn(window.departamentosColombia, valores.department)) {
+    invalidar('cliente-departamento', 'Selecciona un departamento válido.');
+  }
+  if (!window.departamentosColombia[valores.department]?.includes(valores.city)) {
+    invalidar('cliente-ciudad', 'Selecciona un municipio válido para el departamento.');
+  }
+
+  function telefonoValido(valor, prefijoId, obligatorio) {
+    if (!valor && !obligatorio) return true;
+    var prefijo = document.getElementById(prefijoId).value;
+    var digitosLocales = valor.replace(/\D/g, '').replace(/^0+/, '');
+    return /^[\d()\s-]{7,16}$/.test(valor) &&
+      digitosLocales.length >= 7 &&
+      (prefijo + ' ' + valor).length <= 20;
+  }
+  if (!telefonoValido(valores.phone, 'cliente-prefijo-telefono', true)) {
+    invalidar('cliente-telefono', 'Ingresa un teléfono válido con al menos 7 dígitos.');
+  }
+  if (!telefonoValido(valores.secondaryPhone, 'cliente-prefijo-secundario', false)) {
+    invalidar('cliente-telefono-secundario', 'Ingresa un teléfono secundario válido con al menos 7 dígitos.');
+  }
+  if (!document.getElementById('cliente-terminos').checked) {
+    invalidar('cliente-terminos', 'Debes confirmar la aceptación de los términos y la política de datos.');
+  }
+
+  if (!valido) {
+    mostrarToast('error', 'Por favor corrige los campos señalados antes de guardar.');
+    document.querySelector('#formularioDinamico .campo-invalido')?.focus();
+  }
+  return valido;
+}
+
+function formatearTelefonoClienteAdmin(valorId, prefijoId) {
+  var digitos = document.getElementById(valorId).value.replace(/\D/g, '').replace(/^0+/, '');
+  return digitos ? document.getElementById(prefijoId).value + ' ' + digitos : '';
 }
 
 // Funciones para marcar y limpiar errores visuales en los campos
@@ -1009,6 +1268,26 @@ function validarCamposObligatorios(formulario) {
 }
 
 function campoIdParaErrorBackend(campo) {
+  if (tipoModalActual === 'clientes' && !usuarioEdicion) {
+    var camposNuevoCliente = {
+      firstName: 'cliente-nombre',
+      lastName: 'cliente-apellido',
+      birthDate: 'cliente-nacimiento',
+      email: 'cliente-correo',
+      confirmEmail: 'cliente-confirmar-correo',
+      password: 'cliente-contrasena',
+      confirmPassword: 'cliente-confirmar-contrasena',
+      phone: 'cliente-telefono',
+      secondaryPhone: 'cliente-telefono-secundario',
+      department: 'cliente-departamento',
+      city: 'cliente-ciudad',
+      address: 'cliente-direccion',
+      postalCode: 'cliente-codigo-postal',
+      acceptedTerms: 'cliente-terminos'
+    };
+    return camposNuevoCliente[campo] || campo;
+  }
+
   var camposPorFormulario = {
     inventario: {
     name: 'campo1', category: 'campo2', publisher: 'campo_marca',
@@ -2777,29 +3056,24 @@ async function guardarDatos(evento) {
     };
 
   } else if (tipoModalActual === 'clientes') {
-    var regexNombre = /^[A-Za-zÁÉÍÓÚáéíóúñÑüÜ\s'-]{3,60}$/;
-    if (!c1 || c1.length > 60 || !regexNombre.test(c1) || c1.split(/\s+/).filter(Boolean).length < 2) {
-      marcarErrorCampo(c1Input, 'Ingresa nombre y apellido completos (máximo 60 caracteres).');
-      hayErrores = true;
-    }
-    var regexTel = /^[0-9+\-\s()]{7,20}$/;
-    var digitosTelefono = c2.replace(/\D/g, '');
-    if (!regexTel.test(c2) || digitosTelefono.length < 7 || digitosTelefono.length > 15) {
-      marcarErrorCampo(c2Input, 'Ingresa un teléfono válido con 7 a 15 dígitos.');
-      hayErrores = true;
-    }
-    var regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!c3 || c3.length > 120 || !regexEmail.test(c3)) {
-      marcarErrorCampo(c3Input, 'Ingresa un correo válido de máximo 120 caracteres (ej. usuario@dominio.com).');
-      hayErrores = true;
-    }
-
-    if (hayErrores) {
-      mostrarToast('error', 'Por favor corrige los datos del cliente');
-      return;
-    }
-
     if (usuarioEdicion) {
+      var regexNombre = /^[\p{L}\s'-]{3,60}$/u;
+      if (!c1 || c1.length > 60 || !regexNombre.test(c1) || c1.split(/\s+/).filter(Boolean).length < 2) {
+        marcarErrorCampo(c1Input, 'Ingresa nombre y apellido completos (máximo 60 caracteres).');
+        hayErrores = true;
+      }
+      var regexTel = /^[0-9+\-\s()]{7,20}$/;
+      var digitosTelefono = c2.replace(/\D/g, '');
+      if (!regexTel.test(c2) || digitosTelefono.length < 7 || digitosTelefono.length > 15) {
+        marcarErrorCampo(c2Input, 'Ingresa un teléfono válido con 7 a 15 dígitos.');
+        hayErrores = true;
+      }
+      var regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!c3 || c3.length > 120 || !regexEmail.test(c3)) {
+        marcarErrorCampo(c3Input, 'Ingresa un correo válido de máximo 120 caracteres (ej. usuario@dominio.com).');
+        hayErrores = true;
+      }
+
       var departamentoInput = document.getElementById('campo_departamento');
       var ciudadInput = document.getElementById('campo_ciudad');
       var direccionInput = document.getElementById('campo_direccion');
@@ -2842,11 +3116,30 @@ async function guardarDatos(evento) {
         roleId: rolId
       };
     } else {
+      if (hayErrores) {
+        mostrarToast('error', 'Completa todos los campos obligatorios.');
+        document.querySelector('#formularioDinamico .campo-invalido')?.focus();
+        return;
+      }
+      if (!validarNuevoClienteAdmin()) return;
+
       url = API_BASE + '/api/admin/clientes';
       payload = {
-        name: c1,
-        phone: c2,
-        email: c3
+        firstName: document.getElementById('cliente-nombre').value.trim(),
+        lastName: document.getElementById('cliente-apellido').value.trim(),
+        birthDate: document.getElementById('cliente-nacimiento').value,
+        email: document.getElementById('cliente-correo').value.trim().toLowerCase(),
+        confirmEmail: document.getElementById('cliente-confirmar-correo').value.trim().toLowerCase(),
+        password: document.getElementById('cliente-contrasena').value,
+        confirmPassword: document.getElementById('cliente-confirmar-contrasena').value,
+        phone: formatearTelefonoClienteAdmin('cliente-telefono', 'cliente-prefijo-telefono'),
+        secondaryPhone: formatearTelefonoClienteAdmin('cliente-telefono-secundario', 'cliente-prefijo-secundario'),
+        department: document.getElementById('cliente-departamento').value,
+        city: document.getElementById('cliente-ciudad').value,
+        address: document.getElementById('cliente-direccion').value.trim(),
+        postalCode: document.getElementById('cliente-codigo-postal').value.trim(),
+        acceptedTerms: document.getElementById('cliente-terminos').checked,
+        sameBillingAddress: document.getElementById('cliente-misma-direccion').checked
       };
     }
 

@@ -43,9 +43,32 @@ let warrantyStatusSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
 let backupSchemaPromise;
+let customerPostalCodeSchemaPromise;
 const BACKUP_DIR = path.join(__dirname, "backups");
 const BACKUP_TABLE = "backup";
 const LEGACY_BACKUP_TABLE = "wiiu_admin_backups";
+
+async function ensureCustomerPostalCodeSchema() {
+  if (!customerPostalCodeSchemaPromise) {
+    customerPostalCodeSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        "SHOW COLUMNS FROM usuario LIKE 'codigo_postal'",
+      );
+      if (!columns.length) {
+        await pool.query(
+          "ALTER TABLE usuario ADD COLUMN codigo_postal VARCHAR(20) NULL AFTER direccion",
+        );
+      }
+    })();
+  }
+
+  try {
+    await customerPostalCodeSchemaPromise;
+  } catch (error) {
+    customerPostalCodeSchemaPromise = null;
+    throw error;
+  }
+}
 
 async function ensureBackupDir() {
   await fs.mkdir(BACKUP_DIR, { recursive: true });
@@ -1485,14 +1508,14 @@ app.post("/api/my-appointments/import-legacy", requireUserSession, async (req, r
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede importar citas antiguas.",
+        message: "Solo una cuenta activa puede importar citas antiguas.",
       });
     }
 
@@ -1627,14 +1650,14 @@ app.post("/api/appointments", requireUserSession, async (req, res) => {
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede agendar citas.",
+        message: "Solo una cuenta activa puede agendar citas.",
       });
     }
 
@@ -2331,7 +2354,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        FOR UPDATE`,
       [req.userId],
     );
@@ -2339,7 +2362,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
       await revertirTransaccionEmpleado(connection);
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede realizar compras.",
+        message: "Solo una cuenta activa puede realizar compras.",
       });
     }
     if (!String(customerRows[0].direccion || "").trim()) {
@@ -3842,6 +3865,7 @@ app.post("/api/usuarios", async (req, res) => {
     const telefono = String(req.body?.telefono || "").trim();
     const telefonoSecundario = String(req.body?.telefono_secundario || "").trim();
     const direccion = String(req.body?.direccion || "").trim();
+    const codigoPostal = String(req.body?.codigoPostal || "").trim();
     const departamento = String(req.body?.departamento || "").trim();
     const ciudad = String(req.body?.ciudad || "").trim();
     const nacimiento = String(req.body?.nacimiento || "").trim();
@@ -3875,6 +3899,9 @@ app.post("/api/usuarios", async (req, res) => {
     if (direccion.length < 5 || direccion.length > 40) {
       return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
     }
+    if (codigoPostal.length > 20) {
+      return res.status(400).json({ ok: false, message: "El código postal no puede superar 20 caracteres." });
+    }
     if (!departamento || !ciudad || departamento.length > 30 || ciudad.length > 30) {
       return res.status(400).json({ ok: false, message: "Selecciona departamento y municipio." });
     }
@@ -3899,9 +3926,13 @@ app.post("/api/usuarios", async (req, res) => {
     // Generar documento (ID) único
     const numDoc = `CLI${Date.now().toString().slice(-8)}`;
     const passwordHash = await bcrypt.hash(password, 12);
+    await ensureCustomerPostalCodeSchema();
     const [result] = await pool.query(
-      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario, departamento, ciudad, direccion, fecha_nacimiento, correo, contrasena_hash, estado)
-       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      `INSERT INTO usuario
+         (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario,
+          departamento, ciudad, direccion, codigo_postal, fecha_nacimiento,
+          correo, contrasena_hash, estado)
+       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         roleRows[0].id_rol,
         nombre,
@@ -3912,6 +3943,7 @@ app.post("/api/usuarios", async (req, res) => {
         departamento,
         ciudad,
         direccion,
+        codigoPostal || null,
         nacimiento || null,
         email,
         passwordHash,
@@ -3929,51 +3961,132 @@ app.post("/api/usuarios", async (req, res) => {
 
 app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
   try {
-    const { name, phone, email } = req.body;
-    const fullName = String(name || "").trim();
-    const parts = fullName.split(/\s+/);
-    const nombre = parts[0] || "Cliente";
-    const apellido = parts.slice(1).join(" ") || "Nuevo";
-    const correo = String(email || "").trim().toLowerCase();
-    const telefono = String(phone || "").trim();
+    const nombre = String(req.body?.firstName || "").normalize("NFC").trim().replace(/\s+/g, " ");
+    const apellido = String(req.body?.lastName || "").normalize("NFC").trim().replace(/\s+/g, " ");
+    const nacimiento = String(req.body?.birthDate || "").trim();
+    const correo = String(req.body?.email || "").trim().toLowerCase();
+    const confirmarCorreo = String(req.body?.confirmEmail || "").trim().toLowerCase();
+    const contrasena = String(req.body?.password || "");
+    const confirmarContrasena = String(req.body?.confirmPassword || "");
+    const telefono = String(req.body?.phone || "").trim();
+    const telefonoSecundario = String(req.body?.secondaryPhone || "").trim();
+    const departamento = String(req.body?.department || "").trim();
+    const ciudad = String(req.body?.city || "").trim();
+    const direccion = String(req.body?.address || "").trim();
+    const codigoPostal = String(req.body?.postalCode || "").trim();
     const errors = {};
 
-    if (
-      fullName.length > 60 ||
-      !/^[\p{L}\s'-]{3,60}$/u.test(fullName) ||
-      parts.length < 2 ||
-      nombre.length > 30 ||
-      apellido.length > 30
-    ) {
-      errors.name = "Ingresa nombre y apellido válidos (máximo 30 caracteres cada uno).";
+    const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
+    if (nombre.length < 2 || nombre.length > 30 || !namePattern.test(nombre)) {
+      errors.firstName = "Ingresa un nombre válido de 2 a 30 caracteres.";
     }
-    if (correo.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-      errors.email = "Ingresa un correo electrónico válido (máximo 120 caracteres).";
+    if (apellido.length < 2 || apellido.length > 30 || !namePattern.test(apellido)) {
+      errors.lastName = "Ingresa un apellido válido de 2 a 30 caracteres.";
     }
+
+    const fechaNacimiento = new Date(`${nacimiento}T00:00:00Z`);
+    const fechaLimiteEdad = new Date();
+    fechaLimiteEdad.setFullYear(fechaLimiteEdad.getFullYear() - 10);
+    const fechaMaxima = [
+      fechaLimiteEdad.getFullYear(),
+      String(fechaLimiteEdad.getMonth() + 1).padStart(2, "0"),
+      String(fechaLimiteEdad.getDate()).padStart(2, "0"),
+    ].join("-");
+    const fechaNacimientoValida =
+      /^\d{4}-\d{2}-\d{2}$/.test(nacimiento) &&
+      !Number.isNaN(fechaNacimiento.getTime()) &&
+      fechaNacimiento.toISOString().slice(0, 10) === nacimiento &&
+      nacimiento >= "1940-01-01" &&
+      nacimiento <= fechaMaxima;
+    if (!fechaNacimientoValida) {
+      errors.birthDate = "Selecciona una fecha válida entre 1940 y la fecha límite permitida (mínimo 10 años).";
+    }
+
+    const formatoCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (correo.length > 120 || !formatoCorreo.test(correo)) {
+      errors.email = "Ingresa un correo electrónico válido de máximo 120 caracteres.";
+    }
+    if (!confirmarCorreo || confirmarCorreo !== correo) {
+      errors.confirmEmail = "Los correos electrónicos deben coincidir.";
+    }
+    if (contrasena.length < 8 || contrasena.length > 128) {
+      errors.password = "La contraseña debe tener entre 8 y 128 caracteres.";
+    }
+    if (!confirmarContrasena || confirmarContrasena !== contrasena) {
+      errors.confirmPassword = "Las contraseñas deben coincidir.";
+    }
+
     const phoneDigits = telefono.replace(/\D/g, "");
+    const secondaryPhoneDigits = telefonoSecundario.replace(/\D/g, "");
     if (
-      !/^[0-9+\-\s()]{7,20}$/.test(telefono) ||
-      phoneDigits.length < 7 ||
-      phoneDigits.length > 15
+      !/^[+\d()\s-]{7,20}$/.test(telefono) ||
+      phoneDigits.length < 7
     ) {
-      errors.phone = "Ingresa un teléfono válido con 7 a 15 dígitos.";
+      errors.phone = "Ingresa un teléfono válido con al menos 7 dígitos.";
     }
+    if (
+      telefonoSecundario &&
+      (!/^[+\d()\s-]{7,20}$/.test(telefonoSecundario) ||
+        secondaryPhoneDigits.length < 7)
+    ) {
+      errors.secondaryPhone = "Ingresa un teléfono secundario válido con al menos 7 dígitos.";
+    }
+    if (!departamento || departamento.length > 30) {
+      errors.department = "Selecciona un departamento válido.";
+    }
+    if (!ciudad || ciudad.length > 30) {
+      errors.city = "Selecciona un municipio o ciudad válido.";
+    }
+    if (direccion.length < 5 || direccion.length > 40) {
+      errors.address = "Ingresa una dirección de 5 a 40 caracteres.";
+    }
+    if (codigoPostal.length > 20) {
+      errors.postalCode = "El código postal no puede superar 20 caracteres.";
+    }
+    if (req.body?.acceptedTerms !== true) {
+      errors.acceptedTerms = "Debes confirmar la aceptación de los términos y la política de datos.";
+    }
+
     if (Object.keys(errors).length) {
       return res.status(400).json({
         ok: false,
-        message: "Revisa los datos obligatorios del cliente.",
+        message: "Revisa los datos del cliente antes de guardarlos.",
         errors,
       });
     }
 
-    // Rol 1 = Cliente
-    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
-    const defaultPassword = "Cliente123";
+    const [roleRows] = await pool.query(
+      "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
+    );
+    if (!roleRows.length) {
+      return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente activo." });
+    }
+
+    const numeroDocumento = `CLI${Date.now().toString(36).toUpperCase()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+    const passwordHash = await bcrypt.hash(contrasena, 12);
+    await ensureCustomerPostalCodeSchema();
 
     const [result] = await pool.query(
-      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento, correo, contrasena_hash, estado)
-       VALUES (1, ?, ?, 'CC', ?, ?, 'Cundinamarca', ?, ?, 'ACTIVO')`,
-      [nombre.substring(0, 30), apellido.substring(0, 30), numDoc, telefono.substring(0, 20), correo.substring(0, 120), defaultPassword],
+      `INSERT INTO usuario
+         (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
+          telefono, telefono_secundario, departamento, ciudad, direccion,
+          codigo_postal, correo, contrasena_hash, estado)
+       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        roleRows[0].id_rol,
+        nombre,
+        apellido,
+        numeroDocumento,
+        nacimiento,
+        telefono,
+        telefonoSecundario || null,
+        departamento,
+        ciudad,
+        direccion,
+        codigoPostal || null,
+        correo,
+        passwordHash,
+      ],
     );
 
     return res.status(201).json({
@@ -3985,7 +4098,7 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(409).json({
         ok: false,
-        message: "El correo o documento ya está registrado.",
+        message: "Ya existe un usuario registrado con este correo.",
         errors: { email: "Ya existe un usuario registrado con este correo." },
       });
     }

@@ -25,6 +25,7 @@ CREATE TABLE usuario (
     departamento VARCHAR(30) NOT NULL,
     ciudad VARCHAR(30) NULL,
     direccion VARCHAR(40) NULL,
+    codigo_postal VARCHAR(20) NULL,
     correo VARCHAR(120) NOT NULL UNIQUE,
     contrasena_hash VARCHAR(255) NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
