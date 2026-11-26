@@ -497,7 +497,7 @@
       panelIcon.className = "fi fi-rr-user";
       panelIcon.setAttribute("aria-hidden", "true");
       const panelLabel = document.createElement("span");
-      panelLabel.textContent = isAdmin
+      panelLabel.textContent = isAdmin || isEmployee
         ? "Ir a mi perfil"
         : "Ir al panel de usuario";
       panelLink.append(panelIcon, panelLabel);
