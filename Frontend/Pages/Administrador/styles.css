@@ -2259,3 +2259,26 @@ html[data-theme="light"] .cabecera-modal,
 html[data-theme="light"] .pie-modal {
   border-color: #e2e8f0;
 }
+
+html[data-theme="light"] .menu-desplegable-perfil {
+  border-color: #e2e8f0;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+}
+
+html[data-theme="light"] .menu-desplegable-perfil a {
+  color: #334155;
+}
+
+html[data-theme="light"] .menu-desplegable-perfil a:hover {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}
+
+html[data-theme="light"] .menu-desplegable-perfil .enlace-rojo {
+  color: #dc2626;
+}
+
+html[data-theme="light"] .menu-desplegable-perfil .separador-menu {
+  background-color: #e2e8f0;
+}

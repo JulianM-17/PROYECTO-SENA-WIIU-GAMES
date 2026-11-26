@@ -949,6 +949,7 @@ async function obtenerPedidosCliente(userId) {
        v.numero_guia AS trackingNumber,
        v.estado AS status,
        v.notas AS notes,
+       CONCAT('GAR-', g.id_garantia) AS warrantyCode,
        DATE_FORMAT(DATE(g.fecha_inicio), '%Y-%m-%d') AS warrantyStartsAt,
        DATE_FORMAT(
          DATE(g.fecha_fin),
@@ -1014,6 +1015,7 @@ async function obtenerPedidosCliente(userId) {
         category: row.category || "Sin categoría",
         warrantyStartsAt: row.warrantyStartsAt,
         warrantyExpiresAt: row.warrantyExpiresAt,
+        warrantyCode: row.warrantyCode,
         warrantyDaysRemaining:
           row.warrantyDaysRemaining === null
             ? null
@@ -1088,12 +1090,16 @@ app.get("/api/my-warranty-products", requireUserSession, async (req, res) => {
           unitNumber: item.unitNumber,
           unitCount: item.unitCount,
           purchasedAt: order.createdAt?.slice(0, 10) || "",
+          warrantyCode: item.warrantyCode,
+          unitNumber: item.unitNumber,
+          unitCount: item.unitCount,
           quantity: item.quantity,
           productName: item.name,
           imageUrl: item.imageUrl,
           category: item.category,
           warrantyStartsAt: item.warrantyStartsAt,
           warrantyExpiresAt: item.warrantyExpiresAt,
+          warrantyStatus: item.warrantyStatus,
           warrantyDaysRemaining: item.warrantyDaysRemaining,
           warrantyActive: item.warrantyActive,
         })),
@@ -1141,22 +1147,20 @@ app.get("/api/my-warranty-requests", requireUserSession, async (req, res) => {
       `SELECT
          sg.id_solicitud AS id,
          COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS orderNumber,
+         CONCAT('GAR-', g.id_garantia) AS warrantyCode,
          p.nombre AS productName,
          DATE_FORMAT(DATE(v.fecha), '%Y-%m-%d') AS warrantyStartsAt,
          DATE_FORMAT(
            DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
            '%Y-%m-%d'
          ) AS warrantyExpiresAt,
-         DATEDIFF(
-           DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
-           CURRENT_DATE()
-         ) AS warrantyDaysRemaining,
          DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i') AS requestedAt,
          sg.descripcion AS description,
          sg.estado AS status
        FROM solicitud_garantia sg
        INNER JOIN detalle_venta dv
          ON dv.id_detalle_venta = sg.id_detalle_venta
+       LEFT JOIN garantia g ON g.id_detalle_venta = dv.id_detalle_venta
        INNER JOIN venta v ON v.id_venta = dv.id_venta
        INNER JOIN producto p ON p.id_producto = dv.id_producto
        WHERE sg.id_usuario = ?
