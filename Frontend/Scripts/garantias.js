@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <div>
                 <h3>${escapeHtml(request.productName)}</h3>
                 <p class="garantia-solicitud-referencia">
-                  Pedido ${escapeHtml(request.orderNumber)} · Solicitud #${escapeHtml(request.id)}
+                  Código ${escapeHtml(request.warrantyCode || "No disponible")} · Pedido ${escapeHtml(request.orderNumber)} · Solicitud #${escapeHtml(request.id)}
                 </p>
               </div>
               <span class="garantia-solicitud-estado estado-${status.toLowerCase()}">
@@ -174,6 +174,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       option.textContent = [
         product.productName,
+        product.unitCount > 1
+          ? `Unidad ${product.unitNumber} de ${product.unitCount}`
+          : "",
+        product.warrantyCode ? `Código ${product.warrantyCode}` : "",
         `Cantidad ${product.quantity}`,
         `Código ${unitReference}`,
         `Tiempo restante ${remainingTime}`,
