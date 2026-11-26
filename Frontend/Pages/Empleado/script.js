@@ -24,8 +24,77 @@ if (!employeeSession?.token || employeeSession.rol !== "Trabajador") {
   initializeEmployeePanel();
 }
 
+function configurarOrdenamientoTodasLasTablasEmpleado() {
+  document.querySelectorAll(".tabla-empleado").forEach((tabla) => {
+    tabla.querySelectorAll("thead th").forEach((encabezado) => {
+      encabezado.setAttribute("title", "Ordenar por " + encabezado.textContent.trim());
+      encabezado.setAttribute("aria-sort", "none");
+    });
+
+    tabla.addEventListener("click", (evento) => {
+      const encabezado = evento.target.closest("thead th");
+      if (!encabezado || !tabla.contains(encabezado)) return;
+
+      const tbody = tabla.tBodies[0];
+      if (!tbody) return;
+      const indice = Array.prototype.indexOf.call(
+        encabezado.parentElement.children,
+        encabezado,
+      );
+      const descendente = encabezado.getAttribute("aria-sort") === "ascending";
+
+      tabla.querySelectorAll("thead th").forEach((otro) => {
+        otro.setAttribute("aria-sort", "none");
+      });
+      encabezado.setAttribute("aria-sort", descendente ? "descending" : "ascending");
+
+      const filas = Array.from(tbody.rows).filter(
+        (fila) =>
+          !fila.querySelector(".mensaje-vacio") && fila.cells[indice],
+      );
+      const collator = new Intl.Collator("es", {
+        numeric: true,
+        sensitivity: "base",
+      });
+
+      filas.sort((a, b) => {
+        const textoA = (a.cells[indice].textContent || "").trim();
+        const textoB = (b.cells[indice].textContent || "").trim();
+        const numeroA = Number(
+          textoA.replace(/[^0-9,-]/g, "").replace(",", "."),
+        );
+        const numeroB = Number(
+          textoB.replace(/[^0-9,-]/g, "").replace(",", "."),
+        );
+
+        let comparacion;
+        if (
+          textoA &&
+          textoB &&
+          Number.isFinite(numeroA) &&
+          Number.isFinite(numeroB) &&
+          (/[$%]|\d[.,]\d/.test(textoA) || /^-?\d/.test(textoA))
+        ) {
+          comparacion = numeroA - numeroB;
+        } else {
+          const fechaA = Date.parse(textoA);
+          const fechaB = Date.parse(textoB);
+          comparacion =
+            Number.isFinite(fechaA) && Number.isFinite(fechaB)
+              ? fechaA - fechaB
+              : collator.compare(textoA, textoB);
+        }
+        return descendente ? -comparacion : comparacion;
+      });
+
+      filas.forEach((fila) => tbody.appendChild(fila));
+    });
+  });
+}
+
 function initializeEmployeePanel() {
   configurarMenuLateral();
+  configurarOrdenamientoTodasLasTablasEmpleado();
   window.matchMedia("(max-width: 768px)").addEventListener(
     "change",
     configurarMenuLateral,

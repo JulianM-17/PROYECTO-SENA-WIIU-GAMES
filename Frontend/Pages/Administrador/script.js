@@ -3179,6 +3179,61 @@ function configurarOrdenamientoUsuarios() {
   });
 }
 
+function configurarOrdenamientoTodasLasTablas() {
+  document.querySelectorAll('.tabla-panel').forEach(function(tabla) {
+    tabla.querySelectorAll('thead th').forEach(function(encabezado) {
+      encabezado.setAttribute('title', 'Ordenar por ' + encabezado.textContent.trim());
+      encabezado.setAttribute('aria-sort', 'none');
+    });
+
+    tabla.addEventListener('click', function(evento) {
+      var encabezado = evento.target.closest('thead th');
+      if (!encabezado || !tabla.contains(encabezado)) return;
+
+      var tbody = tabla.tBodies[0];
+      if (!tbody) return;
+      var indice = Array.prototype.indexOf.call(encabezado.parentElement.children, encabezado);
+      var descendente = encabezado.getAttribute('aria-sort') === 'ascending';
+
+      tabla.querySelectorAll('thead th').forEach(function(otro) {
+        otro.setAttribute('aria-sort', 'none');
+      });
+      encabezado.setAttribute('aria-sort', descendente ? 'descending' : 'ascending');
+
+      var filas = Array.from(tbody.rows).filter(function(fila) {
+        return !fila.querySelector('.texto-vacio') && fila.cells[indice];
+      });
+      var collator = new Intl.Collator('es', { numeric: true, sensitivity: 'base' });
+
+      filas.sort(function(a, b) {
+        var textoA = (a.cells[indice].textContent || '').trim();
+        var textoB = (b.cells[indice].textContent || '').trim();
+        var numeroA = Number(textoA.replace(/[^0-9,-]/g, '').replace(',', '.'));
+        var numeroB = Number(textoB.replace(/[^0-9,-]/g, '').replace(',', '.'));
+        var comparacion;
+
+        if (textoA && textoB && Number.isFinite(numeroA) && Number.isFinite(numeroB)
+          && /[$%]|\d[.,]\d/.test(textoA) && /[$%]|\d[.,]\d/.test(textoB)) {
+          comparacion = numeroA - numeroB;
+        } else {
+          var fechaA = Date.parse(textoA);
+          var fechaB = Date.parse(textoB);
+          if (Number.isFinite(fechaA) && Number.isFinite(fechaB)) {
+            comparacion = fechaA - fechaB;
+          } else {
+            comparacion = collator.compare(textoA, textoB);
+          }
+        }
+        return descendente ? -comparacion : comparacion;
+      });
+
+      filas.forEach(function(fila) {
+        tbody.appendChild(fila);
+      });
+    });
+  });
+}
+
 // Copias de seguridad
 function formatearTamanoBackup(bytes) {
   var valor = Number(bytes) || 0;
@@ -3415,6 +3470,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .getElementById('btnLimpiarNotificaciones')
     ?.addEventListener('click', limpiarNotificacionesAdmin);
   configurarOrdenamientoUsuarios();
+  configurarOrdenamientoTodasLasTablas();
   configurarAccionesSolicitudesGarantia();
   configurarAccionesGarantias();
   cargarDashboard();
