@@ -430,6 +430,10 @@ body {
   font-size: 18px;
 }
 
+.contenedor-toast .toast.success {
+  border-left-color: #22c55e;
+}
+
 @keyframes carrito-toast-in {
   from {
     opacity: 0;
@@ -513,6 +517,22 @@ button.acordeon.abierto i {
 
 .panel-descuento[hidden] {
   display: none;
+}
+
+.mensaje-descuento {
+  grid-column: 1 / -1;
+  min-height: 18px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.mensaje-descuento.success {
+  color: #7bdcb5;
+}
+
+.mensaje-descuento.error {
+  color: #fca5a5;
 }
 
 .input-descuento {
