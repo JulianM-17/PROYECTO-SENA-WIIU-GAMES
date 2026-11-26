@@ -85,6 +85,11 @@ function cambiarPestana(idSeccion, botonClickeado) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+function irAVentasAdmin() {
+  var botonVentas = document.querySelector('.boton-menu[data-seccion="seccion-ventas"]');
+  cambiarPestana('seccion-ventas', botonVentas);
+}
+
 function toggleMenuMovil() {
   var navegacion = document.getElementById('menuNavegacion');
   var botonHamburguesa = document.querySelector('.boton-hamburguesa');
@@ -2757,29 +2762,30 @@ function cargarDashboard() {
     }
 
     // Pedidos registrados
-    if (data.orders) {
-      if (data.orders.length) {
-        poblarTabla('tablaPedidosBody', data.orders, function(row) {
+    var pedidosInicio = Array.isArray(data.orders) ? data.orders : [];
+    var botonVerVentasHome = document.getElementById('pedidosVerVentasHome');
+    if (botonVerVentasHome) botonVerVentasHome.hidden = pedidosInicio.length < 5;
+    if (pedidosInicio.length) {
+      poblarTabla('tablaPedidosBody', pedidosInicio.slice(0, 5), function(row) {
         var estadoClase = row.estado === 'PAGADA'
           ? 'etiqueta-verde'
           : row.estado === 'ANULADA'
             ? 'etiqueta-rojo'
             : 'etiqueta-naranja';
-          var saleId = Number(row.id_venta);
-          var botonAnular = row.estado === 'ANULADA'
-            ? '<button class="boton-icono" type="button" disabled title="La venta ya está anulada" aria-label="Venta anulada"><i class="fi fi-rr-ban"></i></button>'
-            : '<button class="boton-icono rojo" type="button" title="Anular venta" aria-label="Anular venta #' +
-              escaparHtmlAdmin(row.id_venta) + '" onclick="anularVentaAdmin(' + saleId +
-              ')"><i class="fi fi-rr-ban"></i></button>';
-          return '<td><strong>#' + escaparHtmlAdmin(row.orderNumber || row.id_venta) + '</strong></td><td>' + escaparHtmlAdmin(row.nombre + ' ' + row.apellido) + '<small>Cliente #' + escaparHtmlAdmin(row.clientId) + '</small></td><td>' + escaparHtmlAdmin(row.date) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.estado) + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td>' + botonAnular + '</td>';
-        });
-      } else {
-        document.getElementById('tablaPedidosBody').innerHTML =
-          '<tr><td colspan="6" class="texto-vacio">No hay pedidos registrados en la base de datos</td></tr>';
-      }
+        var saleId = Number(row.id_venta);
+        var botonAnular = row.estado === 'ANULADA'
+          ? '<button class="boton-icono" type="button" disabled title="La venta ya está anulada" aria-label="Venta anulada"><i class="fi fi-rr-ban"></i></button>'
+          : '<button class="boton-icono rojo" type="button" title="Anular venta" aria-label="Anular venta #' +
+            escaparHtmlAdmin(row.id_venta) + '" onclick="anularVentaAdmin(' + saleId +
+            ')"><i class="fi fi-rr-ban"></i></button>';
+        return '<td><strong>#' + escaparHtmlAdmin(row.orderNumber || row.id_venta) + '</strong></td><td>' + escaparHtmlAdmin(row.nombre + ' ' + row.apellido) + '<small>Cliente #' + escaparHtmlAdmin(row.clientId) + '</small></td><td>' + escaparHtmlAdmin(row.date) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.estado) + '</span></td><td>$ ' + Number(row.total).toLocaleString('es-CO') + '</td><td>' + botonAnular + '</td>';
+      });
+    } else {
+      document.getElementById('tablaPedidosBody').innerHTML =
+        '<tr><td colspan="6" class="texto-vacio">No hay pedidos registrados en la base de datos</td></tr>';
     }
 
-    var ventas = Array.isArray(data.orders) ? data.orders : [];
+    var ventas = pedidosInicio;
     var ventasIngresos = document.getElementById('ventasIngresos');
     if (ventasIngresos) {
       ventasIngresos.textContent =
