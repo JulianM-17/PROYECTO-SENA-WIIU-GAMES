@@ -1690,7 +1690,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                   icon: "fi-rr-clock",
                   className: "insignia-procesando",
                 };
-<<<<<<< Updated upstream
         const productsById = new Map();
         for (const item of order.items) {
           const productId = String(item.productId);
@@ -1709,27 +1708,9 @@ document.addEventListener("DOMContentLoaded", async () => {
               .map(
                 (product) =>
                   `${escapeHtml(product.name)}${product.quantity > 1 ? ` x${product.quantity}` : ""}`,
-=======
-        const productCounts = new Map();
-        for (const item of order.items) {
-          const productId = String(item.productId);
-          const entry = productCounts.get(productId) || {
-            name: item.name,
-            quantity: 0,
-          };
-          entry.quantity += Number(item.quantity);
-          productCounts.set(productId, entry);
-        }
-        const productSummary = productCounts.size
-          ? [...productCounts.values()]
-              .map(
-                (item) =>
-                  `${escapeHtml(item.name)}${item.quantity > 1 ? ` ×${item.quantity}` : ""}`,
->>>>>>> Stashed changes
               )
               .join(", ")
           : "Pedido sin productos";
-        const firstItem = order.items[0];
         const date = order.createdAt ? new Date(order.createdAt) : null;
         const dateLabel = !date || Number.isNaN(date.getTime())
           ? "Fecha no disponible"
@@ -2184,13 +2165,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <tr style="border-bottom: 1px solid var(--border);">
                 <td style="padding: 12px 8px 12px 0;">
                   ${escapeHtml(item.name)}
-<<<<<<< Updated upstream
                   ${item.unitCount > 1 ? `<small style="display: block; margin-top: 4px; color: var(--text-muted);">Unidad ${Number(item.unitNumber)} de ${Number(item.unitCount)}</small>` : ""}
-=======
-                  <small style="display: block; margin-top: 4px; color: var(--text-muted);">
-                    Unidad ${Number(item.unitNumber)} de ${Number(item.unitCount)} · Código ${escapeHtml(item.warrantyCode || "No disponible")}
-                  </small>
->>>>>>> Stashed changes
                   <small style="display: block; margin-top: 4px; color: ${warrantyIsActive ? "#047857" : "#b42318"};">
                     Garantía: ${escapeHtml(warrantyStatusLabel(order, item))}
                   </small>
