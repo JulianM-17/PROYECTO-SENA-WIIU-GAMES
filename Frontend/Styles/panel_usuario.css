@@ -2589,6 +2589,33 @@ body.a11y-mode-dark-mode .acciones-top .btn-agregar i {
   border-radius: 0 0 20px 20px;
 }
 
+.detalle-pedido-resumen {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.detalle-pedido-dato {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.detalle-pedido-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+
+.detalle-pedido-tabla th,
+.detalle-pedido-tabla td {
+  overflow-wrap: anywhere;
+}
+
 /* Toast Container */
 .contenedor-notificacion {
   position: fixed;

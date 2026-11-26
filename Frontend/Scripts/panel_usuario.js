@@ -2137,11 +2137,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       ANULADA: "Anulado",
     };
     contenido.innerHTML = `
-      <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Estado: <b>${escapeHtml(statusLabels[order.status] || order.status)}</b></p>
-        <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Método de pago: <b>${escapeHtml(paymentMethods[order.paymentMethod] || order.paymentMethod || "No registrado")}</b></p>
+      <div class="detalle-pedido-resumen">
+        <p class="detalle-pedido-dato">Estado: <b>${escapeHtml(statusLabels[order.status] || order.status)}</b></p>
+        <p class="detalle-pedido-dato">Método de pago: <b>${escapeHtml(paymentMethods[order.paymentMethod] || order.paymentMethod || "No registrado")}</b></p>
       </div>
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+      <table class="detalle-pedido-tabla">
         <thead>
           <tr style="border-bottom: 1.5px solid var(--border); text-align: left; color: var(--text-muted);">
             <th style="padding: 8px 0;">Producto</th>

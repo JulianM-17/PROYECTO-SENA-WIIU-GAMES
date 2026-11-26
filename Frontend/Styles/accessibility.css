@@ -2552,6 +2552,117 @@ body.a11y-mode-large-text .sitio-footer .columna-contacto a {
   overflow-wrap: anywhere !important;
 }
 
+/* =====================================================
+   MODALES, RESÚMENES Y DATOS DE FACTURACIÓN
+   Mantiene legibles los formularios y tablas en todos los temas.
+   ===================================================== */
+body.a11y-mode-dark-mode .fondo-modal,
+body.a11y-mode-high-contrast .fondo-modal {
+  backdrop-filter: blur(6px) !important;
+}
+
+body.a11y-mode-dark-mode .tarjeta-modal,
+body.a11y-mode-dark-mode .ventana-modal,
+body.a11y-mode-dark-mode .modal-contenido,
+body.a11y-mode-dark-mode .cuerpo-modal,
+body.a11y-mode-dark-mode .encabezado-modal,
+body.a11y-mode-dark-mode .pie-modal {
+  background-color: #0e1834 !important;
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .detalle-pedido-resumen,
+body.a11y-mode-dark-mode .detalle-pedido-dato {
+  background-color: #070d1e !important;
+  color: #cbd5e1 !important;
+  border-color: #1a2c5b !important;
+}
+
+body.a11y-mode-dark-mode .detalle-pedido-tabla,
+body.a11y-mode-dark-mode .detalle-pedido-tabla th,
+body.a11y-mode-dark-mode .detalle-pedido-tabla td,
+body.a11y-mode-dark-mode .detalle-pedido-tabla tfoot,
+body.a11y-mode-dark-mode .detalle-pedido-tabla tr {
+  color: #f8fafc !important;
+  border-color: #1a2c5b !important;
+  background-color: transparent !important;
+}
+
+body.a11y-mode-dark-mode .detalle-pedido-dato b,
+body.a11y-mode-dark-mode .detalle-pedido-tabla b,
+body.a11y-mode-dark-mode .detalle-pedido-tabla strong,
+body.a11y-mode-dark-mode .encabezado-modal h3,
+body.a11y-mode-dark-mode .encabezado-modal h3 span {
+  color: #f5c842 !important;
+}
+
+body.a11y-mode-high-contrast .tarjeta-modal,
+body.a11y-mode-high-contrast .ventana-modal,
+body.a11y-mode-high-contrast .modal-contenido,
+body.a11y-mode-high-contrast .cuerpo-modal,
+body.a11y-mode-high-contrast .encabezado-modal,
+body.a11y-mode-high-contrast .pie-modal,
+body.a11y-mode-high-contrast .detalle-pedido-resumen {
+  background: #101010 !important;
+  color: #ffffff !important;
+  border: 2px solid #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .detalle-pedido-dato,
+body.a11y-mode-high-contrast .detalle-pedido-tabla,
+body.a11y-mode-high-contrast .detalle-pedido-tabla th,
+body.a11y-mode-high-contrast .detalle-pedido-tabla td,
+body.a11y-mode-high-contrast .detalle-pedido-tabla tfoot,
+body.a11y-mode-high-contrast .detalle-pedido-tabla tr {
+  color: #ffffff !important;
+  border-color: #ffff00 !important;
+  background: transparent !important;
+}
+
+body.a11y-mode-high-contrast .detalle-pedido-dato b,
+body.a11y-mode-high-contrast .detalle-pedido-tabla b,
+body.a11y-mode-high-contrast .detalle-pedido-tabla strong,
+body.a11y-mode-high-contrast .encabezado-modal h3,
+body.a11y-mode-high-contrast .encabezado-modal h3 span {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-large-text .tarjeta-modal,
+body.a11y-mode-large-text .ventana-modal,
+body.a11y-mode-large-text .modal-contenido,
+body.a11y-mode-large-text .caja-modal,
+body.a11y-mode-large-text .modal-empleado,
+body.a11y-mode-large-text .modal-tarjeta-exito {
+  max-height: calc(100vh - 24px) !important;
+  overflow-y: auto !important;
+}
+
+body.a11y-mode-large-text .tarjeta-modal,
+body.a11y-mode-large-text .ventana-modal,
+body.a11y-mode-large-text .modal-contenido,
+body.a11y-mode-large-text .confirmacion-sesion-contenido {
+  width: calc(100% - 24px) !important;
+  max-width: 680px !important;
+}
+
+body.a11y-mode-large-text .encabezado-modal,
+body.a11y-mode-large-text .pie-modal,
+body.a11y-mode-large-text .cuerpo-modal,
+body.a11y-mode-large-text .confirmacion-sesion-acciones {
+  overflow-wrap: anywhere !important;
+}
+
+body.a11y-mode-large-text .pie-modal,
+body.a11y-mode-large-text .confirmacion-sesion-acciones {
+  flex-wrap: wrap !important;
+}
+
+body.a11y-mode-large-text .detalle-pedido-tabla {
+  min-width: 0 !important;
+  white-space: normal !important;
+}
+
 /* Mantiene legibles los estados de stock al combinar alto contraste con otros modos. */
 body.a11y-mode-high-contrast .estado-stock {
   color: #ffff00 !important;
