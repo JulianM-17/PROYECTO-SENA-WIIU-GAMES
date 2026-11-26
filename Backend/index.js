@@ -43,9 +43,32 @@ let warrantyStatusSchemaPromise;
 let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
 let backupSchemaPromise;
+let customerPostalCodeSchemaPromise;
 const BACKUP_DIR = path.join(__dirname, "backups");
 const BACKUP_TABLE = "backup";
 const LEGACY_BACKUP_TABLE = "wiiu_admin_backups";
+
+async function ensureCustomerPostalCodeSchema() {
+  if (!customerPostalCodeSchemaPromise) {
+    customerPostalCodeSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        "SHOW COLUMNS FROM usuario LIKE 'codigo_postal'",
+      );
+      if (!columns.length) {
+        await pool.query(
+          "ALTER TABLE usuario ADD COLUMN codigo_postal VARCHAR(20) NULL AFTER direccion",
+        );
+      }
+    })();
+  }
+
+  try {
+    await customerPostalCodeSchemaPromise;
+  } catch (error) {
+    customerPostalCodeSchemaPromise = null;
+    throw error;
+  }
+}
 
 async function ensureBackupDir() {
   await fs.mkdir(BACKUP_DIR, { recursive: true });
@@ -108,8 +131,17 @@ async function ensureBackupTable() {
 }
 
 async function readBackupContent(filename) {
+  if (isTemporaryStoreBackupFilename(filename)) {
+    const error = new Error("Los respaldos temporales no están disponibles.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  let hasInvalidContent = false;
   try {
-    return await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
+    const content = await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
+    if (parseValidatedBackup(content, filename)) return content;
+    hasInvalidContent = true;
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
@@ -118,19 +150,32 @@ async function readBackupContent(filename) {
   const [rows] = await pool.query(
     `SELECT contenido FROM ${quoteIdentifier(BACKUP_TABLE)}
      WHERE nombre_archivo = ? AND contenido IS NOT NULL
-     ORDER BY id_backup DESC LIMIT 1`,
+     ORDER BY id_backup DESC`,
     [filename],
   );
-  if (!rows.length) {
-    const error = new Error("El respaldo no existe.");
-    error.code = "ENOENT";
-    throw error;
+  for (const row of rows) {
+    if (parseValidatedBackup(row.contenido, filename)) return row.contenido;
   }
-  return rows[0].contenido;
+  if (rows.length) hasInvalidContent = true;
+
+  const error = new Error(
+    hasInvalidContent ? "El archivo de respaldo no es válido." : "El respaldo no existe.",
+  );
+  error.code = hasInvalidContent ? "EBACKUPINVALID" : "ENOENT";
+  error.statusCode = hasInvalidContent ? 400 : 404;
+  throw error;
 }
 
 function isSafeBackupFilename(filename) {
   return /^[A-Za-z0-9_-]+\.json$/.test(filename);
+}
+
+function isTemporaryStoreBackupFilename(filename) {
+  return /(?:^|[_-])pre_store(?:[_-]|\.|$)/i.test(String(filename || ""));
+}
+
+function isRecoveryBackupFilename(filename) {
+  return /(?:^|[_-])pre_restore(?:[_-]|\.|$)/i.test(String(filename || ""));
 }
 
 function quoteIdentifier(identifier) {
@@ -240,6 +285,20 @@ function validateBackup(backup) {
       }
       expectedColumns = columns;
     }
+  }
+}
+
+function parseValidatedBackup(content, filename) {
+  try {
+    const backup = JSON.parse(String(content), deserializeBackupValue);
+    validateBackup(backup);
+    return backup;
+  } catch (error) {
+    if (error instanceof SyntaxError || error.statusCode === 400) {
+      console.warn("Se omitió un respaldo no válido:", filename, error.message);
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -1485,14 +1544,14 @@ app.post("/api/my-appointments/import-legacy", requireUserSession, async (req, r
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede importar citas antiguas.",
+        message: "Solo una cuenta activa puede importar citas antiguas.",
       });
     }
 
@@ -1627,14 +1686,14 @@ app.post("/api/appointments", requireUserSession, async (req, res) => {
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        LIMIT 1`,
       [req.userId],
     );
     if (!userRows.length) {
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede agendar citas.",
+        message: "Solo una cuenta activa puede agendar citas.",
       });
     }
 
@@ -2015,9 +2074,11 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [discountRows] = await pool.query(
       `SELECT
+         pr.id_promocion AS id,
          CONCAT('PROM-', pr.id_promocion) AS code,
          pr.descripcion AS discountDescription,
          CONCAT(ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100), '%') AS percent,
+         ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percentValue,
          DATE_FORMAT(pr.fecha_fin, '%d/%m/%Y') AS expires,
          CASE WHEN pr.estado = 'ACTIVO' THEN 'Activo' ELSE 'Inactivo' END AS status
        FROM promocion pr
@@ -2331,7 +2392,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
        FROM usuario u
        INNER JOIN rol r ON r.id_rol = u.id_rol
        WHERE u.id_usuario = ? AND u.estado = 'ACTIVO'
-         AND r.nombre_rol IN ('Cliente', 'Administrador')
+         AND r.nombre_rol IN ('Cliente', 'Administrador', 'Trabajador')
        FOR UPDATE`,
       [req.userId],
     );
@@ -2339,7 +2400,7 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
       await revertirTransaccionEmpleado(connection);
       return res.status(403).json({
         ok: false,
-        message: "Solo una cuenta activa de cliente o administrador puede realizar compras.",
+        message: "Solo una cuenta activa puede realizar compras.",
       });
     }
     if (!String(customerRows[0].direccion || "").trim()) {
@@ -2774,6 +2835,7 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
   const department = String(req.body?.department || "").trim();
   const city = String(req.body?.city || "").trim();
   const address = String(req.body?.address || "").trim();
+  const postalCode = String(req.body?.postalCode || "").trim();
   const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
   const validDocumentTypes = ["CC", "TI", "PAS", "NIT", "CE"];
   const birth = new Date(`${birthDate}T00:00:00Z`);
@@ -2836,6 +2898,15 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
   if (address.length < 5 || address.length > 40) {
     return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
   }
+  if (postalCode.length > 20) {
+    return res.status(400).json({ ok: false, message: "El código postal no puede superar 20 caracteres." });
+  }
+  if (req.body?.acceptedTerms !== true) {
+    return res.status(400).json({
+      ok: false,
+      message: "El cliente debe aceptar los términos y la política de datos.",
+    });
+  }
 
   const fullName = `${firstName} ${lastName}`.trim();
 
@@ -2869,10 +2940,11 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
       return res.status(409).json({ ok: false, message: "El número de documento ya está registrado." });
     }
 
+    await ensureCustomerPostalCodeSchema();
     const [result] = await pool.query(
       `INSERT INTO usuario
          (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
-          telefono, telefono_secundario, departamento, ciudad, direccion,
+          telefono, telefono_secundario, departamento, ciudad, direccion, codigo_postal,
           correo, contrasena_hash, estado)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
@@ -2887,6 +2959,7 @@ app.post("/api/employee/clients", requireEmployee, async (req, res) => {
         department,
         city,
         address,
+        postalCode || null,
         email,
         passwordHash,
       ],
@@ -3002,8 +3075,9 @@ app.post("/api/employee/workshop-orders", requireEmployee, async (req, res) => {
     defect.length > 100 ||
     !validEquipmentTypes.includes(equipmentType) ||
     !validServiceTypes.includes(serviceType) ||
-    !Number.isFinite(cost) ||
-    cost <= 0
+    !Number.isSafeInteger(cost) ||
+    cost <= 0 ||
+    cost > 99999999
   ) {
     return res.status(400).json({ ok: false, message: "Revisa los datos de la orden de taller." });
   }
@@ -3099,9 +3173,12 @@ app.patch("/api/employee/workshop-orders/:id", requireEmployee, async (req, res)
   const serviceId = Number(req.params.id);
   const requestedStatus = String(req.body?.status || "");
   const statusLabels = {
-    PENDIENTE: "Pendiente",
     "EN PROCESO": "En proceso",
     COMPLETO: "Completado",
+  };
+  const previousStatusByTransition = {
+    "EN PROCESO": "PENDIENTE",
+    COMPLETO: "EN PROCESO",
   };
   if (
     !Number.isSafeInteger(serviceId) ||
@@ -3115,11 +3192,12 @@ app.patch("/api/employee/workshop-orders/:id", requireEmployee, async (req, res)
   try {
     connection = await pool.getConnection();
     await connection.beginTransaction();
+    const previousStatus = previousStatusByTransition[requestedStatus];
     const [result] = await connection.query(
       `UPDATE servicio
        SET estado = ?
-       WHERE id_servicio = ? AND id_encargado = ? AND estado <> 'CANCELADO'`,
-      [requestedStatus, serviceId, req.userId],
+       WHERE id_servicio = ? AND id_encargado = ? AND estado = ?`,
+      [requestedStatus, serviceId, req.userId, previousStatus],
     );
     if (!result.affectedRows) {
       await revertirTransaccionEmpleado(connection);
@@ -3842,11 +3920,14 @@ app.post("/api/usuarios", async (req, res) => {
     const telefono = String(req.body?.telefono || "").trim();
     const telefonoSecundario = String(req.body?.telefono_secundario || "").trim();
     const direccion = String(req.body?.direccion || "").trim();
+    const codigoPostal = String(req.body?.codigoPostal || "").trim();
     const departamento = String(req.body?.departamento || "").trim();
     const ciudad = String(req.body?.ciudad || "").trim();
     const nacimiento = String(req.body?.nacimiento || "").trim();
+    const tipoDocumento = String(req.body?.tipoDocumento || "CC").trim().toUpperCase();
+    const numeroDocumento = String(req.body?.numeroDocumento || "").trim();
 
-    if (!nombre || !apellido || !email || !password) {
+    if (!nombre || !apellido || !email || !password || !tipoDocumento || !numeroDocumento) {
       return res.status(400).json({ ok: false, message: "Datos obligatorios faltantes." });
     }
     const nombreValido = /^[\p{L}][\p{L}\s'-]*$/u;
@@ -3875,6 +3956,9 @@ app.post("/api/usuarios", async (req, res) => {
     if (direccion.length < 5 || direccion.length > 40) {
       return res.status(400).json({ ok: false, message: "Ingresa una dirección válida." });
     }
+    if (codigoPostal.length > 20) {
+      return res.status(400).json({ ok: false, message: "El código postal no puede superar 20 caracteres." });
+    }
     if (!departamento || !ciudad || departamento.length > 30 || ciudad.length > 30) {
       return res.status(400).json({ ok: false, message: "Selecciona departamento y municipio." });
     }
@@ -3888,6 +3972,28 @@ app.post("/api/usuarios", async (req, res) => {
     if (!fechaValida) {
       return res.status(400).json({ ok: false, message: "Selecciona una fecha de nacimiento válida." });
     }
+    const tiposDocumentoValidos = ["CC", "TI", "PAS", "NIT", "CE"];
+    if (!tiposDocumentoValidos.includes(tipoDocumento)) {
+      return res.status(400).json({ ok: false, message: "Selecciona un tipo de documento válido." });
+    }
+    const documentoValido = tipoDocumento === "PAS"
+      ? /^[A-Za-z0-9-]{5,20}$/.test(numeroDocumento)
+      : /^[0-9]{6,20}$/.test(numeroDocumento);
+    if (!documentoValido) {
+      return res.status(400).json({
+        ok: false,
+        message: tipoDocumento === "PAS"
+          ? "El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos."
+          : "El documento seleccionado debe contener entre 6 y 20 números.",
+      });
+    }
+    const [documentoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE num_doc = ? LIMIT 1",
+      [numeroDocumento],
+    );
+    if (documentoExistente.length) {
+      return res.status(409).json({ ok: false, message: "El número de documento ya está registrado." });
+    }
 
     const [roleRows] = await pool.query(
       "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
@@ -3896,22 +4002,26 @@ app.post("/api/usuarios", async (req, res) => {
       return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente." });
     }
 
-    // Generar documento (ID) único
-    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
     const passwordHash = await bcrypt.hash(password, 12);
+    await ensureCustomerPostalCodeSchema();
     const [result] = await pool.query(
-      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario, departamento, ciudad, direccion, fecha_nacimiento, correo, contrasena_hash, estado)
-       VALUES (?, ?, ?, 'CC', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      `INSERT INTO usuario
+         (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, telefono_secundario,
+          departamento, ciudad, direccion, codigo_postal, fecha_nacimiento,
+          correo, contrasena_hash, estado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         roleRows[0].id_rol,
         nombre,
         apellido,
-        numDoc,
+        tipoDocumento,
+        numeroDocumento,
         telefono.substring(0, 20),
         telefonoSecundario.substring(0, 20) || null,
         departamento,
         ciudad,
         direccion,
+        codigoPostal || null,
         nacimiento || null,
         email,
         passwordHash,
@@ -3929,51 +4039,169 @@ app.post("/api/usuarios", async (req, res) => {
 
 app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
   try {
-    const { name, phone, email } = req.body;
-    const fullName = String(name || "").trim();
-    const parts = fullName.split(/\s+/);
-    const nombre = parts[0] || "Cliente";
-    const apellido = parts.slice(1).join(" ") || "Nuevo";
-    const correo = String(email || "").trim().toLowerCase();
-    const telefono = String(phone || "").trim();
+    const nombre = String(req.body?.firstName || "").normalize("NFC").trim().replace(/\s+/g, " ");
+    const apellido = String(req.body?.lastName || "").normalize("NFC").trim().replace(/\s+/g, " ");
+    const nacimiento = String(req.body?.birthDate || "").trim();
+    const tipoDocumento = String(req.body?.documentType || "").trim().toUpperCase();
+    const numeroDocumento = String(req.body?.documentNumber || "").trim();
+    const correo = String(req.body?.email || "").trim().toLowerCase();
+    const confirmarCorreo = String(req.body?.confirmEmail || "").trim().toLowerCase();
+    const contrasena = String(req.body?.password || "");
+    const confirmarContrasena = String(req.body?.confirmPassword || "");
+    const telefono = String(req.body?.phone || "").trim();
+    const telefonoSecundario = String(req.body?.secondaryPhone || "").trim();
+    const departamento = String(req.body?.department || "").trim();
+    const ciudad = String(req.body?.city || "").trim();
+    const direccion = String(req.body?.address || "").trim();
+    const codigoPostal = String(req.body?.postalCode || "").trim();
     const errors = {};
 
-    if (
-      fullName.length > 60 ||
-      !/^[\p{L}\s'-]{3,60}$/u.test(fullName) ||
-      parts.length < 2 ||
-      nombre.length > 30 ||
-      apellido.length > 30
-    ) {
-      errors.name = "Ingresa nombre y apellido válidos (máximo 30 caracteres cada uno).";
+    const namePattern = /^[\p{L}][\p{L}\s'-]*$/u;
+    if (nombre.length < 2 || nombre.length > 30 || !namePattern.test(nombre)) {
+      errors.firstName = "Ingresa un nombre válido de 2 a 30 caracteres.";
     }
-    if (correo.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-      errors.email = "Ingresa un correo electrónico válido (máximo 120 caracteres).";
+    if (apellido.length < 2 || apellido.length > 30 || !namePattern.test(apellido)) {
+      errors.lastName = "Ingresa un apellido válido de 2 a 30 caracteres.";
     }
+
+    const fechaNacimiento = new Date(`${nacimiento}T00:00:00Z`);
+    const fechaLimiteEdad = new Date();
+    fechaLimiteEdad.setFullYear(fechaLimiteEdad.getFullYear() - 10);
+    const fechaMaxima = [
+      fechaLimiteEdad.getFullYear(),
+      String(fechaLimiteEdad.getMonth() + 1).padStart(2, "0"),
+      String(fechaLimiteEdad.getDate()).padStart(2, "0"),
+    ].join("-");
+    const fechaNacimientoValida =
+      /^\d{4}-\d{2}-\d{2}$/.test(nacimiento) &&
+      !Number.isNaN(fechaNacimiento.getTime()) &&
+      fechaNacimiento.toISOString().slice(0, 10) === nacimiento &&
+      nacimiento >= "1940-01-01" &&
+      nacimiento <= fechaMaxima;
+    if (!fechaNacimientoValida) {
+      errors.birthDate = "Selecciona una fecha válida entre 1940 y la fecha límite permitida (mínimo 10 años).";
+    }
+    const tiposDocumentoValidos = ["CC", "TI", "CE", "PAS", "NIT"];
+    if (!tiposDocumentoValidos.includes(tipoDocumento)) {
+      errors.documentType = "Selecciona un tipo de documento válido.";
+    }
+    const documentoValido = tipoDocumento === "PAS"
+      ? /^[A-Za-z0-9-]{5,20}$/.test(numeroDocumento)
+      : /^[0-9]{6,20}$/.test(numeroDocumento);
+    if (!documentoValido) {
+      errors.documentNumber = tipoDocumento === "PAS"
+        ? "El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos."
+        : "El documento debe contener entre 6 y 20 números.";
+    }
+
+    const formatoCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (correo.length > 120 || !formatoCorreo.test(correo)) {
+      errors.email = "Ingresa un correo electrónico válido de máximo 120 caracteres.";
+    }
+    if (!confirmarCorreo || confirmarCorreo !== correo) {
+      errors.confirmEmail = "Los correos electrónicos deben coincidir.";
+    }
+    if (contrasena.length < 8 || contrasena.length > 128) {
+      errors.password = "La contraseña debe tener entre 8 y 128 caracteres.";
+    }
+    if (!confirmarContrasena || confirmarContrasena !== contrasena) {
+      errors.confirmPassword = "Las contraseñas deben coincidir.";
+    }
+
     const phoneDigits = telefono.replace(/\D/g, "");
+    const secondaryPhoneDigits = telefonoSecundario.replace(/\D/g, "");
     if (
-      !/^[0-9+\-\s()]{7,20}$/.test(telefono) ||
-      phoneDigits.length < 7 ||
-      phoneDigits.length > 15
+      !/^[+\d()\s-]{7,20}$/.test(telefono) ||
+      phoneDigits.length < 7
     ) {
-      errors.phone = "Ingresa un teléfono válido con 7 a 15 dígitos.";
+      errors.phone = "Ingresa un teléfono válido con al menos 7 dígitos.";
     }
+    if (
+      telefonoSecundario &&
+      (!/^[+\d()\s-]{7,20}$/.test(telefonoSecundario) ||
+        secondaryPhoneDigits.length < 7)
+    ) {
+      errors.secondaryPhone = "Ingresa un teléfono secundario válido con al menos 7 dígitos.";
+    }
+    if (!departamento || departamento.length > 30) {
+      errors.department = "Selecciona un departamento válido.";
+    }
+    if (!ciudad || ciudad.length > 30) {
+      errors.city = "Selecciona un municipio o ciudad válido.";
+    }
+    if (direccion.length < 5 || direccion.length > 40) {
+      errors.address = "Ingresa una dirección de 5 a 40 caracteres.";
+    }
+    if (codigoPostal.length > 20) {
+      errors.postalCode = "El código postal no puede superar 20 caracteres.";
+    }
+    if (req.body?.acceptedTerms !== true) {
+      errors.acceptedTerms = "Debes confirmar la aceptación de los términos y la política de datos.";
+    }
+
     if (Object.keys(errors).length) {
       return res.status(400).json({
         ok: false,
-        message: "Revisa los datos obligatorios del cliente.",
+        message: "Revisa los datos del cliente antes de guardarlos.",
         errors,
       });
     }
 
-    // Rol 1 = Cliente
-    const numDoc = `CLI${Date.now().toString().slice(-8)}`;
-    const defaultPassword = "Cliente123";
+    const [roleRows] = await pool.query(
+      "SELECT id_rol FROM rol WHERE nombre_rol = 'Cliente' AND estado = 'ACTIVO' LIMIT 1",
+    );
+    if (!roleRows.length) {
+      return res.status(500).json({ ok: false, message: "No se encontró el rol de cliente activo." });
+    }
+
+    const passwordHash = await bcrypt.hash(contrasena, 12);
+    await ensureCustomerPostalCodeSchema();
+
+    const [correoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE correo = ? LIMIT 1",
+      [correo],
+    );
+    if (correoExistente.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un usuario registrado con este correo.",
+        errors: { email: "Ya existe un usuario registrado con este correo." },
+      });
+    }
+    const [documentoExistente] = await pool.query(
+      "SELECT id_usuario FROM usuario WHERE num_doc = ? LIMIT 1",
+      [numeroDocumento],
+    );
+    if (documentoExistente.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un usuario registrado con este número de documento.",
+        errors: { documentNumber: "El número de documento ya está registrado." },
+      });
+    }
 
     const [result] = await pool.query(
-      `INSERT INTO usuario (id_rol, nombre, apellido, tipo_doc, num_doc, telefono, departamento, correo, contrasena_hash, estado)
-       VALUES (1, ?, ?, 'CC', ?, ?, 'Cundinamarca', ?, ?, 'ACTIVO')`,
-      [nombre.substring(0, 30), apellido.substring(0, 30), numDoc, telefono.substring(0, 20), correo.substring(0, 120), defaultPassword],
+      `INSERT INTO usuario
+         (id_rol, nombre, apellido, tipo_doc, num_doc, fecha_nacimiento,
+          telefono, telefono_secundario, departamento, ciudad, direccion,
+          codigo_postal, correo, contrasena_hash, estado)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      [
+        roleRows[0].id_rol,
+        nombre,
+        apellido,
+          tipoDocumento,
+        numeroDocumento,
+        nacimiento,
+        telefono,
+        telefonoSecundario || null,
+        departamento,
+        ciudad,
+        direccion,
+        codigoPostal || null,
+        correo,
+        passwordHash,
+      ],
     );
 
     return res.status(201).json({
@@ -3985,7 +4213,7 @@ app.post("/api/admin/clientes", requireAdmin, async (req, res) => {
     if (error.code === "ER_DUP_ENTRY") {
       return res.status(409).json({
         ok: false,
-        message: "El correo o documento ya está registrado.",
+        message: "Ya existe un usuario registrado con este correo.",
         errors: { email: "Ya existe un usuario registrado con este correo." },
       });
     }
@@ -4887,15 +5115,11 @@ app.get("/api/promotions", async (req, res) => {
 
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
-    const { code, percent, limit: useLimit, desc } = req.body;
-    const codeValue = String(code || "").trim();
+    const { limit: useLimit, percent, desc } = req.body;
     const percentValue = Number(percent);
     const descriptionValue = String(desc || "").trim();
     const errors = {};
 
-    if (!/^[A-Za-z0-9_-]{3,20}$/.test(codeValue)) {
-      errors.code = "El código debe tener entre 3 y 20 caracteres alfanuméricos.";
-    }
     if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
       errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
     }
@@ -4953,7 +5177,7 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: codeValue.toUpperCase(),
+        code: `PROM-${result.insertId}`,
         desc: descriptionValue,
         percent: `${percentValue}%`,
         expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
@@ -4964,6 +5188,73 @@ app.post("/api/admin/descuentos", async (req, res) => {
   } catch (error) {
     console.error("Error al crear descuento:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
+  }
+});
+
+app.put("/api/admin/descuentos/:id", requireAdmin, async (req, res) => {
+  const promotionId = Number(req.params.id);
+  const percentValue = Number(req.body?.percent);
+  const descriptionValue = String(req.body?.desc || "").trim();
+  const errors = {};
+
+  if (!Number.isSafeInteger(promotionId) || promotionId <= 0) {
+    errors.id = "El descuento seleccionado no es válido.";
+  }
+  if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
+    errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
+  }
+  if (descriptionValue.length < 3 || descriptionValue.length > 150) {
+    errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
+  }
+  if (Object.keys(errors).length) {
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa los datos obligatorios del descuento.",
+      errors,
+    });
+  }
+
+  try {
+    const [promotionRows] = await pool.query(
+      `SELECT pr.id_promocion, p.precio AS originalPrice
+       FROM promocion pr
+       INNER JOIN producto p ON p.id_producto = pr.id_producto
+       WHERE pr.id_promocion = ? AND pr.estado = 'ACTIVO'
+       LIMIT 1`,
+      [promotionId],
+    );
+    if (!promotionRows.length) {
+      return res.status(404).json({
+        ok: false,
+        message: "No se encontró el descuento activo seleccionado.",
+      });
+    }
+
+    const originalPrice = Number(promotionRows[0].originalPrice);
+    if (!Number.isFinite(originalPrice) || originalPrice <= 0) {
+      return res.status(409).json({
+        ok: false,
+        message: "El producto asociado no tiene un precio válido para actualizar el descuento.",
+      });
+    }
+    const discountedPrice = originalPrice * (1 - percentValue / 100);
+    await pool.query(
+      `UPDATE promocion
+       SET precio = ?, descripcion = ?
+       WHERE id_promocion = ? AND estado = 'ACTIVO'`,
+      [discountedPrice, descriptionValue, promotionId],
+    );
+
+    return res.json({
+      ok: true,
+      message: "Descuento actualizado correctamente.",
+    });
+  } catch (error) {
+    console.error("Error actualizando descuento:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo actualizar el descuento.",
+    });
   }
 });
 
@@ -5287,6 +5578,8 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
       ok: true,
       message: recurso === "clientes"
         ? "Usuario suspendido correctamente."
+        : recurso === "descuentos"
+          ? "Descuento suspendido correctamente; el registro se conservó."
         : "Registro eliminado de la base de datos.",
     });
   } catch (error) {
@@ -5352,87 +5645,126 @@ app.get("/api/admin/backups", requireAdmin, async (req, res) => {
        ORDER BY id_backup DESC`,
     );
     for (const row of databaseRows) {
-      if (!isSafeBackupFilename(row.nombre_archivo) || backupsByName.has(row.nombre_archivo)) continue;
+      const filename = row.nombre_archivo;
+      if (!isSafeBackupFilename(filename)) continue;
+      if (isTemporaryStoreBackupFilename(filename)) {
+        await pool.query(
+          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
+          [filename],
+        );
+        try {
+          await fs.unlink(path.join(BACKUP_DIR, filename));
+        } catch (error) {
+          if (error.code !== "ENOENT") throw error;
+        }
+        continue;
+      }
+      const existingBackup = backupsByName.get(filename);
+      if (
+        isRecoveryBackupFilename(filename) ||
+        (existingBackup && existingBackup.storedInDatabase)
+      ) continue;
       const createdAt = new Date(row.fecha_creacion);
+      let validDatabaseBackup = false;
+      let databaseCreatedAt = Number.isNaN(createdAt.getTime())
+        ? String(row.fecha_creacion || "")
+        : createdAt.toISOString();
+      if (row.has_content) {
+        const [contentRows] = await pool.query(
+          `SELECT contenido
+           FROM ${quoteIdentifier(BACKUP_TABLE)}
+           WHERE id_backup = ? AND contenido IS NOT NULL
+           LIMIT 1`,
+          [row.id_backup],
+        );
+        if (contentRows.length) {
+          const parsedBackup = parseValidatedBackup(contentRows[0].contenido, filename);
+          if (parsedBackup) {
+            validDatabaseBackup = true;
+            if (
+              typeof parsedBackup.createdAt === "string" &&
+              !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+            ) {
+              databaseCreatedAt = parsedBackup.createdAt;
+            }
+          }
+        }
+      }
       backupsByName.set(row.nombre_archivo, {
         id: row.id_backup,
-        filename: row.nombre_archivo,
+        filename,
         size: Number(row.peso),
-        createdAt: Number.isNaN(createdAt.getTime())
-          ? String(row.fecha_creacion || "")
-          : createdAt.toISOString(),
+        createdAt: databaseCreatedAt,
         storedLocally: false,
-        storedInDatabase: Boolean(row.has_content),
+        storedInDatabase: validDatabaseBackup,
       });
     }
 
     for (const entry of entries) {
       if (!entry.isFile() || !isSafeBackupFilename(entry.name)) continue;
+      if (isTemporaryStoreBackupFilename(entry.name)) {
+        await pool.query(
+          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
+          [entry.name],
+        );
+        try {
+          await fs.unlink(path.join(BACKUP_DIR, entry.name));
+        } catch (error) {
+          if (error.code !== "ENOENT") throw error;
+        }
+        backupsByName.delete(entry.name);
+        continue;
+      }
+      if (isRecoveryBackupFilename(entry.name)) continue;
       const filePath = path.join(BACKUP_DIR, entry.name);
       const stats = await fs.stat(filePath);
       let backupRecord = backupsByName.get(entry.name);
-      if (!backupRecord || !backupRecord.storedInDatabase) {
-        const content = await fs.readFile(filePath, "utf8");
-        let backupCreatedAt = stats.birthtime.toISOString();
-        let validBackup = false;
-        try {
-          const parsedBackup = JSON.parse(content, deserializeBackupValue);
-          validateBackup(parsedBackup);
-          if (
-            typeof parsedBackup.createdAt === "string" &&
-            !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
-          ) {
-            backupCreatedAt = parsedBackup.createdAt;
-          }
-          validBackup = true;
-        } catch (validationError) {
-          if (!(validationError instanceof SyntaxError) && validationError.statusCode !== 400) {
-            throw validationError;
-          }
-          console.warn("No se pudo sincronizar un respaldo local con MySQL:", entry.name, validationError.message);
+      const content = await fs.readFile(filePath, "utf8");
+      const parsedBackup = parseValidatedBackup(content, entry.name);
+      if (!parsedBackup) {
+        if (backupRecord && backupRecord.storedInDatabase) {
+          await fs.unlink(filePath);
+          backupRecord.storedLocally = false;
         }
+        continue;
+      }
 
-        if (validBackup) {
-          const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
-          if (backupRecord) {
-            await pool.query(
-              `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
-               SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
-                   tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
-               WHERE id_backup = ?`,
-              [filePath, stats.size, createdAtSql, content, backupRecord.id],
-            );
-          } else {
-            const [result] = await pool.query(
-              `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
-                 (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
-               VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
-              [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
-            );
-            backupRecord = {
-              id: result.insertId,
-              filename: entry.name,
-              size: stats.size,
-              createdAt: backupCreatedAt,
-              storedInDatabase: true,
-            };
-            backupsByName.set(entry.name, backupRecord);
-          }
-        }
-        if (!backupRecord) {
+      let backupCreatedAt = stats.birthtime.toISOString();
+      if (
+        typeof parsedBackup.createdAt === "string" &&
+        !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+      ) {
+        backupCreatedAt = parsedBackup.createdAt;
+      }
+      const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
+      if (!backupRecord || !backupRecord.storedInDatabase) {
+        if (backupRecord) {
+          await pool.query(
+            `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
+             SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
+                 tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
+             WHERE id_backup = ?`,
+            [filePath, stats.size, createdAtSql, content, backupRecord.id],
+          );
+        } else {
+          const [result] = await pool.query(
+            `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+               (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
+             VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
+            [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
+          );
           backupRecord = {
+            id: result.insertId,
             filename: entry.name,
-            size: stats.size,
-            createdAt: backupCreatedAt,
-            storedInDatabase: false,
+            storedInDatabase: true,
           };
           backupsByName.set(entry.name, backupRecord);
         }
-        backupRecord.storedInDatabase = validBackup;
-        backupRecord.createdAt = backupCreatedAt;
+        backupRecord.storedInDatabase = true;
       }
       backupRecord.storedLocally = true;
       backupRecord.size = stats.size;
+      backupRecord.createdAt = backupCreatedAt;
     }
     const backups = Array.from(backupsByName.values()).filter(
       (backup) => backup.storedInDatabase || backup.storedLocally,
@@ -5465,7 +5797,7 @@ app.post("/api/admin/backups", requireAdmin, async (req, res) => {
 
 app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
   try {
@@ -5475,6 +5807,9 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
     if (error.code === "ENOENT") {
       return res.status(404).json({ ok: false, message: "El respaldo no existe." });
     }
+    if (error.statusCode === 400) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
     console.error("Error descargando respaldo:", error);
     return res.status(500).json({ ok: false, message: "No se pudo descargar el respaldo." });
   }
@@ -5482,7 +5817,7 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
 
 app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
 

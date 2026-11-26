@@ -25,6 +25,7 @@ CREATE TABLE usuario (
     departamento VARCHAR(30) NOT NULL,
     ciudad VARCHAR(30) NULL,
     direccion VARCHAR(40) NULL,
+    codigo_postal VARCHAR(20) NULL,
     correo VARCHAR(120) NOT NULL UNIQUE,
     contrasena_hash VARCHAR(255) NOT NULL,
     estado ENUM('ACTIVO', 'INACTIVO') NOT NULL DEFAULT 'ACTIVO',
@@ -334,6 +335,18 @@ CREATE TABLE backup (
     tipo ENUM ('COMPLETO', 'INCREMENTAL', 'DIFERENCIAL'),
     estado ENUM ('EXITOSO', 'FALLIDO', 'EN PROCESO') NOT NULL,
     CONSTRAINT chk_peso CHECK (peso >= 0)
+);
+
+-- -------------------------- carrito ---------------------------
+CREATE TABLE carrito (
+    id_carrito INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_producto INT NOT NULL,
+    UNIQUE (id_usuario, id_producto),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto)
 );
 
 -- -------------------------- favorito ---------------------------

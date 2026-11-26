@@ -77,11 +77,15 @@
         <div class="grupos-portatiles-footer" id="grupos-portatiles-footer">
           <section class="grupo-portatil-footer" data-tipo-portatil="diario">
             <h4>Portátiles para todos los días</h4>
-            <ul aria-live="polite"><li>Cargando portátiles...</li></ul>
+            <ul>
+              <li><a href="${catalogPage("?categoria=Portatiles")}">Portátil Lenovo IdeaPad 3</a></li>
+            </ul>
           </section>
           <section class="grupo-portatil-footer" data-tipo-portatil="gaming">
             <h4>Portátiles gaming</h4>
-            <ul aria-live="polite"><li>Cargando portátiles...</li></ul>
+            <ul>
+              <li><a href="${catalogPage("?categoria=Portatiles")}">Portátil Gamer ASUS ROG Strix G16</a></li>
+            </ul>
           </section>
         </div>
       </div>
@@ -107,89 +111,6 @@
     </div>
   `;
 
-  function normalizarTexto(value) {
-    return String(value ?? "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .trim()
-      .toLocaleLowerCase("es");
-  }
-
-  function escaparHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  async function cargarPortatilesFooter() {
-    const contenedor = document.getElementById("grupos-portatiles-footer");
-    if (!contenedor) return;
-
-    try {
-      const response = await fetch("http://localhost:3000/api/productos");
-      if (!response.ok) {
-        throw new Error(`Estado ${response.status}`);
-      }
-
-      const products = await response.json();
-      if (!Array.isArray(products)) {
-        throw new Error("La respuesta del catálogo no tiene un formato válido.");
-      }
-
-      const portatiles = products.filter(
-        (product) => normalizarTexto(product.nombre_cat) === "portatiles",
-      );
-      if (portatiles.length === 0) {
-        contenedor.innerHTML = "<p>No hay portátiles disponibles.</p>";
-        return;
-      }
-
-      const grupos = {
-        diario: [],
-        gaming: [],
-      };
-
-      portatiles.forEach((product) => {
-        const textoProducto = normalizarTexto(
-          `${product.nombre} ${product.descripcion}`,
-        );
-        const tipo = /\b(?:gaming|gamer)\b/.test(textoProducto)
-          ? "gaming"
-          : "diario";
-        grupos[tipo].push(product);
-      });
-
-      Object.entries(grupos).forEach(([tipo, productsInGroup]) => {
-        const grupo = contenedor.querySelector(
-          `[data-tipo-portatil="${tipo}"]`,
-        );
-        if (!grupo) return;
-        if (productsInGroup.length === 0) {
-          grupo.hidden = true;
-          return;
-        }
-
-        const lista = grupo.querySelector("ul");
-        lista.innerHTML = productsInGroup
-          .map(
-            (product) => `
-              <li>
-                <a href="${productPage(product.id_producto)}">${escaparHtml(product.nombre)}</a>
-              </li>
-            `,
-          )
-          .join("");
-      });
-    } catch (error) {
-      console.error("No se pudieron cargar los portátiles del footer:", error);
-      contenedor.innerHTML =
-        "<p>No se pudieron cargar los portátiles del catálogo.</p>";
-    }
-  }
-
   function normalizarFooter() {
     document.querySelectorAll("footer.sitio-footer").forEach((footer) => {
       footer.innerHTML = footerTemplate;
@@ -202,7 +123,6 @@
       document.body.appendChild(footer);
     }
     document.dispatchEvent(new CustomEvent("footer-normalized"));
-    cargarPortatilesFooter();
   }
 
   document.addEventListener("DOMContentLoaded", normalizarFooter);

@@ -159,6 +159,43 @@
               <span class="mensaje-error" id="error-nacimiento"></span>
             </div>
 
+            <div class="fila-formulario">
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="tipo-documento"
+                  >Tipo de Documento <span class="obligatorio">*</span></label
+                >
+                <select
+                  id="tipo-documento"
+                  class="entrada-texto"
+                  required
+                >
+                  <option value="">Selecciona el tipo</option>
+                  <option value="CC">Cédula de ciudadanía</option>
+                  <option value="TI">Tarjeta de identidad</option>
+                  <option value="CE">Cédula de extranjería</option>
+                  <option value="PAS">Pasaporte</option>
+                  <option value="NIT">NIT</option>
+                </select>
+                <span class="mensaje-error" id="error-tipo-documento"></span>
+              </div>
+              <div class="grupo-entrada ancho-mitad">
+                <label class="etiqueta" for="numero-documento"
+                  >Número de Documento <span class="obligatorio">*</span></label
+                >
+                <input
+                  type="text"
+                  id="numero-documento"
+                  class="entrada-texto"
+                  placeholder="Ej. 1075654321"
+                  minlength="6"
+                  maxlength="20"
+                  inputmode="numeric"
+                  required
+                />
+                <span class="mensaje-error" id="error-numero-documento"></span>
+              </div>
+            </div>
+
             <h3 class="titulo-seccion margen-superior">
               Credenciales de Acceso
             </h3>
@@ -299,6 +336,7 @@
                   id="codigo-postal"
                   class="entrada-texto"
                   placeholder="Ej: 152210"
+                  maxlength="20"
                 />
               </div>
               <div class="grupo-entrada ancho-mitad">
@@ -532,6 +570,7 @@
 
     <script src="../Scripts/carrito-store.js" defer></script>
     <script src="../Scripts/accessibility.js" defer></script>
+    <script src="../Scripts/ubicaciones-colombia.js" defer></script>
     <script src="../Scripts/registro.js" defer></script>
     <script src="../Scripts/contactanos.js" defer></script>
     <script src="../Scripts/footer.js" defer></script>

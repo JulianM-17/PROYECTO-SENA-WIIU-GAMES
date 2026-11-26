@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputNombre = document.getElementById('nombre');
   const inputApellido = document.getElementById('apellido');
   const inputFechaNacimiento = document.getElementById('fecha-nacimiento');
+  const selectTipoDocumento = document.getElementById('tipo-documento');
+  const inputNumeroDocumento = document.getElementById('numero-documento');
   const inputCorreo = document.getElementById('correo');
   const inputConfirmarCorreo = document.getElementById('confirmar-correo');
   const inputContrasena = document.getElementById('contrasena');
@@ -30,76 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return localDigits ? `${prefijo} ${localDigits}` : '';
   }
 
-  // Departamentos y municipios disponibles
-  const departamentosColombia = {
-    "Boyacá": [
-      "Sogamoso", "Tunja", "Duitama", "Paipa", "Chiquinquirá", "Villa de Leyva",
-      "Moniquirá", "Nobsa", "Tibarría", "Garagoa", "Guateque", "Puerto Boyacá",
-      "Santa Rosa de Viterbo", "Soatá", "Samacá"
-    ],
-    "Cundinamarca": [
-      "Bogotá D.C.", "Soacha", "Chía", "Zipaquirá", "Facatativá", "Fusagasugá",
-      "Mosquera", "Madrid", "Funza", "Cajicá", "Girardot", "Cota", "Sopó", "Tocancipá"
-    ],
-    "Antioquia": [
-      "Medellín", "Bello", "Itagüí", "Envigado", "Rionegro", "Apartadó",
-      "Sabaneta", "La Estrella", "Caldas", "Copacabana", "Marinilla", "Caucasia"
-    ],
-    "Santander": [
-      "Bucaramanga", "Floridablanca", "Girón", "Piedecuesta", "Barrancabermeja",
-      "San Gil", "Socorro", "Málaga", "Barbosa", "Zapatoca"
-    ],
-    "Valle del Cauca": [
-      "Cali", "Palmira", "Buenaventura", "Tuluá", "Buga", "Cartago",
-      "Jamundí", "Yumbo", "Candelaria", "Sevilla"
-    ],
-    "Atlántico": [
-      "Barranquilla", "Soledad", "Malambo", "Sabanalarga", "Puerto Colombia",
-      "Baranoa", "Galapa", "Palmar de Varela"
-    ],
-    "Bolívar": [
-      "Cartagena", "Magangué", "El Carmen de Bolívar", "Turbaco", "Arjona", "Mompox"
-    ],
-    "Tolima": [
-      "Ibagué", "Espinal", "Melgar", "Chaparral", "Mariquita", "Líbano", "Honda"
-    ],
-    "Meta": [
-      "Villavicencio", "Acacías", "Granada", "Puerto López", "Cumaral"
-    ],
-    "Norte de Santander": [
-      "Cúcuta", "Ocaña", "Pamplona", "Los Patios", "Villa del Rosario", "Tibú"
-    ],
-    "Caldas": [
-      "Manizales", "La Dorada", "Chinchiná", "Villamaría", "Anserma", "Riosucio"
-    ],
-    "Risaralda": [
-      "Pereira", "Dosquebradas", "Santa Rosa de Cabal", "La Virginia", "Belén de Umbría"
-    ],
-    "Quindío": [
-      "Armenia", "Calarcá", "La Tebaida", "Circasia", "Montenegro", "Quimbaya"
-    ],
-    "Huila": [
-      "Neiva", "Pitalito", "Garzón", "La Plata", "Campoalegre"
-    ],
-    "Nariño": [
-      "Pasto", "Tumaco", "Ipiales", "Túquerres", "La Unión"
-    ],
-    "Cauca": [
-      "Popayán", "Santander de Quilichao", "Puerto Tejada", "Patía", "Piendamó"
-    ],
-    "Cesar": [
-      "Valledupar", "Aguachica", "Agustín Codazzi", "Bosconia", "Curumaní"
-    ],
-    "Córdoba": [
-      "Montería", "Lorica", "Cereté", "Sahagún", "Montelíbano", "Tierralta"
-    ],
-    "Magdalena": [
-      "Santa Marta", "Ciénaga", "Fundación", "Plato", "El Banco"
-    ],
-    "Casanare": [
-      "Yopal", "Aguazul", "Villanueva", "Paz de Ariporo", "Tauramena"
-    ]
-  };
+  const departamentosColombia = window.departamentosColombia;
 
   // Poblado de Departamentos
   if (selectDepartamento) {
@@ -330,6 +263,39 @@ document.addEventListener('DOMContentLoaded', () => {
     return limpiarError(inputFechaNacimiento, 'error-nacimiento');
   }
 
+  function validarTipoDocumento() {
+    if (!selectTipoDocumento.value) {
+      return mostrarError(selectTipoDocumento, 'error-tipo-documento', 'Selecciona el tipo de documento.');
+    }
+    const esPasaporte = selectTipoDocumento.value === 'PAS';
+    inputNumeroDocumento.inputMode = esPasaporte ? 'text' : 'numeric';
+    inputNumeroDocumento.pattern = esPasaporte ? '[A-Za-z0-9-]{5,20}' : '[0-9]{6,20}';
+    inputNumeroDocumento.placeholder = esPasaporte ? 'Ej. AB123456' : 'Ej. 1075654321';
+    inputNumeroDocumento.setCustomValidity('');
+    return limpiarError(selectTipoDocumento, 'error-tipo-documento');
+  }
+
+  function validarNumeroDocumento() {
+    const tipo = selectTipoDocumento.value;
+    const valor = inputNumeroDocumento.value.trim();
+    if (!tipo) {
+      return mostrarError(inputNumeroDocumento, 'error-numero-documento', 'Primero selecciona el tipo de documento.');
+    }
+    const valido = tipo === 'PAS'
+      ? /^[A-Za-z0-9-]{5,20}$/.test(valor)
+      : /^[0-9]{6,20}$/.test(valor);
+    if (!valido) {
+      return mostrarError(
+        inputNumeroDocumento,
+        'error-numero-documento',
+        tipo === 'PAS'
+          ? 'El pasaporte debe tener entre 5 y 20 caracteres alfanuméricos.'
+          : 'El documento debe contener entre 6 y 20 números.',
+      );
+    }
+    return limpiarError(inputNumeroDocumento, 'error-numero-documento');
+  }
+
   function validarCorreo() {
     const val = inputCorreo.value.trim();
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -482,6 +448,20 @@ document.addEventListener('DOMContentLoaded', () => {
     inputFechaNacimiento.addEventListener('blur', validarFechaNacimiento);
   }
 
+  if (selectTipoDocumento) {
+    selectTipoDocumento.addEventListener('change', validarTipoDocumento);
+  }
+
+  if (inputNumeroDocumento) {
+    inputNumeroDocumento.addEventListener('input', () => {
+      inputNumeroDocumento.value = selectTipoDocumento.value === 'PAS'
+        ? inputNumeroDocumento.value.replace(/[^A-Za-z0-9-]/g, '').toUpperCase()
+        : inputNumeroDocumento.value.replace(/\D/g, '');
+      if (inputNumeroDocumento.classList.contains('input-error')) validarNumeroDocumento();
+    });
+    inputNumeroDocumento.addEventListener('blur', validarNumeroDocumento);
+  }
+
   if (inputCorreo) {
     inputCorreo.addEventListener('blur', validarCorreo);
     inputCorreo.addEventListener('input', () => { if (inputCorreo.classList.contains('input-error')) validarCorreo(); });
@@ -544,6 +524,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const vNombre = validarNombre();
       const vApellido = validarApellido();
       const vFecha = validarFechaNacimiento();
+      const vTipoDocumento = validarTipoDocumento();
+      const vNumeroDocumento = validarNumeroDocumento();
       const vCorreo = validarCorreo();
       const vConfCorreo = validarConfirmarCorreo();
       const vPass = validarContrasena();
@@ -555,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const vTelSecundario = validarTelefonoSecundario();
       const vTerm = validarTerminos();
 
-      const esValido = vNombre && vApellido && vFecha && vCorreo && vConfCorreo &&
+      const esValido = vNombre && vApellido && vFecha && vTipoDocumento && vNumeroDocumento && vCorreo && vConfCorreo &&
                         vPass && vConfPass && vDir && vDep && vMun && vTel &&
                         vTelSecundario && vTerm;
 
@@ -578,6 +560,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const nuevoUsuario = {
         nombre: inputNombre.value.trim(),
         apellido: inputApellido.value.trim(),
+        tipoDocumento: selectTipoDocumento.value,
+        numeroDocumento: inputNumeroDocumento.value.trim(),
         email: inputCorreo.value.trim().toLowerCase(),
         telefono: formatearTelefono(inputTelefonoPrincipal, selectPrefijoPrincipal),
         telefono_secundario: inputTelefonoSecundario

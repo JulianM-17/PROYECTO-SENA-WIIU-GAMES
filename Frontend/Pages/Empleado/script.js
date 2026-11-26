@@ -328,6 +328,15 @@ function createCell(text, className = "") {
   return cell;
 }
 
+function createStatusCell(text, tone) {
+  const cell = document.createElement("td");
+  const badge = document.createElement("span");
+  badge.className = `etiqueta-estado etiqueta-${tone}`;
+  badge.textContent = text ?? "";
+  cell.appendChild(badge);
+  return cell;
+}
+
 function renderCategoryOptions() {
   const select = document.getElementById("filtroCategoriaPos");
   const selected = select.value;
@@ -413,7 +422,10 @@ function renderCatalog() {
       createCell(product.category),
       createCell(formatCurrency(product.price)),
       createCell(String(product.stock)),
-      createCell(Number(product.stock) > 0 ? "Disponible" : "No disponible"),
+      createStatusCell(
+        Number(product.stock) > 0 ? "Disponible" : "No disponible",
+        Number(product.stock) > 0 ? "verde" : "rojo",
+      ),
     );
   });
 }
@@ -478,7 +490,14 @@ function renderWarranties() {
       ),
       createCell(warranty.buyDate),
       createCell(warranty.expDate),
-      createCell(warranty.status),
+      createStatusCell(
+        warranty.status,
+        warranty.status === "Activa"
+          ? "verde"
+          : warranty.status === "Suspendida"
+            ? "rojo"
+            : "naranja",
+      ),
     );
     const action = document.createElement("td");
     const button = document.createElement("button");
@@ -510,7 +529,14 @@ function renderWorkshopOrders() {
       createCell(order.defect),
       createCell(order.client),
       createCell(formatCurrency(order.cost)),
-      createCell(order.status),
+      createStatusCell(
+        order.status,
+        order.status === "Completado"
+          ? "verde"
+          : order.status === "Cancelado"
+            ? "rojo"
+            : "naranja",
+      ),
     );
     const action = document.createElement("td");
     if (order.status === "Completado" || order.status === "Cancelado") {
@@ -672,7 +698,10 @@ function filtrarTablaGenerica(idTbody, texto) {
 
 function createField(labelText, control) {
   const wrapper = document.createElement("div");
-  wrapper.className = "grupo-campo";
+  const isCheckbox = control.type === "checkbox";
+  wrapper.className = isCheckbox
+    ? "grupo-campo grupo-campo-check"
+    : "grupo-campo";
   const label = document.createElement("label");
   label.htmlFor = control.id;
   label.textContent = labelText;
@@ -683,7 +712,7 @@ function createField(labelText, control) {
     indicator.textContent = "*";
     label.append(" ", indicator);
   }
-  wrapper.append(label, control);
+  wrapper.append(...(isCheckbox ? [control, label] : [label, control]));
   return wrapper;
 }
 
@@ -805,15 +834,18 @@ function abrirModalEmpleado(tipo) {
       { value: "Mantenimiento preventivo", label: "Mantenimiento preventivo" },
     ]);
     const device = createInput("empDispositivo", "text", "Ej. Wii U, portátil o consola");
+    device.minLength = 3;
     device.maxLength = 100;
     const defect = document.createElement("textarea");
     defect.id = "empFalla";
     defect.name = "empFalla";
     defect.placeholder = "Describe la falla o el trabajo solicitado";
     defect.required = true;
+    defect.minLength = 3;
     defect.maxLength = 100;
     const cost = createInput("empPresupuesto", "number", "Ej. 65000");
     cost.min = "1";
+    cost.max = "99999999";
     cost.step = "1";
     fields.append(
       createField("Cliente", clientSelect),
@@ -877,6 +909,9 @@ function abrirModalEmpleado(tipo) {
     const address = createInput("empDireccion", "text", "Ej. Carrera 11 #14-14 Local 126");
     address.minLength = 5;
     address.maxLength = 40;
+    const postalCode = createInput("empCodigoPostal", "text", "Ej. 152210", false);
+    postalCode.maxLength = 20;
+    postalCode.inputMode = "numeric";
     const phone = createInput("empTelefono", "tel", "Ej. 3123456789");
     phone.pattern = "[0-9 +()-]{7,20}";
     phone.inputMode = "tel";
@@ -897,6 +932,19 @@ function abrirModalEmpleado(tipo) {
     const confirmPassword = createInput("empConfirmarContrasena", "password", "Repite la contraseña");
     confirmPassword.minLength = 8;
     confirmPassword.maxLength = 128;
+    const sameBillingAddress = document.createElement("input");
+    sameBillingAddress.type = "checkbox";
+    sameBillingAddress.id = "empMismaDireccion";
+    sameBillingAddress.checked = true;
+    const sameBillingField = createField("Usar la misma dirección para facturación", sameBillingAddress);
+    const acceptedTerms = document.createElement("input");
+    acceptedTerms.type = "checkbox";
+    acceptedTerms.id = "empAceptarTerminos";
+    acceptedTerms.required = true;
+    const termsField = createField(
+      "El cliente acepta los términos, condiciones y la política de tratamiento de datos",
+      acceptedTerms,
+    );
 
     function updateCities() {
       city.replaceChildren(new Option("Selecciona municipio / ciudad", ""));
@@ -917,12 +965,15 @@ function abrirModalEmpleado(tipo) {
       createField("Departamento", department),
       createField("Municipio / Ciudad", city),
       createField("Dirección principal", address),
+      createField("Código postal (opcional)", postalCode),
       createField("Teléfono de contacto", phone),
       createField("Teléfono secundario (opcional)", secondaryPhone),
       createField("Correo electrónico", email),
       createField("Confirmar correo electrónico", confirmEmail),
       createField("Contraseña", password),
       createField("Confirmar contraseña", confirmPassword),
+      sameBillingField,
+      termsField,
     );
     fields.classList.add("campos-cliente-completo");
     form.querySelector('[type="submit"]').disabled = false;
@@ -988,6 +1039,33 @@ async function guardarRegistroEmpleado(event) {
         ? ""
         : "Las contraseñas no coinciden.",
     );
+    document.getElementById("empAceptarTerminos").setCustomValidity(
+      document.getElementById("empAceptarTerminos").checked
+        ? ""
+        : "El cliente debe aceptar los términos y la política de datos.",
+    );
+    if (!event.currentTarget.reportValidity()) return;
+  } else if (tipoRegistroActual === "taller") {
+    const device = document.getElementById("empDispositivo");
+    const defect = document.getElementById("empFalla");
+    const cost = document.getElementById("empPresupuesto");
+
+    device.setCustomValidity(
+      device.value.trim().length >= 3
+        ? ""
+        : "Indica el dispositivo con al menos 3 caracteres.",
+    );
+    defect.setCustomValidity(
+      defect.value.trim().length >= 3
+        ? ""
+        : "Describe la falla o el trabajo solicitado con al menos 3 caracteres.",
+    );
+    const costValue = Number(cost.value);
+    cost.setCustomValidity(
+      Number.isSafeInteger(costValue) && costValue >= 1 && costValue <= 99999999
+        ? ""
+        : "Ingresa un presupuesto entero entre 1 y 99.999.999.",
+    );
     if (!event.currentTarget.reportValidity()) return;
   }
   submitButton.disabled = true;
@@ -1019,12 +1097,15 @@ async function guardarRegistroEmpleado(event) {
         department: document.getElementById("empDepartamento").value,
         city: document.getElementById("empCiudad").value,
         address: document.getElementById("empDireccion").value.trim(),
+        postalCode: document.getElementById("empCodigoPostal").value.trim(),
         phone: document.getElementById("empTelefono").value.trim(),
         secondaryPhone: document.getElementById("empTelefonoSecundario").value.trim(),
         email: document.getElementById("empCorreo").value.trim(),
         confirmEmail: document.getElementById("empConfirmarCorreo").value.trim(),
         password: document.getElementById("empContrasena").value,
         confirmPassword: document.getElementById("empConfirmarContrasena").value,
+        acceptedTerms: document.getElementById("empAceptarTerminos").checked,
+        sameBillingAddress: document.getElementById("empMismaDireccion").checked,
       };
     } else {
       return;
@@ -1124,13 +1205,35 @@ function showEmployeeToast(message, type = "success") {
   if (!container) {
     container = document.createElement("div");
     container.id = "notificacionesEmpleado";
-    container.className = "notificaciones-empleado";
+    container.className = "contenedor-toast notificaciones-empleado";
     container.setAttribute("aria-live", "polite");
     document.body.appendChild(container);
   }
   const toast = document.createElement("div");
-  toast.className = `notificacion-empleado ${type}`;
-  toast.textContent = message;
+  const normalizedType = ["success", "error", "info", "warning"].includes(type)
+    ? type
+    : "info";
+  const icon = document.createElement("span");
+  icon.className = "toast-icono";
+  icon.setAttribute("aria-hidden", "true");
+  icon.textContent =
+    normalizedType === "success"
+      ? "✅"
+      : normalizedType === "error"
+        ? "❌"
+        : normalizedType === "warning"
+          ? "⚠️"
+          : "ℹ️";
+  const content = document.createElement("span");
+  content.className = "toast-mensaje";
+  content.textContent = message;
+  toast.className = `toast toast-${normalizedType}`;
+  toast.setAttribute("role", normalizedType === "error" ? "alert" : "status");
+  toast.setAttribute("aria-live", normalizedType === "error" ? "assertive" : "polite");
+  toast.append(icon, content);
   container.appendChild(toast);
-  window.setTimeout(() => toast.remove(), 5000);
+  window.setTimeout(() => {
+    toast.style.opacity = "0";
+    window.setTimeout(() => toast.remove(), 300);
+  }, 3500);
 }

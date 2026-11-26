@@ -978,6 +978,15 @@ body {
   color: #f5a623;
 }
 
+#seccion-mantenimientos .tabla-panel th:last-child {
+  cursor: default;
+  user-select: text;
+}
+
+#seccion-mantenimientos .tabla-panel th:last-child::after {
+  content: none;
+}
+
 #tablaUsuarios .boton-orden-tabla {
   display: inline-flex;
   align-items: center;
@@ -1430,6 +1439,49 @@ body {
   outline: none;
 }
 
+.campo-telefono {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.campo-telefono select {
+  flex: 0 0 104px;
+}
+
+.campo-telefono input {
+  flex: 1 1 150px;
+  min-width: 0;
+}
+
+.campo-telefono .mensaje-error-campo {
+  flex-basis: 100%;
+}
+
+.campo-grupo.campo-grupo-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.campo-grupo-check input {
+  margin: 3px 0 0;
+}
+
+.caja-modal.modal-dos-columnas .campo-grupo-check input {
+  width: auto;
+  min-height: auto;
+}
+
+.campo-grupo-check label {
+  line-height: 1.5;
+}
+
+.campo-grupo-check .mensaje-error-campo {
+  grid-column: 1 / -1;
+}
+
 .nota-obligatorios {
   margin: 0 0 14px;
   color: #a9b7cf;
@@ -1470,6 +1522,18 @@ body {
 
 .acciones-servicio {
   white-space: nowrap;
+}
+
+#seccion-mantenimientos .acciones-servicio {
+  text-align: left;
+}
+
+#seccion-mantenimientos .acciones-servicio > :not(.btn-mas-informacion) {
+  display: none;
+}
+
+#seccion-mantenimientos .acciones-servicio .btn-mas-informacion {
+  margin-right: 0;
 }
 
 .btn-mas-informacion,
