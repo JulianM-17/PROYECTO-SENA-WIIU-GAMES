@@ -5142,8 +5142,6 @@ app.get("/api/promotions", async (req, res) => {
        FROM promocion pr
        INNER JOIN producto p ON p.id_producto = pr.id_producto
        WHERE pr.estado = 'ACTIVO'
-         AND pr.fecha_inicio <= CURRENT_DATE()
-         AND pr.fecha_fin >= CURRENT_DATE()
        ORDER BY pr.fecha_fin ASC`
     );
     return res.json({ ok: true, promotions: rows || [] });

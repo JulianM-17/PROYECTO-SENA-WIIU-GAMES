@@ -140,10 +140,12 @@
               placeholder="Escribe el código"
               aria-label="Código de descuento"
               autocomplete="off"
+              aria-describedby="mensaje-descuento"
               maxlength="20"
             >
             <button type="button" class="btn-aplicar-descuento" id="btn-aplicar-descuento">Aplicar</button>
             <button type="button" class="btn-quitar-descuento" id="btn-quitar-descuento" hidden>Quitar</button>
+            <p class="mensaje-descuento" id="mensaje-descuento" role="status" aria-live="polite"></p>
           </div>
 
           <div class="desglose-totales">
