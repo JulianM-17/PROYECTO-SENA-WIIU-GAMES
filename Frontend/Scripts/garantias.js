@@ -49,6 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = requests
       .map((request) => {
         const status = labels[request.status] ? request.status : "RECIBIDA";
+        const daysRemaining =
+          request.warrantyDaysRemaining == null
+            ? Number.NaN
+            : Number(request.warrantyDaysRemaining);
+        const warrantyRemaining = !Number.isFinite(daysRemaining)
+          ? "Tiempo restante no disponible"
+          : daysRemaining < 0
+            ? `Venció hace ${Math.abs(daysRemaining)} día${Math.abs(daysRemaining) === 1 ? "" : "s"}`
+            : daysRemaining === 0
+              ? "Vence hoy"
+              : `Quedan ${daysRemaining} día${daysRemaining === 1 ? "" : "s"}`;
         return `
           <article class="garantia-solicitud-card">
             <header class="garantia-solicitud-cabecera">
@@ -64,8 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </header>
             <p class="garantia-solicitud-fecha">
               <strong>Enviada:</strong> ${escapeHtml(request.requestedAt)}
-              · <strong>Garantía:</strong> desde ${escapeHtml(request.warrantyStartsAt)}
-              hasta ${escapeHtml(request.warrantyExpiresAt)}
+              · <strong>Tiempo restante:</strong> ${escapeHtml(warrantyRemaining)}
             </p>
             <p class="garantia-solicitud-descripcion">${escapeHtml(request.description)}</p>
           </article>`;
@@ -153,17 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const product of products) {
       const option = document.createElement("option");
       option.value = String(product.detailId);
+      const unitReference =
+        product.unitReference ||
+        `${product.orderNumber}-U${product.detailId}`;
       option.textContent = [
         product.productName,
         `Cantidad ${product.quantity}`,
-        `Pedido ${product.orderNumber}`,
-        `Garantía desde ${product.warrantyStartsAt}`,
-        product.warrantyActive
-          ? `Garantía hasta ${product.warrantyExpiresAt}`
-          : `Garantía vencida ${product.warrantyExpiresAt}`,
-        product.hasRequest
-          ? `Solicitud ${product.requestStatus.toLowerCase()}`
-          : "",
+        `Código ${unitReference}`,
       ]
         .filter(Boolean)
         .join(" · ");

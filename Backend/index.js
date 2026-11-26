@@ -131,17 +131,8 @@ async function ensureBackupTable() {
 }
 
 async function readBackupContent(filename) {
-  if (isTemporaryStoreBackupFilename(filename)) {
-    const error = new Error("Los respaldos temporales no están disponibles.");
-    error.statusCode = 400;
-    throw error;
-  }
-
-  let hasInvalidContent = false;
   try {
-    const content = await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
-    if (parseValidatedBackup(content, filename)) return content;
-    hasInvalidContent = true;
+    return await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
@@ -150,32 +141,19 @@ async function readBackupContent(filename) {
   const [rows] = await pool.query(
     `SELECT contenido FROM ${quoteIdentifier(BACKUP_TABLE)}
      WHERE nombre_archivo = ? AND contenido IS NOT NULL
-     ORDER BY id_backup DESC`,
+     ORDER BY id_backup DESC LIMIT 1`,
     [filename],
   );
-  for (const row of rows) {
-    if (parseValidatedBackup(row.contenido, filename)) return row.contenido;
+  if (!rows.length) {
+    const error = new Error("El respaldo no existe.");
+    error.code = "ENOENT";
+    throw error;
   }
-  if (rows.length) hasInvalidContent = true;
-
-  const error = new Error(
-    hasInvalidContent ? "El archivo de respaldo no es válido." : "El respaldo no existe.",
-  );
-  error.code = hasInvalidContent ? "EBACKUPINVALID" : "ENOENT";
-  error.statusCode = hasInvalidContent ? 400 : 404;
-  throw error;
+  return rows[0].contenido;
 }
 
 function isSafeBackupFilename(filename) {
   return /^[A-Za-z0-9_-]+\.json$/.test(filename);
-}
-
-function isTemporaryStoreBackupFilename(filename) {
-  return /(?:^|[_-])pre_store(?:[_-]|\.|$)/i.test(String(filename || ""));
-}
-
-function isRecoveryBackupFilename(filename) {
-  return /(?:^|[_-])pre_restore(?:[_-]|\.|$)/i.test(String(filename || ""));
 }
 
 function quoteIdentifier(identifier) {
@@ -285,20 +263,6 @@ function validateBackup(backup) {
       }
       expectedColumns = columns;
     }
-  }
-}
-
-function parseValidatedBackup(content, filename) {
-  try {
-    const backup = JSON.parse(String(content), deserializeBackupValue);
-    validateBackup(backup);
-    return backup;
-  } catch (error) {
-    if (error instanceof SyntaxError || error.statusCode === 400) {
-      console.warn("Se omitió un respaldo no válido:", filename, error.message);
-      return null;
-    }
-    throw error;
   }
 }
 
@@ -652,6 +616,24 @@ async function insertAutomaticWarrantyCoverage(connection, detailId) {
   );
 }
 
+async function insertSaleUnitsWithWarranties(connection, saleId, line, notes) {
+  const totalMicros = Math.round(line.subtotal * 1_000_000);
+  const baseMicros = Math.floor(totalMicros / line.quantity);
+  const extraMicros = totalMicros % line.quantity;
+
+  for (let unitIndex = 0; unitIndex < line.quantity; unitIndex += 1) {
+    const unitSubtotal =
+      (baseMicros + (unitIndex < extraMicros ? 1 : 0)) / 1_000_000;
+    const [detailResult] = await connection.query(
+      `INSERT INTO detalle_venta
+         (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+       VALUES (?, ?, 1, ?, ?, ?)`,
+      [saleId, line.productId, line.unitPrice, unitSubtotal, notes],
+    );
+    await insertAutomaticWarrantyCoverage(connection, detailResult.insertId);
+  }
+}
+
 function ensureAutomaticWarrantyCoverage() {
   if (!automaticWarrantyCoveragePromise) {
     automaticWarrantyCoveragePromise = (async () => {
@@ -662,6 +644,58 @@ function ensureAutomaticWarrantyCoverage() {
         await ensureWarrantyDetailIndexes();
         connection = await pool.getConnection();
         await connection.beginTransaction();
+        const [multiUnitDetails] = await connection.query(
+          `SELECT
+             dv.id_detalle_venta AS detailId,
+             dv.id_venta AS saleId,
+             dv.id_producto AS productId,
+             dv.cantidad AS quantity,
+             dv.precio_unitario AS unitPrice,
+             dv.subtotal AS subtotal,
+             dv.notas AS notes
+           FROM detalle_venta dv
+           INNER JOIN venta v ON v.id_venta = dv.id_venta
+           WHERE v.estado = 'PAGADA' AND dv.cantidad > 1
+           ORDER BY dv.id_detalle_venta
+           FOR UPDATE`,
+        );
+        for (const detail of multiUnitDetails) {
+          const quantity = Number(detail.quantity);
+          const unitPrice = Number(detail.unitPrice);
+          const totalMicros = Math.round(Number(detail.subtotal) * 1_000_000);
+          const baseMicros = Math.floor(totalMicros / quantity);
+          const extraMicros = totalMicros % quantity;
+          const firstUnitSubtotal =
+            (baseMicros + (extraMicros > 0 ? 1 : 0)) / 1_000_000;
+          const [updateResult] = await connection.query(
+            `UPDATE detalle_venta
+             SET cantidad = 1, subtotal = ?
+             WHERE id_detalle_venta = ? AND cantidad = ?`,
+            [firstUnitSubtotal, detail.detailId, quantity],
+          );
+          if (!updateResult.affectedRows) {
+            throw new Error(
+              `No se pudo separar el detalle de venta ${detail.detailId}.`,
+            );
+          }
+
+          for (let unitIndex = 1; unitIndex < quantity; unitIndex += 1) {
+            const unitSubtotal =
+              (baseMicros + (unitIndex < extraMicros ? 1 : 0)) / 1_000_000;
+            await connection.query(
+              `INSERT INTO detalle_venta
+                 (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
+               VALUES (?, ?, 1, ?, ?, ?)`,
+              [
+                detail.saleId,
+                detail.productId,
+                unitPrice,
+                unitSubtotal,
+                detail.notes,
+              ],
+            );
+          }
+        }
         await connection.query(
           `UPDATE garantia g
            INNER JOIN detalle_venta dv
@@ -997,11 +1031,31 @@ async function obtenerPedidosCliente(userId) {
     }
   }
 
-  return [...ordersById.values()].map((order) => ({
-    ...order,
-    subtotal: Number(order.subtotal.toFixed(2)),
-    total: order.total ?? Number(order.subtotal.toFixed(2)),
-  }));
+  return [...ordersById.values()].map((order) => {
+    const unitCounts = new Map();
+    for (const item of order.items) {
+      const productId = String(item.productId);
+      unitCounts.set(
+        productId,
+        (unitCounts.get(productId) || 0) + Number(item.quantity),
+      );
+    }
+
+    const unitIndexes = new Map();
+    for (const item of order.items) {
+      const productId = String(item.productId);
+      const unitNumber = (unitIndexes.get(productId) || 0) + 1;
+      unitIndexes.set(productId, unitNumber);
+      item.unitNumber = unitNumber;
+      item.unitCount = unitCounts.get(productId);
+    }
+
+    return {
+      ...order,
+      subtotal: Number(order.subtotal.toFixed(2)),
+      total: order.total ?? Number(order.subtotal.toFixed(2)),
+    };
+  });
 }
 
 app.get("/api/my-orders", requireUserSession, async (req, res) => {
@@ -1030,6 +1084,9 @@ app.get("/api/my-warranty-products", requireUserSession, async (req, res) => {
           detailId: item.detailId,
           saleId: order.id,
           orderNumber: order.number,
+          unitReference: `${order.number}-U${item.detailId}`,
+          unitNumber: item.unitNumber,
+          unitCount: item.unitCount,
           purchasedAt: order.createdAt?.slice(0, 10) || "",
           quantity: item.quantity,
           productName: item.name,
@@ -1090,6 +1147,10 @@ app.get("/api/my-warranty-requests", requireUserSession, async (req, res) => {
            DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
            '%Y-%m-%d'
          ) AS warrantyExpiresAt,
+         DATEDIFF(
+           DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
+           CURRENT_DATE()
+         ) AS warrantyDaysRemaining,
          DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i') AS requestedAt,
          sg.descripcion AS description,
          sg.estado AS status
@@ -2074,11 +2135,9 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [discountRows] = await pool.query(
       `SELECT
-         pr.id_promocion AS id,
          CONCAT('PROM-', pr.id_promocion) AS code,
          pr.descripcion AS discountDescription,
          CONCAT(ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100), '%') AS percent,
-         ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percentValue,
          DATE_FORMAT(pr.fecha_fin, '%d/%m/%Y') AS expires,
          CASE WHEN pr.estado = 'ACTIVO' THEN 'Activo' ELSE 'Inactivo' END AS status
        FROM promocion pr
@@ -2508,21 +2567,11 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     );
 
     for (const line of saleLines) {
-      const [detailResult] = await connection.query(
-        `INSERT INTO detalle_venta
-           (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
-         VALUES (?, ?, ?, ?, ?, 'Compra web de demostración')`,
-        [
-          saleResult.insertId,
-          line.productId,
-          line.quantity,
-          line.unitPrice,
-          line.subtotal,
-        ],
-      );
-      await insertAutomaticWarrantyCoverage(
+      await insertSaleUnitsWithWarranties(
         connection,
-        detailResult.insertId,
+        saleResult.insertId,
+        line,
+        "Compra web de demostración",
       );
 
       let remainingQuantity = line.quantity;
@@ -3409,21 +3458,11 @@ app.post("/api/employee/sales", requireEmployee, async (req, res) => {
     );
 
     for (const line of saleLines) {
-      const [detailResult] = await connection.query(
-        `INSERT INTO detalle_venta
-           (id_venta, id_producto, cantidad, precio_unitario, subtotal, notas)
-         VALUES (?, ?, ?, ?, ?, 'Venta desde POS de empleado')`,
-        [
-          saleResult.insertId,
-          line.productId,
-          line.quantity,
-          line.unitPrice,
-          line.subtotal,
-        ],
-      );
-      await insertAutomaticWarrantyCoverage(
+      await insertSaleUnitsWithWarranties(
         connection,
-        detailResult.insertId,
+        saleResult.insertId,
+        line,
+        "Venta desde POS de empleado",
       );
       let remainingQuantity = line.quantity;
       for (const inventory of line.inventoryRows) {
@@ -5115,11 +5154,15 @@ app.get("/api/promotions", async (req, res) => {
 
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
-    const { limit: useLimit, percent, desc } = req.body;
+    const { code, percent, limit: useLimit, desc } = req.body;
+    const codeValue = String(code || "").trim();
     const percentValue = Number(percent);
     const descriptionValue = String(desc || "").trim();
     const errors = {};
 
+    if (!/^[A-Za-z0-9_-]{3,20}$/.test(codeValue)) {
+      errors.code = "El código debe tener entre 3 y 20 caracteres alfanuméricos.";
+    }
     if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
       errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
     }
@@ -5177,7 +5220,7 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: `PROM-${result.insertId}`,
+        code: codeValue.toUpperCase(),
         desc: descriptionValue,
         percent: `${percentValue}%`,
         expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
@@ -5188,73 +5231,6 @@ app.post("/api/admin/descuentos", async (req, res) => {
   } catch (error) {
     console.error("Error al crear descuento:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
-  }
-});
-
-app.put("/api/admin/descuentos/:id", requireAdmin, async (req, res) => {
-  const promotionId = Number(req.params.id);
-  const percentValue = Number(req.body?.percent);
-  const descriptionValue = String(req.body?.desc || "").trim();
-  const errors = {};
-
-  if (!Number.isSafeInteger(promotionId) || promotionId <= 0) {
-    errors.id = "El descuento seleccionado no es válido.";
-  }
-  if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
-    errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
-  }
-  if (descriptionValue.length < 3 || descriptionValue.length > 150) {
-    errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
-  }
-  if (Object.keys(errors).length) {
-    return res.status(400).json({
-      ok: false,
-      message: "Revisa los datos obligatorios del descuento.",
-      errors,
-    });
-  }
-
-  try {
-    const [promotionRows] = await pool.query(
-      `SELECT pr.id_promocion, p.precio AS originalPrice
-       FROM promocion pr
-       INNER JOIN producto p ON p.id_producto = pr.id_producto
-       WHERE pr.id_promocion = ? AND pr.estado = 'ACTIVO'
-       LIMIT 1`,
-      [promotionId],
-    );
-    if (!promotionRows.length) {
-      return res.status(404).json({
-        ok: false,
-        message: "No se encontró el descuento activo seleccionado.",
-      });
-    }
-
-    const originalPrice = Number(promotionRows[0].originalPrice);
-    if (!Number.isFinite(originalPrice) || originalPrice <= 0) {
-      return res.status(409).json({
-        ok: false,
-        message: "El producto asociado no tiene un precio válido para actualizar el descuento.",
-      });
-    }
-    const discountedPrice = originalPrice * (1 - percentValue / 100);
-    await pool.query(
-      `UPDATE promocion
-       SET precio = ?, descripcion = ?
-       WHERE id_promocion = ? AND estado = 'ACTIVO'`,
-      [discountedPrice, descriptionValue, promotionId],
-    );
-
-    return res.json({
-      ok: true,
-      message: "Descuento actualizado correctamente.",
-    });
-  } catch (error) {
-    console.error("Error actualizando descuento:", error.message);
-    return res.status(500).json({
-      ok: false,
-      message: "No se pudo actualizar el descuento.",
-    });
   }
 });
 
@@ -5578,8 +5554,6 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
       ok: true,
       message: recurso === "clientes"
         ? "Usuario suspendido correctamente."
-        : recurso === "descuentos"
-          ? "Descuento suspendido correctamente; el registro se conservó."
         : "Registro eliminado de la base de datos.",
     });
   } catch (error) {
@@ -5645,126 +5619,87 @@ app.get("/api/admin/backups", requireAdmin, async (req, res) => {
        ORDER BY id_backup DESC`,
     );
     for (const row of databaseRows) {
-      const filename = row.nombre_archivo;
-      if (!isSafeBackupFilename(filename)) continue;
-      if (isTemporaryStoreBackupFilename(filename)) {
-        await pool.query(
-          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
-          [filename],
-        );
-        try {
-          await fs.unlink(path.join(BACKUP_DIR, filename));
-        } catch (error) {
-          if (error.code !== "ENOENT") throw error;
-        }
-        continue;
-      }
-      const existingBackup = backupsByName.get(filename);
-      if (
-        isRecoveryBackupFilename(filename) ||
-        (existingBackup && existingBackup.storedInDatabase)
-      ) continue;
+      if (!isSafeBackupFilename(row.nombre_archivo) || backupsByName.has(row.nombre_archivo)) continue;
       const createdAt = new Date(row.fecha_creacion);
-      let validDatabaseBackup = false;
-      let databaseCreatedAt = Number.isNaN(createdAt.getTime())
-        ? String(row.fecha_creacion || "")
-        : createdAt.toISOString();
-      if (row.has_content) {
-        const [contentRows] = await pool.query(
-          `SELECT contenido
-           FROM ${quoteIdentifier(BACKUP_TABLE)}
-           WHERE id_backup = ? AND contenido IS NOT NULL
-           LIMIT 1`,
-          [row.id_backup],
-        );
-        if (contentRows.length) {
-          const parsedBackup = parseValidatedBackup(contentRows[0].contenido, filename);
-          if (parsedBackup) {
-            validDatabaseBackup = true;
-            if (
-              typeof parsedBackup.createdAt === "string" &&
-              !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
-            ) {
-              databaseCreatedAt = parsedBackup.createdAt;
-            }
-          }
-        }
-      }
       backupsByName.set(row.nombre_archivo, {
         id: row.id_backup,
-        filename,
+        filename: row.nombre_archivo,
         size: Number(row.peso),
-        createdAt: databaseCreatedAt,
+        createdAt: Number.isNaN(createdAt.getTime())
+          ? String(row.fecha_creacion || "")
+          : createdAt.toISOString(),
         storedLocally: false,
-        storedInDatabase: validDatabaseBackup,
+        storedInDatabase: Boolean(row.has_content),
       });
     }
 
     for (const entry of entries) {
       if (!entry.isFile() || !isSafeBackupFilename(entry.name)) continue;
-      if (isTemporaryStoreBackupFilename(entry.name)) {
-        await pool.query(
-          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
-          [entry.name],
-        );
-        try {
-          await fs.unlink(path.join(BACKUP_DIR, entry.name));
-        } catch (error) {
-          if (error.code !== "ENOENT") throw error;
-        }
-        backupsByName.delete(entry.name);
-        continue;
-      }
-      if (isRecoveryBackupFilename(entry.name)) continue;
       const filePath = path.join(BACKUP_DIR, entry.name);
       const stats = await fs.stat(filePath);
       let backupRecord = backupsByName.get(entry.name);
-      const content = await fs.readFile(filePath, "utf8");
-      const parsedBackup = parseValidatedBackup(content, entry.name);
-      if (!parsedBackup) {
-        if (backupRecord && backupRecord.storedInDatabase) {
-          await fs.unlink(filePath);
-          backupRecord.storedLocally = false;
-        }
-        continue;
-      }
-
-      let backupCreatedAt = stats.birthtime.toISOString();
-      if (
-        typeof parsedBackup.createdAt === "string" &&
-        !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
-      ) {
-        backupCreatedAt = parsedBackup.createdAt;
-      }
-      const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
       if (!backupRecord || !backupRecord.storedInDatabase) {
-        if (backupRecord) {
-          await pool.query(
-            `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
-             SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
-                 tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
-             WHERE id_backup = ?`,
-            [filePath, stats.size, createdAtSql, content, backupRecord.id],
-          );
-        } else {
-          const [result] = await pool.query(
-            `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
-               (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
-             VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
-            [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
-          );
+        const content = await fs.readFile(filePath, "utf8");
+        let backupCreatedAt = stats.birthtime.toISOString();
+        let validBackup = false;
+        try {
+          const parsedBackup = JSON.parse(content, deserializeBackupValue);
+          validateBackup(parsedBackup);
+          if (
+            typeof parsedBackup.createdAt === "string" &&
+            !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+          ) {
+            backupCreatedAt = parsedBackup.createdAt;
+          }
+          validBackup = true;
+        } catch (validationError) {
+          if (!(validationError instanceof SyntaxError) && validationError.statusCode !== 400) {
+            throw validationError;
+          }
+          console.warn("No se pudo sincronizar un respaldo local con MySQL:", entry.name, validationError.message);
+        }
+
+        if (validBackup) {
+          const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
+          if (backupRecord) {
+            await pool.query(
+              `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
+               SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
+                   tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
+               WHERE id_backup = ?`,
+              [filePath, stats.size, createdAtSql, content, backupRecord.id],
+            );
+          } else {
+            const [result] = await pool.query(
+              `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+                 (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
+               VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
+              [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
+            );
+            backupRecord = {
+              id: result.insertId,
+              filename: entry.name,
+              size: stats.size,
+              createdAt: backupCreatedAt,
+              storedInDatabase: true,
+            };
+            backupsByName.set(entry.name, backupRecord);
+          }
+        }
+        if (!backupRecord) {
           backupRecord = {
-            id: result.insertId,
             filename: entry.name,
-            storedInDatabase: true,
+            size: stats.size,
+            createdAt: backupCreatedAt,
+            storedInDatabase: false,
           };
           backupsByName.set(entry.name, backupRecord);
         }
-        backupRecord.storedInDatabase = true;
+        backupRecord.storedInDatabase = validBackup;
+        backupRecord.createdAt = backupCreatedAt;
       }
       backupRecord.storedLocally = true;
       backupRecord.size = stats.size;
-      backupRecord.createdAt = backupCreatedAt;
     }
     const backups = Array.from(backupsByName.values()).filter(
       (backup) => backup.storedInDatabase || backup.storedLocally,
@@ -5797,7 +5732,7 @@ app.post("/api/admin/backups", requireAdmin, async (req, res) => {
 
 app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
   try {
@@ -5807,9 +5742,6 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
     if (error.code === "ENOENT") {
       return res.status(404).json({ ok: false, message: "El respaldo no existe." });
     }
-    if (error.statusCode === 400) {
-      return res.status(400).json({ ok: false, message: error.message });
-    }
     console.error("Error descargando respaldo:", error);
     return res.status(500).json({ ok: false, message: "No se pudo descargar el respaldo." });
   }
@@ -5817,7 +5749,7 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
 
 app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
 

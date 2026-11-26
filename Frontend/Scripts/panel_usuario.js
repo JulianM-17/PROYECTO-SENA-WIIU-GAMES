@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       nombre: partesNombre[0] || "Usuario",
       apellidos: partesNombre.slice(1).join(" ") || "",
       email: sessionUser?.correo || "usuario@wiiu.com",
-      fotoPerfil: "",
       telefono: "",
       nacimiento: "",
       documento: "",
@@ -149,7 +148,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       nombre: profile.nombre || "",
       apellidos: profile.apellido || "",
       email: profile.correo || "",
-      fotoPerfil: profile.fotoPerfil || "",
       telefono: profile.telefono || "",
       nacimiento: profile.nacimiento || "",
       documento: profile.documento || "",
@@ -187,7 +185,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionUser.nombre =
       `${state.profile.nombre} ${state.profile.apellidos}`.trim();
     sessionUser.correo = state.profile.email;
-    sessionUser.fotoPerfil = state.profile.fotoPerfil;
     sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
   }
 
@@ -591,33 +588,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         state.cartCount && state.cartCount > 0 ? state.cartCount : "";
 
     // 4.2 Datos del Perfil (Header, Sidebar, Banner, Cards)
-    const {
-      nombre,
-      apellidos,
-      email,
-      fotoPerfil,
-      telefono,
-      nacimiento,
-      documento,
-    } = state.profile;
+    const { nombre, apellidos, email, telefono, nacimiento, documento } =
+      state.profile;
     const initial =
       nombre && nombre.charAt(0) ? nombre.charAt(0).toUpperCase() : "U";
-    const hasProfilePhoto =
-      typeof fotoPerfil === "string" &&
-      /^\/Assets\/uploads\/perfiles\/[a-f0-9]{32}\.(?:jpg|png|webp|gif)$/i.test(
-        fotoPerfil,
-      );
 
     document
       .querySelectorAll(
-        ".avatar-barra-lateral, .perfil-avatar-grande, .foto-perfil, .avatar-sesion",
+        ".avatar-barra-lateral, .perfil-avatar-grande, .foto-perfil",
       )
       .forEach((el) => {
-        el.classList.toggle("tiene-foto", hasProfilePhoto);
-        el.textContent = hasProfilePhoto ? "" : initial;
-        el.style.backgroundImage = hasProfilePhoto ? `url("${fotoPerfil}")` : "";
-        el.style.backgroundPosition = hasProfilePhoto ? "center" : "";
-        el.style.backgroundSize = hasProfilePhoto ? "cover" : "";
+        if (el.classList.contains("foto-perfil")) {
+          el.textContent = initial;
+        } else {
+          el.textContent = initial;
+        }
       });
 
     document
@@ -690,59 +675,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnEditarPerfil = document.getElementById("btn-editar-perfil");
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
   const formPerfilSeguridad = document.getElementById("form-perfil-seguridad");
-  const btnCambiarFotoPerfil = document.getElementById("btn-cambiar-foto-perfil");
-  const inputFotoPerfil = document.getElementById("input-foto-perfil");
-
-  btnCambiarFotoPerfil?.addEventListener("click", () => inputFotoPerfil?.click());
-  inputFotoPerfil?.addEventListener("change", async () => {
-    const file = inputFotoPerfil.files?.[0];
-    if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-    if (!allowedTypes.includes(file.type)) {
-      showToast("Selecciona una imagen JPG, PNG, WEBP o GIF.", "error");
-      inputFotoPerfil.value = "";
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("La foto no puede superar los 5 MB.", "error");
-      inputFotoPerfil.value = "";
-      return;
-    }
-
-    btnCambiarFotoPerfil.disabled = true;
-    showToast("Subiendo tu foto de perfil...", "info");
-    try {
-      const response = await fetch("http://localhost:3000/api/profile/photo", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${sessionUser.token}`,
-          "Content-Type": file.type,
-        },
-        body: file,
-      });
-      const data = await response.json().catch(() => ({}));
-      if (response.status === 401) {
-        sessionStorage.removeItem("wiiu_usuario_activo");
-        window.location.replace("Login.html?returnTo=panel_usuario.html");
-        return;
-      }
-      if (!response.ok || !data.ok || !data.fotoPerfil) {
-        throw new Error(data.message || "No se pudo actualizar la foto de perfil.");
-      }
-
-      state.profile.fotoPerfil = data.fotoPerfil;
-      sessionUser.fotoPerfil = data.fotoPerfil;
-      sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
-      updateUI();
-      showToast("Foto de perfil actualizada.", "success");
-    } catch (error) {
-      showToast(error.message || "No se pudo actualizar la foto de perfil.", "error");
-    } finally {
-      btnCambiarFotoPerfil.disabled = false;
-      inputFotoPerfil.value = "";
-    }
-  });
 
   const inputPasswordActual = document.getElementById("perfil-pass-actual");
   const togglePasswordActual = document.getElementById(
@@ -981,7 +913,6 @@ document.addEventListener("DOMContentLoaded", async () => {
           nombre: profile.nombre || "",
           apellidos: profile.apellido || "",
           email: profile.correo || "",
-          fotoPerfil: profile.fotoPerfil || state.profile.fotoPerfil || "",
           telefono: profile.telefono || "",
           nacimiento: profile.nacimiento || "",
           documento: profile.documento || "",
@@ -989,7 +920,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         sessionUser.nombre =
           `${state.profile.nombre} ${state.profile.apellidos}`.trim();
         sessionUser.correo = state.profile.email;
-        sessionUser.fotoPerfil = state.profile.fotoPerfil;
         sessionStorage.setItem(
           "wiiu_usuario_activo",
           JSON.stringify(sessionUser),
@@ -1671,21 +1601,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll("'", "&#039;");
   let selectedInvoiceOrder = null;
 
-  function formatWarrantyDate(value) {
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
-    if (!match) return "fecha no disponible";
-    const [, year, month, day] = match;
-    return new Intl.DateTimeFormat("es-CO", {
-      dateStyle: "long",
-      timeZone: "UTC",
-    }).format(
-      new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))),
-    );
-  }
-
   function warrantyStatusLabel(order, item) {
-    const startDate = formatWarrantyDate(item.warrantyStartsAt);
-    const expirationDate = formatWarrantyDate(item.warrantyExpiresAt);
     const daysRemaining =
       item.warrantyDaysRemaining == null
         ? Number.NaN
@@ -1696,19 +1612,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!Number.isFinite(daysRemaining)) {
       return "No hay información del plazo de garantía.";
     }
-    if (daysRemaining < 0) {
-      return `Vencida; inició el ${startDate} y terminó el ${expirationDate}.`;
-    }
     if (["ANULADA", "SUSPENDIDA"].includes(item.warrantyStatus)) {
-      return `Suspendida; la cobertura terminó el ${expirationDate}.`;
+      return "Garantía suspendida.";
+    }
+    if (daysRemaining < 0) {
+      const daysSinceExpiration = Math.abs(daysRemaining);
+      return `Venció hace ${daysSinceExpiration} día${daysSinceExpiration === 1 ? "" : "s"}.`;
     }
     if (!item.warrantyActive) {
       return "No disponible: la cobertura de esta compra no está activa.";
     }
     if (daysRemaining === 0) {
-      return `Vigente desde ${startDate}; vence hoy, ${expirationDate}.`;
+      return "Vence hoy.";
     }
-    return `Vigente desde ${startDate}; quedan ${daysRemaining} días (hasta ${expirationDate}).`;
+    return `Quedan ${daysRemaining} día${daysRemaining === 1 ? "" : "s"}.`;
   }
 
   function renderOrders() {
@@ -1760,9 +1677,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                   icon: "fi-rr-clock",
                   className: "insignia-procesando",
                 };
-        const firstItem = order.items[0];
-        const productSummary = firstItem
-          ? `${escapeHtml(firstItem.name)}${order.items.length > 1 ? ` y ${order.items.length - 1} producto(s) más` : ""}`
+        const productsById = new Map();
+        for (const item of order.items) {
+          const productId = String(item.productId);
+          const existingProduct = productsById.get(productId);
+          if (existingProduct) {
+            existingProduct.quantity += Number(item.quantity);
+          } else {
+            productsById.set(productId, {
+              name: item.name,
+              quantity: Number(item.quantity),
+            });
+          }
+        }
+        const productSummary = productsById.size
+          ? [...productsById.values()]
+              .map(
+                (product) =>
+                  `${escapeHtml(product.name)}${product.quantity > 1 ? ` x${product.quantity}` : ""}`,
+              )
+              .join(", ")
           : "Pedido sin productos";
         const date = order.createdAt ? new Date(order.createdAt) : null;
         const dateLabel = !date || Number.isNaN(date.getTime())
@@ -1770,6 +1704,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           : `Realizado el ${new Intl.DateTimeFormat("es-CO", {
               dateStyle: "long",
             }).format(date)}`;
+        const firstItem = order.items[0];
         const imageMarkup = firstItem?.imageUrl
           ? `<div class="pedido-img"><img src="${escapeHtml(firstItem.imageUrl)}" alt="${escapeHtml(firstItem.name)}" onerror="this.src='../Assets/lenovolegion.webp'"></div>`
           : '<div class="pedido-img-emoji"><i class="fi fi-rr-box"></i></div>';
@@ -1882,7 +1817,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       .map(
         (item) => `
           <tr>
-            <td>${escapeHtml(item.name)}</td>
+            <td>
+              ${escapeHtml(item.name)}
+              ${item.unitCount > 1 ? `<small>Unidad ${Number(item.unitNumber)} de ${Number(item.unitCount)}</small>` : ""}
+            </td>
             <td class="number">${Number(item.quantity)}</td>
             <td class="number">${formatCOP(item.unitPrice)}</td>
             <td class="number">${formatCOP(item.subtotal)}</td>
@@ -2214,6 +2152,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               <tr style="border-bottom: 1px solid var(--border);">
                 <td style="padding: 12px 8px 12px 0;">
                   ${escapeHtml(item.name)}
+                  ${item.unitCount > 1 ? `<small style="display: block; margin-top: 4px; color: var(--text-muted);">Unidad ${Number(item.unitNumber)} de ${Number(item.unitCount)}</small>` : ""}
                   <small style="display: block; margin-top: 4px; color: ${warrantyIsActive ? "#047857" : "#b42318"};">
                     Garantía: ${escapeHtml(warrantyStatusLabel(order, item))}
                   </small>
