@@ -642,11 +642,100 @@ body {
   border: 2px solid var(--yellow);
   border-radius: 9px;
   text-align: center;
+  padding: 0 21px 0 3px;
   font: inherit;
   font-size: 16px;
   font-weight: 700;
   color: var(--dark-blue);
   background: #fffdf5;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.cantidad-producto::-webkit-inner-spin-button,
+.cantidad-producto::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.cantidad-stepper {
+  position: relative;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 42px;
+}
+
+.cantidad-stepper .cantidad-producto {
+  position: absolute;
+  inset: 0;
+  width: 48px;
+  height: 42px;
+}
+
+.flechas-cantidad {
+  position: absolute;
+  z-index: 2;
+  top: 5px;
+  right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 19px;
+  height: 32px;
+}
+
+.btn-cantidad {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(245, 200, 66, 0.14);
+  color: #7a621c;
+  font-size: 0;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 120ms ease,
+    box-shadow 160ms ease;
+}
+
+.btn-cantidad::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  transform: rotate(45deg) translate(1px, 1px);
+  border-radius: 1px;
+}
+
+.btn-cantidad-menos::before {
+  transform: rotate(225deg) translate(1px, 1px);
+}
+
+.btn-cantidad:hover:not(:disabled),
+.btn-cantidad:focus-visible:not(:disabled) {
+  color: #b58a00;
+  background: rgba(245, 200, 66, 0.32);
+  box-shadow: 0 2px 5px rgba(174, 132, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.btn-cantidad:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.btn-cantidad:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
 }
 
 .cantidad-producto:focus {
@@ -898,10 +987,30 @@ body {
   }
 
   .cantidad-producto {
-    flex: 0 0 34px;
-    width: 100%;
+    flex: 0 0 48px;
+    width: 48px;
     height: 34px;
     font-size: 13px;
+  }
+
+  .cantidad-stepper,
+  .cantidad-stepper .cantidad-producto {
+    flex-basis: 48px;
+    width: 48px;
+    height: 34px;
+  }
+
+  .flechas-cantidad {
+    top: 4px;
+    right: 4px;
+    gap: 2px;
+    width: 19px;
+    height: 26px;
+  }
+
+  .btn-cantidad {
+    width: 19px;
+    height: 12px;
   }
 
   .btn-agregar-carrito {

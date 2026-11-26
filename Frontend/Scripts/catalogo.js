@@ -424,16 +424,32 @@ function crearTarjetaProducto(prod) {
       </a>
       <div class="precio-actual">${precioFormateado}</div>
       <div class="contenedor-acciones-producto">
-        <input
-          type="number"
-          id="cantidad-${escapeHtml(prod.id_producto)}"
-          min="1"
-          max="${Math.max(Number(prod.stock_total) || 99, 1)}"
-          value="1"
-          class="cantidad-producto"
-          aria-label="Cantidad para ${escapeHtml(prod.nombre)}"
-          ${tieneStock ? '' : 'disabled'}
-        />
+        <div class="cantidad-stepper">
+          <input
+            type="number"
+            id="cantidad-${escapeHtml(prod.id_producto)}"
+            min="1"
+            max="${Math.max(Number(prod.stock_total) || 99, 1)}"
+            value="1"
+            class="cantidad-producto"
+            aria-label="Cantidad para ${escapeHtml(prod.nombre)}"
+            ${tieneStock ? '' : 'disabled'}
+          />
+          <div class="flechas-cantidad" aria-label="Controles de cantidad">
+            <button
+              type="button"
+              class="btn-cantidad btn-cantidad-mas"
+              aria-label="Aumentar cantidad"
+              ${tieneStock ? '' : 'disabled'}
+            >▲</button>
+            <button
+              type="button"
+              class="btn-cantidad btn-cantidad-menos"
+              aria-label="Disminuir cantidad"
+              disabled
+            >▼</button>
+          </div>
+        </div>
         <div class="acciones-carrito-favorito">
           <button
             class="btn-agregar-carrito"
@@ -650,6 +666,27 @@ function configurarAgregarAlCarrito() {
   if (!grid) return;
 
   grid.addEventListener('click', event => {
+    const quantityButton = event.target.closest('.btn-cantidad');
+    if (quantityButton && grid.contains(quantityButton)) {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const stepper = quantityButton.closest('.cantidad-stepper');
+      const input = stepper?.querySelector('.cantidad-producto');
+      if (!input || input.disabled) return;
+
+      const min = Math.max(Number(input.min) || 1, 1);
+      const max = Math.max(Number(input.max) || 1, min);
+      const current = Math.floor(Number(input.value) || min);
+      const next = quantityButton.classList.contains('btn-cantidad-mas')
+        ? current + 1
+        : current - 1;
+
+      input.value = String(Math.min(Math.max(next, min), max));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return;
+    }
+
     const button = event.target.closest('.btn-agregar-carrito');
     if (!button || !grid.contains(button)) return;
 
@@ -747,6 +784,30 @@ function configurarAgregarAlCarrito() {
         button.style.color = '';
       }, 1500);
     }
+  });
+
+  grid.addEventListener('change', event => {
+    const input = event.target.closest('.cantidad-producto');
+    if (!input || !grid.contains(input)) return;
+
+    const min = Math.max(Number(input.min) || 1, 1);
+    const max = Math.max(Number(input.max) || min, min);
+    const value = Math.floor(Number(input.value) || min);
+    input.value = String(Math.min(Math.max(value, min), max));
+
+    const stepper = input.closest('.cantidad-stepper');
+    const minus = stepper?.querySelector('.btn-cantidad-menos');
+    const plus = stepper?.querySelector('.btn-cantidad-mas');
+    if (minus) minus.disabled = input.disabled || Number(input.value) <= min;
+    if (plus) plus.disabled = input.disabled || Number(input.value) >= max;
+  });
+
+  grid.addEventListener('input', event => {
+    const input = event.target.closest('.cantidad-producto');
+    if (!input || input.value === '') return;
+
+    const max = Math.max(Number(input.max) || 1, 1);
+    if (Number(input.value) > max) input.value = String(max);
   });
 }
 

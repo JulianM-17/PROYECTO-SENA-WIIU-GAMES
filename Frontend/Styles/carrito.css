@@ -207,18 +207,62 @@ body {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  color: var(--text-muted);
-  font-size: 12px;
+  width: 19px;
+  height: 32px;
+  flex: 0 0 19px;
+}
+
+.flechitas button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 19px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  border-radius: 5px;
+  background: rgba(245, 200, 66, 0.14);
+  color: #7a621c;
+  font-size: 0;
+  line-height: 1;
   cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 120ms ease,
+    box-shadow 160ms ease;
 }
 
-.flechitas i {
-  transition: color 0.15s ease, transform 0.15s ease;
+.flechitas button::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  border-radius: 1px;
+  transform: rotate(45deg) translate(1px, 1px);
 }
 
-.flechitas i:hover {
-  color: var(--yellow);
-  transform: scale(1.2);
+.flechitas .btn-restar::before {
+  transform: rotate(225deg) translate(1px, 1px);
+}
+
+.flechitas button:hover:not(:disabled),
+.flechitas button:focus-visible:not(:disabled) {
+  color: #b58a00;
+  background: rgba(245, 200, 66, 0.32);
+  box-shadow: 0 2px 5px rgba(174, 132, 20, 0.12);
+  transform: translateY(-1px);
+}
+
+.flechitas button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.flechitas button:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
 }
 
 .celda-subtotal {
