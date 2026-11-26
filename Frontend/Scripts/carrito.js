@@ -158,23 +158,41 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputDescuento && active) inputDescuento.value = active.code;
   }
 
-  botonAplicarDescuento?.addEventListener('click', () => {
+  function mostrarMensajeDescuento(mensaje, tipo = 'error') {
+    const mensajeDescuento = document.getElementById('mensaje-descuento');
+    if (!mensajeDescuento) return;
+    mensajeDescuento.textContent = mensaje;
+    mensajeDescuento.className = `mensaje-descuento ${tipo}`;
+  }
+
+  botonAplicarDescuento?.addEventListener('click', async () => {
     const code = inputDescuento?.value.trim().toUpperCase();
     if (!code) {
+      mostrarMensajeDescuento('Escribe un código de descuento.');
       mostrarToast('Escribe un código de descuento.');
       return;
     }
+    await cargarPromociones();
     const promotion = promocionesDisponibles.find(
-      (item) => String(item.code).toUpperCase() === code
+      (item) => String(item.code).trim().toUpperCase() === code
     );
     if (!promotion) {
+      mostrarMensajeDescuento('El código ingresado no es válido o ya venció.');
       mostrarToast('El código ingresado no es válido.');
+      return;
+    }
+    const percent = Math.min(100, Math.max(0, Number(promotion.percent) || 0));
+    if (percent <= 0) {
+      mostrarMensajeDescuento('El código no tiene un descuento válido.');
+      mostrarToast('El código no tiene un descuento válido.');
       return;
     }
     localStorage.setItem('wiiu_active_discount', JSON.stringify({
       code: promotion.code,
-      percent: Number(promotion.percent) || 0,
+      percent,
     }));
+    mostrarMensajeDescuento(`Código aplicado: ${promotion.code} (${percent}%).`, 'success');
+    mostrarToast(`Código ${promotion.code} aplicado: ${percent}% de descuento.`, 'success');
     actualizarBotonesDescuento();
     renderCart();
   });
@@ -186,9 +204,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  inputDescuento?.addEventListener('input', () => {
+    const mensajeDescuento = document.getElementById('mensaje-descuento');
+    if (mensajeDescuento) {
+      mensajeDescuento.textContent = '';
+      mensajeDescuento.className = 'mensaje-descuento';
+    }
+  });
+
   botonQuitarDescuento?.addEventListener('click', () => {
     localStorage.removeItem('wiiu_active_discount');
     if (inputDescuento) inputDescuento.value = '';
+    mostrarMensajeDescuento('Código de descuento eliminado.', 'success');
     actualizarBotonesDescuento();
     renderCart();
   });
@@ -227,15 +254,15 @@ document.addEventListener('DOMContentLoaded', () => {
   renderCart();
 });
 
-function mostrarToast(mensaje) {
+function mostrarToast(mensaje, tipo = 'error') {
   const contenedor = document.getElementById('contenedor-toast');
   if (!contenedor) return;
 
   const toast = document.createElement('div');
-  toast.className = 'toast error';
+  toast.className = `toast ${tipo}`;
   toast.setAttribute('role', 'status');
   toast.innerHTML = `
-    <i class="fi fi-rr-cross-circle" aria-hidden="true"></i>
+    <i class="${tipo === 'success' ? 'fi fi-rr-check-circle' : 'fi fi-rr-cross-circle'}" aria-hidden="true"></i>
     <span></span>
   `;
   toast.querySelector('span').textContent = mensaje;
