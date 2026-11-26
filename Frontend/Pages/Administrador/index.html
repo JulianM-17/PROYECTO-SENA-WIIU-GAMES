@@ -543,10 +543,12 @@
 
         <div class="caja-panel">
           <div class="barra-filtros">
-            <label for="filtroSucursalInventario">Sucursal de ingreso:</label>
-            <select id="filtroSucursalInventario" class="select-filtro" aria-label="Sucursal donde ingresar stock" onchange="cargarDashboard()">
-              <option value="">Cargando sucursales...</option>
-            </select>
+            <div hidden aria-hidden="true">
+              <label for="filtroSucursalInventario">Sucursal de ingreso:</label>
+              <select id="filtroSucursalInventario" class="select-filtro" aria-label="Sucursal donde ingresar stock" disabled>
+                <option value="">Cargando sucursales...</option>
+              </select>
+            </div>
             <input type="text" class="input-filtro" placeholder="Buscar por título, SKU o categoría..." oninput="filtrarTabla('tablaInventarioBody', this.value)">
             <select class="select-filtro" onchange="filtrarEstadoTabla('tablaInventarioBody', this.value, 2)">
               <option value="">Todas las categorías</option>

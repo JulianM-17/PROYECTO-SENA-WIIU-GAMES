@@ -337,6 +337,18 @@ CREATE TABLE backup (
     CONSTRAINT chk_peso CHECK (peso >= 0)
 );
 
+-- -------------------------- carrito ---------------------------
+CREATE TABLE carrito (
+    id_carrito INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT NOT NULL,
+    id_producto INT NOT NULL,
+    UNIQUE (id_usuario, id_producto),
+    FOREIGN KEY (id_usuario)
+        REFERENCES usuario (id_usuario),
+    FOREIGN KEY (id_producto)
+        REFERENCES producto (id_producto)
+);
+
 -- -------------------------- favorito ---------------------------
 CREATE TABLE favorito (
     id_favorito INT NOT NULL AUTO_INCREMENT PRIMARY KEY,

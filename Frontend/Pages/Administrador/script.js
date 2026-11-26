@@ -601,6 +601,8 @@ var clientesDisponibles = [];
 var usuariosDisponibles = [];
 var rolesDisponibles = [];
 var usuarioEdicion = null;
+var descuentosDisponibles = [];
+var descuentoEdicion = null;
 var tecnicosDisponibles = [];
 var productosDisponibles = [];
 var productoInventarioEdicion = null;
@@ -611,6 +613,7 @@ function abrirModal(tipo, productoId) {
   tipoModalActual = tipo;
   productoInventarioEdicion = null;
   usuarioEdicion = null;
+  descuentoEdicion = null;
   if (tipo === 'inventario' && productoId !== undefined) {
     productoInventarioEdicion = productosDisponibles.find(function(producto) {
       return String(producto.id) === String(productoId);
@@ -627,6 +630,16 @@ function abrirModal(tipo, productoId) {
     });
     if (!usuarioEdicion) {
       mostrarToast('error', 'No se encontró el usuario seleccionado.');
+      tipoModalActual = '';
+      return;
+    }
+  }
+  if (tipo === 'descuentos' && productoId !== undefined) {
+    descuentoEdicion = descuentosDisponibles.find(function(descuento) {
+      return String(descuento.id) === String(productoId);
+    });
+    if (!descuentoEdicion) {
+      mostrarToast('error', 'No se encontró el descuento seleccionado.');
       tipoModalActual = '';
       return;
     }
@@ -840,19 +853,22 @@ function abrirModal(tipo, productoId) {
       </div>
     `;
   } else if (tipo === 'descuentos') {
-    titulo.textContent = "Crear Código de Descuento";
+    var descuento = descuentoEdicion;
+    var campoCodigoDescuento = descuento
+      ? '<div class="campo-grupo"><label>Código del Cupón:</label>' +
+        '<input type="text" id="campo1" value="' + escaparHtmlAdmin(descuento.code) +
+        '" readonly aria-readonly="true" style="text-transform: uppercase;"></div>'
+      : '<p class="ayuda-campo">El identificador PROM se asigna automáticamente al guardar.</p>';
+    titulo.textContent = descuento ? "Editar Descuento" : "Crear Código de Descuento";
     campos.innerHTML = `
-      <div class="campo-grupo">
-        <label>Código del Cupón:</label>
-        <input type="text" id="campo1" required minlength="3" maxlength="20" placeholder="Ej. WIIU2026" style="text-transform: uppercase;">
-      </div>
+      ${campoCodigoDescuento}
       <div class="campo-grupo">
         <label>Porcentaje de Descuento (%):</label>
-        <input type="number" id="campo2" required min="1" max="99" step="1" placeholder="Ej. 15">
+        <input type="number" id="campo2" required min="1" max="99" step="1" value="${escaparHtmlAdmin(descuento && descuento.percentValue != null ? descuento.percentValue : '')}" placeholder="Ej. 15">
       </div>
       <div class="campo-grupo">
         <label>Descripción / Nota del Cupón:</label>
-        <input type="text" id="campo3" required minlength="3" maxlength="150" placeholder="Ej. Descuento de temporada navideña">
+        <input type="text" id="campo3" required minlength="3" maxlength="150" value="${escaparHtmlAdmin(descuento ? descuento.discountDescription : '')}" placeholder="Ej. Descuento de temporada navideña">
       </div>
     `;
   } else if (tipo === 'resenas') {
@@ -888,14 +904,26 @@ function abrirModal(tipo, productoId) {
     `;
   } else if (tipo === 'clientes') {
     var nombreCompleto = usuarioEdicion ? usuarioEdicion.name : '';
-    var opcionesRoles = rolesDisponibles.map(function(rol) {
+    var rolesUnicos = [];
+    var indicesRolesPorNombre = new Map();
+    rolesDisponibles.forEach(function(rol) {
+      var nombreRolNormalizado = String(rol.name || '').trim().toLocaleLowerCase();
+      if (!nombreRolNormalizado) return;
+      if (!indicesRolesPorNombre.has(nombreRolNormalizado)) {
+        indicesRolesPorNombre.set(nombreRolNormalizado, rolesUnicos.length);
+        rolesUnicos.push(rol);
+      } else if (usuarioEdicion && Number(usuarioEdicion.roleId) === Number(rol.id)) {
+        rolesUnicos[indicesRolesPorNombre.get(nombreRolNormalizado)] = rol;
+      }
+    });
+    var opcionesRoles = rolesUnicos.map(function(rol) {
       var selected = usuarioEdicion && Number(usuarioEdicion.roleId) === Number(rol.id)
         ? ' selected'
         : '';
       return '<option value="' + escaparHtmlAdmin(rol.id) + '"' + selected + '>' +
         escaparHtmlAdmin(rol.name) + '</option>';
     }).join('');
-    if (usuarioEdicion && !rolesDisponibles.some(function(rol) {
+    if (usuarioEdicion && !rolesUnicos.some(function(rol) {
       return Number(rol.id) === Number(usuarioEdicion.roleId);
     })) {
       opcionesRoles =
@@ -1344,8 +1372,7 @@ function campoIdParaErrorBackend(campo) {
     name: 'campo1', category: 'campo2', publisher: 'campo_marca',
     price: 'campo3', stock: 'campo4', imageUrl: 'campo_imagen_principal',
     imageUrl2: 'campo_imagen_2', imageUrl3: 'campo_imagen_3',
-    imageUrl4: 'campo_imagen_4', description: 'campo_descripcion',
-    branchId: 'filtroSucursalInventario'
+    imageUrl4: 'campo_imagen_4', description: 'campo_descripcion'
     },
     mantenimientos: {
     equipment: 'campo1', equipmentType: 'campo_tipo_equipo',
@@ -1423,6 +1450,7 @@ function cerrarModal() {
   tipoModalActual = "";
   productoInventarioEdicion = null;
   usuarioEdicion = null;
+  descuentoEdicion = null;
 }
 
 function escaparHtmlAdmin(valor) {
@@ -2557,10 +2585,11 @@ function cargarDashboard() {
         var productId = Number(row.id);
         var nextStatus = productoActivo ? 'INACTIVO' : 'ACTIVO';
         var actionLabel = productoActivo ? 'Suspender' : 'Reactivar';
+        var actionIcon = productoActivo ? 'fi-rr-ban' : 'fi-rr-refresh';
         var editButton = productoActivo
           ? '<button class="boton-icono" type="button" title="Editar" aria-label="Editar ' + escaparHtmlAdmin(row.name) + '" onclick="abrirModal(\'inventario\', ' + productId + ')"><i class="fi fi-rr-edit"></i></button>'
           : '';
-        return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td>' + editButton + '<button class="btn-estado-producto ' + (productoActivo ? 'btn-suspender-producto' : 'btn-reactivar-producto') + '" type="button" aria-label="' + actionLabel + ' ' + escaparHtmlAdmin(row.name) + '" onclick="cambiarEstadoProductoAdmin(' + productId + ', \'' + nextStatus + '\')">' + actionLabel + '</button></td>';
+        return '<td><strong>' + escaparHtmlAdmin(row.name) + '</strong></td><td>' + escaparHtmlAdmin(row.sku) + '</td><td>' + escaparHtmlAdmin(row.category) + '</td><td>$ ' + Number(row.price).toLocaleString('es-CO') + '</td><td>' + stockTexto + '</td><td>' + escaparHtmlAdmin(row.warranty || '12 Meses') + '</td><td><span class="' + estadoClase + '">' + estadoTexto + '</span></td><td>' + editButton + '<button class="boton-icono ' + (productoActivo ? 'rojo' : '') + '" type="button" title="' + actionLabel + ' producto" aria-label="' + actionLabel + ' ' + escaparHtmlAdmin(row.name) + '" onclick="cambiarEstadoProductoAdmin(' + productId + ', \'' + nextStatus + '\')"><i class="fi ' + actionIcon + '"></i></button></td>';
       });
       // Actualizar tarjetas de inventario
       el = document.getElementById('invTotalProductos');
@@ -2699,10 +2728,11 @@ function cargarDashboard() {
 
     // Descuentos
     if (data.discounts) {
+      descuentosDisponibles = data.discounts;
       poblarTabla('tablaDescuentosBody', data.discounts, function(row) {
         var estadoClase = row.status === 'Activo' ? 'etiqueta-verde' : 'etiqueta-rojo';
-        var rawId = String(row.code).replace('PROM-', '');
-        return '<td><strong>' + row.code + '</strong></td><td>Porcentaje</td><td>' + row.percent + '</td><td>' + (row.discountDescription || '') + '</td><td>' + row.expires + '</td><td><span class="' + estadoClase + '">' + row.status + '</span></td><td><button class="boton-icono rojo" title="Eliminar" onclick="eliminarFilaDB(this, \'descuentos\', ' + rawId + ')"><i class="fi fi-rr-trash"></i></button></td>';
+        var discountId = Number(row.id);
+        return '<td><strong>' + escaparHtmlAdmin(row.code) + '</strong></td><td>Porcentaje</td><td>' + escaparHtmlAdmin(row.percent) + '</td><td>' + escaparHtmlAdmin(row.discountDescription || '') + '</td><td>' + escaparHtmlAdmin(row.expires) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td><td><button class="boton-icono" type="button" title="Editar descuento" aria-label="Editar descuento ' + escaparHtmlAdmin(row.code) + '" onclick="abrirModal(\'descuentos\', ' + discountId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" type="button" title="Suspender descuento" aria-label="Suspender descuento ' + escaparHtmlAdmin(row.code) + '" onclick="suspenderDescuentoAdmin(' + discountId + ')"><i class="fi fi-rr-ban"></i></button></td>';
       });
       el = document.getElementById('descActivos');
       if (el) el.textContent = data.discounts.length;
@@ -2902,8 +2932,8 @@ async function guardarDatos(evento) {
       }
     });
     if (!Number.isSafeInteger(sucursalId) || sucursalId < 1) {
-      marcarErrorCampo(document.getElementById('filtroSucursalInventario'), 'Selecciona una sucursal válida.');
-      hayErrores = true;
+      mostrarToast('error', 'No hay una ubicación de inventario activa disponible.');
+      return;
     }
 
     if (hayErrores) {
@@ -3078,11 +3108,6 @@ async function guardarDatos(evento) {
     };
 
   } else if (tipoModalActual === 'descuentos') {
-    var regexCodigo = /^[A-Za-z0-9\-_]{3,20}$/;
-    if (!c1 || !regexCodigo.test(c1)) {
-      marcarErrorCampo(c1Input, 'El código debe tener 3-20 caracteres alfanuméricos (sin espacios ni símbolos raros).');
-      hayErrores = true;
-    }
     var numPercent = Number(c2);
     if (!Number.isInteger(numPercent) || numPercent < 1 || numPercent > 99) {
       marcarErrorCampo(c2Input, 'El porcentaje debe ser un valor entero entre 1 y 99.');
@@ -3098,13 +3123,21 @@ async function guardarDatos(evento) {
       return;
     }
 
-    url = API_BASE + '/api/admin/descuentos';
-    payload = {
-      code: c1.toUpperCase().trim(),
-      percent: numPercent,
-      limit: 100,
-      desc: c3
-    };
+    if (descuentoEdicion) {
+      url = API_BASE + '/api/admin/descuentos/' + encodeURIComponent(descuentoEdicion.id);
+      metodo = 'PUT';
+      payload = {
+        percent: numPercent,
+        desc: c3
+      };
+    } else {
+      url = API_BASE + '/api/admin/descuentos';
+      payload = {
+        percent: numPercent,
+        limit: 100,
+        desc: c3
+      };
+    }
 
   } else if (tipoModalActual === 'clientes') {
     if (usuarioEdicion) {
@@ -3362,6 +3395,32 @@ function cambiarEstadoProductoAdmin(id, status) {
   .catch(function(error) {
     console.error('Error al cambiar el estado del producto:', error);
     mostrarToast('error', 'No se pudo conectar con el servidor para cambiar el estado del producto.');
+  });
+}
+
+function suspenderDescuentoAdmin(id) {
+  if (!confirm('¿Suspender este descuento? El registro se conservará en la base de datos.')) return;
+
+  fetch(API_BASE + '/api/admin/descuentos/' + encodeURIComponent(id), {
+    method: 'DELETE',
+    headers: { 'Authorization': 'Bearer ' + sessionToken }
+  })
+  .then(function(response) {
+    return response.json().then(function(data) {
+      return { ok: response.ok, data: data };
+    });
+  })
+  .then(function(result) {
+    if (!result.ok || !result.data.ok) {
+      mostrarToast('error', result.data.message || 'No se pudo suspender el descuento.');
+      return;
+    }
+    mostrarToast('success', result.data.message);
+    cargarDashboard();
+  })
+  .catch(function(error) {
+    console.error('Error al suspender el descuento:', error);
+    mostrarToast('error', 'No se pudo conectar con el servidor para suspender el descuento.');
   });
 }
 

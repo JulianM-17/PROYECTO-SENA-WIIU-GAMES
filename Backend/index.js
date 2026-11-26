@@ -131,8 +131,17 @@ async function ensureBackupTable() {
 }
 
 async function readBackupContent(filename) {
+  if (isTemporaryStoreBackupFilename(filename)) {
+    const error = new Error("Los respaldos temporales no están disponibles.");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  let hasInvalidContent = false;
   try {
-    return await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
+    const content = await fs.readFile(path.join(BACKUP_DIR, filename), "utf8");
+    if (parseValidatedBackup(content, filename)) return content;
+    hasInvalidContent = true;
   } catch (error) {
     if (error.code !== "ENOENT") throw error;
   }
@@ -141,19 +150,32 @@ async function readBackupContent(filename) {
   const [rows] = await pool.query(
     `SELECT contenido FROM ${quoteIdentifier(BACKUP_TABLE)}
      WHERE nombre_archivo = ? AND contenido IS NOT NULL
-     ORDER BY id_backup DESC LIMIT 1`,
+     ORDER BY id_backup DESC`,
     [filename],
   );
-  if (!rows.length) {
-    const error = new Error("El respaldo no existe.");
-    error.code = "ENOENT";
-    throw error;
+  for (const row of rows) {
+    if (parseValidatedBackup(row.contenido, filename)) return row.contenido;
   }
-  return rows[0].contenido;
+  if (rows.length) hasInvalidContent = true;
+
+  const error = new Error(
+    hasInvalidContent ? "El archivo de respaldo no es válido." : "El respaldo no existe.",
+  );
+  error.code = hasInvalidContent ? "EBACKUPINVALID" : "ENOENT";
+  error.statusCode = hasInvalidContent ? 400 : 404;
+  throw error;
 }
 
 function isSafeBackupFilename(filename) {
   return /^[A-Za-z0-9_-]+\.json$/.test(filename);
+}
+
+function isTemporaryStoreBackupFilename(filename) {
+  return /(?:^|[_-])pre_store(?:[_-]|\.|$)/i.test(String(filename || ""));
+}
+
+function isRecoveryBackupFilename(filename) {
+  return /(?:^|[_-])pre_restore(?:[_-]|\.|$)/i.test(String(filename || ""));
 }
 
 function quoteIdentifier(identifier) {
@@ -263,6 +285,20 @@ function validateBackup(backup) {
       }
       expectedColumns = columns;
     }
+  }
+}
+
+function parseValidatedBackup(content, filename) {
+  try {
+    const backup = JSON.parse(String(content), deserializeBackupValue);
+    validateBackup(backup);
+    return backup;
+  } catch (error) {
+    if (error instanceof SyntaxError || error.statusCode === 400) {
+      console.warn("Se omitió un respaldo no válido:", filename, error.message);
+      return null;
+    }
+    throw error;
   }
 }
 
@@ -2038,9 +2074,11 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [discountRows] = await pool.query(
       `SELECT
+         pr.id_promocion AS id,
          CONCAT('PROM-', pr.id_promocion) AS code,
          pr.descripcion AS discountDescription,
          CONCAT(ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100), '%') AS percent,
+         ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percentValue,
          DATE_FORMAT(pr.fecha_fin, '%d/%m/%Y') AS expires,
          CASE WHEN pr.estado = 'ACTIVO' THEN 'Activo' ELSE 'Inactivo' END AS status
        FROM promocion pr
@@ -5077,15 +5115,11 @@ app.get("/api/promotions", async (req, res) => {
 
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
-    const { code, percent, limit: useLimit, desc } = req.body;
-    const codeValue = String(code || "").trim();
+    const { limit: useLimit, percent, desc } = req.body;
     const percentValue = Number(percent);
     const descriptionValue = String(desc || "").trim();
     const errors = {};
 
-    if (!/^[A-Za-z0-9_-]{3,20}$/.test(codeValue)) {
-      errors.code = "El código debe tener entre 3 y 20 caracteres alfanuméricos.";
-    }
     if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
       errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
     }
@@ -5143,7 +5177,7 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: codeValue.toUpperCase(),
+        code: `PROM-${result.insertId}`,
         desc: descriptionValue,
         percent: `${percentValue}%`,
         expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
@@ -5154,6 +5188,73 @@ app.post("/api/admin/descuentos", async (req, res) => {
   } catch (error) {
     console.error("Error al crear descuento:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
+  }
+});
+
+app.put("/api/admin/descuentos/:id", requireAdmin, async (req, res) => {
+  const promotionId = Number(req.params.id);
+  const percentValue = Number(req.body?.percent);
+  const descriptionValue = String(req.body?.desc || "").trim();
+  const errors = {};
+
+  if (!Number.isSafeInteger(promotionId) || promotionId <= 0) {
+    errors.id = "El descuento seleccionado no es válido.";
+  }
+  if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
+    errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
+  }
+  if (descriptionValue.length < 3 || descriptionValue.length > 150) {
+    errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
+  }
+  if (Object.keys(errors).length) {
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa los datos obligatorios del descuento.",
+      errors,
+    });
+  }
+
+  try {
+    const [promotionRows] = await pool.query(
+      `SELECT pr.id_promocion, p.precio AS originalPrice
+       FROM promocion pr
+       INNER JOIN producto p ON p.id_producto = pr.id_producto
+       WHERE pr.id_promocion = ? AND pr.estado = 'ACTIVO'
+       LIMIT 1`,
+      [promotionId],
+    );
+    if (!promotionRows.length) {
+      return res.status(404).json({
+        ok: false,
+        message: "No se encontró el descuento activo seleccionado.",
+      });
+    }
+
+    const originalPrice = Number(promotionRows[0].originalPrice);
+    if (!Number.isFinite(originalPrice) || originalPrice <= 0) {
+      return res.status(409).json({
+        ok: false,
+        message: "El producto asociado no tiene un precio válido para actualizar el descuento.",
+      });
+    }
+    const discountedPrice = originalPrice * (1 - percentValue / 100);
+    await pool.query(
+      `UPDATE promocion
+       SET precio = ?, descripcion = ?
+       WHERE id_promocion = ? AND estado = 'ACTIVO'`,
+      [discountedPrice, descriptionValue, promotionId],
+    );
+
+    return res.json({
+      ok: true,
+      message: "Descuento actualizado correctamente.",
+    });
+  } catch (error) {
+    console.error("Error actualizando descuento:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudo actualizar el descuento.",
+    });
   }
 });
 
@@ -5477,6 +5578,8 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
       ok: true,
       message: recurso === "clientes"
         ? "Usuario suspendido correctamente."
+        : recurso === "descuentos"
+          ? "Descuento suspendido correctamente; el registro se conservó."
         : "Registro eliminado de la base de datos.",
     });
   } catch (error) {
@@ -5542,87 +5645,126 @@ app.get("/api/admin/backups", requireAdmin, async (req, res) => {
        ORDER BY id_backup DESC`,
     );
     for (const row of databaseRows) {
-      if (!isSafeBackupFilename(row.nombre_archivo) || backupsByName.has(row.nombre_archivo)) continue;
+      const filename = row.nombre_archivo;
+      if (!isSafeBackupFilename(filename)) continue;
+      if (isTemporaryStoreBackupFilename(filename)) {
+        await pool.query(
+          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
+          [filename],
+        );
+        try {
+          await fs.unlink(path.join(BACKUP_DIR, filename));
+        } catch (error) {
+          if (error.code !== "ENOENT") throw error;
+        }
+        continue;
+      }
+      const existingBackup = backupsByName.get(filename);
+      if (
+        isRecoveryBackupFilename(filename) ||
+        (existingBackup && existingBackup.storedInDatabase)
+      ) continue;
       const createdAt = new Date(row.fecha_creacion);
+      let validDatabaseBackup = false;
+      let databaseCreatedAt = Number.isNaN(createdAt.getTime())
+        ? String(row.fecha_creacion || "")
+        : createdAt.toISOString();
+      if (row.has_content) {
+        const [contentRows] = await pool.query(
+          `SELECT contenido
+           FROM ${quoteIdentifier(BACKUP_TABLE)}
+           WHERE id_backup = ? AND contenido IS NOT NULL
+           LIMIT 1`,
+          [row.id_backup],
+        );
+        if (contentRows.length) {
+          const parsedBackup = parseValidatedBackup(contentRows[0].contenido, filename);
+          if (parsedBackup) {
+            validDatabaseBackup = true;
+            if (
+              typeof parsedBackup.createdAt === "string" &&
+              !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+            ) {
+              databaseCreatedAt = parsedBackup.createdAt;
+            }
+          }
+        }
+      }
       backupsByName.set(row.nombre_archivo, {
         id: row.id_backup,
-        filename: row.nombre_archivo,
+        filename,
         size: Number(row.peso),
-        createdAt: Number.isNaN(createdAt.getTime())
-          ? String(row.fecha_creacion || "")
-          : createdAt.toISOString(),
+        createdAt: databaseCreatedAt,
         storedLocally: false,
-        storedInDatabase: Boolean(row.has_content),
+        storedInDatabase: validDatabaseBackup,
       });
     }
 
     for (const entry of entries) {
       if (!entry.isFile() || !isSafeBackupFilename(entry.name)) continue;
+      if (isTemporaryStoreBackupFilename(entry.name)) {
+        await pool.query(
+          `DELETE FROM ${quoteIdentifier(BACKUP_TABLE)} WHERE nombre_archivo = ?`,
+          [entry.name],
+        );
+        try {
+          await fs.unlink(path.join(BACKUP_DIR, entry.name));
+        } catch (error) {
+          if (error.code !== "ENOENT") throw error;
+        }
+        backupsByName.delete(entry.name);
+        continue;
+      }
+      if (isRecoveryBackupFilename(entry.name)) continue;
       const filePath = path.join(BACKUP_DIR, entry.name);
       const stats = await fs.stat(filePath);
       let backupRecord = backupsByName.get(entry.name);
-      if (!backupRecord || !backupRecord.storedInDatabase) {
-        const content = await fs.readFile(filePath, "utf8");
-        let backupCreatedAt = stats.birthtime.toISOString();
-        let validBackup = false;
-        try {
-          const parsedBackup = JSON.parse(content, deserializeBackupValue);
-          validateBackup(parsedBackup);
-          if (
-            typeof parsedBackup.createdAt === "string" &&
-            !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
-          ) {
-            backupCreatedAt = parsedBackup.createdAt;
-          }
-          validBackup = true;
-        } catch (validationError) {
-          if (!(validationError instanceof SyntaxError) && validationError.statusCode !== 400) {
-            throw validationError;
-          }
-          console.warn("No se pudo sincronizar un respaldo local con MySQL:", entry.name, validationError.message);
+      const content = await fs.readFile(filePath, "utf8");
+      const parsedBackup = parseValidatedBackup(content, entry.name);
+      if (!parsedBackup) {
+        if (backupRecord && backupRecord.storedInDatabase) {
+          await fs.unlink(filePath);
+          backupRecord.storedLocally = false;
         }
+        continue;
+      }
 
-        if (validBackup) {
-          const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
-          if (backupRecord) {
-            await pool.query(
-              `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
-               SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
-                   tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
-               WHERE id_backup = ?`,
-              [filePath, stats.size, createdAtSql, content, backupRecord.id],
-            );
-          } else {
-            const [result] = await pool.query(
-              `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
-                 (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
-               VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
-              [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
-            );
-            backupRecord = {
-              id: result.insertId,
-              filename: entry.name,
-              size: stats.size,
-              createdAt: backupCreatedAt,
-              storedInDatabase: true,
-            };
-            backupsByName.set(entry.name, backupRecord);
-          }
-        }
-        if (!backupRecord) {
+      let backupCreatedAt = stats.birthtime.toISOString();
+      if (
+        typeof parsedBackup.createdAt === "string" &&
+        !Number.isNaN(new Date(parsedBackup.createdAt).getTime())
+      ) {
+        backupCreatedAt = parsedBackup.createdAt;
+      }
+      const createdAtSql = new Date(backupCreatedAt).toISOString().slice(0, 19).replace("T", " ");
+      if (!backupRecord || !backupRecord.storedInDatabase) {
+        if (backupRecord) {
+          await pool.query(
+            `UPDATE ${quoteIdentifier(BACKUP_TABLE)}
+             SET ruta_almacenamiento = ?, peso = ?, fecha_creacion = ?,
+                 tipo = 'COMPLETO', estado = 'EXITOSO', contenido = ?
+             WHERE id_backup = ?`,
+            [filePath, stats.size, createdAtSql, content, backupRecord.id],
+          );
+        } else {
+          const [result] = await pool.query(
+            `INSERT INTO ${quoteIdentifier(BACKUP_TABLE)}
+               (id_encargado, nombre_archivo, ruta_almacenamiento, peso, fecha_creacion, tipo, estado, contenido)
+             VALUES (?, ?, ?, ?, ?, 'COMPLETO', 'EXITOSO', ?)`,
+            [req.userId, entry.name, filePath, stats.size, createdAtSql, content],
+          );
           backupRecord = {
+            id: result.insertId,
             filename: entry.name,
-            size: stats.size,
-            createdAt: backupCreatedAt,
-            storedInDatabase: false,
+            storedInDatabase: true,
           };
           backupsByName.set(entry.name, backupRecord);
         }
-        backupRecord.storedInDatabase = validBackup;
-        backupRecord.createdAt = backupCreatedAt;
+        backupRecord.storedInDatabase = true;
       }
       backupRecord.storedLocally = true;
       backupRecord.size = stats.size;
+      backupRecord.createdAt = backupCreatedAt;
     }
     const backups = Array.from(backupsByName.values()).filter(
       (backup) => backup.storedInDatabase || backup.storedLocally,
@@ -5655,7 +5797,7 @@ app.post("/api/admin/backups", requireAdmin, async (req, res) => {
 
 app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
   try {
@@ -5665,6 +5807,9 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
     if (error.code === "ENOENT") {
       return res.status(404).json({ ok: false, message: "El respaldo no existe." });
     }
+    if (error.statusCode === 400) {
+      return res.status(400).json({ ok: false, message: error.message });
+    }
     console.error("Error descargando respaldo:", error);
     return res.status(500).json({ ok: false, message: "No se pudo descargar el respaldo." });
   }
@@ -5672,7 +5817,7 @@ app.get("/api/admin/backups/:filename/download", requireAdmin, async (req, res) 
 
 app.post("/api/admin/backups/:filename/restore", requireAdmin, async (req, res) => {
   const filename = req.params.filename;
-  if (!isSafeBackupFilename(filename)) {
+  if (!isSafeBackupFilename(filename) || isTemporaryStoreBackupFilename(filename)) {
     return res.status(400).json({ ok: false, message: "Nombre de respaldo inválido." });
   }
 
