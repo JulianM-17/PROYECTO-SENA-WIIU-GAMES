@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       nombre: partesNombre[0] || "Usuario",
       apellidos: partesNombre.slice(1).join(" ") || "",
       email: sessionUser?.correo || "usuario@wiiu.com",
+      fotoPerfil: "",
       telefono: "",
       nacimiento: "",
       documento: "",
@@ -148,6 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       nombre: profile.nombre || "",
       apellidos: profile.apellido || "",
       email: profile.correo || "",
+      fotoPerfil: profile.fotoPerfil || "",
       telefono: profile.telefono || "",
       nacimiento: profile.nacimiento || "",
       documento: profile.documento || "",
@@ -185,6 +187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     sessionUser.nombre =
       `${state.profile.nombre} ${state.profile.apellidos}`.trim();
     sessionUser.correo = state.profile.email;
+    sessionUser.fotoPerfil = state.profile.fotoPerfil;
     sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
   }
 
@@ -588,21 +591,33 @@ document.addEventListener("DOMContentLoaded", async () => {
         state.cartCount && state.cartCount > 0 ? state.cartCount : "";
 
     // 4.2 Datos del Perfil (Header, Sidebar, Banner, Cards)
-    const { nombre, apellidos, email, telefono, nacimiento, documento } =
-      state.profile;
+    const {
+      nombre,
+      apellidos,
+      email,
+      fotoPerfil,
+      telefono,
+      nacimiento,
+      documento,
+    } = state.profile;
     const initial =
       nombre && nombre.charAt(0) ? nombre.charAt(0).toUpperCase() : "U";
+    const hasProfilePhoto =
+      typeof fotoPerfil === "string" &&
+      /^\/Assets\/uploads\/perfiles\/[a-f0-9]{32}\.(?:jpg|png|webp|gif)$/i.test(
+        fotoPerfil,
+      );
 
     document
       .querySelectorAll(
-        ".avatar-barra-lateral, .perfil-avatar-grande, .foto-perfil",
+        ".avatar-barra-lateral, .perfil-avatar-grande, .foto-perfil, .avatar-sesion",
       )
       .forEach((el) => {
-        if (el.classList.contains("foto-perfil")) {
-          el.textContent = initial;
-        } else {
-          el.textContent = initial;
-        }
+        el.classList.toggle("tiene-foto", hasProfilePhoto);
+        el.textContent = hasProfilePhoto ? "" : initial;
+        el.style.backgroundImage = hasProfilePhoto ? `url("${fotoPerfil}")` : "";
+        el.style.backgroundPosition = hasProfilePhoto ? "center" : "";
+        el.style.backgroundSize = hasProfilePhoto ? "cover" : "";
       });
 
     document
@@ -675,6 +690,59 @@ document.addEventListener("DOMContentLoaded", async () => {
   const btnEditarPerfil = document.getElementById("btn-editar-perfil");
   const btnCancelarPerfil = document.getElementById("btn-cancelar-perfil");
   const formPerfilSeguridad = document.getElementById("form-perfil-seguridad");
+  const btnCambiarFotoPerfil = document.getElementById("btn-cambiar-foto-perfil");
+  const inputFotoPerfil = document.getElementById("input-foto-perfil");
+
+  btnCambiarFotoPerfil?.addEventListener("click", () => inputFotoPerfil?.click());
+  inputFotoPerfil?.addEventListener("change", async () => {
+    const file = inputFotoPerfil.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      showToast("Selecciona una imagen JPG, PNG, WEBP o GIF.", "error");
+      inputFotoPerfil.value = "";
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("La foto no puede superar los 5 MB.", "error");
+      inputFotoPerfil.value = "";
+      return;
+    }
+
+    btnCambiarFotoPerfil.disabled = true;
+    showToast("Subiendo tu foto de perfil...", "info");
+    try {
+      const response = await fetch("http://localhost:3000/api/profile/photo", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${sessionUser.token}`,
+          "Content-Type": file.type,
+        },
+        body: file,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (response.status === 401) {
+        sessionStorage.removeItem("wiiu_usuario_activo");
+        window.location.replace("Login.html?returnTo=panel_usuario.html");
+        return;
+      }
+      if (!response.ok || !data.ok || !data.fotoPerfil) {
+        throw new Error(data.message || "No se pudo actualizar la foto de perfil.");
+      }
+
+      state.profile.fotoPerfil = data.fotoPerfil;
+      sessionUser.fotoPerfil = data.fotoPerfil;
+      sessionStorage.setItem("wiiu_usuario_activo", JSON.stringify(sessionUser));
+      updateUI();
+      showToast("Foto de perfil actualizada.", "success");
+    } catch (error) {
+      showToast(error.message || "No se pudo actualizar la foto de perfil.", "error");
+    } finally {
+      btnCambiarFotoPerfil.disabled = false;
+      inputFotoPerfil.value = "";
+    }
+  });
 
   const inputPasswordActual = document.getElementById("perfil-pass-actual");
   const togglePasswordActual = document.getElementById(
@@ -913,6 +981,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           nombre: profile.nombre || "",
           apellidos: profile.apellido || "",
           email: profile.correo || "",
+          fotoPerfil: profile.fotoPerfil || state.profile.fotoPerfil || "",
           telefono: profile.telefono || "",
           nacimiento: profile.nacimiento || "",
           documento: profile.documento || "",
@@ -920,6 +989,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         sessionUser.nombre =
           `${state.profile.nombre} ${state.profile.apellidos}`.trim();
         sessionUser.correo = state.profile.email;
+        sessionUser.fotoPerfil = state.profile.fotoPerfil;
         sessionStorage.setItem(
           "wiiu_usuario_activo",
           JSON.stringify(sessionUser),

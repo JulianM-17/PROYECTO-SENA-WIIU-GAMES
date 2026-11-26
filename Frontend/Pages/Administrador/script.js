@@ -1275,7 +1275,7 @@ function agregarCampoEdicionDetalleAdmin(form, nombre, etiquetaTexto, valor, tip
     }
     if (nombre === 'equipment') control.maxLength = 100;
     if (nombre === 'phone') {
-      control.maxLength = 10;
+      control.maxLength = 15;
       control.inputMode = 'numeric';
     }
   }
@@ -1357,8 +1357,8 @@ function validarCitaDetalleAdmin(form) {
   if (descripcion.length < 10 || descripcion.length > 1000) {
     errores.description = 'La descripción debe tener entre 10 y 1000 caracteres.';
   }
-  if (!/^\d{10}$/.test(telefono)) {
-    errores.phone = 'El teléfono debe contener exactamente 10 dígitos.';
+  if (!/^\d{10,15}$/.test(telefono)) {
+    errores.phone = 'El teléfono debe contener entre 10 y 15 dígitos.';
   }
   if (
     !/^\d{4}-\d{2}-\d{2}$/.test(fecha) ||

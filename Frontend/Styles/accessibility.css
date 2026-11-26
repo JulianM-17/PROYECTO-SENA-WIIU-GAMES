@@ -2660,15 +2660,21 @@ body.a11y-mode-high-contrast .tarjeta-icono-wrap {
   color: #ffff00 !important;
 }
 
-body.a11y-mode-high-contrast .avatar-barra-lateral {
+body.a11y-mode-high-contrast .avatar-barra-lateral:not(.tiene-foto) {
   background: #ffff00 !important;
   color: #000000 !important;
 }
 
-body.a11y-mode-high-contrast .avatar-sesion {
+body.a11y-mode-high-contrast .avatar-sesion:not(.tiene-foto) {
   background: #000000 !important;
   border: 2px solid #ffff00 !important;
   color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast .avatar-barra-lateral.tiene-foto,
+body.a11y-mode-high-contrast .avatar-sesion.tiene-foto {
+  background-color: #000000 !important;
+  border: 2px solid #ffff00 !important;
 }
 
 body.a11y-mode-high-contrast .elemento-nav.activo {

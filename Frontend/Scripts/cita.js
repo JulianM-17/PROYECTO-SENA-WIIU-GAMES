@@ -48,12 +48,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     nombrePerfil = `${data.profile.nombre || ""} ${data.profile.apellido || ""}`.trim();
-    telefonoPerfil = String(data.profile.telefono || "").replace(/\D/g, "").slice(0, 10);
+    telefonoPerfil = String(data.profile.telefono || "").replace(/\D/g, "").slice(0, 15);
     if (!nombrePerfil) {
       throw new Error("Tu cuenta no tiene un nombre válido para registrar la cita.");
     }
     nombreInput.value = nombrePerfil;
-    if (telefonoPerfil.length === 10) telefonoInput.value = telefonoPerfil;
+    if (telefonoPerfil.length >= 10) telefonoInput.value = telefonoPerfil;
     form.hidden = false;
   } catch (error) {
     console.error("No se pudo validar la cuenta para agendar la cita:", error);
@@ -228,11 +228,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 
     telefonoInput.addEventListener("input", () => {
-      const soloNumeros = telefonoInput.value.replace(/\D/g, "").slice(0, 10);
+      const soloNumeros = telefonoInput.value.replace(/\D/g, "").slice(0, 15);
       if (telefonoInput.value !== soloNumeros) {
         telefonoInput.value = soloNumeros;
       }
-      if (soloNumeros.length === 10) {
+      if (soloNumeros.length >= 10) {
         marcarValido(telefonoInput);
       } else {
         limpiarError(telefonoInput);
@@ -242,12 +242,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     telefonoInput.addEventListener("paste", (e) => {
       e.preventDefault();
       const pegado = (e.clipboardData || window.clipboardData).getData("text");
-      const soloNums = pegado.replace(/\D/g, "").slice(0, 10);
+      const soloNums = pegado.replace(/\D/g, "").slice(0, 15);
       telefonoInput.value = soloNums;
-      if (soloNums.length === 10) {
+      if (soloNums.length >= 10) {
         marcarValido(telefonoInput);
       } else {
-        mostrarError(telefonoInput, "Ingresa un número de 10 dígitos.");
+        mostrarError(telefonoInput, "Ingresa un número de entre 10 y 15 dígitos.");
       }
     });
 
@@ -255,8 +255,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const val = telefonoInput.value.trim();
       if (!val) {
         mostrarError(telefonoInput, "El número de teléfono es obligatorio.");
-      } else if (val.length !== 10) {
-        mostrarError(telefonoInput, "El teléfono debe contener exactamente 10 dígitos (ej: 3046616081).");
+      } else if (val.length < 10 || val.length > 15) {
+        mostrarError(telefonoInput, "El teléfono debe contener entre 10 y 15 dígitos.");
       } else {
         marcarValido(telefonoInput);
       }
@@ -376,8 +376,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!tel) {
       mostrarError(telefonoInput, "El teléfono es obligatorio.");
       esValido = false;
-    } else if (!/^\d{10}$/.test(tel)) {
-      mostrarError(telefonoInput, "El teléfono debe tener 10 dígitos numéricos.");
+    } else if (!/^\d{10,15}$/.test(tel)) {
+      mostrarError(telefonoInput, "El teléfono debe tener entre 10 y 15 dígitos numéricos.");
       esValido = false;
     }
 

@@ -837,3 +837,13 @@ body.a11y-mode-dark-mode .beneficios-registro {
 body.a11y-mode-dark-mode .texto-beneficio {
   color: #f8fafc !important;
 }
+
+body.a11y-mode-dark-mode #fecha-nacimiento,
+body.a11y-mode-high-contrast #fecha-nacimiento {
+  color-scheme: dark;
+}
+
+#fecha-nacimiento::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  cursor: pointer;
+}

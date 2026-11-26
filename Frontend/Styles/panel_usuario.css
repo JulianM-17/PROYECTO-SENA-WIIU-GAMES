@@ -610,6 +610,14 @@ body {
   min-width: 260px;
 }
 
+.perfil-avatar-edicion {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
 .perfil-avatar-grande {
   width: 72px;
   height: 72px;
@@ -623,6 +631,41 @@ body {
   color: var(--dark-blue);
   flex-shrink: 0;
   box-shadow: 0 6px 18px rgba(245, 200, 66, 0.4);
+  background-position: center;
+  background-size: cover;
+  overflow: hidden;
+}
+
+.btn-cambiar-foto-perfil {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid rgba(245, 200, 66, 0.55);
+  border-radius: 999px;
+  background: rgba(245, 200, 66, 0.12);
+  color: var(--dark-blue);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.btn-cambiar-foto-perfil:hover:not(:disabled) {
+  background: rgba(245, 200, 66, 0.24);
+  transform: translateY(-1px);
+}
+
+.btn-cambiar-foto-perfil:focus-visible {
+  outline: 3px solid rgba(245, 200, 66, 0.5);
+  outline-offset: 2px;
+}
+
+.btn-cambiar-foto-perfil:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .perfil-avatar-nombre {

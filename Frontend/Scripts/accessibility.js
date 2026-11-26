@@ -445,6 +445,11 @@
       .slice(0, 2)
       .map((part) => part.charAt(0).toUpperCase())
       .join("");
+    const profilePhoto = String(user.fotoPerfil || "");
+    const hasProfilePhoto =
+      /^\/Assets\/uploads\/perfiles\/[a-f0-9]{32}\.(?:jpg|png|webp|gif)$/i.test(
+        profilePhoto,
+      );
     const existingAvatar = document.querySelector(".foto-perfil");
     const hasProfileMenu =
       isAdmin || isEmployee || ["cliente", "proveedor"].includes(role);
@@ -464,7 +469,13 @@
         ? `Abrir opciones de perfil de ${user.nombre || "usuario"}`
         : `Abrir cuenta de ${user.nombre || "usuario"}`,
     );
-    avatar.textContent = initials || "U";
+    avatar.textContent = hasProfilePhoto ? "" : initials || "U";
+    avatar.classList.toggle("tiene-foto", hasProfilePhoto);
+    if (hasProfilePhoto) {
+      avatar.style.backgroundImage = `url("${profilePhoto}")`;
+      avatar.style.backgroundPosition = "center";
+      avatar.style.backgroundSize = "cover";
+    }
 
     let profileMenu;
     if (hasProfileMenu) {

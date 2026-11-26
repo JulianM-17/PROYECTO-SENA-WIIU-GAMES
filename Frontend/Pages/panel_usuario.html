@@ -371,7 +371,24 @@
             <!-- Carta de avatar mas secciones -->
             <div class="perfil-top">
               <div class="perfil-avatar-card">
-                <div class="perfil-avatar-grande">F</div>
+                <div class="perfil-avatar-edicion">
+                  <div class="perfil-avatar-grande" aria-hidden="true">F</div>
+                  <button
+                    type="button"
+                    class="btn-cambiar-foto-perfil"
+                    id="btn-cambiar-foto-perfil"
+                    aria-label="Cambiar foto de perfil"
+                  >
+                    <i class="fi fi-rr-camera" aria-hidden="true"></i>
+                    Cambiar foto
+                  </button>
+                  <input
+                    type="file"
+                    id="input-foto-perfil"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    hidden
+                  />
+                </div>
                 <div>
                   <p class="perfil-avatar-nombre">Tu nombre</p>
                   <p class="perfil-avatar-email">usuario@wiiu.com</p>
