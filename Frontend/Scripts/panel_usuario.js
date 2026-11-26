@@ -1601,7 +1601,21 @@ document.addEventListener("DOMContentLoaded", async () => {
       .replaceAll("'", "&#039;");
   let selectedInvoiceOrder = null;
 
+  function formatWarrantyDate(value) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+    if (!match) return "fecha no disponible";
+    const [, year, month, day] = match;
+    return new Intl.DateTimeFormat("es-CO", {
+      dateStyle: "long",
+      timeZone: "UTC",
+    }).format(
+      new Date(Date.UTC(Number(year), Number(month) - 1, Number(day))),
+    );
+  }
+
   function warrantyStatusLabel(order, item) {
+    const startDate = formatWarrantyDate(item.warrantyStartsAt);
+    const expirationDate = formatWarrantyDate(item.warrantyExpiresAt);
     const daysRemaining =
       item.warrantyDaysRemaining == null
         ? Number.NaN
@@ -1612,20 +1626,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!Number.isFinite(daysRemaining)) {
       return "No hay información del plazo de garantía.";
     }
-    if (["ANULADA", "SUSPENDIDA"].includes(item.warrantyStatus)) {
-      return "Garantía suspendida.";
-    }
     if (daysRemaining < 0) {
-      const daysSinceExpiration = Math.abs(daysRemaining);
-      return `Venció hace ${daysSinceExpiration} día${daysSinceExpiration === 1 ? "" : "s"}.`;
+      return `Vencida; inició el ${startDate} y terminó el ${expirationDate}.`;
+    }
+    if (["ANULADA", "SUSPENDIDA"].includes(item.warrantyStatus)) {
+      return `Suspendida; la cobertura terminó el ${expirationDate}.`;
     }
     if (!item.warrantyActive) {
       return "No disponible: la cobertura de esta compra no está activa.";
     }
     if (daysRemaining === 0) {
-      return "Vence hoy.";
+      return `Vigente desde ${startDate}; vence hoy, ${expirationDate}.`;
     }
-    return `Quedan ${daysRemaining} día${daysRemaining === 1 ? "" : "s"}.`;
+    return `Vigente desde ${startDate}; quedan ${daysRemaining} días (hasta ${expirationDate}).`;
   }
 
   function renderOrders() {

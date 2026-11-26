@@ -1094,6 +1094,7 @@ app.get("/api/my-warranty-products", requireUserSession, async (req, res) => {
           category: item.category,
           warrantyStartsAt: item.warrantyStartsAt,
           warrantyExpiresAt: item.warrantyExpiresAt,
+          warrantyStatus: item.warrantyStatus,
           warrantyDaysRemaining: item.warrantyDaysRemaining,
           warrantyActive: item.warrantyActive,
         })),
@@ -1147,10 +1148,6 @@ app.get("/api/my-warranty-requests", requireUserSession, async (req, res) => {
            DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
            '%Y-%m-%d'
          ) AS warrantyExpiresAt,
-         DATEDIFF(
-           DATE_ADD(DATE(v.fecha), INTERVAL 6 MONTH),
-           CURRENT_DATE()
-         ) AS warrantyDaysRemaining,
          DATE_FORMAT(sg.fecha_solicitud, '%Y-%m-%d %H:%i') AS requestedAt,
          sg.descripcion AS description,
          sg.estado AS status

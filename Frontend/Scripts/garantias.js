@@ -49,17 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     container.innerHTML = requests
       .map((request) => {
         const status = labels[request.status] ? request.status : "RECIBIDA";
-        const daysRemaining =
-          request.warrantyDaysRemaining == null
-            ? Number.NaN
-            : Number(request.warrantyDaysRemaining);
-        const warrantyRemaining = !Number.isFinite(daysRemaining)
-          ? "Tiempo restante no disponible"
-          : daysRemaining < 0
-            ? `Venció hace ${Math.abs(daysRemaining)} día${Math.abs(daysRemaining) === 1 ? "" : "s"}`
-            : daysRemaining === 0
-              ? "Vence hoy"
-              : `Quedan ${daysRemaining} día${daysRemaining === 1 ? "" : "s"}`;
         return `
           <article class="garantia-solicitud-card">
             <header class="garantia-solicitud-cabecera">
@@ -75,7 +64,8 @@ document.addEventListener("DOMContentLoaded", () => {
             </header>
             <p class="garantia-solicitud-fecha">
               <strong>Enviada:</strong> ${escapeHtml(request.requestedAt)}
-              · <strong>Tiempo restante:</strong> ${escapeHtml(warrantyRemaining)}
+              · <strong>Garantía:</strong> desde ${escapeHtml(request.warrantyStartsAt)}
+              hasta ${escapeHtml(request.warrantyExpiresAt)}
             </p>
             <p class="garantia-solicitud-descripcion">${escapeHtml(request.description)}</p>
           </article>`;
@@ -166,10 +156,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const unitReference =
         product.unitReference ||
         `${product.orderNumber}-U${product.detailId}`;
+      const remainingDays =
+        product.warrantyDaysRemaining == null
+          ? null
+          : Number(product.warrantyDaysRemaining);
+      let remainingTime = "Sin información";
+      if (["ANULADA", "SUSPENDIDA"].includes(product.warrantyStatus)) {
+        remainingTime = "Cobertura suspendida";
+      } else if (Number.isFinite(remainingDays)) {
+        if (remainingDays < 0) {
+          remainingTime = "Garantía vencida";
+        } else if (remainingDays === 0) {
+          remainingTime = "Vence hoy";
+        } else {
+          remainingTime = `Quedan ${remainingDays} día${remainingDays === 1 ? "" : "s"}`;
+        }
+      }
       option.textContent = [
         product.productName,
         `Cantidad ${product.quantity}`,
         `Código ${unitReference}`,
+        `Tiempo restante ${remainingTime}`,
       ]
         .filter(Boolean)
         .join(" · ");
