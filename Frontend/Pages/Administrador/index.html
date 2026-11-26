@@ -44,27 +44,27 @@
           <span>Home</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('seccion-ventas', this)">
+        <button class="boton-menu" data-seccion="seccion-ventas" onclick="cambiarPestana('seccion-ventas', this)">
           <i class="fi fi-rr-shopping-cart"></i>
           <span>Ventas</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('seccion-garantias', this)">
+        <button class="boton-menu" data-seccion="seccion-garantias" onclick="cambiarPestana('seccion-garantias', this)">
           <i class="fi fi-rr-shield-check"></i>
           <span>Garantías</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('seccion-mantenimientos', this)">
+        <button class="boton-menu" data-seccion="seccion-mantenimientos" onclick="cambiarPestana('seccion-mantenimientos', this)">
           <i class="fi fi-rr-wrench-simple"></i>
           <span>Mantenimientos</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('seccion-inventario', this)">
+        <button class="boton-menu" data-seccion="seccion-inventario" onclick="cambiarPestana('seccion-inventario', this)">
           <i class="fi fi-rr-box-alt"></i>
           <span>Inventario</span>
         </button>
 
-        <button class="boton-menu" onclick="cambiarPestana('seccion-reparacion', this)">
+        <button class="boton-menu" data-seccion="seccion-reparacion" onclick="cambiarPestana('seccion-reparacion', this)">
           <i class="fi fi-rr-bolt"></i>
           <span>Reparación</span>
         </button>
@@ -282,8 +282,8 @@
 
             <div class="fila-financiera">
               <div class="circulo-meta">
-                <span class="porcentaje">0%</span>
-                <small>Meta mensual</small>
+                <span class="porcentaje" id="finMargen">0%</span>
+                <small>Margen mensual</small>
               </div>
 
               <div class="detalles-dinero">
@@ -298,7 +298,7 @@
                 <div class="item-dinero">
                   <div class="icono-cuadro naranja"><i class="fi fi-rr-chart-line-down"></i></div>
                   <div>
-                    <small>Gastos</small>
+                    <small>Compras de inventario</small>
                     <p class="valor" id="finGastos">$ 0</p>
                   </div>
                 </div>
@@ -306,7 +306,7 @@
                 <div class="item-dinero">
                   <div class="icono-cuadro verde"><i class="fi fi-rr-wallet"></i></div>
                   <div>
-                    <small>Utilidad</small>
+                    <small>Resultado estimado</small>
                     <p class="valor" id="finUtilidad">$ 0</p>
                   </div>
                 </div>
@@ -314,7 +314,7 @@
             </div>
 
             <div class="pie-enlace">
-              <a href="#" onclick="alert('Detalles financieros listos para consultar base de datos')">
+              <a href="#modalDetalleFinanciero" onclick="mostrarDetallesFinancieros(event)">
                 <i class="fi fi-rr-arrow-up-right-from-square"></i> Ver detalles financieros
               </a>
             </div>
@@ -376,7 +376,7 @@
                   <th>Fecha</th>
                   <th>Estado</th>
                   <th>Total</th>
-                  <th>Detalle</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody id="tablaVentasBody">
@@ -985,7 +985,24 @@
       </header>
       <div id="modalDetalleVentaContenido" class="contenido-modal-detalle" aria-live="polite"></div>
       <footer class="pie-modal-detalle">
+        <button type="button" class="boton-amarillo" id="btnEditarDetalleVenta" hidden>Editar datos</button>
         <button type="button" class="boton-amarillo" id="btnCerrarDetalleVentaPie">Cerrar</button>
+      </footer>
+    </div>
+  </dialog>
+
+  <dialog class="modal-detalle-servicio" id="modalDetalleFinanciero" aria-labelledby="modalDetalleFinancieroTitulo">
+    <div class="caja-modal-detalle">
+      <header class="cabecera-modal-detalle">
+        <div>
+          <p id="modalDetalleFinancieroPeriodo">Resumen financiero del mes</p>
+          <h2 id="modalDetalleFinancieroTitulo">Detalles financieros</h2>
+        </div>
+        <button type="button" class="btn-cerrar-detalle" id="btnCerrarDetalleFinanciero" aria-label="Cerrar detalles financieros">&times;</button>
+      </header>
+      <div id="modalDetalleFinancieroContenido" class="contenido-modal-detalle"></div>
+      <footer class="pie-modal-detalle">
+        <button type="button" class="boton-amarillo" id="btnCerrarDetalleFinancieroPie">Cerrar</button>
       </footer>
     </div>
   </dialog>

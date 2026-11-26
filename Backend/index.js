@@ -1826,6 +1826,30 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
        INNER JOIN venta v ON v.id_venta = dv.id_venta
        WHERE v.estado = 'PAGADA'`,
     );
+    const [monthlyIncomeRows] = await pool.query(
+      `SELECT
+         DATE_FORMAT(CURRENT_DATE(), '%Y-%m') AS month,
+         COUNT(DISTINCT v.id_venta) AS transactions,
+         COALESCE(SUM(dv.subtotal), 0) AS total
+       FROM venta v
+       LEFT JOIN detalle_venta dv ON dv.id_venta = v.id_venta
+       WHERE v.estado = 'PAGADA'
+         AND v.fecha >= DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01')
+         AND v.fecha < DATE_ADD(DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01'), INTERVAL 1 MONTH)`,
+    );
+    const [monthlyExpenseRows] = await pool.query(
+      `SELECT
+         COUNT(DISTINCT c.id_compra) AS transactions,
+         COALESCE(SUM(dc.subtotal), 0) AS total
+       FROM compra c
+       LEFT JOIN detalle_compra dc ON dc.id_compra = c.id_compra
+       WHERE c.estado = 'PAGADA'
+         AND c.fecha >= DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01')
+         AND c.fecha < DATE_ADD(DATE_FORMAT(CURRENT_DATE(), '%Y-%m-01'), INTERVAL 1 MONTH)`,
+    );
+    const monthlyIncome = Number(monthlyIncomeRows[0]?.total || 0);
+    const monthlyExpenses = Number(monthlyExpenseRows[0]?.total || 0);
+    const monthlyResult = monthlyIncome - monthlyExpenses;
     const [topProductsRows] = await pool.query(
       `SELECT p.nombre, p.imagen_prin AS imagen_url, SUM(dv.cantidad) AS cantidad, SUM(dv.subtotal) AS total
        FROM detalle_venta dv
@@ -2191,6 +2215,17 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
         clientsCount: Number(clientsCountRows[0]?.total || 0),
         ordersCount: Number(ordersCountRows[0]?.total || 0),
         salesTotal: Number(salesTotalRows[0]?.total || 0),
+        monthlyFinancial: {
+          month: monthlyIncomeRows[0]?.month,
+          income: monthlyIncome,
+          expenses: monthlyExpenses,
+          result: monthlyResult,
+          marginPercent: monthlyIncome > 0
+            ? (monthlyResult / monthlyIncome) * 100
+            : 0,
+          salesCount: Number(monthlyIncomeRows[0]?.transactions || 0),
+          purchasesCount: Number(monthlyExpenseRows[0]?.transactions || 0),
+        },
       },
       topProducts: topProductsRows || [],
       salesTrend: (salesTrendRows || []).map((point) => ({
@@ -2238,7 +2273,10 @@ app.get("/api/admin/ventas/:id", requireAdmin, async (req, res) => {
          v.id_venta AS id,
          COALESCE(v.nro_pago, CONCAT('WG-', v.id_venta)) AS reference,
          CONCAT(u.nombre, ' ', u.apellido) AS clientName,
+         u.nombre AS clientFirstName,
+         u.apellido AS clientLastName,
          u.correo AS clientEmail,
+         v.id_usuario AS clientId,
          COALESCE(v.telefono, u.telefono) AS phone,
          DATE_FORMAT(v.fecha, '%Y-%m-%d %H:%i') AS date,
          v.estado AS status,
@@ -2291,7 +2329,10 @@ app.get("/api/admin/ventas/:id", requireAdmin, async (req, res) => {
         id: sale.id,
         reference: sale.reference,
         clientName: sale.clientName,
+        clientFirstName: sale.clientFirstName,
+        clientLastName: sale.clientLastName,
         clientEmail: sale.clientEmail,
+        clientId: sale.clientId,
         phone: sale.phone,
         date: sale.date,
         status: sale.status,
@@ -2317,6 +2358,222 @@ app.get("/api/admin/ventas/:id", requireAdmin, async (req, res) => {
       ok: false,
       message: "No se pudo cargar el detalle de la venta.",
     });
+  }
+});
+
+app.put("/api/admin/ventas/:id", requireAdmin, async (req, res) => {
+  const saleId = Number(req.params.id);
+  if (!Number.isSafeInteger(saleId) || saleId <= 0) {
+    return res.status(400).json({ ok: false, message: "ID de venta inválido." });
+  }
+
+  const firstName = String(req.body?.firstName || "").normalize("NFC").trim();
+  const lastName = String(req.body?.lastName || "").normalize("NFC").trim();
+  const phone = req.body?.phone;
+  const city = req.body?.city;
+  const address = req.body?.address;
+  const trackingNumber = req.body?.trackingNumber;
+  const status = req.body?.status;
+  const total = req.body?.total;
+  const dateInput = req.body?.date;
+  const dateMatch =
+    typeof dateInput === "string" &&
+    dateInput.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/);
+  const parsedDate = dateMatch
+    ? new Date(Date.UTC(
+        Number(dateMatch[1]),
+        Number(dateMatch[2]) - 1,
+        Number(dateMatch[3]),
+        Number(dateMatch[4]),
+        Number(dateMatch[5]),
+      ))
+    : null;
+  const validDate = Boolean(
+    dateMatch &&
+    Number(dateMatch[1]) >= 1000 &&
+    Number(dateMatch[2]) >= 1 &&
+    Number(dateMatch[2]) <= 12 &&
+    Number(dateMatch[3]) >= 1 &&
+    Number(dateMatch[4]) <= 23 &&
+    Number(dateMatch[5]) <= 59 &&
+    parsedDate.getUTCFullYear() === Number(dateMatch[1]) &&
+    parsedDate.getUTCMonth() + 1 === Number(dateMatch[2]) &&
+    parsedDate.getUTCDate() === Number(dateMatch[3]) &&
+    parsedDate.getUTCHours() === Number(dateMatch[4]) &&
+    parsedDate.getUTCMinutes() === Number(dateMatch[5]),
+  );
+  const validName = /^[\p{L}][\p{L}\s'-]*$/u;
+  const validTotal =
+    typeof total === "number" &&
+    Number.isFinite(total) &&
+    total >= 0 &&
+    total <= 99999999.999999;
+  if (
+    !validName.test(firstName) ||
+    firstName.length > 30 ||
+    !validName.test(lastName) ||
+    lastName.length > 30 ||
+    typeof phone !== "string" ||
+    phone.trim().length > 20 ||
+    typeof city !== "string" ||
+    city.trim().length > 100 ||
+    typeof address !== "string" ||
+    address.trim().length > 180 ||
+    typeof trackingNumber !== "string" ||
+    trackingNumber.trim().length > 30 ||
+    !validDate ||
+    !["PAGADA", "ANULADA"].includes(status) ||
+    !validTotal
+  ) {
+    return res.status(400).json({
+      ok: false,
+      message: "Revisa el nombre, la fecha, el estado, el total y los datos de contacto.",
+    });
+  }
+
+  const totalMicros = Math.round(total * 1000000);
+  const formatMicros = (value) => {
+    const whole = Math.floor(value / 1000000);
+    const fraction = String(value % 1000000).padStart(6, "0");
+    return `${whole}.${fraction}`;
+  };
+  const formatNoteTotal = (value) => {
+    const [whole, fraction] = formatMicros(value).split(".");
+    return `${whole}.${fraction.replace(/0+$/, "")}`.replace(/\.$/, "");
+  };
+  let connection;
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const [saleRows] = await connection.query(
+      `SELECT id_usuario, tipo_venta, notas
+       FROM venta
+       WHERE id_venta = ?
+       LIMIT 1
+       FOR UPDATE`,
+      [saleId],
+    );
+    if (!saleRows.length) {
+      await connection.rollback();
+      return res.status(404).json({ ok: false, message: "No se encontró la venta solicitada." });
+    }
+
+    const [detailRows] = await connection.query(
+      `SELECT id_detalle_venta, cantidad, subtotal
+       FROM detalle_venta
+       WHERE id_venta = ?
+       ORDER BY id_detalle_venta
+       FOR UPDATE`,
+      [saleId],
+    );
+    const currentNotes = String(saleRows[0].notas || "");
+    const recordedTotalMatch = currentNotes.match(
+      /;\s*total\s+([\d.]+)\s+COP(?:\.|$)/i,
+    );
+    const currentTotal = recordedTotalMatch
+      ? Number(recordedTotalMatch[1])
+      : detailRows.reduce((sum, item) => sum + Number(item.subtotal || 0), 0);
+    let updatedNotes = saleRows[0].notas;
+
+    if (Math.round(currentTotal * 1000000) !== totalMicros) {
+      if (!detailRows.length) {
+        await connection.rollback();
+        return res.status(409).json({
+          ok: false,
+          message: "No se puede cambiar el total de una venta sin productos asociados.",
+        });
+      }
+
+      const currentSubtotalMicros = detailRows.map((item) =>
+        Math.max(0, Math.round(Number(item.subtotal || 0) * 1000000)),
+      );
+      const subtotalWeight = currentSubtotalMicros.reduce((sum, value) => sum + value, 0);
+      const quantityWeight = detailRows.reduce(
+        (sum, item) => sum + Number(item.cantidad),
+        0,
+      );
+      let allocatedMicros = 0;
+      for (let index = 0; index < detailRows.length; index += 1) {
+        const detail = detailRows[index];
+        const weight = subtotalWeight > 0
+          ? currentSubtotalMicros[index]
+          : Number(detail.cantidad);
+        const weightTotal = subtotalWeight > 0 ? subtotalWeight : quantityWeight;
+        const subtotalMicros = index === detailRows.length - 1
+          ? totalMicros - allocatedMicros
+          : Math.round(totalMicros * weight / weightTotal);
+        allocatedMicros += subtotalMicros;
+        const unitPriceMicros = Math.round(subtotalMicros / Number(detail.cantidad));
+        await connection.query(
+          `UPDATE detalle_venta
+           SET precio_unitario = ?, subtotal = ?
+           WHERE id_detalle_venta = ?`,
+          [
+            formatMicros(unitPriceMicros),
+            formatMicros(subtotalMicros),
+            detail.id_detalle_venta,
+          ],
+        );
+      }
+
+      if (recordedTotalMatch) {
+        updatedNotes = currentNotes.replace(
+          /(; *total +)[0-9.]+( +COP(?:[.]|$))/i,
+          `$1${formatNoteTotal(totalMicros)}$2`,
+        );
+        if (updatedNotes.length > 300) {
+          await connection.rollback();
+          return res.status(400).json({
+            ok: false,
+            message: "El total nuevo no cabe en las notas registradas de la venta.",
+          });
+        }
+      }
+    }
+
+    const mysqlDate = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]} ${dateMatch[4]}:${dateMatch[5]}:00`;
+    await connection.query(
+      `UPDATE usuario
+       SET nombre = ?, apellido = ?
+       WHERE id_usuario = ?`,
+      [firstName, lastName, saleRows[0].id_usuario],
+    );
+    await connection.query(
+      `UPDATE venta
+       SET fecha = ?, estado = ?, telefono = ?, notas = ?,
+           ciudad = IF(tipo_venta = 'DOMICILIO', ?, ciudad),
+           direccion_entrega = IF(tipo_venta = 'DOMICILIO', ?, direccion_entrega),
+           numero_guia = IF(tipo_venta = 'DOMICILIO', ?, numero_guia)
+       WHERE id_venta = ?`,
+      [
+        mysqlDate,
+        status,
+        phone.trim() || null,
+        updatedNotes,
+        city.trim() || null,
+        address.trim() || null,
+        trackingNumber.trim() || null,
+        saleId,
+      ],
+    );
+    await connection.commit();
+    return res.json({ ok: true, message: "Datos de la venta actualizados correctamente." });
+  } catch (error) {
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        console.error("Error revirtiendo la edición de la venta:", rollbackError.message);
+      }
+    }
+    console.error("Error actualizando datos de venta:", error.message);
+    return res.status(500).json({
+      ok: false,
+      message: "No se pudieron actualizar los datos de la venta.",
+    });
+  } finally {
+    connection?.release();
   }
 });
 
@@ -5516,12 +5773,15 @@ app.delete("/api/admin/backups/:filename", requireAdmin, async (req, res) => {
 });
 
 app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
+  const { recurso, id } = req.params;
   try {
-    const { recurso, id } = req.params;
     const numId = Number(id);
 
     if (isNaN(numId)) {
       return res.status(400).json({ ok: false, message: "ID inválido." });
+    }
+    if (recurso === "pedidos" && (!Number.isSafeInteger(numId) || numId <= 0)) {
+      return res.status(400).json({ ok: false, message: "ID de venta inválido." });
     }
 
     if (recurso === "garantias") {
@@ -5547,6 +5807,16 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
       await pool.query("UPDATE usuario SET estado = 'INACTIVO' WHERE id_usuario = ?", [numId]);
       invalidarSesionesUsuario(numId);
     } else if (recurso === "pedidos") {
+      const [saleRows] = await pool.query(
+        "SELECT estado FROM venta WHERE id_venta = ? LIMIT 1",
+        [numId],
+      );
+      if (!saleRows.length) {
+        return res.status(404).json({ ok: false, message: "No se encontró la venta solicitada." });
+      }
+      if (saleRows[0].estado === "ANULADA") {
+        return res.status(409).json({ ok: false, message: "La venta ya está anulada." });
+      }
       await pool.query("UPDATE venta SET estado = 'ANULADA' WHERE id_venta = ?", [numId]);
     } else if (recurso === "resenas") {
       await pool.query("DELETE FROM sugerencia WHERE id_sugerencia = ?", [numId]);
@@ -5558,11 +5828,18 @@ app.delete("/api/admin/:recurso/:id", requireAdmin, async (req, res) => {
       ok: true,
       message: recurso === "clientes"
         ? "Usuario suspendido correctamente."
-        : "Registro eliminado de la base de datos.",
+        : recurso === "pedidos"
+          ? "Venta anulada correctamente."
+          : "Registro eliminado de la base de datos.",
     });
   } catch (error) {
     console.error("Error al eliminar registro:", error.message);
-    return res.status(500).json({ ok: false, message: "No se pudo eliminar el registro." });
+    return res.status(500).json({
+      ok: false,
+      message: recurso === "pedidos"
+        ? "No se pudo anular la venta."
+        : "No se pudo eliminar el registro.",
+    });
   }
 });
 
