@@ -44,6 +44,7 @@ let automaticWarrantyCoveragePromise;
 let legacyAppointmentSchemaPromise;
 let backupSchemaPromise;
 let customerPostalCodeSchemaPromise;
+let promotionCodeSchemaPromise;
 const BACKUP_DIR = path.join(__dirname, "backups");
 const BACKUP_TABLE = "backup";
 const LEGACY_BACKUP_TABLE = "wiiu_admin_backups";
@@ -66,6 +67,36 @@ async function ensureCustomerPostalCodeSchema() {
     await customerPostalCodeSchemaPromise;
   } catch (error) {
     customerPostalCodeSchemaPromise = null;
+    throw error;
+  }
+}
+
+async function ensurePromotionCodeSchema() {
+  if (!promotionCodeSchemaPromise) {
+    promotionCodeSchemaPromise = (async () => {
+      const [columns] = await pool.query(
+        "SHOW COLUMNS FROM promocion LIKE 'codigo'",
+      );
+      if (!columns.length) {
+        await pool.query(
+          "ALTER TABLE promocion ADD COLUMN codigo VARCHAR(30) NULL AFTER id_encargado",
+        );
+      }
+      await pool.query(
+        "UPDATE promocion SET codigo = CONCAT('PROM-', id_promocion) WHERE codigo IS NULL OR TRIM(codigo) = ''",
+      );
+      await pool.query(
+        "CREATE UNIQUE INDEX idx_promocion_codigo ON promocion(codigo)",
+      ).catch((error) => {
+        if (error.code !== "ER_DUP_KEYNAME") throw error;
+      });
+    })();
+  }
+
+  try {
+    await promotionCodeSchemaPromise;
+  } catch (error) {
+    promotionCodeSchemaPromise = null;
     throw error;
   }
 }
@@ -1801,6 +1832,7 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
   try {
     await ensureWarrantyRequestSchema();
     await ensureAutomaticWarrantyCoverage();
+    await ensurePromotionCodeSchema();
     const salesPeriod = req.query.period === undefined ? 7 : Number(req.query.period);
     if (![7, 15, 30].includes(salesPeriod)) {
       return res.status(400).json({
@@ -2163,14 +2195,22 @@ app.get("/api/dashboard/admin", requireAdmin, async (req, res) => {
     );
     const [discountRows] = await pool.query(
       `SELECT
-         CONCAT('PROM-', pr.id_promocion) AS code,
+         pr.id_promocion AS id,
+         COALESCE(pr.codigo, CONCAT('PROM-', pr.id_promocion)) AS code,
          pr.descripcion AS discountDescription,
          CONCAT(ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100), '%') AS percent,
+         ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percentValue,
+         DATE_FORMAT(pr.fecha_inicio, '%d/%m/%Y') AS starts,
+         DATE_FORMAT(pr.fecha_inicio, '%Y-%m-%d') AS startDate,
          DATE_FORMAT(pr.fecha_fin, '%d/%m/%Y') AS expires,
-         CASE WHEN pr.estado = 'ACTIVO' THEN 'Activo' ELSE 'Inactivo' END AS status
+         DATE_FORMAT(pr.fecha_fin, '%Y-%m-%d') AS endDate,
+         CASE
+           WHEN pr.estado <> 'ACTIVO' THEN 'Inactivo'
+           WHEN pr.fecha_fin < NOW() THEN 'Expirado'
+           ELSE 'Activo'
+         END AS status
        FROM promocion pr
        INNER JOIN producto p ON p.id_producto = pr.id_producto
-       WHERE pr.estado = 'ACTIVO'
        ORDER BY pr.fecha_fin DESC`,
     );
 
@@ -2807,25 +2847,19 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
       .toUpperCase();
     let discount = null;
     if (requestedDiscountCode) {
-      const codeMatch = /^PROM-(\d+)$/.exec(requestedDiscountCode);
-      if (!codeMatch) {
-        await revertirTransaccionEmpleado(connection);
-        return res.status(400).json({
-          ok: false,
-          message: "El código de descuento no es válido o ya venció.",
-        });
-      }
-
+      await ensurePromotionCodeSchema();
       const [promotionRows] = await connection.query(
         `SELECT
-           CONCAT('PROM-', pr.id_promocion) AS code,
+           COALESCE(pr.codigo, CONCAT('PROM-', pr.id_promocion)) AS code,
            ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percent
          FROM promocion pr
          INNER JOIN producto p ON p.id_producto = pr.id_producto
-         WHERE pr.id_promocion = ?
+         WHERE COALESCE(pr.codigo, CONCAT('PROM-', pr.id_promocion)) = ?
            AND pr.estado = 'ACTIVO'
+           AND pr.fecha_inicio <= NOW()
+           AND pr.fecha_fin >= NOW()
          FOR UPDATE`,
-        [Number(codeMatch[1])],
+        [requestedDiscountCode],
       );
       const promotion = promotionRows[0];
       const percent = Number(promotion?.percent);
@@ -5460,15 +5494,18 @@ app.patch("/api/admin/appointments/:id/technician", requireAdmin, async (req, re
 // ---------- DESCUENTOS / PROMOCIONES ----------
 app.get("/api/promotions", async (req, res) => {
   try {
+    await ensurePromotionCodeSchema();
     const [rows] = await pool.query(
       `SELECT
-         CONCAT('PROM-', pr.id_promocion) AS code,
+         COALESCE(pr.codigo, CONCAT('PROM-', pr.id_promocion)) AS code,
          pr.descripcion AS description,
          ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percent,
          DATE_FORMAT(pr.fecha_fin, '%Y-%m-%d') AS expires
        FROM promocion pr
        INNER JOIN producto p ON p.id_producto = pr.id_producto
        WHERE pr.estado = 'ACTIVO'
+         AND pr.fecha_inicio <= NOW()
+         AND pr.fecha_fin >= NOW()
        ORDER BY pr.fecha_fin ASC`
     );
     return res.json({
@@ -5485,24 +5522,52 @@ app.get("/api/promotions", async (req, res) => {
   }
 });
 
-app.post("/api/admin/descuentos", async (req, res) => {
+app.post("/api/admin/descuentos", requireAdmin, async (req, res) => {
   try {
-    const { percent, limit: useLimit, desc } = req.body;
+    await ensurePromotionCodeSchema();
+    const { code, percent, limit: useLimit, desc, startDate, endDate } = req.body;
     const percentValue = Number(percent);
+    const codeValue = String(code || "").trim().toUpperCase();
     const descriptionValue = String(desc || "").trim();
     const errors = {};
 
+    if (!/^[A-Z0-9_-]{3,30}$/.test(codeValue)) {
+      errors.code = "El código debe tener 3 a 30 caracteres: letras, números, guion o guion bajo.";
+    }
     if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
       errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
     }
     if (descriptionValue.length < 3 || descriptionValue.length > 150) {
       errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
     }
+    let fechaInicio = startDate ? normalizeMysqlDate(startDate) : null;
+    let fechaFin = endDate ? normalizeMysqlDate(endDate) : null;
+    if (fechaInicio && !/^\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}(?::\d{2})?)?$/.test(String(fechaInicio))) {
+      errors.startDate = "La fecha de inicio no es válida.";
+    }
+    if (fechaFin && !/^\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2}(?::\d{2})?)?$/.test(String(fechaFin))) {
+      errors.endDate = "La fecha de fin no es válida.";
+    }
+    if (fechaInicio && fechaFin && String(fechaFin).slice(0, 10) <= String(fechaInicio).slice(0, 10)) {
+      errors.endDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+    }
     if (Object.keys(errors).length) {
       return res.status(400).json({
         ok: false,
         message: "Revisa los datos obligatorios del descuento.",
         errors,
+      });
+    }
+
+    const [duplicateCode] = await pool.query(
+      "SELECT id_promocion FROM promocion WHERE codigo = ? LIMIT 1",
+      [codeValue],
+    );
+    if (duplicateCode.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un descuento con ese código.",
+        errors: { code: "Este código ya está registrado." },
       });
     }
 
@@ -5529,15 +5594,19 @@ app.post("/api/admin/descuentos", async (req, res) => {
     const adminId = adminRows.length > 0 ? adminRows[0].id_usuario : 3;
 
     const now = new Date();
-    const fechaFin = new Date(now);
-    fechaFin.setMonth(fechaFin.getMonth() + 3);
+    if (!fechaInicio) fechaInicio = now;
+    if (!fechaFin) {
+      fechaFin = new Date(now);
+      fechaFin.setMonth(fechaFin.getMonth() + 3);
+    }
 
     const [result] = await pool.query(
-      `INSERT INTO promocion (id_producto, id_encargado, precio, descripcion, fecha_inicio, fecha_fin, estado)
-       VALUES (?, ?, ?, ?, ?, ?, 'ACTIVO')`,
+      `INSERT INTO promocion (id_producto, id_encargado, codigo, precio, descripcion, fecha_inicio, fecha_fin, estado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'ACTIVO')`,
       [
         productId,
         adminId,
+        codeValue,
         discountedPrice,
         descriptionValue.substring(0, 150),
         now,
@@ -5545,14 +5614,17 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ],
     );
 
+    const fechaFinTexto = fechaFin instanceof Date
+      ? `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`
+      : String(fechaFin).slice(0, 10).split("-").reverse().join("/");
     return res.status(201).json({
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: `PROM-${result.insertId}`,
+        code: codeValue,
         desc: descriptionValue,
         percent: `${percentValue}%`,
-        expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
+        expires: fechaFinTexto,
         uses: `0 / ${useLimit || 100}`,
         status: "Activo",
       },
@@ -5560,6 +5632,104 @@ app.post("/api/admin/descuentos", async (req, res) => {
   } catch (error) {
     console.error("Error al crear descuento:", error.message);
     return res.status(500).json({ ok: false, message: "No se pudo crear el descuento." });
+  }
+});
+
+app.put("/api/admin/descuentos/:id", requireAdmin, async (req, res) => {
+  try {
+    await ensurePromotionCodeSchema();
+    const discountId = Number(req.params.id);
+    if (!Number.isSafeInteger(discountId) || discountId <= 0) {
+      return res.status(400).json({ ok: false, message: "ID de descuento inválido." });
+    }
+
+    const codeValue = String(req.body?.code || "").trim().toUpperCase();
+    const percentValue = Number(req.body?.percent);
+    const descriptionValue = String(req.body?.desc || "").trim();
+    const startDateValue = req.body?.startDate ? normalizeMysqlDate(req.body.startDate) : null;
+    const endDateValue = req.body?.endDate ? normalizeMysqlDate(req.body.endDate) : null;
+    const errors = {};
+
+    if (!/^[A-Z0-9_-]{3,30}$/.test(codeValue)) {
+      errors.code = "El código debe tener 3 a 30 caracteres: letras, números, guion o guion bajo.";
+    }
+    if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
+      errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
+    }
+    if (descriptionValue.length < 3 || descriptionValue.length > 150) {
+      errors.desc = "La descripción debe tener entre 3 y 150 caracteres.";
+    }
+    if (startDateValue && !/^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?$/.test(String(startDateValue))) {
+      errors.startDate = "La fecha de inicio no es válida.";
+    }
+    if (endDateValue && !/^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}(?::\d{2})?)?$/.test(String(endDateValue))) {
+      errors.endDate = "La fecha de fin no es válida.";
+    }
+    if (startDateValue && endDateValue && String(endDateValue).slice(0, 10) <= String(startDateValue).slice(0, 10)) {
+      errors.endDate = "La fecha de fin debe ser posterior a la fecha de inicio.";
+    }
+    if (Object.keys(errors).length) {
+      return res.status(400).json({
+        ok: false,
+        message: "Revisa los datos del descuento.",
+        errors,
+      });
+    }
+
+    const [existing] = await pool.query(
+      `SELECT pr.id_promocion, pr.id_producto, p.precio,
+              pr.fecha_inicio, pr.fecha_fin
+       FROM promocion pr
+       INNER JOIN producto p ON p.id_producto = pr.id_producto
+       WHERE pr.id_promocion = ? LIMIT 1`,
+      [discountId],
+    );
+    if (!existing.length) {
+      return res.status(404).json({ ok: false, message: "El descuento no existe." });
+    }
+
+    const [duplicateCode] = await pool.query(
+      "SELECT id_promocion FROM promocion WHERE codigo = ? AND id_promocion <> ? LIMIT 1",
+      [codeValue, discountId],
+    );
+    if (duplicateCode.length) {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe otro descuento con ese código.",
+        errors: { code: "Este código ya está registrado." },
+      });
+    }
+
+    const originalPrice = Number(existing[0].precio);
+    const discountedPrice = originalPrice * (1 - percentValue / 100);
+    const fechaInicioUpdate = startDateValue || existing[0].fecha_inicio;
+    const fechaFinUpdate = endDateValue || existing[0].fecha_fin;
+    await pool.query(
+      "UPDATE promocion SET codigo = ?, precio = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ? WHERE id_promocion = ?",
+      [
+        codeValue,
+        discountedPrice,
+        descriptionValue.substring(0, 150),
+        fechaInicioUpdate,
+        fechaFinUpdate,
+        discountId,
+      ],
+    );
+
+    return res.json({
+      ok: true,
+      message: "Código y datos del descuento actualizados.",
+    });
+  } catch (error) {
+    if (error.code === "ER_DUP_ENTRY") {
+      return res.status(409).json({
+        ok: false,
+        message: "Ya existe un descuento con ese código.",
+        errors: { code: "Este código ya está registrado." },
+      });
+    }
+    console.error("Error al editar descuento:", error.message);
+    return res.status(500).json({ ok: false, message: "No se pudo editar el descuento." });
   }
 });
 
