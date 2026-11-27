@@ -832,3 +832,301 @@ main {
     transition-duration: 0.01ms !important;
   }
 }
+
+html[data-theme="light"] main {
+  color: #1e293b;
+  background:
+    radial-gradient(ellipse at 42% 42%, rgba(14, 116, 144, 0.08), transparent 55%),
+    #f4f7fb;
+}
+
+html[data-theme="light"] .navblur {
+  border-bottom-color: #dbe3ec;
+}
+
+html[data-theme="light"] .textoarma span,
+html[data-theme="light"] .textoarma p {
+  color: #64748b;
+}
+
+html[data-theme="light"] .textoarma h1 {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .cfg-centro,
+html[data-theme="light"] .cfg-resumen {
+  border-color: #d8e1eb;
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="light"] .cfg-centro {
+  background:
+    radial-gradient(ellipse at 54% 76%, rgba(14, 165, 233, 0.12), transparent 43%),
+    linear-gradient(135deg, #f8fcff, #edf5fb);
+}
+
+html[data-theme="light"] .cfg-centro::before {
+  background:
+    repeating-linear-gradient(90deg, transparent 0 11%, rgba(14, 116, 144, 0.035) 11.1% 11.2%, transparent 11.4% 22%),
+    linear-gradient(180deg, transparent 76%, rgba(14, 116, 144, 0.04));
+}
+
+html[data-theme="light"] .cfg-beneficios li,
+html[data-theme="light"] .cfg-beneficios strong,
+html[data-theme="light"] .cfg-resumen h2,
+html[data-theme="light"] .precio-total h2,
+html[data-theme="light"] .cfg-compatibilidad strong,
+html[data-theme="light"] .cfg-avance-texto strong {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .cfg-beneficios small,
+html[data-theme="light"] #cfgCount,
+html[data-theme="light"] .precio-total > span,
+html[data-theme="light"] .cfg-compatibilidad small,
+html[data-theme="light"] .cfg-avance-texto small,
+html[data-theme="light"] .cfg-componente-seleccionado {
+  color: #64748b;
+}
+
+html[data-theme="light"] .cfg-beneficio-icono,
+html[data-theme="light"] .cfg-compatibilidad-icono,
+html[data-theme="light"] .cfg-avance-icono {
+  border-color: rgba(2, 132, 199, 0.22);
+  color: #0369a1;
+}
+
+html[data-theme="light"] .precioycompra {
+  border-color: #dbe3ec;
+  background: rgba(241, 245, 249, 0.85);
+}
+
+html[data-theme="light"] .cfg-compra-feedback {
+  color: #047857;
+}
+
+html[data-theme="light"] .cfg-compatibilidad,
+html[data-theme="light"] .cfg-configuracion-avance {
+  border-color: #d8e1eb;
+  background: rgba(241, 245, 249, 0.72);
+}
+
+html[data-theme="light"] .cfg-ia-abrir,
+html[data-theme="light"] .cfg-ia-enviar {
+  color: #0e7490;
+  border-color: rgba(8, 145, 178, 0.38);
+  background: rgba(8, 145, 178, 0.07);
+}
+
+html[data-theme="light"] .cfg-ia-abrir:hover,
+html[data-theme="light"] .cfg-ia-enviar:hover {
+  border-color: #0891b2;
+  background: rgba(8, 145, 178, 0.13);
+}
+
+html[data-theme="light"] .cfg-ia-abrir:focus-visible,
+html[data-theme="light"] .cfg-ia-cerrar:focus-visible,
+html[data-theme="light"] .cfg-ia-enviar:focus-visible,
+html[data-theme="light"] .cfg-ia-modal textarea:focus-visible,
+html[data-theme="light"] .cfg-componente-boton:focus-visible,
+html[data-theme="light"] #btnComprar:focus-visible {
+  outline-color: #0369a1;
+}
+
+html[data-theme="light"] .cfg-ia-modal {
+  color: #1e293b;
+  border-color: #d8e1eb;
+  background: #ffffff;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.2);
+}
+
+html[data-theme="light"] .cfg-ia-modal::backdrop {
+  background: rgba(15, 23, 42, 0.38);
+}
+
+html[data-theme="light"] .cfg-ia-cerrar {
+  color: #475569;
+  border-color: #d8e1eb;
+}
+
+html[data-theme="light"] .cfg-ia-etiqueta {
+  color: #0e7490;
+}
+
+html[data-theme="light"] .cfg-ia-contenido h2 {
+  color: #0f172a;
+}
+
+html[data-theme="light"] .cfg-ia-contenido p,
+html[data-theme="light"] .cfg-ia-contenido label {
+  color: #475569;
+}
+
+html[data-theme="light"] .cfg-ia-modal textarea {
+  color: #1e293b;
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .cfg-ia-modal textarea::placeholder,
+html[data-theme="light"] .cfg-ia-estado {
+  color: #64748b;
+}
+
+html[data-theme="light"] .cfg-ia-estado:not(:empty) {
+  color: #92400e;
+}
+
+html[data-theme="light"] #cfgPercent {
+  color: #1e293b;
+  background:
+    linear-gradient(#f1f5f9, #f1f5f9) padding-box,
+    conic-gradient(#0891b2 calc(var(--avance) * 1%), #dbe3ec 0) border-box;
+}
+
+html[data-theme="light"] .cfg-cards h2 {
+  color: #0e7490;
+}
+
+html[data-theme="light"] .cfg-mensaje {
+  color: #64748b;
+}
+
+html[data-theme="light"] .cfg-componente {
+  color: #1e293b;
+  border-color: #d8e1eb;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .cfg-componente:hover,
+html[data-theme="light"] .cfg-componente.seleccionado {
+  border-color: rgba(8, 145, 178, 0.55);
+  background: #f0f9fc;
+}
+
+html[data-theme="light"] .cfg-componente-numero {
+  border-color: #0891b2;
+  color: #0e7490;
+}
+
+html[data-theme="light"] .cfg-componente h3 {
+  color: #1e293b;
+}
+
+html[data-theme="light"] .cfg-componente-arte img {
+  mix-blend-mode: normal;
+}
+
+html[data-theme="light"] .cfg-componente-icono {
+  color: #0e7490;
+  text-shadow: none;
+}
+
+html[data-theme="light"] .cfg-componente-selector {
+  color: #1e293b;
+  border-color: #cbd5e1;
+  background: #ffffff;
+}
+
+html[data-theme="light"] .cfg-componente-boton {
+  color: #0e7490;
+  border-top-color: #e2e8f0;
+}
+
+html[data-theme="light"] .cfg-componente-boton:disabled {
+  color: #94a3b8;
+}
+
+html[data-theme="light"] .cfg-componente-boton:not(:disabled):hover {
+  color: #0f172a;
+}
+
+body.a11y-mode-high-contrast main .configurador,
+body.a11y-mode-high-contrast main .configurador *,
+body.a11y-mode-high-contrast main dialog.cfg-ia-modal,
+body.a11y-mode-high-contrast main dialog.cfg-ia-modal * {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast main .configurador h2,
+body.a11y-mode-high-contrast main .configurador h3,
+body.a11y-mode-high-contrast main .configurador strong,
+body.a11y-mode-high-contrast main dialog.cfg-ia-modal h2 {
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast main {
+  background-image: none !important;
+}
+
+body.a11y-mode-high-contrast main .textoarma span,
+body.a11y-mode-high-contrast main .textoarma p {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast main .configurador .cfg-centro,
+body.a11y-mode-high-contrast main .configurador .cfg-resumen,
+body.a11y-mode-high-contrast main .configurador .cfg-componente,
+body.a11y-mode-high-contrast main dialog.cfg-ia-modal {
+  border: 2px solid #ffff00 !important;
+  background: #101010 !important;
+  box-shadow: none !important;
+}
+
+body.a11y-mode-high-contrast main .configurador .cfg-centro::before {
+  background: none !important;
+}
+
+body.a11y-mode-high-contrast main .configurador .precioycompra,
+body.a11y-mode-high-contrast main .configurador .cfg-compatibilidad,
+body.a11y-mode-high-contrast main .configurador .cfg-configuracion-avance {
+  border: 1px solid #ffff00 !important;
+  background: #000000 !important;
+}
+
+body.a11y-mode-high-contrast main .configurador .cfg-componente:hover,
+body.a11y-mode-high-contrast main .configurador .cfg-componente.seleccionado {
+  border-color: #ffff00 !important;
+  background: #000000 !important;
+}
+
+body.a11y-mode-high-contrast main .configurador button {
+  border: 2px solid #ffff00 !important;
+  background: #000000 !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast main .configurador select,
+body.a11y-mode-high-contrast main .cfg-ia-modal textarea {
+  border: 2px solid #ffff00 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast main .cfg-ia-modal textarea::placeholder {
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast main #cfgPercent {
+  border-color: #ffff00 !important;
+  background:
+    linear-gradient(#000000, #000000) padding-box,
+    conic-gradient(#ffff00 calc(var(--avance) * 1%), #555555 0) border-box !important;
+  color: #ffff00 !important;
+}
+
+body.a11y-mode-high-contrast main .cfg-placeholder {
+  border-color: #ffff00 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.a11y-mode-high-contrast main .cfg-componente-icono,
+body.a11y-mode-high-contrast main .cfg-componente-numero,
+body.a11y-mode-high-contrast main .cfg-beneficio-icono,
+body.a11y-mode-high-contrast main .cfg-compatibilidad-icono,
+body.a11y-mode-high-contrast main .cfg-avance-icono {
+  border-color: #ffff00 !important;
+  color: #ffff00 !important;
+}
