@@ -31,12 +31,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const formMetodoPago = document.getElementById("form-metodo-pago");
   const mensajeMetodo = document.getElementById("mensaje-metodo");
   let discount = null;
+  let discountValidationError = "";
   if (activeDiscount?.code) {
     try {
       const response = await fetch("http://localhost:3000/api/promotions");
       const data = await response.json().catch(() => ({}));
       if (!response.ok || !data.ok || !Array.isArray(data.promotions)) {
         throw new Error(data.message || "No se pudo validar el descuento.");
+      }
+      if (data.checkoutDiscounts !== true) {
+        throw new Error(
+          "Reinicia el backend desde Backend con `node index.js` antes de confirmar el pago.",
+        );
       }
       const promotion = data.promotions.find(
         (item) =>
@@ -50,10 +56,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       discount = { code: promotion.code, percent };
     } catch (error) {
       console.error("No se pudo validar el descuento del pedido:", error);
-      mensajeMetodo.textContent =
+      discountValidationError =
         error instanceof TypeError
           ? "No se pudo validar el descuento. Verifica que el backend esté activo."
           : error.message;
+      mensajeMetodo.textContent = discountValidationError;
     }
   }
 
@@ -309,7 +316,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   formMetodoPago.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (activeDiscount?.code && !discount) {
-      mensajeMetodo.textContent =
+      mensajeMetodo.textContent = discountValidationError ||
         "El descuento guardado ya no es válido. Quítalo desde el carrito para continuar.";
       return;
     }

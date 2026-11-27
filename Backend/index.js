@@ -2824,9 +2824,6 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
          INNER JOIN producto p ON p.id_producto = pr.id_producto
          WHERE pr.id_promocion = ?
            AND pr.estado = 'ACTIVO'
-           AND p.estado = 'ACTIVO'
-           AND pr.fecha_inicio <= NOW()
-           AND pr.fecha_fin >= NOW()
          FOR UPDATE`,
         [Number(codeMatch[1])],
       );
@@ -5472,12 +5469,13 @@ app.get("/api/promotions", async (req, res) => {
        FROM promocion pr
        INNER JOIN producto p ON p.id_producto = pr.id_producto
        WHERE pr.estado = 'ACTIVO'
-         AND p.estado = 'ACTIVO'
-         AND pr.fecha_inicio <= NOW()
-         AND pr.fecha_fin >= NOW()
        ORDER BY pr.fecha_fin ASC`
     );
-    return res.json({ ok: true, promotions: rows || [] });
+    return res.json({
+      ok: true,
+      checkoutDiscounts: true,
+      promotions: rows || [],
+    });
   } catch (error) {
     console.error("Error consultando promociones:", error.message);
     return res.status(500).json({
@@ -5489,15 +5487,11 @@ app.get("/api/promotions", async (req, res) => {
 
 app.post("/api/admin/descuentos", async (req, res) => {
   try {
-    const { code, percent, limit: useLimit, desc } = req.body;
-    const codeValue = String(code || "").trim();
+    const { percent, limit: useLimit, desc } = req.body;
     const percentValue = Number(percent);
     const descriptionValue = String(desc || "").trim();
     const errors = {};
 
-    if (!/^[A-Za-z0-9_-]{3,20}$/.test(codeValue)) {
-      errors.code = "El código debe tener entre 3 y 20 caracteres alfanuméricos.";
-    }
     if (!Number.isInteger(percentValue) || percentValue < 1 || percentValue > 99) {
       errors.percent = "El porcentaje debe ser un entero entre 1 y 99.";
     }
@@ -5555,7 +5549,7 @@ app.post("/api/admin/descuentos", async (req, res) => {
       ok: true,
       message: "Cupón de descuento creado.",
       discount: {
-        code: codeValue.toUpperCase(),
+        code: `PROM-${result.insertId}`,
         desc: descriptionValue,
         percent: `${percentValue}%`,
         expires: `${fechaFin.getDate().toString().padStart(2, "0")}/${(fechaFin.getMonth() + 1).toString().padStart(2, "0")}/${fechaFin.getFullYear()}`,
