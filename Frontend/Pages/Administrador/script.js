@@ -2290,11 +2290,18 @@ function renderizarGraficoVentas(tendencia) {
   var frecuenciaEtiquetas = Math.max(1, Math.ceil(coordenadas.length / 7));
   coordenadas.forEach(function(coordenada, indice) {
     if (indice % frecuenciaEtiquetas !== 0 && indice !== coordenadas.length - 1) return;
+    var ancla = coordenadas.length === 1
+      ? 'middle'
+      : indice === 0
+        ? 'start'
+        : indice === coordenadas.length - 1
+          ? 'end'
+          : 'middle';
     agregarSvg('text', {
       x: coordenada.x,
       y: 184,
       class: 'grafico-etiqueta-dia',
-      'text-anchor': 'middle'
+      'text-anchor': ancla
     }, coordenada.punto.label);
   });
 
