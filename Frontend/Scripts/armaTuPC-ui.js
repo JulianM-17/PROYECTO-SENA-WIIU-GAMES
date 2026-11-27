@@ -1,32 +1,13 @@
 const CATEGORIAS_PC = [
-  {
-    nombre: "Procesador",
-    catalogo: "Procesadores",
-    descripcion: "Elige el procesador que será el centro de tu equipo.",
-  },
-  {
-    nombre: "Tarjeta gráfica",
-    catalogo: "Tarjetas Graficas",
-    descripcion: "Selecciona la potencia gráfica para tus juegos y proyectos.",
-  },
-  {
-    nombre: "Memoria RAM",
-    catalogo: "Memorias RAM",
-    descripcion: "Escoge la memoria que necesitas para trabajar y jugar.",
-  },
-  {
-    nombre: "Almacenamiento",
-    catalogo: "Almacenamiento",
-    descripcion: "Agrega espacio y velocidad para tus archivos y juegos.",
-  },
-  {
-    nombre: "Placa madre",
-    catalogo: "Motherboards",
-    descripcion: "Elige una placa madre para conectar tus componentes.",
-  },
+  { nombre: "Procesador", catalogo: "Procesadores", icono: "◉" },
+  { nombre: "Tarjeta gráfica", catalogo: "Tarjetas Graficas", icono: "▣" },
+  { nombre: "Memoria RAM", catalogo: "Memorias RAM", icono: "▤" },
+  { nombre: "Almacenamiento", catalogo: "Almacenamiento", icono: "▧" },
+  { nombre: "Placa madre", catalogo: "Motherboards", icono: "◇" },
+  { nombre: "Fuente de poder", catalogo: null, icono: "▱" },
+  { nombre: "Refrigeración", catalogo: null, icono: "❄" },
+  { nombre: "Gabinete", catalogo: null, icono: "▣" },
 ];
-
-const COLORES_PC = ["#00d4ff", "#8b5cf6", "#ff4f81", "#45df94", "#ffb020"];
 const API_PRODUCTOS_PC =
   window.location.port === "3000"
     ? `${window.location.origin}/api/productos`
@@ -38,30 +19,42 @@ const formatoPrecioPC = new Intl.NumberFormat("es-CO", {
 document.addEventListener("DOMContentLoaded", iniciarConfiguradorPC);
 
 async function iniciarConfiguradorPC() {
-  const menu = document.getElementById("cfgMenu");
   const fila = document.getElementById("cfgFila");
-  const titulo = document.getElementById("cfgTitulo");
   const descripcion = document.getElementById("cfgDesc");
   const precio = document.getElementById("precioTotal");
-  const resumen = document.getElementById("cfgSpecs");
-  const configurador = document.getElementById("configurador");
   const imagen = document.getElementById("cfgImg");
   const placeholder = document.getElementById("cfgPlaceholder");
   const botonComprar = document.getElementById("btnComprar");
   const feedbackCompra = document.getElementById("cfgCompraFeedback");
+  const contador = document.getElementById("cfgCount");
+  const porcentaje = document.getElementById("cfgPercent");
+  const botonArmarIA = document.getElementById("btnArmarIA");
+  const modalIA = document.getElementById("cfgModalIA");
+  const botonCerrarModalIA = document.getElementById("btnCerrarModalIA");
+  const formularioIA = document.getElementById("formArmarIA");
+  const promptIA = document.getElementById("cfgPromptIA");
+  const estadoIA = document.getElementById("cfgIADisponibilidad");
+  const botonTema = document.getElementById("btnTemaConfigurador");
+  const iconoTema = botonTema?.querySelector("i");
+  const textoTema = botonTema?.querySelector("span");
+  const contenidoPagina = document.querySelector("main");
 
   if (
-    !menu ||
     !fila ||
-    !titulo ||
     !descripcion ||
     !precio ||
-    !resumen ||
-    !configurador ||
     !imagen ||
     !placeholder ||
     !botonComprar ||
-    !feedbackCompra
+    !feedbackCompra ||
+    !contador ||
+    !porcentaje ||
+    !botonArmarIA ||
+    !(modalIA instanceof HTMLDialogElement) ||
+    !botonCerrarModalIA ||
+    !formularioIA ||
+    !(promptIA instanceof HTMLTextAreaElement) ||
+    !estadoIA
   ) {
     console.error("Faltan elementos necesarios para el configurador de PC.");
     return;
@@ -69,27 +62,36 @@ async function iniciarConfiguradorPC() {
 
   botonComprar.disabled = true;
 
+  botonArmarIA.addEventListener("click", () => {
+    estadoIA.textContent = "";
+    modalIA.showModal();
+    promptIA.focus();
+  });
+  botonCerrarModalIA.addEventListener("click", () => modalIA.close());
+  modalIA.addEventListener("click", (evento) => {
+    if (evento.target === modalIA) modalIA.close();
+  });
+  promptIA.addEventListener("input", () => promptIA.setCustomValidity(""));
+  formularioIA.addEventListener("submit", (evento) => {
+    evento.preventDefault();
+    if (!promptIA.value.trim()) {
+      promptIA.setCustomValidity("Describe para qué necesitas tu PC.");
+      promptIA.reportValidity();
+      return;
+    }
+
+    estadoIA.textContent =
+      "La función de IA aún no está disponible. Tu texto no se envió.";
+  });
+
   imagen.addEventListener("error", () => {
     imagen.hidden = true;
     placeholder.hidden = false;
   });
 
-  COLORES_PC.forEach((color, index) => {
-    const boton = document.createElement("button");
-    boton.type = "button";
-    boton.style.backgroundColor = color;
-    boton.setAttribute("aria-label", `Cambiar iluminación al color ${index + 1}`);
-    boton.addEventListener("click", () => {
-      configurador.style.setProperty("--luz", color);
-    });
-    document.getElementById("cfgColores")?.appendChild(boton);
-  });
-
   let categorias = [];
-  let categoriaActual = 0;
   const seleccionados = new Map();
 
-  titulo.textContent = "Cargando componentes";
   descripcion.textContent = "Estamos consultando los componentes disponibles.";
 
   try {
@@ -116,6 +118,7 @@ async function iniciarConfiguradorPC() {
       opciones: productos
         .filter(
           (producto) =>
+            categoria.catalogo &&
             normalizar(producto.nombre_cat) === normalizar(categoria.catalogo) &&
             Number(producto.stock_total) > 0 &&
             Number.isFinite(Number(producto.precio)),
@@ -127,115 +130,143 @@ async function iniciarConfiguradorPC() {
           stock: Number(producto.stock_total),
           imagen: String(producto.imagen_url || ""),
         })),
-    })).filter((categoria) => categoria.opciones.length > 0);
-
-    if (categorias.length === 0) {
-      throw new Error("No hay componentes disponibles en el catálogo.");
-    }
+    }));
+    descripcion.textContent = "";
   } catch (error) {
     console.error("No se pudieron cargar los componentes:", error);
-    titulo.textContent = "No se pudieron cargar los componentes";
     descripcion.textContent =
       "Inicia el servidor Backend en localhost:3000 y verifica la conexión a MySQL.";
-    fila.textContent = "Los componentes no están disponibles en este momento.";
-    return;
-  }
-
-  function pintarMenu() {
-    menu.replaceChildren();
-    categorias.forEach((categoria, indice) => {
-      const boton = document.createElement("button");
-      boton.type = "button";
-      boton.textContent = categoria.nombre;
-      boton.className = indice === categoriaActual ? "activo" : "";
-      boton.setAttribute(
-        "aria-current",
-        indice === categoriaActual ? "true" : "false",
-      );
-      boton.addEventListener("click", () => {
-        categoriaActual = indice;
-        pintarMenu();
-        pintarOpciones();
-      });
-      menu.appendChild(boton);
-    });
+    categorias = CATEGORIAS_PC.map((categoria) => ({
+      ...categoria,
+      opciones: [],
+    }));
   }
 
   function pintarOpciones() {
-    const categoria = categorias[categoriaActual];
-    titulo.textContent = categoria.nombre;
-    descripcion.textContent = categoria.descripcion;
     fila.replaceChildren();
 
-    categoria.opciones.forEach((opcion) => {
-      const boton = document.createElement("button");
-      const activo = seleccionados.get(categoria.nombre)?.id === opcion.id;
-      boton.type = "button";
-      boton.className = `cfg-card${activo ? " activo" : ""}`;
-      boton.setAttribute("aria-pressed", String(activo));
+    categorias.forEach((categoria, indice) => {
+      const seleccion = seleccionados.get(categoria.nombre);
+      const tarjeta = document.createElement("article");
+      tarjeta.className = `cfg-componente${seleccion ? " seleccionado" : ""}`;
+      tarjeta.dataset.categoriaIndex = String(indice);
 
-      const nombre = document.createElement("span");
-      nombre.textContent = opcion.nombre;
-      const costo = document.createElement("em");
-      costo.textContent = `$${formatoPrecioPC.format(opcion.precio)}`;
-      const existencias = document.createElement("small");
-      existencias.className = "cfg-stock";
-      existencias.textContent = `Disponibles: ${opcion.stock}`;
+      const numero = document.createElement("span");
+      numero.className = "cfg-componente-numero";
+      numero.textContent = String(indice + 1);
+      const nombre = document.createElement("h3");
+      nombre.textContent = categoria.nombre;
 
-      boton.append(nombre, costo, existencias);
-      boton.addEventListener("click", () => {
+      const arte = document.createElement("div");
+      arte.className = "cfg-componente-arte";
+      const icono = document.createElement("span");
+      icono.className = "cfg-componente-icono";
+      icono.setAttribute("aria-hidden", "true");
+      icono.textContent = categoria.icono;
+      arte.appendChild(icono);
+
+      const opcionImagen = seleccion || categoria.opciones[0];
+      if (opcionImagen?.imagen) {
+        const imagenProducto = document.createElement("img");
+        imagenProducto.src = opcionImagen.imagen;
+        imagenProducto.alt = "";
+        imagenProducto.loading = "lazy";
+        imagenProducto.addEventListener("load", () => {
+          icono.hidden = true;
+        });
+        imagenProducto.addEventListener("error", () => {
+          imagenProducto.remove();
+        });
+        arte.appendChild(imagenProducto);
+      }
+
+      const selector = document.createElement("select");
+      selector.className = "cfg-componente-selector";
+      selector.id = `cfgProducto-${indice}`;
+      selector.hidden = true;
+      selector.disabled = categoria.opciones.length === 0;
+      selector.setAttribute("aria-label", `Producto para ${categoria.nombre}`);
+      const opcionInicial = document.createElement("option");
+      opcionInicial.value = "";
+      opcionInicial.textContent = "Elige un producto";
+      selector.appendChild(opcionInicial);
+      categoria.opciones.forEach((opcion) => {
+        const elemento = document.createElement("option");
+        elemento.value = opcion.id;
+        elemento.textContent = `${opcion.nombre} - $${formatoPrecioPC.format(opcion.precio)}`;
+        selector.appendChild(elemento);
+      });
+      selector.value = seleccion?.id || "";
+      selector.addEventListener("change", () => {
+        if (!selector.value) {
+          seleccionados.delete(categoria.nombre);
+          feedbackCompra.textContent = "";
+          pintarOpciones();
+          actualizarResumen();
+          return;
+        }
+
+        const opcion = categoria.opciones.find(
+          (elemento) => elemento.id === selector.value,
+        );
+        if (!opcion) return;
         seleccionados.set(categoria.nombre, opcion);
         feedbackCompra.textContent = "";
         pintarOpciones();
         actualizarResumen();
       });
-      fila.appendChild(boton);
+
+      const boton = document.createElement("button");
+      boton.type = "button";
+      boton.className = "cfg-componente-boton";
+      boton.setAttribute("aria-controls", selector.id);
+      boton.setAttribute("aria-expanded", "false");
+      boton.textContent = seleccion ? "Cambiar →" : "Seleccionar →";
+      if (!categoria.opciones.length) {
+        boton.textContent = categoria.catalogo
+          ? "Agotado"
+          : "Próximamente";
+        boton.disabled = true;
+      } else {
+        boton.addEventListener("click", () => {
+          selector.hidden = !selector.hidden;
+          boton.setAttribute("aria-expanded", String(!selector.hidden));
+          if (!selector.hidden) selector.focus();
+        });
+      }
+
+      const seleccionado = document.createElement("small");
+      seleccionado.className = "cfg-componente-seleccionado";
+      seleccionado.textContent = seleccion
+        ? `${seleccion.nombre} · $${formatoPrecioPC.format(seleccion.precio)}`
+        : "";
+
+      tarjeta.append(numero, nombre, arte, seleccionado, boton, selector);
+      fila.appendChild(tarjeta);
     });
   }
 
   function actualizarResumen() {
     const seleccion = categorias
-      .map((categoria) => ({
-        categoria: categoria.nombre,
-        opcion: seleccionados.get(categoria.nombre),
-      }))
-      .filter((elemento) => elemento.opcion);
+      .map((categoria) => seleccionados.get(categoria.nombre))
+      .filter(Boolean);
     const total = seleccion.reduce(
-      (suma, elemento) => suma + elemento.opcion.precio,
+      (suma, opcion) => suma + opcion.precio,
       0,
     );
 
     precio.textContent = formatoPrecioPC.format(total);
     botonComprar.disabled = seleccion.length === 0;
-    resumen.replaceChildren();
-
-    if (seleccion.length === 0) {
-      const nota = document.createElement("p");
-      nota.className = "cfg-nota";
-      nota.textContent = "Selecciona componentes para ver el resumen.";
-      resumen.appendChild(nota);
-      return;
-    }
-
-    seleccion.forEach(({ categoria, opcion }) => {
-      const linea = document.createElement("div");
-      linea.className = "cfg-spec";
-      const etiqueta = document.createElement("span");
-      etiqueta.textContent = categoria;
-      const nombre = document.createElement("strong");
-      nombre.textContent = opcion.nombre;
-      linea.append(etiqueta, nombre);
-      resumen.appendChild(linea);
-    });
+    contador.textContent = `${seleccion.length}/${categorias.length} componentes`;
+    const avance = Math.round((seleccion.length / categorias.length) * 100);
+    porcentaje.parentElement?.style.setProperty("--avance", String(avance));
+    porcentaje.textContent = `${avance}%`;
   }
 
   botonComprar.addEventListener("click", () => {
     const seleccion = categorias
-      .map((categoria) => ({
-        categoria: categoria.nombre,
-        opcion: seleccionados.get(categoria.nombre),
-      }))
-      .filter((elemento) => elemento.opcion);
+      .map((categoria) => seleccionados.get(categoria.nombre))
+      .filter(Boolean);
     const carrito = window.WiiUGamesCart;
 
     if (seleccion.length === 0) {
@@ -251,7 +282,7 @@ async function iniciarConfiguradorPC() {
     }
 
     const carritoActual = carrito.read();
-    const agotado = seleccion.find(({ opcion }) => {
+    const agotado = seleccion.find((opcion) => {
       const cantidadEnCarrito =
         carritoActual.find(
           (item) => String(item.productId) === opcion.id,
@@ -261,14 +292,14 @@ async function iniciarConfiguradorPC() {
 
     if (agotado) {
       feedbackCompra.textContent =
-        `${agotado.opcion.nombre} ya alcanzó el stock disponible en tu carrito.`;
+        `${agotado.nombre} ya alcanzó el stock disponible en tu carrito.`;
       return;
     }
 
     botonComprar.disabled = true;
     let agregados = 0;
     try {
-      for (const { opcion } of seleccion) {
+      for (const opcion of seleccion) {
         const resultado = carrito.add(
           {
             productId: opcion.id,
@@ -303,7 +334,6 @@ async function iniciarConfiguradorPC() {
     }
   });
 
-  pintarMenu();
   pintarOpciones();
   actualizarResumen();
 }
