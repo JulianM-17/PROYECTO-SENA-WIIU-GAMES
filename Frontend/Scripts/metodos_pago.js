@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   let usuarioActivo;
   try {
     usuarioActivo = JSON.parse(
@@ -19,14 +19,56 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  let activeDiscount = null;
+  try {
+    activeDiscount = JSON.parse(
+      localStorage.getItem("wiiu_active_discount") || "null",
+    );
+  } catch (error) {
+    console.error("No se pudo leer el descuento aplicado:", error);
+  }
+
+  const formMetodoPago = document.getElementById("form-metodo-pago");
+  const mensajeMetodo = document.getElementById("mensaje-metodo");
+  let discount = null;
+  if (activeDiscount?.code) {
+    try {
+      const response = await fetch("http://localhost:3000/api/promotions");
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok || !data.ok || !Array.isArray(data.promotions)) {
+        throw new Error(data.message || "No se pudo validar el descuento.");
+      }
+      const promotion = data.promotions.find(
+        (item) =>
+          String(item.code).trim().toUpperCase() ===
+          String(activeDiscount.code).trim().toUpperCase(),
+      );
+      const percent = Number(promotion?.percent);
+      if (!promotion || !Number.isInteger(percent) || percent < 1 || percent > 99) {
+        throw new Error("El código de descuento ya no es válido.");
+      }
+      discount = { code: promotion.code, percent };
+    } catch (error) {
+      console.error("No se pudo validar el descuento del pedido:", error);
+      mensajeMetodo.textContent =
+        error instanceof TypeError
+          ? "No se pudo validar el descuento. Verifica que el backend esté activo."
+          : error.message;
+    }
+  }
+
   const formatCOP = (amount) =>
     "$" + Math.round(amount).toLocaleString("es-CO") + " COP";
   const subtotal = cart.reduce(
     (sum, item) => sum + Number(item.price) * Number(item.quantity),
     0,
   );
+  const discountAmount = discount
+    ? Number((subtotal * discount.percent / 100).toFixed(2))
+    : 0;
+  const discountedSubtotal = subtotal - discountAmount;
   const shipping = 25000;
-  const taxes = subtotal * 0.19;
+  const taxes = Number((discountedSubtotal * 0.19).toFixed(2));
 
   document.getElementById("productos-resumen").innerHTML = cart
     .map(
@@ -45,14 +87,20 @@ document.addEventListener("DOMContentLoaded", () => {
     )
     .join("");
   document.getElementById("subtotal-pedido").textContent = formatCOP(subtotal);
+  const discountRow = document.getElementById("descuento-pedido");
+  if (discount) {
+    discountRow.hidden = false;
+    document.getElementById("texto-descuento-pedido").textContent =
+      `Descuento (${discount.code} · ${discount.percent}%)`;
+    document.getElementById("monto-descuento-pedido").textContent =
+      `-${formatCOP(discountAmount)}`;
+  }
   document.getElementById("envio-pedido").textContent = formatCOP(shipping);
   document.getElementById("impuestos-pedido").textContent = formatCOP(taxes);
   document.getElementById("total-pedido").textContent = formatCOP(
-    subtotal + shipping + taxes,
+    discountedSubtotal + shipping + taxes,
   );
 
-  const formMetodoPago = document.getElementById("form-metodo-pago");
-  const mensajeMetodo = document.getElementById("mensaje-metodo");
   const paymentDetails = {
     tarjeta: document.getElementById("datos-tarjeta"),
     pse: document.getElementById("datos-pse"),
@@ -260,6 +308,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitButton = formMetodoPago.querySelector('button[type="submit"]');
   formMetodoPago.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (activeDiscount?.code && !discount) {
+      mensajeMetodo.textContent =
+        "El descuento guardado ya no es válido. Quítalo desde el carrito para continuar.";
+      return;
+    }
     const method = new FormData(formMetodoPago).get("metodo");
     const names = {
       tarjeta: "Tarjeta débito o crédito",
@@ -301,6 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         body: JSON.stringify({
           method,
+          discountCode: discount?.code || null,
           items: cart.map((item) => ({
             productId: item.productId,
             quantity: Number(item.quantity),

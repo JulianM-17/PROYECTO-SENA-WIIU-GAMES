@@ -256,6 +256,10 @@
   margin-top: 14px;
 }
 
+.fila-resumen[hidden] {
+  display: none;
+}
+
 .total-pedido {
   margin-top: 18px;
   padding-top: 16px;
