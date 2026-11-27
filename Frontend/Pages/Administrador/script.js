@@ -890,11 +890,19 @@ function abrirModal(tipo, productoId) {
     `;
   } else if (tipo === 'descuentos') {
     var descuento = descuentoEdicion;
+    var fechaInicioDefault = descuento ? (descuento.startDate || '') : new Date().toISOString().slice(0, 10);
+    var fechaFinDefault = descuento ? (descuento.endDate || '') : (() => {
+      var fecha = new Date();
+      fecha.setMonth(fecha.getMonth() + 3);
+      return fecha.toISOString().slice(0, 10);
+    })();
     var campoCodigoDescuento = descuento
       ? '<div class="campo-grupo"><label>Código del Cupón:</label>' +
         '<input type="text" id="campo1" value="' + escaparHtmlAdmin(descuento.code) +
-        '" readonly aria-readonly="true" style="text-transform: uppercase;"></div>'
-      : '<p class="ayuda-campo">El identificador PROM se asigna automáticamente al guardar.</p>';
+        '" required maxlength="30" style="text-transform: uppercase;"></div>'
+      : '<div class="campo-grupo"><label>Código del Cupón:</label>' +
+        '<input type="text" id="campo1" required minlength="3" maxlength="30" ' +
+        'placeholder="Ej. NAVIDAD20" style="text-transform: uppercase;"></div>';
     titulo.textContent = descuento ? "Editar Descuento" : "Crear Código de Descuento";
     campos.innerHTML = `
       ${campoCodigoDescuento}
@@ -905,6 +913,14 @@ function abrirModal(tipo, productoId) {
       <div class="campo-grupo">
         <label>Descripción / Nota del Cupón:</label>
         <input type="text" id="campo3" required minlength="3" maxlength="150" value="${escaparHtmlAdmin(descuento ? descuento.discountDescription : '')}" placeholder="Ej. Descuento de temporada navideña">
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_fecha_inicio">Fecha Inicio:</label>
+        <input type="date" id="campo_fecha_inicio" required value="${escaparHtmlAdmin(fechaInicioDefault)}">
+      </div>
+      <div class="campo-grupo">
+        <label for="campo_fecha_fin">Fecha Fin:</label>
+        <input type="date" id="campo_fecha_fin" required value="${escaparHtmlAdmin(fechaFinDefault)}">
       </div>
     `;
   } else if (tipo === 'resenas') {
@@ -2290,11 +2306,18 @@ function renderizarGraficoVentas(tendencia) {
   var frecuenciaEtiquetas = Math.max(1, Math.ceil(coordenadas.length / 7));
   coordenadas.forEach(function(coordenada, indice) {
     if (indice % frecuenciaEtiquetas !== 0 && indice !== coordenadas.length - 1) return;
+    var ancla = coordenadas.length === 1
+      ? 'middle'
+      : indice === 0
+        ? 'start'
+        : indice === coordenadas.length - 1
+          ? 'end'
+          : 'middle';
     agregarSvg('text', {
       x: coordenada.x,
       y: 184,
       class: 'grafico-etiqueta-dia',
-      'text-anchor': 'middle'
+      'text-anchor': ancla
     }, coordenada.punto.label);
   });
 
@@ -3013,10 +3036,12 @@ function cargarDashboard() {
       poblarTabla('tablaDescuentosBody', data.discounts, function(row) {
         var estadoClase = row.status === 'Activo' ? 'etiqueta-verde' : 'etiqueta-rojo';
         var discountId = Number(row.id);
-        return '<td><strong>' + escaparHtmlAdmin(row.code) + '</strong></td><td>Porcentaje</td><td>' + escaparHtmlAdmin(row.percent) + '</td><td>' + escaparHtmlAdmin(row.discountDescription || '') + '</td><td>' + escaparHtmlAdmin(row.expires) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td><td><button class="boton-icono" type="button" title="Editar descuento" aria-label="Editar descuento ' + escaparHtmlAdmin(row.code) + '" onclick="abrirModal(\'descuentos\', ' + discountId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" type="button" title="Suspender descuento" aria-label="Suspender descuento ' + escaparHtmlAdmin(row.code) + '" onclick="suspenderDescuentoAdmin(' + discountId + ')"><i class="fi fi-rr-ban"></i></button></td>';
+        return '<td><strong>' + escaparHtmlAdmin(row.code) + '</strong></td><td>Porcentaje</td><td>' + escaparHtmlAdmin(row.percent) + '</td><td>' + escaparHtmlAdmin(row.starts || '') + '</td><td>' + escaparHtmlAdmin(row.expires) + '</td><td><span class="' + estadoClase + '">' + escaparHtmlAdmin(row.status) + '</span></td><td><button class="boton-icono" type="button" title="Editar descuento" aria-label="Editar descuento ' + escaparHtmlAdmin(row.code) + '" onclick="abrirModal(\'descuentos\', ' + discountId + ')"><i class="fi fi-rr-edit"></i></button><button class="boton-icono rojo" type="button" title="Suspender descuento" aria-label="Suspender descuento ' + escaparHtmlAdmin(row.code) + '" onclick="suspenderDescuentoAdmin(' + discountId + ')"><i class="fi fi-rr-ban"></i></button></td>';
       });
       el = document.getElementById('descActivos');
-      if (el) el.textContent = data.discounts.length;
+      if (el) el.textContent = data.discounts.filter(function(row) {
+        return row.status === 'Activo';
+      }).length;
     }
 
     // Usuarios
@@ -3418,13 +3443,31 @@ async function guardarDatos(evento) {
     };
 
   } else if (tipoModalActual === 'descuentos') {
+    var codigoDescuentoInput = document.getElementById('campo1');
+    var codigoDescuento = codigoDescuentoInput ? codigoDescuentoInput.value.trim().toUpperCase() : '';
+    var fechaInicioInput = document.getElementById('campo_fecha_inicio');
+    var fechaFinInput = document.getElementById('campo_fecha_fin');
+    var fechaInicio = fechaInicioInput ? fechaInicioInput.value : '';
+    var fechaFin = fechaFinInput ? fechaFinInput.value : '';
     var numPercent = Number(c2);
+    if (!/^[A-Z0-9_-]{3,30}$/.test(codigoDescuento)) {
+      marcarErrorCampo(codigoDescuentoInput, 'El código debe tener 3 a 30 caracteres: letras, números, guion o guion bajo.');
+      hayErrores = true;
+    }
     if (!Number.isInteger(numPercent) || numPercent < 1 || numPercent > 99) {
       marcarErrorCampo(c2Input, 'El porcentaje debe ser un valor entero entre 1 y 99.');
       hayErrores = true;
     }
     if (!c3 || c3.length < 3 || c3.length > 150) {
       marcarErrorCampo(c3Input, 'Ingresa una descripción del cupón (3 a 150 caracteres).');
+      hayErrores = true;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaInicio)) {
+      marcarErrorCampo(fechaInicioInput, 'Selecciona una fecha de inicio válida.');
+      hayErrores = true;
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaFin) || (fechaInicio && fechaFin <= fechaInicio)) {
+      marcarErrorCampo(fechaFinInput, 'La fecha de fin debe ser posterior a la fecha de inicio.');
       hayErrores = true;
     }
 
@@ -3437,15 +3480,21 @@ async function guardarDatos(evento) {
       url = API_BASE + '/api/admin/descuentos/' + encodeURIComponent(descuentoEdicion.id);
       metodo = 'PUT';
       payload = {
+        code: codigoDescuento,
         percent: numPercent,
-        desc: c3
+        desc: c3,
+        startDate: fechaInicio,
+        endDate: fechaFin
       };
     } else {
       url = API_BASE + '/api/admin/descuentos';
       payload = {
+        code: codigoDescuento,
         percent: numPercent,
         limit: 100,
-        desc: c3
+        desc: c3,
+        startDate: fechaInicio,
+        endDate: fechaFin
       };
     }
 
