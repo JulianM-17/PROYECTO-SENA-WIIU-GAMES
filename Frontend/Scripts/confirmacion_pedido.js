@@ -52,6 +52,18 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
 
   setText("confirmacion-subtotal", formatCOP(confirmation.totals.subtotal));
+  const discount = confirmation.discount;
+  const discountAmount = Number(
+    confirmation.totals.discount ?? discount?.amount ?? 0,
+  );
+  if (discount && discountAmount > 0) {
+    document.getElementById("fila-descuento-confirmacion").hidden = false;
+    setText(
+      "texto-descuento-confirmacion",
+      `Descuento (${discount.code} · ${discount.percent}%)`,
+    );
+    setText("confirmacion-descuento", `-${formatCOP(discountAmount)}`);
+  }
   setText("confirmacion-envio", formatCOP(confirmation.totals.shipping));
   setText("confirmacion-impuestos", formatCOP(confirmation.totals.taxes));
   setText("confirmacion-total", formatCOP(confirmation.totals.total));

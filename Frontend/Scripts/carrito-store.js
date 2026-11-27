@@ -1,6 +1,17 @@
 (() => {
   const STORAGE_KEY = "wiiu_cart";
 
+  function isSessionActive() {
+    try {
+      const activeUser = JSON.parse(
+        sessionStorage.getItem("wiiu_usuario_activo") || "null",
+      );
+      return Boolean(activeUser?.token);
+    } catch (error) {
+      return false;
+    }
+  }
+
   function requireSession() {
     let activeUser;
     try {
@@ -35,6 +46,15 @@
   }
 
   function read() {
+    if (!isSessionActive()) {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (error) {
+        console.error("No se pudo limpiar el carrito de invitado:", error);
+      }
+      updateCount([]);
+      return [];
+    }
     try {
       const cart = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
       return Array.isArray(cart) ? cart : [];
@@ -45,6 +65,10 @@
   }
 
   function write(cart) {
+    if (!isSessionActive()) {
+      requireSession();
+      return;
+    }
     localStorage.setItem(STORAGE_KEY, JSON.stringify(cart));
     updateCount(cart);
     window.dispatchEvent(new CustomEvent("wiiu-cart-change", { detail: cart }));

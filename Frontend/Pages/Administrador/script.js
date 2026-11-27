@@ -4009,13 +4009,17 @@ function crearBackup() {
   })
     .then(function(response) {
       return response.json().then(function(data) {
-        if (!response.ok) throw new Error(data.message || 'No se pudo crear el respaldo.');
+        if (!response.ok || !data.ok) {
+          throw new Error(data.message || 'No se pudo crear el respaldo.');
+        }
         return data;
       });
     })
     .then(function(data) {
       mostrarToast('success', data.message);
-      cargarBackups();
+      window.setTimeout(function() {
+        window.location.reload();
+      }, 1000);
     })
     .catch(function(error) {
       console.error('Error creando respaldo:', error);
@@ -4174,7 +4178,7 @@ function restaurarBackup(filename) {
   })
     .then(function(response) {
       return response.json().then(function(data) {
-        if (!response.ok) {
+        if (!response.ok || !data.ok) {
           var mensaje = data.message || 'No se pudo restaurar el respaldo.';
           if (data.details) mensaje += ' ' + data.details;
           throw new Error(mensaje);
@@ -4184,8 +4188,9 @@ function restaurarBackup(filename) {
     })
     .then(function(data) {
       mostrarToast('success', data.message);
-      cargarDashboard();
-      cargarBackups();
+      window.setTimeout(function() {
+        window.location.reload();
+      }, 1000);
     })
     .catch(function(error) {
       console.error('Error restaurando respaldo:', error);

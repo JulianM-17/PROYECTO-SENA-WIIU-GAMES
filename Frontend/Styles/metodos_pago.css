@@ -29,9 +29,38 @@
   text-decoration: none;
 }
 
-.migas-pan a:hover,
-.volver-carrito:hover {
+.migas-pan a:hover {
   text-decoration: underline;
+}
+
+.btn-volver-carrito {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 9px 14px;
+  border: 1px solid var(--pago-borde);
+  border-radius: 8px;
+  color: var(--pago-azul);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-volver-carrito:hover {
+  border-color: var(--pago-amarillo);
+  background: #fffcf0;
+}
+
+.btn-volver-carrito:focus-visible {
+  outline: 3px solid rgb(245 200 66 / 45%);
+  outline-offset: 2px;
+}
+
+.btn-volver-carrito i {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .pagina-pago h1 {
@@ -256,19 +285,16 @@
   margin-top: 14px;
 }
 
+.fila-resumen[hidden] {
+  display: none;
+}
+
 .total-pedido {
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid var(--pago-borde);
   color: var(--pago-azul);
   font-size: 17px;
-}
-
-.volver-carrito {
-  display: inline-block;
-  margin-top: 22px;
-  color: var(--pago-azul);
-  font-size: 14px;
 }
 
 body.a11y-mode-dark-mode .pagina-pago {
@@ -278,9 +304,18 @@ body.a11y-mode-dark-mode .pagina-pago {
 body.a11y-mode-dark-mode .pagina-pago h1,
 body.a11y-mode-dark-mode .pagina-pago h2,
 body.a11y-mode-dark-mode .pagina-pago strong,
-body.a11y-mode-dark-mode .pagina-pago .campo-pago label,
-body.a11y-mode-dark-mode .pagina-pago .volver-carrito {
+body.a11y-mode-dark-mode .pagina-pago .campo-pago label {
   color: #f8fafc !important;
+}
+
+body.a11y-mode-dark-mode .btn-volver-carrito {
+  border-color: #475569;
+  color: #f8fafc;
+}
+
+body.a11y-mode-dark-mode .btn-volver-carrito:hover {
+  border-color: var(--pago-amarillo);
+  background: #292719;
 }
 
 body.a11y-mode-dark-mode .introduccion,

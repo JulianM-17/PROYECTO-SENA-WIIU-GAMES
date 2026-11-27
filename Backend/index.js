@@ -2802,12 +2802,76 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
     const subtotal = Number(
       saleLines.reduce((sum, line) => sum + line.subtotal, 0).toFixed(2),
     );
+    const requestedDiscountCode = String(req.body?.discountCode || "")
+      .trim()
+      .toUpperCase();
+    let discount = null;
+    if (requestedDiscountCode) {
+      const codeMatch = /^PROM-(\d+)$/.exec(requestedDiscountCode);
+      if (!codeMatch) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(400).json({
+          ok: false,
+          message: "El código de descuento no es válido o ya venció.",
+        });
+      }
+
+      const [promotionRows] = await connection.query(
+        `SELECT
+           CONCAT('PROM-', pr.id_promocion) AS code,
+           ROUND(((p.precio - pr.precio) / NULLIF(p.precio, 0)) * 100) AS percent
+         FROM promocion pr
+         INNER JOIN producto p ON p.id_producto = pr.id_producto
+         WHERE pr.id_promocion = ?
+           AND pr.estado = 'ACTIVO'
+           AND p.estado = 'ACTIVO'
+           AND pr.fecha_inicio <= NOW()
+           AND pr.fecha_fin >= NOW()
+         FOR UPDATE`,
+        [Number(codeMatch[1])],
+      );
+      const promotion = promotionRows[0];
+      const percent = Number(promotion?.percent);
+      if (!promotion || promotion.code !== requestedDiscountCode ||
+          !Number.isInteger(percent) || percent < 1 || percent > 99) {
+        await revertirTransaccionEmpleado(connection);
+        return res.status(400).json({
+          ok: false,
+          message: "El código de descuento no es válido o ya venció.",
+        });
+      }
+      discount = { code: promotion.code, percent };
+    }
+
+    const subtotalCents = Math.round(subtotal * 100);
+    const discountCents = discount
+      ? Math.round(subtotalCents * discount.percent / 100)
+      : 0;
+    let remainingDiscountCents = discountCents;
+    let remainingSubtotalCents = subtotalCents;
+    saleLines.forEach((line, index) => {
+      const lineCents = Math.round(line.subtotal * 100);
+      const lineDiscountCents = index === saleLines.length - 1
+        ? remainingDiscountCents
+        : remainingSubtotalCents
+          ? Math.round(remainingDiscountCents * lineCents / remainingSubtotalCents)
+          : 0;
+      line.subtotal = (lineCents - lineDiscountCents) / 100;
+      remainingDiscountCents -= lineDiscountCents;
+      remainingSubtotalCents -= lineCents;
+    });
+
+    const discountAmount = discountCents / 100;
+    const discountedSubtotal = (subtotalCents - discountCents) / 100;
     const shipping = 25000;
-    const taxes = Number((subtotal * 0.19).toFixed(2));
-    const total = Number((subtotal + shipping + taxes).toFixed(2));
+    const taxes = Number((discountedSubtotal * 0.19).toFixed(2));
+    const total = Number((discountedSubtotal + shipping + taxes).toFixed(2));
     const paymentReference = `DEMO-${crypto.randomBytes(8).toString("hex").toUpperCase()}`;
     const notes =
-      `Compra web - pago de demostración. Subtotal ${subtotal}; envío ${shipping}; ` +
+      `Compra web - pago de demostración. Subtotal ${subtotal}; ` +
+      `descuento ${
+        discount ? `${discount.code} (${discount.percent}%) ${discountAmount}` : "ninguno"
+      }; envío ${shipping}; ` +
       `IVA ${taxes}; total ${total} COP.`;
 
     const [saleResult] = await connection.query(
@@ -2880,7 +2944,16 @@ app.post("/api/purchases", requireUserSession, async (req, res) => {
           quantity,
           unitPrice,
         })),
-        totals: { subtotal, shipping, taxes, total },
+        discount: discount
+          ? { ...discount, amount: discountAmount }
+          : null,
+        totals: {
+          subtotal,
+          discount: discountAmount,
+          shipping,
+          taxes,
+          total,
+        },
         shippingAddress: {
           address: customerRows[0].direccion,
           city: customerRows[0].ciudad,
@@ -5399,6 +5472,9 @@ app.get("/api/promotions", async (req, res) => {
        FROM promocion pr
        INNER JOIN producto p ON p.id_producto = pr.id_producto
        WHERE pr.estado = 'ACTIVO'
+         AND p.estado = 'ACTIVO'
+         AND pr.fecha_inicio <= NOW()
+         AND pr.fecha_fin >= NOW()
        ORDER BY pr.fecha_fin ASC`
     );
     return res.json({ ok: true, promotions: rows || [] });
